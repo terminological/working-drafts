@@ -2,7 +2,9 @@
 # 
 # Author: robchallen
 ###############################################################################
-
+# https://tbrieder.org/epidata/course_e_ex04_task.pdf
+# https://stats.stackexchange.com/questions/256148/stratification-in-cox-model
+# http://www.sthda.com/english/wiki/cox-proportional-hazards-model
 
 library("survival")
 library("survminer")
