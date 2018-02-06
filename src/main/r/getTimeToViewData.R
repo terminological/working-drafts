@@ -4,7 +4,7 @@ library(datasets)
 library(dplyr)
 library(reshape2)
 
-pwd <- readline(prompt="Enter DB: ")
+pwd <- readline(prompt="Enter DB: ");
 con <- dbConnect(odbc(),
                  Driver = "ODBC Driver 13 for SQL Server",
                  Server = "10.174.129.118",
@@ -30,7 +30,15 @@ data <- data %>%
   mutate(month_cat=format(date, "%Y-%m")) %>%
   mutate(time_of_week=as.numeric(difftime(date,as.POSIXct(cut(date,"week")),unit="mins"))%%(24*7*60)) %>%
   mutate(time_of_day=time_of_week %% (24*60)) %>%
+  mutate(day_time_cat = cut(
+				  (time_of_day+16*60)%%(24*60),
+					breaks=c(0,4*60,8*60,10*60,25*60),
+					labels=c("Morning","Day","Afternoon","Night"),
+					ordered_result=FALSE,
+					include.lowest=TRUE,
+				  )) %>%
   filter(as.Date(date) <= as.Date("2017-08-31")) %>%
+  filter(ward_name != "Other") %>%
   collect();
 
 viewed_data <- data %>% 
