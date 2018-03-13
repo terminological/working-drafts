@@ -116,7 +116,7 @@ GO
 -- in this case 5 of the most recently available tests from any location
 -- this will then be filtered to just tsft inpatient tests.
 DECLARE @numTestsPerGridView INT;
-SET @numTestsPerGridView = 5;
+SET @numTestsPerGridView = 10;
 INSERT INTO RobsDatabase.[dbo].[tsftResultViewedby]
 SELECT 
 	tmp2.viewed_date,
@@ -141,7 +141,7 @@ FROM (
 				AND ar.date < gv.viewed_date
 				-- if we want to put a time constrain rather than a number of test constraint it needs to go here.
 				AND ar.date > gv.viewed_date - 1
-			ORDER BY ar.date desc
+			-- ORDER BY ar.date desc
 		) tmp
 	WHERE 
 		gv.patient_id = tmp.patient_id

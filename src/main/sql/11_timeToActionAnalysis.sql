@@ -32,7 +32,8 @@ SELECT -- TOP(100)
 	DATEDIFF(mi,res.date,v.viewed_date) as minutes_to_view, 
 	-- map.similarity,
 	req.date as request_date,
-	DATEDIFF(mi,v.viewed_date,req.date) as minutes_to_action, 
+	DATEDIFF(mi,res.date,req.date) as minutes_to_action, 
+	DATEDIFF(mi,v.viewed_date,req.date) as minutes_to_response,
 	req.discipline as request_discipline,
 	req.investigation as request_investigation,
 	cast(0.0 as float) as chi_2
@@ -51,15 +52,16 @@ Where
 	and res.patient_id = req.patient_id
 	AND res.normalcy IS NOT NULL
 	AND res.last_test_normalcy IS NULL
-	AND v.viewed_date < req.date
-	AND v.viewed_date+1 > req.date
+	AND res.date-0.25 < req.date -- request less than 6 hours before result
+	AND v.viewed_date+0.25 > req.date -- request less than 6 hours after viewed_date
+	AND v.viewed_date-0.5 < req.date  -- viewed_date less than 6 hours after result
 GO
 
 DROP VIEW IF EXISTS chi_squared_test_investigation;
 GO
 
 CREATE VIEW chi_squared_test_investigation AS
-SELECT test, normalcy, request_investigation,
+SELECT test, test_name, normalcy, request_investigation, test_and_investigation,
 	POWER((test_and_investigation-expected_test_and_investigation),2)/expected_test_and_investigation +
 	POWER((test_and_no_investigation-expected_test_and_no_investigation),2)/expected_test_and_no_investigation +
 	POWER((no_test_and_investigation-expected_no_test_and_investigation),2)/expected_no_test_and_investigation +
@@ -85,7 +87,8 @@ SELECT
 	-- cast(req.observed as float)/t.distinct_tests as test_expected_given_investigation,
 	
 FROM
-(Select test, min(test_name) as test_name, normalcy, request_investigation, cast(count(*) as BIGINT) as observed from aggTimeToAction group by test, normalcy, request_investigation) corr
+(Select test, min(test_name) as test_name, normalcy, request_investigation, cast(count(*) as BIGINT) as observed from aggTimeToAction
+	where request_date>viewed_date group by test, normalcy, request_investigation) corr
 LEFT OUTER JOIN 
 (Select test, normalcy, cast(count(*) AS BIGINT) as observed from aggTimeToAction group by test, normalcy) res 
 ON res.test = corr.test AND res.normalcy = corr.normalcy
