@@ -1,13 +1,28 @@
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(ggrepel)
+library(cowplot)
+library(ggpubr)
+library(scales)
 
+source_directory <- getSrcDirectory(function(dummy) {dummy});
+if (source_directory == "") source_directory="/home/robchallen/Git/working-drafts/src/main/r"
+source(paste(source_directory,'/standardAxes.R',sep=""));
+source(paste(source_directory,'/utils.R',sep=""));
+createDirectory();
+
+# load("~/R/timeToViewData")
 # Use the coin package in R which also requires the modeltools and mvtnorm packages. Here is an example
 
-# data_2012 <- data %>% filter(
-#   investigation_abnormal==1 
-#   & discipline_name=='Chem/Haem'
-#   & as.Date(date) < as.Date("2016-09-01")
-#   & as.Date(date) >= as.Date("2012-09-01")
-# );
-# 
+data_2012 <- data %>% filter(
+  investigation_abnormal==1
+  & discipline_name=='Chem/Haem'
+  & as.Date(date) < as.Date("2016-09-01")
+  & as.Date(date) >= as.Date("2012-09-01")
+);
+
 timespans <- data.frame(
   xmin=c(as.Date("2013-02-01"),as.Date("2014-11-01")),
   #xmax=c(as.Date("2013-04-01"),as.Date("2015-01-01")),
@@ -31,7 +46,7 @@ for (i in c(2:length(pre_timepoints))) {
   for (j in c(2:length(pre_timepoints))) {
     post_start <- post_timepoints[j-1]
     post_end <- post_timepoints[j]
-    print(paste0(k+") "+pre_start,"~",pre_end," : ",post_start,"~",post_end))
+    print(paste0(k,") ",pre_start,"~",pre_end," : ",post_start,"~",post_end))
     # post_start <- as.Date("2015-02-01")
     tmp_post <- data_2012 %>% filter(
       as.Date(date) >= post_start
