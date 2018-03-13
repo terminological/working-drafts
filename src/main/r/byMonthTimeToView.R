@@ -9,8 +9,8 @@ library(cowplot)
 library(ggpubr)
 
 source_directory <- getSrcDirectory(function(dummy) {dummy});
-source(paste(source_directory,'/standardAxes.r',sep=""));
-source(paste(source_directory,'/utils.r',sep=""));
+source(paste(source_directory,'/standardAxes.R',sep=""));
+source(paste(source_directory,'/utils.R',sep=""));
 createDirectory();
 
 ##############

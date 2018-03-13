@@ -2,16 +2,27 @@
 # 
 # Author: robchallen
 ###############################################################################
+# https://tbrieder.org/epidata/course_e_ex04_task.pdf
+# https://stats.stackexchange.com/questions/256148/stratification-in-cox-model
+# http://www.sthda.com/english/wiki/cox-proportional-hazards-model
+
+library(survival)
+library(survminer)
+
+###
+# Time to view cox model
 
 
-library("survival")
-library("survminer")
+covariates <- c(
+		"discipline_name", 
+		"investigation_abnormal",  
+		"ward_name", 
+		"dependency_level", 
+		"patient_group", 
+		"day_time_cat")
 
-cox <- coxph(Surv(minutes_to_view, viewed) ~ ward_name, data = data)
-summary(cox)
+counts <- lapply( covariates, function(x) {eval(substitute(count(data,tmp),list(tmp=as.name(x))))})
 
-
-covariates <- c("discipline_name", "investigation_abnormal",  "ward_name", "dependency_level", "patient_group",)
 univ_formulas <- sapply(covariates,
 		function(x) as.formula(paste('Surv(minutes_to_view, viewed)~', x)))
 
@@ -34,14 +45,18 @@ univ_results <- lapply(univ_models,
 			return(res)
 			#return(exp(cbind(coef(x),confint(x))))
 		})
+univ_models <- NA
 res <- t(as.data.frame(univ_results, check.names = FALSE))
 as.data.frame(res)
 
-plot(survfit(cox), ylim=c(0, 1), xlab="minutes",
-		ylab="not viewed")
 
-count(data , ward_name)
-count(data, investigation_abnormal)
-count(data, dependency_level)
-count(data, patient_group)
 
+# plot(survfit(cox), ylim=c(0, 1), xlab="minutes",
+# 		ylab="not viewed")
+
+multiv_formula = as.formula(paste("Surv(minutes_to_view, viewed) ~ ",paste(covariates,collapse=" + ")));
+multiv_model <- coxph(multiv_formula, data = data)
+
+tmp_model <- coxph(Surv(minutes_to_view, viewed) ~ day_time_cat, data = data)
+summary(tmp_model)
+tmp <- cox.zph(tmp_model)
