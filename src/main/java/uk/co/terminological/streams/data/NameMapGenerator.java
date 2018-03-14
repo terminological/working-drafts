@@ -51,7 +51,6 @@ public class NameMapGenerator {
 				// Create and execute an SQL statement that returns some data.  
 				String SQL = "SELECT user_id,long_name,login,email_address FROM tmpRvUser";  
 				rs = stmt.executeQuery(SQL);
-				rs.getMetaData().
 
 				// Iterate through the data in the result set and display it.  
 				while (rs.next()) {
