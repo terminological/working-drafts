@@ -20,7 +20,7 @@ data_2012 <- data %>% filter(
   investigation_abnormal==1
   & discipline_name=='Chem/Haem'
   & as.Date(date) < as.Date("2016-09-01")
-  & as.Date(date) >= as.Date("2012-09-01")
+  & as.Date(date) >= as.Date("2012-10-01")
 );
 
 timespans <- data.frame(
@@ -86,6 +86,7 @@ for (i in c(2:length(pre_timepoints))) {
 
 h2012_effect_size <- ggplot(tmp_out)+ geom_rect(aes(xmin=x1, xmax=x2,ymin=y1,ymax=y2,fill = estimate),colour = "white") + 
   scale_fill_gradient(high = "black", low = "grey75")+
+  coord_fixed(ratio = 1)+
   scale_x_date(labels = date_format("%b %Y"),date_breaks = "1 month")+
   scale_y_date(labels = date_format("%b %Y"),date_breaks = "1 month")+
   theme(axis.text.x = element_text(angle = 45, hjust = 1))

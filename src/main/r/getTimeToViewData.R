@@ -151,11 +151,11 @@ clinician_views_distribution
 ggsave('clinicianViewsDistribution.png',width=10,height=5,units='in')
 
 distribution <- plot_grid(
-  clinician_views_distribution,
   ttv_distribution_1_day,
+  clinician_views_distribution,
   nrow=1,
   align="v",
-  rel_widths=c(2,3),
+  rel_widths=c(2,1),
   labels = c("A","B")
 )
 distribution
@@ -252,7 +252,7 @@ baseline_historical_percent_unviewed+ggtitle("percent of chemistry and haematolo
   baseline
   save_plot("baselinePub.png", baseline,base_height = 10,base_width = 10)
   
-###################################
+  ###################################
   ## TODO: more fiddling with enquo
   #########################################
   # Detailed correlations
