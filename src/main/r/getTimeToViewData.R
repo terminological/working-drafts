@@ -257,26 +257,26 @@ baseline_historical_percent_unviewed+ggtitle("percent of chemistry and haematolo
   #########################################
   # Detailed correlations
   # https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html
-  plot_bubble = function(input,grouper,bubble_colour) {
-    grouper=enquo(grouper);
-    bubble_colour=enquo(bubble_colour);
-    #bubble_colour=if(is.expression(bubble_colour)) enquo(bubble_colour) else bubble_colour;
+  plot_bubble  <- function(input,grouper,bubble_colour) {
+    grouper <- enquo(grouper);
+    bubble_colour <- enquo(bubble_colour);
     tmpCorrelations <- input %>%
-      group_by(!!grouper, !!bubble_colour) %>%
-      summarize(
+      group_by(!! grouper, !! bubble_colour)%>%
+      dplyr::summarize(
         count=n(),
         median=fivenum(minutes_to_view, na.rm = TRUE)[3],
         viewed_percent=sum(total_views != 0)/n()*100
-      ) %>% 
-      mutate(
-        the_label=!!grouper,
-        the_colour=!!bubble_colour
-      );
+      );  
+    # tmpCorrelations <- mutate(tmpCorrelations,
+    #     the_label := !!grouper,
+    #     the_colour := !!bubble_colour # the colon before the !!enquo is essential to stop R interpreting this as a 
+    #   );
     tmpCorrelations <- tmpCorrelations %>% ungroup() %>% top_n(40,count)
+    View(tmpCorrelations)
     return(ggplot(
       tmpCorrelations,
-      aes(x=median,y=viewed_percent,label=the_label,size=count))+
-        geom_point(shape=21, aes(fill=the_colour), colour="black")+
+      aes(x=median,y=viewed_percent,label:=!!grouper,size=count))+
+        geom_point(shape=21, aes(fill:=!!bubble_colour), colour="black")+
         scale_size_area(max_size=20)+
         geom_text_repel(size=3, segment.colour="#00000080") +
         ylab("percent viewed") +
@@ -300,4 +300,106 @@ baseline_historical_percent_unviewed+ggtitle("percent of chemistry and haematolo
                 mutate(age_group=patient_age %/% 10 * 10),age_group,"#d0d08080")+ggtitle("Time to view and percent viewed by patient decade")
   ggsave('timeToViewAndPercentViewedByPatientDecade.png',width=10,height=5,units='in')
   
+  
+  ######################################
+  
+    tmpCorrelations <- data %>%
+      group_by(discipline_name, investigation_abnormal) %>%
+      dplyr::summarize(
+        count=n(),
+        median=fivenum(minutes_to_view, na.rm = TRUE)[3],
+        viewed_percent=sum(total_views != 0)/n()*100
+      ) %>% 
+      mutate(
+        the_label=paste0(discipline_name,ifelse(investigation_abnormal>0," (a)"," (n)")),
+        the_colour=investigation_abnormal
+      );
+    tmpCorrelations <- tmpCorrelations %>% ungroup() %>% top_n(40,count)
+    ggplot(
+      tmpCorrelations %>% arrange(desc(the_colour)),
+      aes(x=median,y=viewed_percent,label=the_label,size=count))+
+        geom_point(shape=21, aes(fill=the_colour), colour="black", alpha=0.5)+
+        scale_size_area(max_size=30)+
+        geom_text_repel(
+          size=3.5,
+          nudge_x = 45,
+          box.padding = unit(0.1,"inch"),
+          point.padding = unit(0.1,"inch"), 
+          # Color of the line segments.
+          segment.color = '#606060',
+          segment.size = 0.5,
+          # min.segment.length = unit(0.5,"inch"),
+          arrow = arrow(length = unit(0.05, 'inch')),
+          force = 1,
+        ) +
+        ylab("percent viewed") +
+        xlab("median time to view result (minutes)")+
+        expand_limits(x = 0, y=100) +#, y=c(-0.15,0.25))+
+        guides(fill=FALSE, size=FALSE)+
+      ggtitle("Time to view and percent viewed by discipline")+
+      scale_x_continuous(limits=c(0,3000),breaks=seq(0,12000,600))+
+      scale_fill_continuous(low="#4040ff",high="#ff4040")
+    ggsave('timeToViewAndPercentViewedByDiscipline.svg',width=5,height=3,units='in')
+  
   ##############################
+    
+    tmpCorrelations <- data_baseline %>%
+      group_by(investigation_name) %>%
+      dplyr::summarize(
+        count=n(),
+        median=fivenum(minutes_to_view, na.rm = TRUE)[3],
+        viewed_percent=sum(total_views != 0)/n()*100
+      ) %>% 
+      mutate(
+        the_label=investigation_name
+      );
+    tmpCorrelations <- tmpCorrelations %>% ungroup() %>% top_n(40,count)
+    ggplot(
+      tmpCorrelations,
+      aes(x=median,y=viewed_percent,label=the_label,size=count))+
+      geom_point(shape=21, fill="#ff8080", colour="black", alpha=0.5)+
+      scale_size_area(max_size=15)+
+      geom_text_repel(
+        size=2,
+        segment.color = '#00000040',
+      ) +
+      ylab("percent viewed") +
+      xlab("median time to view result (minutes)")+
+      expand_limits(x = 0, y=100) +#, y=c(-0.15,0.25))+
+      guides(fill=FALSE, size=FALSE)+
+      ggtitle("Time to view and percent viewed by test")+
+      scale_x_continuous(limits=c(0,300),breaks=seq(0,300,60))
+    ggsave('timeToViewAndPercentViewedByTest.svg',width=5,height=3,units='in')
+    
+    ##############################
+    
+    tmpCorrelations <- data_baseline %>%
+      group_by(ward_name,dependency_level) %>%
+      dplyr::summarize(
+        count=n(),
+        median=fivenum(minutes_to_view, na.rm = TRUE)[3],
+        viewed_percent=sum(total_views != 0)/n()*100
+      ) %>% 
+      mutate(
+        the_label=ward_name,
+        the_colour=dependency_level
+      );
+    tmpCorrelations <- tmpCorrelations %>% ungroup() %>% top_n(40,count)
+    ggplot(
+      tmpCorrelations,
+      aes(x=median,y=viewed_percent,label=the_label,size=count))+
+      geom_point(shape=21, aes(,fill=the_colour), colour="black", alpha=0.5)+
+      scale_size_area(max_size=18)+
+      geom_text_repel(
+        size=2.5,
+        segment.color = '#00000040',
+        force=1,
+        box.padding=0.25
+      ) +
+      ylab("percent viewed") +
+      xlab("median time to view result (minutes)")+
+      expand_limits(x = 0, y=100) +#, y=c(-0.15,0.25))+
+      guides(fill=FALSE, size=FALSE)+
+      ggtitle("Time to view and percent viewed by ward")+
+      scale_x_continuous(limits=c(0,200),breaks=seq(0,200,60))
+    ggsave('timeToViewAndPercentViewedByWard.svg',width=5,height=3,units='in')
