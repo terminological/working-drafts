@@ -28,7 +28,7 @@ public class Analysis {
 		Delimited in = Delimited.fromFile(input.toFile()).tsv().noIdentifiers().withLabels("actual","predicted","prob_pos","prob_neg").begin();
 		
 		EavMap<String,String,String> tmp = in.getContents();
-		EavMap<String,String,String> tmp2 = tmp.transpose();
+		// EavMap<String,String,String> tmp2 = tmp.transpose();
 		
 		ClassifierResult res = new ClassifierResult();
 		
@@ -68,15 +68,27 @@ public class Analysis {
 		
 		public void add(Prediction p) {this.predictions.add(p);}
 		
-		public Stream<Prediction> streamByPrediction() {
-			return predictions.stream().sorted(Comparator.comparing(Prediction::getPredicted));
+		public List<Prediction> getPredictions() {
+			List<Prediction> tmp = new ArrayList<>(predictions);
+			tmp.sort(Comparator.comparing(Prediction::getPredicted));
+			return tmp;
 		}
 		
+		public List<Cutoff> getCutoffs() {
+			
+						int i=0;
+			streamByPrediction().
+			
+		}
 		
 		
 	}
 	
-	public static class BandedCutoff {
+	public static class Cutoff {
+
+		Double value;
+		Integer actualPositives;
+		Integer predictedNegatives;
 		
 	}
 	
@@ -91,6 +103,7 @@ public class Analysis {
 	
 	
 }
+
 
 
 
