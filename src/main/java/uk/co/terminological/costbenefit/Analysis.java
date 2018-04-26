@@ -68,13 +68,27 @@ public class Analysis {
 	public static class ClassifierResult {
 		
 		List<Prediction> predictions = new ArrayList<>();
+		int totalPositive = 0;
+		int total = 0;
 		
-		public void add(Prediction p) {this.predictions.add(p);}
+		public void add(Prediction p) {
+			this.predictions.add(p);
+			total +=1;
+			totalPositive += p.getActual() ? 1:0;
+		}
 		
 		public List<Prediction> getPredictions() {
 			List<Prediction> tmp = new ArrayList<>(predictions);
 			tmp.sort(Comparator.comparing(Prediction::getPredicted));
 			return tmp;
+		}
+		
+		public int totalPositive() {
+			return totalPositive;
+		}
+		
+		public int total() {
+			return total;
 		}
 		
 		public List<Cutoff> getCutoffs(Double resolution) {
@@ -83,16 +97,17 @@ public class Analysis {
 			Cutoff c = null;
 			List<Cutoff> out = new ArrayList<>();
 			
+			int predNeg = 0;
+			int falseNeg = 0;
+			
 			for (Double i=resolution; i<=1; i+=resolution) {
 				
-				int count = 0;
-				int actuals = 0;
 				while (preds.hasNext() && preds.peek().getPredicted() < i) {
-					count += 1;
-					actuals += preds.next().getActual() ? 1 : 0;
+					predNeg += 1;
+					falseNeg += preds.next().getActual() ? 1 : 0;
 				}
 				
-				c = new Cutoff(i, actuals, count);
+				c = new Cutoff(i, falseNeg, predNeg, totalPositive(), total(), out, out.size());
 				out.add(c);
 				
 			}
@@ -107,39 +122,52 @@ public class Analysis {
 	public static class Cutoff {
 
 		Double value;
-		Integer actualPositives;
+		Integer falseNegatives;
 		Integer predictedNegatives;
+		Integer totalPositives;
+		Integer total;
+		List<Cutoff> all;
+		int index;
 		
-		public Cutoff(Double value, Integer actualPositives, Integer predictedNegatives) {
+		public Cutoff(Double value, Integer falseNegatives, Integer predictedNegatives, Integer totalPositives, Integer total, List<Cutoff> all, int index) {
 			super();
 			this.value = value;
-			this.actualPositives = actualPositives;
+			this.falseNegatives = falseNegatives;
 			this.predictedNegatives = predictedNegatives;
+			this.total = total;
+			this.totalPositives = totalPositives;
+			this.all = all;
+			this.index = index;
 		}
 
 		public Double getValue() {
 			return value;
 		}
 
-		public void setValue(Double value) {
-			this.value = value;
+		public Integer fn() {
+			return falseNegatives;
 		}
-
-		public Integer getActualPositives() {
-			return actualPositives;
+		
+		public Integer tn() {
+			return predictedNegatives-falseNegatives;
 		}
-
-		public void setActualPositives(Integer actualPositives) {
-			this.actualPositives = actualPositives;
+		
+		public Integer tp() {
+			return totalPositives-falseNegatives;
 		}
-
-		public Integer getPredictedNegatives() {
-			return predictedNegatives;
+		
+		public Integer fp() {
+			return (total-predictedNegatives)-tp();
 		}
-
-		public void setPredictedNegatives(Integer predictedNegatives) {
-			this.predictedNegatives = predictedNegatives;
+		
+		public Double sensitivity() {
+			return ((double) tp())/totalPositives;
 		}
+		
+		public Double specificity() {
+			return ((double) tn())/(total-totalPositives);
+		}
+		
 		
 	}
 	
@@ -151,7 +179,33 @@ public class Analysis {
 		
 	}*/
 	
+	public static <X,Y> Double smooth(List<X> list, int index, int width, Function<X,Double> selector) {
+		width = width/2+1;
+		int start = index<width ? 0 : index-width;
+		int end = (list.size()-index)<width ? list.size() : index+width;
+		return list.subList(start, end).stream().map(selector).collect(Collectors.averagingDouble(c->c));
+	}
 	
+	public static class SavitzkyGolay {
+		
+		//https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter#Appendix
+		
+		static double[] smooth_5_cubic() {return new double[]{-3/35,12/35,17/35,12/35,-3/35};}
+		static double[] smooth_7_cubic() {return new double[]{-2/21,3/21,6/21,7/21,6/21,3/21,-2/21};}
+		static double[] smooth_9_cubic() {return new double[]{-21/231,14/231,39/231,54/231,59/231,54/231,39/231,14/231,-21/231};}
+		
+		static double[] derivative_5_quad(double w) {return new double[]{-2/(10*w),-1/(10*w),0,1/(10*w),2/(10*w)};}
+		static double[] derivative_7_quad(double w) {return new double[]{-3/(28*w),-2/(28*w),-1/(28*w),0,1/(28*w),2/(28*w),3/(10*w)};}
+		
+		static double[] derivative_5_quartic(double w) {return new double[]{1/(12*w),-8/(12*w),0,8/(12*w),-1/(12*w)};}
+		static double[] derivative_7_quartic(double w) {return new double[]{22/(252*w),-67/(252*w),-58/(252*w),0,58/(252*w),67/(252*w),-22/(252*w)};}
+		
+		static List<Double> convolute(List<Double> input, double[] filter) {
+			int size = filter.length;
+			List<>
+		}
+		
+	}
 	
 }
 
