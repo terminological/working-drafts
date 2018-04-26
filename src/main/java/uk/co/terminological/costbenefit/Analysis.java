@@ -5,12 +5,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.collections4.iterators.PeekingIterator;
 
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.parser.ParserException;
@@ -74,10 +77,27 @@ public class Analysis {
 			return tmp;
 		}
 		
-		public List<Cutoff> getCutoffs() {
+		public List<Cutoff> getCutoffs(Double resolution) {
 			
-						int i=0;
-			streamByPrediction().
+			PeekingIterator<Prediction> preds = new PeekingIterator<>(getPredictions().iterator()); 
+			Cutoff c = null;
+			List<Cutoff> out = new ArrayList<>();
+			
+			for (Double i=resolution; i<=1; i+=resolution) {
+				
+				int count = 0;
+				int actuals = 0;
+				while (preds.hasNext() && preds.peek().getPredicted() < i) {
+					count += 1;
+					actuals += preds.next().getActual() ? 1 : 0;
+				}
+				
+				c = new Cutoff(i, actuals, count);
+				out.add(c);
+				
+			}
+			
+			return out;
 			
 		}
 		
@@ -89,6 +109,37 @@ public class Analysis {
 		Double value;
 		Integer actualPositives;
 		Integer predictedNegatives;
+		
+		public Cutoff(Double value, Integer actualPositives, Integer predictedNegatives) {
+			super();
+			this.value = value;
+			this.actualPositives = actualPositives;
+			this.predictedNegatives = predictedNegatives;
+		}
+
+		public Double getValue() {
+			return value;
+		}
+
+		public void setValue(Double value) {
+			this.value = value;
+		}
+
+		public Integer getActualPositives() {
+			return actualPositives;
+		}
+
+		public void setActualPositives(Integer actualPositives) {
+			this.actualPositives = actualPositives;
+		}
+
+		public Integer getPredictedNegatives() {
+			return predictedNegatives;
+		}
+
+		public void setPredictedNegatives(Integer predictedNegatives) {
+			this.predictedNegatives = predictedNegatives;
+		}
 		
 	}
 	
