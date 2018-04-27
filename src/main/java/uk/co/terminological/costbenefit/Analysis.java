@@ -51,7 +51,7 @@ public class Analysis {
 				Double.parseDouble(m.get("prob_pos"))))
 		.forEach(p -> res.add(p));;
 
-		List<Cutoff> binned = res.getCutoffs(0.01D);
+		List<Cutoff> binned = res.getCutoffs(0.04D);
 		// tmp.numberEntities();
 
 		/*List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
@@ -64,6 +64,8 @@ public class Analysis {
 				binned.stream().map(c -> ((double) c.getValue())).collect(Collectors.toList()), 
 				binned.stream().map(c -> ((double) c.smoothedProbabilityDensity())).collect(Collectors.toList())
 						);
+		
+		
 		
 		new SwingWrapper<XYChart>(chart).displayChart();
 
