@@ -303,11 +303,11 @@ public class Analysis {
 			if (position > input.size() || position < 0) throw new ArrayIndexOutOfBoundsException("window position outside of list");
 			int i = width/2;
 			int start = position-i;
-			int end = position+i;
+			int end = position+i+1;
 			List<X> out;
 			if (start < 0) {
-				//the easy case
 				out = input.subList(input.size()+start, input.size());
+				out.addAll(input.subList(0, end));
 			} else if (end > input.size()) {
 				out = input.subList(start, input.size());
 				out.addAll(input.subList(0, end-input.size()));
