@@ -44,7 +44,7 @@ public class Analysis {
 		.map(kv -> kv.getValue())
 		.map(m -> new Prediction(
 				convert01TF.apply(m.get("actual")),
-				Double.parseDouble(m.get("prediction"))))
+				Double.parseDouble(m.get("prob_pos"))))
 		.forEach(p -> res.add(p));;
 
 		res.getCutoffs(0.01D).stream().forEach(System.out::println);
