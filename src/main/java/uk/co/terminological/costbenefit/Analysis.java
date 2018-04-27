@@ -37,6 +37,8 @@ public class Analysis {
 		// EavMap<String,String,String> tmp2 = tmp.transpose();
 
 		ClassifierResult res = new ClassifierResult();
+		
+		tmp.stream().limit(20).forEach(System.out::println);
 
 		tmp.streamEntities()
 		.map(kv -> kv.getValue())
