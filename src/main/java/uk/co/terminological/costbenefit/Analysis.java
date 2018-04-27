@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections4.iterators.PeekingIterator;
 import org.apache.commons.lang3.StringUtils;
+import org.knowm.xchart.QuickChart;
+import org.knowm.xchart.XYChart;
 
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.parser.ParserException;
@@ -48,16 +50,19 @@ public class Analysis {
 				Double.parseDouble(m.get("prob_pos"))))
 		.forEach(p -> res.add(p));;
 
-		res.getCutoffs(0.01D).stream().forEach(System.out::println);
+		List<Cutoff> binned = res.getCutoffs(0.01D);
 		// tmp.numberEntities();
 
-		List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
+		/*List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
 		Iterator<List<Double>> tmp3 = SavitzkyGolay.symmetric(tmp2,5);
 		while (tmp3.hasNext()) {
 			System.out.println(tmp3.next());
-		}
+		}*/
 
-
+		XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", 
+				binned.stream().map(c -> ((double) c.getValue())).collect(Collectors.toList()).toArray(), 
+				binned.stream().map(c -> ((double) c.smoothedProbabilityDensity()).collect(Collectors.toList()).toArray()
+						);
 	}
 
 	static Function<String,Boolean> convert01TF = s -> s.equals("1") ? true : (s.equals("0") ? false: null);
