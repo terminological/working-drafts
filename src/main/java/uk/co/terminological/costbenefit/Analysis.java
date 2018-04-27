@@ -226,15 +226,15 @@ public class Analysis {
 
 		//https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter#Appendix
 
-		static double[] smooth_5_cubic() {return new double[]{-3/35,12/35,17/35,12/35,-3/35};}
-		static double[] smooth_7_cubic() {return new double[]{-2/21,3/21,6/21,7/21,6/21,3/21,-2/21};}
-		static double[] smooth_9_cubic() {return new double[]{-21/231,14/231,39/231,54/231,59/231,54/231,39/231,14/231,-21/231};}
+		static double[] smooth_5_cubic() {return new double[]{-3D/35,12D/35,17D/35,12D/35,-3D/35};}
+		static double[] smooth_7_cubic() {return new double[]{-2D/21,3D/21,6D/21,7D/21,6D/21,3D/21,-2D/21};}
+		static double[] smooth_9_cubic() {return new double[]{-21D/231,14D/231,39D/231,54D/231,59D/231,54D/231,39D/231,14D/231,-21D/231};}
 
-		static double[] derivative_5_quad(double w) {return new double[]{-2/(10*w),-1/(10*w),0,1/(10*w),2/(10*w)};}
-		static double[] derivative_7_quad(double w) {return new double[]{-3/(28*w),-2/(28*w),-1/(28*w),0,1/(28*w),2/(28*w),3/(10*w)};}
+		static double[] derivative_5_quad(double w) {return new double[]{-2D/(10*w),-1D/(10*w),0,1D/(10*w),2D/(10*w)};}
+		static double[] derivative_7_quad(double w) {return new double[]{-3D/(28*w),-2D/(28*w),-1D/(28*w),0,1D/(28*w),2D/(28*w),3D/(10*w)};}
 
-		static double[] derivative_5_quartic(double w) {return new double[]{1/(12*w),-8/(12*w),0,8/(12*w),-1/(12*w)};}
-		static double[] derivative_7_quartic(double w) {return new double[]{22/(252*w),-67/(252*w),-58/(252*w),0,58/(252*w),67/(252*w),-22/(252*w)};}
+		static double[] derivative_5_quartic(double w) {return new double[]{1D/(12*w),-8D/(12*w),0,8D/(12*w),-1D/(12*w)};}
+		static double[] derivative_7_quartic(double w) {return new double[]{22D/(252*w),-67D/(252*w),-58D/(252*w),0,58D/(252*w),67D/(252*w),-22D/(252*w)};}
 
 		static <X> Double convolute(List<X> input, double[] filter, boolean circular, int position, Function<X,Double> toDouble) {
 			List<X> window = circular ? circular(input, filter.length, position) : symmetric(input, filter.length, position);
