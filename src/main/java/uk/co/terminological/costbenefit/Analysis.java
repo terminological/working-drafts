@@ -52,7 +52,7 @@ public class Analysis {
 		// tmp.numberEntities();
 
 		List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
-		Iterator<List<Double>> tmp3 = SavitzkyGolay.symmetric(tmp2,3);
+		Iterator<List<Double>> tmp3 = SavitzkyGolay.symmetric(tmp2,5);
 		while (tmp3.hasNext()) {
 			System.out.println(tmp3.next());
 		}
