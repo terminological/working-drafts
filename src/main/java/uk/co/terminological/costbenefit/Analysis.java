@@ -304,15 +304,15 @@ public class Analysis {
 			int i = width/2;
 			int start = position-i;
 			int end = position+i+1;
-			List<X> out;
+			List<X> out = new ArrayList<>();
 			if (start < 0) {
-				out = input.subList(input.size()+start, input.size());
+				out.addAll(input.subList(input.size()+start, input.size()));
 				out.addAll(input.subList(0, end));
 			} else if (end > input.size()) {
-				out = input.subList(start, input.size());
+				out.addAll(input.subList(start, input.size()));
 				out.addAll(input.subList(0, end-input.size()));
 			} else {
-				out = input.subList(start, end);
+				out.addAll(input.subList(start, end));
 			}
 			return out;
 		}
@@ -343,19 +343,19 @@ public class Analysis {
 			if (position > input.size() || position < 0) throw new ArrayIndexOutOfBoundsException("window position outside of list");
 			int i = width/2;
 			int start = position-i;
-			int end = position+i;
-			List<X> out;
+			int end = position+i+1;
+			List<X> out = new ArrayList<>();
 			if (start < 0) {
-				out = input.subList(0, -start);
+				out.addAll(input.subList(0, -start));
 				Collections.reverse(out);
 				out.addAll(input.subList(0, end));
 			} else if (end > input.size()) {
 				List<X> tmp = input.subList(input.size()-end, input.size());
 				Collections.reverse(tmp);
-				out = input.subList(start, input.size());
+				out.addAll(input.subList(start, input.size()));
 				out.addAll(tmp);
 			} else {
-				out = input.subList(start, end);
+				out.addAll(input.subList(start, end));
 			}
 			start = start == input.size() ? 0 : start+1;
 			end = end == input.size() ? 0 : end+1;
