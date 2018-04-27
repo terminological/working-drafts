@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -50,7 +51,11 @@ public class Analysis {
 		res.getCutoffs(0.01D).stream().forEach(System.out::println);
 		// tmp.numberEntities();
 
-
+		List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
+		Iterator<List<Double>> tmp3 = SavitzkyGolay.circular(tmp2,3);
+		while (tmp3.hasNext()) {
+			System.out.println(tmp3.next());
+		}
 
 
 	}
@@ -279,7 +284,6 @@ public class Analysis {
 			if (input.size() < width) throw new ArrayIndexOutOfBoundsException("window width larger than list size");
 			return new Iterator<List<X>>() {
 
-				int i = width/2;
 				int position = 0;
 
 				@Override
