@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.iterators.PeekingIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.knowm.xchart.QuickChart;
+import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 
 import uk.co.terminological.datatypes.EavMap;
@@ -60,9 +61,12 @@ public class Analysis {
 		}*/
 
 		XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", 
-				binned.stream().map(c -> ((double) c.getValue())).collect(Collectors.toList()).toArray(), 
-				binned.stream().map(c -> ((double) c.smoothedProbabilityDensity()).collect(Collectors.toList()).toArray()
+				binned.stream().map(c -> ((double) c.getValue())).collect(Collectors.toList()), 
+				binned.stream().map(c -> ((double) c.smoothedProbabilityDensity())).collect(Collectors.toList())
 						);
+		
+		new SwingWrapper<XYChart>(chart).displayChart();
+
 	}
 
 	static Function<String,Boolean> convert01TF = s -> s.equals("1") ? true : (s.equals("0") ? false: null);
