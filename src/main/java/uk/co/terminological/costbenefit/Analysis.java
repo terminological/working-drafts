@@ -207,9 +207,9 @@ public class Analysis {
 		}
 		
 		public String toString() {
-			return StringUtils.joinWith("\t", this.value, this.falseNegatives, this.predictedNegatives);
-			//return StringUtils.joinWith("\t", getValue(), tp(),fp(),fn(),tn(),sensitivity(),specificity(), smoothedSensitivity(),deltaSensitivity(),cumulativeProbability(),
-			//		probabilityDensity(),smoothedProbabilityDensity(),probabilityDensityOverDeltaSensitivity());
+			//return StringUtils.joinWith("\t", this.value, this.falseNegatives, this.predictedNegatives);
+			return StringUtils.joinWith("\t", getValue(), tp(),fp(),fn(),tn(),sensitivity(),specificity(), smoothedSensitivity(),deltaSensitivity(),cumulativeProbability(),
+					probabilityDensity(),smoothedProbabilityDensity(),probabilityDensityOverDeltaSensitivity());
 		}
 	}
 
