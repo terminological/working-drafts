@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -108,7 +109,7 @@ public class Analysis {
 					falseNeg += preds.next().getActual() ? 1 : 0;
 				}
 
-				c = new Cutoff(i, falseNeg, predNeg, totalPositive(), total(), out, out.size());
+				c = new Cutoff(i, falseNeg, predNeg, totalPositive(), total(), out, out.size(), resolution);
 				out.add(c);
 
 			}
@@ -129,8 +130,9 @@ public class Analysis {
 		Integer total;
 		List<Cutoff> all;
 		int index;
+		Double resolution;
 
-		public Cutoff(Double value, Integer falseNegatives, Integer predictedNegatives, Integer totalPositives, Integer total, List<Cutoff> all, int index) {
+		public Cutoff(Double value, Integer falseNegatives, Integer predictedNegatives, Integer totalPositives, Integer total, List<Cutoff> all, int index, Double resolution) {
 			super();
 			this.value = value;
 			this.falseNegatives = falseNegatives;
@@ -139,6 +141,7 @@ public class Analysis {
 			this.totalPositives = totalPositives;
 			this.all = all;
 			this.index = index;
+			this.resolution = resolution;
 		}
 
 		public Double getValue() {
@@ -169,6 +172,13 @@ public class Analysis {
 			return ((double) tn())/(total-totalPositives);
 		}
 
+		public Double smoothedSensitivity() {
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_7_cubic(), false, index, c -> c.sensitivity()); 
+		}
+		
+		public Double deltaSensitivity() {
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.sensitivity()); 
+		}
 
 	}
 
@@ -201,10 +211,30 @@ public class Analysis {
 		static double[] derivative_5_quartic(double w) {return new double[]{1/(12*w),-8/(12*w),0,8/(12*w),-1/(12*w)};}
 		static double[] derivative_7_quartic(double w) {return new double[]{22/(252*w),-67/(252*w),-58/(252*w),0,58/(252*w),67/(252*w),-22/(252*w)};}
 
+		static <X> Double convolute(List<X> input, double[] filter, boolean circular, int position, Function<X,Double> toDouble) {
+			List<X> window = circular ? circular(input, filter.length, position) : symmetric(input, filter.length, position);
+			Double collect = 0D;
+			for (int i=0; i<filter.length; i++) {
+				collect += toDouble.apply(window.get(i))*filter[i];
+				//TODO: deal with null etc
+			}
+			return collect;
+		}
+		
+		static Double convolute(List<Double> input, double[] filter, boolean circular, int position) {
+			List<Double> window = circular ? circular(input, filter.length, position) : symmetric(input, filter.length, position);
+			Double collect = 0D;
+			for (int i=0; i<filter.length; i++) {
+				collect += window.get(i)*filter[i];
+				//TODO: deal with null etc
+			}
+			return collect;
+		}
+		
 		static List<Double> convolute(List<Double> input, double[] filter, boolean circular) {
 			int size = filter.length;
 			List<Double> out = new ArrayList<>();
-			Iterator<List<Double>> window = circular ? circular(input, size) : tailed(input, size);
+			Iterator<List<Double>> window = circular ? circular(input, size) : symmetric(input, size);
 			while (window.hasNext()) {
 				List<Double> tmp = window.next();
 				Double collect = 0D;
@@ -224,67 +254,82 @@ public class Analysis {
 			return new Iterator<List<X>>() {
 
 				int i = width/2;
-				int start = input.size()-i;
-				int end = i;
+				int position = 0;
 
 				@Override
 				public boolean hasNext() {
-					return end != i-1;
+					return position < input.size();
 				}
 
 				@Override
 				public List<X> next() {
-					List<X> out;
-					if (start < end) {
-						//the easy case
-						out = input.subList(start, end);
-					} else {
-						out = input.subList(start, input.size());
-						out.addAll(input.subList(0, end));
-					}
-					start = start == input.size() ? 0 : start+1;
-					end = end == input.size() ? 0 : end+1;
-					return out;
+					return circular(input,width,position++);
 				}
 
 			};
 		}
+		
+		static <X> List<X> circular(final List<X> input, int width, int position) {
+			if (position > input.size() || position < 0) throw new ArrayIndexOutOfBoundsException("window position outside of list");
+			int i = width/2;
+			int start = position-i;
+			int end = position+i;
+			List<X> out;
+			if (start < 0) {
+				//the easy case
+				out = input.subList(input.size()+start, input.size());
+			} else if (end > input.size()) {
+				out = input.subList(start, input.size());
+				out.addAll(input.subList(0, end-input.size()));
+			} else {
+				out = input.subList(start, end);
+			}
+			return out;
+		}
 
-		static <X> Iterator<List<X>> tailed(final List<X> input, int width) { 
-
+		static <X> Iterator<List<X>> symmetric(final List<X> input, int width) { 
 			if (input.size() < width) throw new ArrayIndexOutOfBoundsException("window width larger than list size");
 			return new Iterator<List<X>>() {
 
 				int i = width/2;
-				int start = -i;
-				int end = i;
+				int position = 0;
+				
 
 				@Override
 				public boolean hasNext() {
-					return end != input.size()+i;
+					return position < input.size();
 				}
 
 				@Override
 				public List<X> next() {
-					List<X> out;
-					if (start < 0) {
-						out = input.subList(0, start);
-						Collections.reverse(out);
-						out.addAll(input.subList(0, end));
-					} else if (end > input.size()) {
-						List<X> tmp = input.subList(input.size()-end, input.size());
-						Collections.reverse(tmp);
-						out = input.subList(start, input.size());
-						out.addAll(tmp);
-					} else {
-						out = input.subList(start, end);
-					}
-					start = start == input.size() ? 0 : start+1;
-					end = end == input.size() ? 0 : end+1;
-					return out;
+					if (!hasNext()) throw new NoSuchElementException();
+					return symmetric(input,width,position++);
 				}
 
 			};
+		}
+		
+		static <X> List<X> symmetric(final List<X> input, int width, int position) {
+			if (position > input.size() || position < 0) throw new ArrayIndexOutOfBoundsException("window position outside of list");
+			int i = width/2;
+			int start = position-i;
+			int end = position+i;
+			List<X> out;
+			if (start < 0) {
+				out = input.subList(0, -start);
+				Collections.reverse(out);
+				out.addAll(input.subList(0, end));
+			} else if (end > input.size()) {
+				List<X> tmp = input.subList(input.size()-end, input.size());
+				Collections.reverse(tmp);
+				out = input.subList(start, input.size());
+				out.addAll(tmp);
+			} else {
+				out = input.subList(start, end);
+			}
+			start = start == input.size() ? 0 : start+1;
+			end = end == input.size() ? 0 : end+1;
+			return out;
 		}
 
 
