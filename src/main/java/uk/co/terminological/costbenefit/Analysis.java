@@ -239,7 +239,7 @@ public class Analysis {
 		static <X> Double convolute(List<X> input, double[] filter, boolean circular, int position, Function<X,Double> toDouble) {
 			List<X> window = circular ? circular(input, filter.length, position) : symmetric(input, filter.length, position);
 			Double collect = 0D;
-			for (int i=0; i<filter.length; i++) {
+			for (int i=0; i<filter.length; i=i+1) {
 				collect += toDouble.apply(window.get(i))*filter[i];
 				//TODO: deal with null etc
 			}
