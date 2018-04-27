@@ -202,7 +202,8 @@ public class Analysis {
 		
 		static List<Double> convolute(List<Double> input, double[] filter) {
 			int size = filter.length;
-			List<>
+			LinkedList<Double> queue = new LinkedList<>();
+			
 		}
 		
 	}
