@@ -350,7 +350,7 @@ public class Analysis {
 				Collections.reverse(out);
 				out.addAll(input.subList(0, end));
 			} else if (end > input.size()) {
-				List<X> tmp = input.subList(input.size()-end, input.size());
+				List<X> tmp = input.subList(2*input.size()-end, input.size());
 				Collections.reverse(tmp);
 				out.addAll(input.subList(start, input.size()));
 				out.addAll(tmp);
