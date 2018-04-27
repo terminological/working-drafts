@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.iterators.PeekingIterator;
+import org.apache.commons.lang3.StringUtils;
 
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.parser.ParserException;
@@ -44,6 +45,7 @@ public class Analysis {
 				Double.parseDouble(m.get("prediction"))))
 		.forEach(p -> res.add(p));;
 
+		res.getCutoffs(0.01D).stream().forEach(System.out::println);
 		// tmp.numberEntities();
 
 
@@ -180,6 +182,27 @@ public class Analysis {
 			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.sensitivity()); 
 		}
 
+		public Double cumulativeProbability() {
+			return ((double) predictedNegatives)/total;
+		}
+		
+		public Double probabilityDensity() {
+			if (index == 0) return cumulativeProbability();
+			return ((double) (predictedNegatives-all.get(index -1).predictedNegatives))/total/resolution;
+		}
+		
+		public Double smoothedProbabilityDensity() {
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_7_cubic(), false, index, c -> c.probabilityDensity()); 
+		}
+		
+		public Double probabilityDensityOverDeltaSensitivity() {
+			return smoothedProbabilityDensity()/deltaSensitivity(); 
+		}
+		
+		public String toString() {
+			return StringUtils.joinWith("\t", getValue(), tp(),fp(),fn(),tn(),sensitivity(),specificity(), smoothedSensitivity(),deltaSensitivity(),cumulativeProbability(),
+					probabilityDensity(),smoothedProbabilityDensity(),probabilityDensityOverDeltaSensitivity());
+		}
 	}
 
 	/*public static class Grouping<X,Y> {
