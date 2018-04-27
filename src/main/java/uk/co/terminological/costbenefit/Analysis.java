@@ -346,7 +346,7 @@ public class Analysis {
 			int end = position+i+1;
 			List<X> out = new ArrayList<>();
 			if (start < 0) {
-				out.addAll(input.subList(0, -start));
+				out.addAll(input.subList(1, 1-start));
 				Collections.reverse(out);
 				out.addAll(input.subList(0, end));
 			} else if (end > input.size()) {
