@@ -135,7 +135,7 @@ public class Analysis {
 			int predNeg = 0;
 			int falseNeg = 0;
 
-			for (Double i=0; i<1+resolution*0.95; i+=resolution) {
+			for (Double i=0D; i<1+resolution*0.95; i+=resolution) {
 
 				while (preds.hasNext() && preds.peek().getPredicted() < i) {
 					predNeg += 1;
