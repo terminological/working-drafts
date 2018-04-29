@@ -60,7 +60,7 @@ public class Analysis {
 		
 		int i=0;
 		while (binned.get(i).deltaFOverGPrime() < 0) i++;
-		xIntercept = (binned.get(i-1).deltaFOverGPrime()*binned.get(i-1).getValue()+binned.get(i).deltaFOverGPrime()*binned.get(i).getValue()) / 
+		Double xIntercept = (binned.get(i-1).deltaFOverGPrime()*binned.get(i-1).getValue()+binned.get(i).deltaFOverGPrime()*binned.get(i).getValue()) / 
 				(binned.get(i-1).getValue()+binned.get(i).getValue());
 
 		/*List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
