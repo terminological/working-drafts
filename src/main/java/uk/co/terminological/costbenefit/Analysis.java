@@ -75,7 +75,7 @@ public class Analysis {
 		
 		XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", 
 				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.deltaSensitivity())
+				Lists.transform(binned, c->c.sensitivity())
 		);
 		
 		
