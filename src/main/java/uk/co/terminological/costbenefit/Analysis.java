@@ -73,16 +73,13 @@ public class Analysis {
 
 		
 		
-		XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", 
-				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.sensitivity())
-		);
+		
 		
 		List<XYChart> charts = new ArrayList<XYChart>();
 		
-		charts.add(QuickChart.getChart("A", "cutoff", "sensitivity","sensitivity",
+		charts.add(QuickChart.getChart("A", "cutoff", "sensitivity","g(x)",
 				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.sensitivity())));
+				Lists.transform(binned, c->c.smoothedSensitivity())));
 	    
 		charts.add(QuickChart.getChart("B", "cutoff", "specificity","specificity", 
 				Lists.transform(binned, c->c.getValue()),
@@ -92,13 +89,21 @@ public class Analysis {
 				Lists.transform(binned, c->1-c.sensitivity()),
 				Lists.transform(binned, c->c.specificity())));
 	    
-		charts.add(QuickChart.getChart("D", "cutoff", "probability density","density", 
+		charts.add(QuickChart.getChart("D", "cutoff", "probability density","f(x)", 
 				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.probabilityDensity())));
+				Lists.transform(binned, c->c.smoothedProbabilityDensity())));
 	    
-		charts.add(QuickChart.getChart("E", "cutoff", "first derivative sensitivity","delta", 
+		charts.add(QuickChart.getChart("E", "cutoff", "first derivative sensitivity","g'(x)", 
 				Lists.transform(binned, c->c.getValue()),
 				Lists.transform(binned, c->c.deltaSensitivity())));
+	    
+		charts.add(QuickChart.getChart("F", "cutoff", "f(x)/g'(x)","f(x)/g'(x)", 
+				Lists.transform(binned, c->c.getValue()),
+				Lists.transform(binned, c->c.probabilityDensityOverDeltaSensitivity())));
+	    
+		charts.add(QuickChart.getChart("F", "cutoff", "f(x)/g'(x)","f(x)/g'(x)", 
+				Lists.transform(binned, c->c.getValue()),
+				Lists.transform(binned, c->c.deltaFOverGPrime())));
 	    
 		
 	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
