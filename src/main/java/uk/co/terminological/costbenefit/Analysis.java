@@ -103,7 +103,7 @@ public class Analysis {
 		
 		charts.add(QuickChart.getChart("F", "cutoff", "f(x)/g'(x)","f(x)/g'(x)", 
 				Lists.transform(filtered, c->c.getValue()),
-				Lists.transform(filtered, c->c.probabilityDensityOverDeltaSensitivity())));
+				Lists.transform(filtered, c->c.smoothedFOverGPrime())));
 	    
 		filtered = binned.stream().filter(c -> c.deltaFOverGPrime() < 10 && c.deltaFOverGPrime() > -10).collect(Collectors.toList());
 		
@@ -267,7 +267,11 @@ public class Analysis {
 		}
 		
 		public Double probabilityDensityOverDeltaSensitivity() {
-			return smoothedProbabilityDensity()/deltaSensitivity(); 
+			return probabilityDensity()/deltaSensitivity(); 
+		}
+		
+		public Double smoothedFOverGPrime() {
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.probabilityDensityOverDeltaSensitivity());
 		}
 		
 		public Double deltaFOverGPrime() {
