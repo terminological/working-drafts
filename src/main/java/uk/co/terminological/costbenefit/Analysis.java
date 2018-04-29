@@ -246,7 +246,7 @@ public class Analysis {
 		Double deltaS = null;
 		public Double deltaSensitivity() {
 			if (deltaS == null) deltaS = 
-					SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.sensitivity());
+					SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.smoothedSensitivity());
 			return deltaS;
 		}
 
