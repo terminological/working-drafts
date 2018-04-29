@@ -46,7 +46,7 @@ public class Analysis {
 
 		ClassifierResult res = new ClassifierResult();
 		
-		tmp.stream().limit(20).forEach(System.out::println);
+		//tmp.stream().limit(20).forEach(System.out::println);
 
 		tmp.streamEntities()
 		.map(kv -> kv.getValue())
@@ -57,6 +57,8 @@ public class Analysis {
 
 		List<Cutoff> binned = res.getCutoffs(0.04D);
 		// tmp.numberEntities();
+		
+		binned.stream().forEach(System.out::println);
 		
 		int i=0;
 		while (binned.get(i).deltaFOverGPrime() < 0) i++;
