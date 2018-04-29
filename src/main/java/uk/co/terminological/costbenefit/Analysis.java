@@ -17,7 +17,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections4.iterators.PeekingIterator;
+import org.apache.commons.collections4.list.TransformedList;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
@@ -54,7 +56,10 @@ public class Analysis {
 		List<Cutoff> binned = res.getCutoffs(0.04D);
 		// tmp.numberEntities();
 		
-		SimpleRegression regression = new SimpleRegression();
+		int i=0;
+		while (binned.get(i).deltaFOverGPrime() < 0) i++;
+		xIntercept = (binned.get(i-1).deltaFOverGPrime()*binned.get(i-1).getValue()+binned.get(i).deltaFOverGPrime()*binned.get(i).getValue()) / 
+				(binned.get(i-1).getValue()+binned.get(i).getValue());
 
 		/*List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
 		Iterator<List<Double>> tmp3 = SavitzkyGolay.symmetric(tmp2,5);
@@ -62,10 +67,12 @@ public class Analysis {
 			System.out.println(tmp3.next());
 		}*/
 
+		binned.stream().forEach(c -> regression.addData(c., arg1););
+		
 		XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", 
-				binned.stream().map(c -> ((double) c.getValue())).collect(Collectors.toList()), 
-				binned.stream().map(c -> ((double) c.smoothedProbabilityDensity())).collect(Collectors.toList())
-						);
+				TransformedList.transformedList(binned, c->c.getValue()),
+				TransformedList.transformedList(binned, c->c.smoothedProbabilityDensity())
+		);
 		
 		
 		
@@ -232,7 +239,7 @@ public class Analysis {
 		public String toString() {
 			//return StringUtils.joinWith("\t", this.value, this.falseNegatives, this.predictedNegatives);
 			return StringUtils.joinWith("\t", getValue(), tp(),fp(),fn(),tn(),sensitivity(),specificity(), smoothedSensitivity(),deltaSensitivity(),cumulativeProbability(),
-					probabilityDensity(),smoothedProbabilityDensity(),probabilityDensityOverDeltaSensitivity());
+					probabilityDensity(),smoothedProbabilityDensity(),probabilityDensityOverDeltaSensitivity(),deltaFOverGPrime());
 		}
 	}
 
