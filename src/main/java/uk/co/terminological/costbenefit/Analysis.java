@@ -80,23 +80,23 @@ public class Analysis {
 		
 		List<XYChart> charts = new ArrayList<XYChart>();
 		
-		charts.add(QuickChart.getChart("A", "cutoff", "sensitivity","",
+		charts.add(QuickChart.getChart("A", "cutoff", "sensitivity","sensitivity",
 				Lists.transform(binned, c->c.getValue()),
 				Lists.transform(binned, c->c.sensitivity())));
 	    
-		charts.add(QuickChart.getChart("B", "cutoff", "specificity","", 
+		charts.add(QuickChart.getChart("B", "cutoff", "specificity","specificity", 
 				Lists.transform(binned, c->c.getValue()),
 				Lists.transform(binned, c->c.specificity())));
 	    
-		charts.add(QuickChart.getChart("C", "1-sensitivity", "specificity","", 
+		charts.add(QuickChart.getChart("C", "1-sensitivity", "specificity","roc", 
 				Lists.transform(binned, c->1-c.sensitivity()),
 				Lists.transform(binned, c->c.specificity())));
 	    
-		charts.add(QuickChart.getChart("D", "cutoff", "probability density","", 
+		charts.add(QuickChart.getChart("D", "cutoff", "probability density","density", 
 				Lists.transform(binned, c->c.getValue()),
 				Lists.transform(binned, c->c.probabilityDensity())));
 	    
-		charts.add(QuickChart.getChart("E", "cutoff", "first derivative sensitivity","", 
+		charts.add(QuickChart.getChart("E", "cutoff", "first derivative sensitivity","delta", 
 				Lists.transform(binned, c->c.getValue()),
 				Lists.transform(binned, c->c.deltaSensitivity())));
 	    
