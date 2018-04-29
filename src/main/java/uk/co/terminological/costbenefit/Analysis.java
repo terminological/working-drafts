@@ -24,6 +24,8 @@ import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 
+import com.google.common.collect.Lists;
+
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.parser.ParserException;
 import uk.co.terminological.tabular.Delimited;
@@ -67,11 +69,11 @@ public class Analysis {
 			System.out.println(tmp3.next());
 		}*/
 
-		binned.stream().forEach(c -> regression.addData(c., arg1););
+		
 		
 		XYChart chart = QuickChart.getChart("Sample Chart", "X", "Y", "y(x)", 
-				TransformedList.transformedList(binned, c->c.getValue()),
-				TransformedList.transformedList(binned, c->c.smoothedProbabilityDensity())
+				Lists.transform(binned, c->c.getValue()),
+				Lists.transform(binned, c->c.smoothedProbabilityDensity())
 		);
 		
 		
