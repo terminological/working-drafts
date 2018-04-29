@@ -275,7 +275,7 @@ public class Analysis {
 		}
 		
 		public Double deltaFOverGPrime() {
-			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.probabilityDensityOverDeltaSensitivity()); 
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.smoothedFOverGPrime()); 
 		}
 		
 		public String toString() {
