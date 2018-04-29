@@ -67,11 +67,11 @@ public class Analysis {
 		//Double xIntercept = (binned.get(i-1).deltaFOverGPrime()*binned.get(i-1).getValue()+binned.get(i).deltaFOverGPrime()*binned.get(i).getValue()) / 
 		//		(binned.get(i-1).getValue()+binned.get(i).getValue());
 
-		/*List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
-		Iterator<List<Double>> tmp3 = SavitzkyGolay.symmetric(tmp2,5);
+		List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
+		Iterator<List<Double>> tmp3 = SavitzkyGolay.tailed(tmp2,5);
 		while (tmp3.hasNext()) {
 			System.out.println(tmp3.next());
-		}*/
+		}
 
 		
 		
@@ -305,6 +305,7 @@ public class Analysis {
 		//https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter#Appendix
 
 		static double[] smooth_5_cubic() {return new double[]{-3D/35,12D/35,17D/35,12D/35,-3D/35};}
+		
 		static double[] smooth_7_cubic() {return new double[]{-2D/21,3D/21,6D/21,7D/21,6D/21,3D/21,-2D/21};}
 		static double[] smooth_9_cubic() {return new double[]{-21D/231,14D/231,39D/231,54D/231,59D/231,54D/231,39D/231,14D/231,-21D/231};}
 
@@ -314,6 +315,11 @@ public class Analysis {
 		static double[] derivative_5_quartic(double w) {return new double[]{1D/(12*w),-8D/(12*w),0,8D/(12*w),-1D/(12*w)};}
 		static double[] derivative_7_quartic(double w) {return new double[]{22D/(252*w),-67D/(252*w),-58D/(252*w),0,58D/(252*w),67D/(252*w),-22D/(252*w)};}
 
+		static double[] smooth_N_sliding(int n) { 
+			double[] tmp = new double[n];
+			Arrays.fill(tmp, 1D/n);
+			return tmp;}
+		
 		static <X> Double convolute(List<X> input, double[] filter, boolean circular, int position, Function<X,Double> toDouble) {
 			List<X> window = circular ? circular(input, filter.length, position) : symmetric(input, filter.length, position);
 			Double collect = 0D;
@@ -393,7 +399,6 @@ public class Analysis {
 			if (input.size() < width) throw new ArrayIndexOutOfBoundsException("window width larger than list size");
 			return new Iterator<List<X>>() {
 
-				int i = width/2;
 				int position = 0;
 				
 
@@ -434,6 +439,48 @@ public class Analysis {
 			return out;
 		}
 
+		public static <X> Iterator<List<X>> tailed(final List<X> input, int width) {
+			if (input.size() < width) throw new ArrayIndexOutOfBoundsException("window width larger than list size");
+			return new Iterator<List<X>>() {
+
+				int position = 0;
+				
+
+				@Override
+				public boolean hasNext() {
+					return position < input.size();
+				}
+
+				@Override
+				public List<X> next() {
+					if (!hasNext()) throw new NoSuchElementException();
+					return tailed(input,width,position++);
+				}
+
+			};
+		}
+		
+		static <X> List<X> tailed(final List<X> input, int width, int position) {
+			if (position > input.size() || position < 0) throw new ArrayIndexOutOfBoundsException("window position outside of list");
+			int i = width/2;
+			int start = position-i;
+			int end = position+i+1;
+			List<X> out = new ArrayList<>();
+			int tmp = start;
+			while (tmp<0) {
+				out.add(input.get(0)); 
+				tmp++;
+			}
+			out.addAll(input.subList(tmp, end>input.size()-1 ? input.size()-1 : end));
+			tmp = end;
+			while (tmp > input.size()) {
+				out.add(input.get(input.size()-1));
+				tmp-=1;
+			}
+			start = start == input.size() ? 0 : start+1;
+			end = end == input.size() ? 0 : end+1;
+			return out;
+		}
 
 	}
 
