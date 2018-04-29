@@ -321,7 +321,7 @@ public class Analysis {
 			return tmp;}
 		
 		static <X> Double convolute(List<X> input, double[] filter, boolean circular, int position, Function<X,Double> toDouble) {
-			List<X> window = circular ? circular(input, filter.length, position) : symmetric(input, filter.length, position);
+			List<X> window = circular ? circular(input, filter.length, position) : tailed(input, filter.length, position);
 			Double collect = 0D;
 			for (int i=0; i<filter.length; i=i+1) {
 				collect += toDouble.apply(window.get(i))*filter[i];
@@ -331,7 +331,7 @@ public class Analysis {
 		}
 		
 		static Double convolute(List<Double> input, double[] filter, boolean circular, int position) {
-			List<Double> window = circular ? circular(input, filter.length, position) : symmetric(input, filter.length, position);
+			List<Double> window = circular ? circular(input, filter.length, position) : tailed(input, filter.length, position);
 			Double collect = 0D;
 			for (int i=0; i<filter.length; i++) {
 				collect += window.get(i)*filter[i];
@@ -343,7 +343,7 @@ public class Analysis {
 		static List<Double> convolute(List<Double> input, double[] filter, boolean circular) {
 			int size = filter.length;
 			List<Double> out = new ArrayList<>();
-			Iterator<List<Double>> window = circular ? circular(input, size) : symmetric(input, size);
+			Iterator<List<Double>> window = circular ? circular(input, size) : tailed(input, size);
 			while (window.hasNext()) {
 				List<Double> tmp = window.next();
 				Double collect = 0D;
