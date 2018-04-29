@@ -78,10 +78,31 @@ public class Analysis {
 				Lists.transform(binned, c->c.sensitivity())
 		);
 		
+		List<XYChart> charts = new ArrayList<XYChart>();
 		
+		charts.add(QuickChart.getChart("", "cutoff", "sensitivity","",
+				Lists.transform(binned, c->c.getValue()),
+				Lists.transform(binned, c->c.sensitivity())));
+	    
+		charts.add(QuickChart.getChart("", "cutoff", "specificity","", 
+				Lists.transform(binned, c->c.getValue()),
+				Lists.transform(binned, c->c.specificity())));
+	    
+		charts.add(QuickChart.getChart("", "1-sensitivity", "specificity","", 
+				Lists.transform(binned, c->1-c.sensitivity()),
+				Lists.transform(binned, c->c.specificity())));
+	    
+		charts.add(QuickChart.getChart("", "cutoff", "probability density","", 
+				Lists.transform(binned, c->c.getValue()),
+				Lists.transform(binned, c->c.probabilityDensity())));
+	    
+		charts.add(QuickChart.getChart("", "cutoff", "first derivative sensitivity","", 
+				Lists.transform(binned, c->c.getValue()),
+				Lists.transform(binned, c->c.deltaSensitivity())));
+	    
 		
-		new SwingWrapper<XYChart>(chart).displayChart();
-
+	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
+		
 	}
 
 	static Function<String,Boolean> convert01TF = s -> s.equals("1") ? true : (s.equals("0") ? false: null);
