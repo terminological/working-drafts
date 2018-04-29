@@ -58,6 +58,8 @@ public class Analysis {
 		List<Cutoff> binned = res.getCutoffs(0.04D);
 		// tmp.numberEntities();
 		
+		System.out.println(StringUtils.joinWith("\t", "getValue", "tp","fp","fn","tn","sensitivity","specificity", "smoothedSensitivity","deltaSensitivity","cumulativeProbability",
+				"probabilityDensity","smoothedProbabilityDensity","probabilityDensityOverDeltaSensitivity","deltaFOverGPrime");
 		binned.stream().forEach(System.out::println);
 		
 		//int i=0;
