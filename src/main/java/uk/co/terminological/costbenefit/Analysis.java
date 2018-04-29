@@ -473,7 +473,7 @@ public class Analysis {
 			}
 			out.addAll(input.subList(tmp, end>input.size()-1 ? input.size()-1 : end));
 			tmp = end;
-			while (tmp > input.size()) {
+			while (tmp > input.size()-1) {
 				out.add(input.get(input.size()-1));
 				tmp-=1;
 			}
