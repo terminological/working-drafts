@@ -240,7 +240,7 @@ public class Analysis {
 		}
 
 		public Double smoothedSensitivity() {
-			return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_7_cubic(), false, index, c -> c.sensitivity()); 
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13), false, index, c -> c.sensitivity()); 
 		}
 		
 		Double deltaS = null;
