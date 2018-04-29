@@ -271,7 +271,7 @@ public class Analysis {
 		}
 		
 		public Double smoothedFOverGPrime() {
-			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.probabilityDensityOverDeltaSensitivity());
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_7_cubic(resolution), false, index, c -> c.probabilityDensityOverDeltaSensitivity());
 		}
 		
 		public Double deltaFOverGPrime() {
