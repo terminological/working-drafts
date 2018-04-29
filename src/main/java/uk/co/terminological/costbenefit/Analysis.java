@@ -53,6 +53,8 @@ public class Analysis {
 
 		List<Cutoff> binned = res.getCutoffs(0.04D);
 		// tmp.numberEntities();
+		
+		SimpleRegression regression = new SimpleRegression();
 
 		/*List<Double> tmp2 = Arrays.asList(0D,1D,2D,3D,4D,5D,6D);
 		Iterator<List<Double>> tmp3 = SavitzkyGolay.symmetric(tmp2,5);
@@ -196,8 +198,11 @@ public class Analysis {
 			return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_7_cubic(), false, index, c -> c.sensitivity()); 
 		}
 		
+		Double deltaS = null;
 		public Double deltaSensitivity() {
-			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.sensitivity()); 
+			if (deltaS == null) deltaS = 
+					SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.sensitivity());
+			return deltaS;
 		}
 
 		public Double cumulativeProbability() {
@@ -209,12 +214,19 @@ public class Analysis {
 			return ((double) (predictedNegatives-all.get(index -1).predictedNegatives))/total/resolution;
 		}
 		
+		Double smoothPD = null;
 		public Double smoothedProbabilityDensity() {
-			return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_7_cubic(), false, index, c -> c.probabilityDensity()); 
+			if (smoothPD == null) smoothPD = 
+					SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_7_cubic(), false, index, c -> c.probabilityDensity());
+			return smoothPD;
 		}
 		
 		public Double probabilityDensityOverDeltaSensitivity() {
 			return smoothedProbabilityDensity()/deltaSensitivity(); 
+		}
+		
+		public Double deltaFOverGPrime() {
+			return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_7_quartic(resolution), false, index, c -> c.probabilityDensityOverDeltaSensitivity()); 
 		}
 		
 		public String toString() {
