@@ -105,7 +105,7 @@ public class Analysis {
 				Lists.transform(filtered, c->c.getValue()),
 				Lists.transform(filtered, c->c.probabilityDensityOverDeltaSensitivity())));
 	    
-		List<Cutoff> filtered = binned.stream().filter(c -> c.deltaFOverGPrime() < 10 && c.deltaFOverGPrime() > -10).collect(Collectors.toList());
+		filtered = binned.stream().filter(c -> c.deltaFOverGPrime() < 10 && c.deltaFOverGPrime() > -10).collect(Collectors.toList());
 		
 		charts.add(QuickChart.getChart("F", "cutoff", "f(x)/g'(x)","deriv f(x)/g'(x)", 
 				Lists.transform(filtered, c->c.getValue()),
