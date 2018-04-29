@@ -55,7 +55,7 @@ public class Analysis {
 				Double.parseDouble(m.get("prob_pos"))))
 		.forEach(p -> res.add(p));;
 
-		List<Cutoff> binned = res.getCutoffs(0.04D);
+		List<Cutoff> binned = res.getCutoffs(0.01D);
 		// tmp.numberEntities();
 		
 		System.out.println(StringUtils.joinWith("\t", "getValue", "tp","fp","fn","tn","sensitivity","specificity", "smoothedSensitivity","deltaSensitivity","cumulativeProbability",
