@@ -101,9 +101,11 @@ public class Analysis {
 				Lists.transform(binned, c->c.getValue()),
 				Lists.transform(binned, c->c.probabilityDensityOverDeltaSensitivity())));
 	    
-		charts.add(QuickChart.getChart("F", "cutoff", "f(x)/g'(x)","f(x)/g'(x)", 
-				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.deltaFOverGPrime())));
+		charts.add(QuickChart.getChart("F", "cutoff", "f(x)/g'(x)","deriv f(x)/g'(x)", 
+				binned.stream().filter(c -> c.deltaFOverGPrime() < 10 && c.deltaFOverGPrime() > 10).map(c->c.getValue()).collect(Collectors.toList()),
+				binned.stream().filter(c -> c.deltaFOverGPrime() < 10 && c.deltaFOverGPrime() > 10).map(c->c.deltaFOverGPrime()).collect(Collectors.toList())
+				));
+				
 	    
 		
 	    new SwingWrapper<XYChart>(charts).displayChartMatrix();
