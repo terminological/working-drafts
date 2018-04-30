@@ -16,6 +16,9 @@ public class InflexionFinder {
 		public static Coordinate create(Double x,Double y) {
 			return new Coordinate(x,y);
 		}
+		public Double getX() { return getFirst(); }
+		public Double getY() { return getSecond(); }
+		public String toString() {return "("+getX()+","+getY()+")";}
 	}
 	
 	public static class Result {
@@ -25,16 +28,16 @@ public class InflexionFinder {
 		public List<Coordinate> getMaxima() {
 			return maxima;
 		}
-		public Double getMax() {
+		public Coordinate getMax() {
 			return max;
 		}
-		public Double getMin() {
+		public Coordinate getMin() {
 			return min;
 		}
 		List<Coordinate> minima = new ArrayList<>();
 		List<Coordinate> maxima = new ArrayList<>();
-		Double max = null;
-		Double min = null;
+		Coordinate max = null;
+		Coordinate min = null;
 		
 		public String toString() {
 			return "range: "+min+" - "+max+"\nminima: \n"
@@ -54,8 +57,8 @@ public class InflexionFinder {
 		for (int i=1; i<firstOrder.size(); i++) {
 			
 			
-			if (out.min == null || out.min > coords.get(i)) out.min = coords.get(i);
-			if (out.max == null || out.max < coords.get(i)) out.max = coords.get(i);
+			if (out.min == null || out.min.getY() > coords.get(i)) out.min = Coordinate.create(i*spacing,coords.get(i));
+			if (out.max == null || out.max.getY() < coords.get(i)) out.max = Coordinate.create(i*spacing,coords.get(i));
 			
 			Double last = firstOrder.get(i-1);
 			Double current = firstOrder.get(i);
