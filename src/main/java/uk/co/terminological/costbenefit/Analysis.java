@@ -103,7 +103,7 @@ public class Analysis {
 		
 		charts.add(QuickChart.getChart("H", "cutoff", "value", "value", 
 				Lists.transform(filtered, c->c.getValue()),
-				Lists.transform(filtered, c->c->c.cost(0.1D, 100D, -1D, -10D, 11D))));
+				Lists.transform(filtered, c->c.cost(0.1D, 100D, -1D, -10D, 11D))));
 				
 		
 		for (Chart chart: charts) {
