@@ -86,7 +86,7 @@ public class Cutoff {
 	
 	public Double probabilityDensity() {
 		if (index == 0) return cumulativeProbability();
-		return ((double) (predictedNegatives-all.get(index -1).predictedNegatives))/total/resolution;
+		return ((double) (predictedNegatives-all.get(index-1).predictedNegatives))/total/resolution;
 	}
 	
 	Double smoothPD = null;

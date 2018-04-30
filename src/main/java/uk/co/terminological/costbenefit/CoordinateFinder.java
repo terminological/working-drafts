@@ -99,4 +99,23 @@ public class CoordinateFinder {
 		return out;
 	}
 	
+	public static Interceptions intercept(Double yValue, List<Double> coords, Double spacing) {
+		Interceptions out = new Interceptions();
+		
+		for (int i=1; i<coords.size(); i++) {
+			
+			Double last = coords.get(i-1);
+			Double current = coords.get(i);
+			
+			if ((last < yValue && current >= yValue) || (last > yValue && current <= yValue)) {
+				// a local minimum
+				Double x = last/(last-current);
+				out.intercepts.add(Coordinate.create(((i-1)+x)/spacing, yValue));	
+			}
+			
+		}
+		
+		return out;
+	}
+	
 }

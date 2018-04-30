@@ -56,5 +56,19 @@ public class ClassifierResult {
 		return out;
 
 	}
+	
+	public Cutoff getValue(Double cutoff) {
+		int predNeg = 0;
+		int falseNeg = 0;
+
+		this.getPredictions().stream().filter(p->p.getPredicted()<=cutoff)
+			.forEach(pred-> {
+				predNeg += 1;
+				falseNeg += pred.getActual() ? 1 : 0;
+			});
+
+		Cutoff c = new Cutoff(cutoff, falseNeg, predNeg, totalPositive(), total(), out, out.size(), resolution);
+		return c;
+	}
 
 }
