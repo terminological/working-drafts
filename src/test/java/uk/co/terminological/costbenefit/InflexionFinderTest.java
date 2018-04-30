@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
-import uk.co.terminological.costbenefit.CoordinateFinder.Result;
 
 public class InflexionFinderTest {
 
