@@ -61,4 +61,16 @@ public class SavitskyGolayTest {
 		System.out.println(Arrays.toString(SavitzkyGolay.smooth_5_cubic()));
 		System.out.println(Arrays.toString(SavitzkyGolay.filter(5,3,0,0.01D)));
 	}
+	
+	@Test
+	public void testConvolution() {
+		List<Double> coords = Arrays.asList(
+			0D, 1D, 2D, 3D, 4D, 5D, 6D	
+		);
+		System.out.println(SavitzkyGolay.convolute(coords, 
+				SavitzkyGolay.smooth_5_cubic(), false));
+		System.out.println(SavitzkyGolay.convolute(coords, 
+				SavitzkyGolay.derivative_5_quartic(1), false));
+	}
+	
 }
