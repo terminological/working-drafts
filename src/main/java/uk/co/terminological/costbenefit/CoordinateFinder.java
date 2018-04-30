@@ -21,7 +21,19 @@ public class CoordinateFinder {
 		public String toString() {return "("+getX()+","+getY()+")";}
 	}
 	
-	public static class Result {
+	public static class Interceptions {
+		List<Coordinate> intercepts;
+		public List<Coordinate> getIntercepts() {
+			return intercepts;
+		}
+		public String toString() {
+			return "intercepts: \n"
+					+getIntercepts().stream().map(c -> c.toString()).collect(Collectors.joining("\n"))
+					;
+		}
+	}
+	
+	public static class Inflexions {
 		public List<Coordinate> getMinima() {
 			return minima;
 		}
@@ -48,9 +60,9 @@ public class CoordinateFinder {
 		}
 	}
 	
-	public static Result inflexion(List<Double> coords, Double spacing) {
+	public static Inflexions inflexion(List<Double> coords, Double spacing) {
 		
-		Result out = new Result();
+		Inflexions out = new Inflexions();
 		
 		List<Double> firstOrder = SavitzkyGolay.convolute(coords, SavitzkyGolay.derivative_5_quad(spacing), false);
 		
