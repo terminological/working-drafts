@@ -40,7 +40,7 @@ public class InflexionFinder {
 			return "range: "+min+" - "+max+"\nminima: \n"
 					+getMinima().stream().map(c -> c.toString()).collect(Collectors.joining("\n"))
 					+"\nmaxima: \n"
-					+getMinima().stream().map(c -> c.toString()).collect(Collectors.joining("\n"))
+					+getMaxima().stream().map(c -> c.toString()).collect(Collectors.joining("\n"))
 					;
 		}
 	}
