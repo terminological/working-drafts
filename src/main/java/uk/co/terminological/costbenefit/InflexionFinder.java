@@ -54,21 +54,16 @@ public class InflexionFinder {
 		
 		List<Double> firstOrder = SavitzkyGolay.convolute(coords, SavitzkyGolay.derivative_5_quad(spacing), false);
 		
-		for (int i=1; i<firstOrder.size(); i++) {
-			
-			
+		for (int i=0; i<firstOrder.size(); i++) {
 			if (out.min == null || out.min.getY() > coords.get(i)) out.min = Coordinate.create(i*spacing,coords.get(i));
 			if (out.max == null || out.max.getY() < coords.get(i)) out.max = Coordinate.create(i*spacing,coords.get(i));
+		}
+		
+		
+		for (int i=1; i<firstOrder.size(); i++) {
 			
 			Double last = firstOrder.get(i-1);
 			Double current = firstOrder.get(i);
-			/*if (current == 0) {
-				// current = firstOrder.get(i+1);
-				// not dealing with saddles
-				if (last < 0) {
-					
-				}
-			}*/
 			
 			if (last < 0 && current >= 0) {
 				// a local minimum
@@ -76,8 +71,7 @@ public class InflexionFinder {
 				Double yLast = coords.get(i-1);
 				Double yCurrent = coords.get(i);
 				Double y = Math.min(yLast,yCurrent);
-				out.minima.add(Coordinate.create(((i-1)+x)/spacing, y));
-				
+				out.minima.add(Coordinate.create(((i-1)+x)/spacing, y));	
 			}
 			
 			if (last > 0 && current <= 0) {
