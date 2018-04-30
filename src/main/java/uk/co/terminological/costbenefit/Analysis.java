@@ -149,7 +149,7 @@ public class Analysis {
 					Lists.transform(filtered, c->c.getValue()),
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
-			BitmapEncoder.saveBitmapWithDPI(chart2, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
+			BitmapEncoder.saveBitmapWithDPI(chart2, "/home/rc538/tmp/"+chart2.getTitle(), BitmapFormat.PNG, 300);
 					
 			/*for (Double valueTP: costs) {
 				
