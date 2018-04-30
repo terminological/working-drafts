@@ -58,8 +58,11 @@ public class SavitskyGolayTest {
 	
 	@Test
 	public void testFilter() {
+		System.out.println("======Filters=======");
 		System.out.println(Arrays.toString(SavitzkyGolay.smooth_5_cubic()));
 		System.out.println(Arrays.toString(SavitzkyGolay.filter(5,3,0,0.01D)));
+		System.out.println(Arrays.toString(SavitzkyGolay.derivative_7_quartic(0.01D)));
+		System.out.println(Arrays.toString(SavitzkyGolay.filter(7,4,1,0.01D)));
 	}
 	
 	@Test
