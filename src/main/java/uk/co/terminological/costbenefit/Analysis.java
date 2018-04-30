@@ -114,7 +114,7 @@ public class Analysis {
 			
 			String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
 			
-			XYChart chart = QuickChart.getChart(name, "cutoff",name,name, 
+			XYChart chart = QuickChart.getChart("value_"+name, "cutoff",name,name, 
 					Lists.transform(filtered, c->c.getValue()),
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
