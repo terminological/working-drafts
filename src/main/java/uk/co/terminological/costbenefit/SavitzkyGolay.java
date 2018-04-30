@@ -68,9 +68,8 @@ public class SavitzkyGolay {
 	static double[] filter(int width, int order, int derivative, double interval) {
 		int m = (width-1)/2;
 		double[] out = new double[2*m+1];
-		for (int i = m; i>=0; i--) {
+		for (int i = -m; i<m; i++) {
 			double tmp = weight(i,0,m,order,derivative);
-			out[m-i] = tmp/Math.pow(interval,derivative);
 			out[m+i] = tmp/Math.pow(interval,derivative);
 		}
 		return out;
