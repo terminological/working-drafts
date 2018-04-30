@@ -30,9 +30,7 @@ public class InflexionFinderTest {
 		
 		System.out.println(firstOrder);
 		
-		Result r = CoordinateFinder.inflexion(
-				coords
-				, 1D);
+		Result r = CoordinateFinder.inflexion(coords,1D);
 		System.out.print(r.toString());
 		;
 	}
