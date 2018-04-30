@@ -124,7 +124,7 @@ public class Analysis {
 		
 		for (Double cost: costs) {
 			
-			Double prevalence = 0.1D;
+			Double prevalence = 0.5D;
 			Double valueTP = 1D;
 			Double valueFN = cost;
 			Double valueFP = cost;
