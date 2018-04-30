@@ -127,7 +127,7 @@ public class Analysis {
 			Double prevalence = 0.5D;
 			Double valueTP = 1D;
 			Double valueFN = cost;
-			Double valueFP = cost;
+			Double valueFP = cost/2;
 			Double valueTN = 1D;
 			
 			String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
