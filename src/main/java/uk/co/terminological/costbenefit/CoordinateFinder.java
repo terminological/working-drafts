@@ -48,7 +48,7 @@ public class CoordinateFinder {
 		}
 	}
 	
-	public static Result find(List<Double> coords, Double spacing) {
+	public static Result inflexion(List<Double> coords, Double spacing) {
 		
 		Result out = new Result();
 		
