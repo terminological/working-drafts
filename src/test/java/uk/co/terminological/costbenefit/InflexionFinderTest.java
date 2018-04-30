@@ -28,10 +28,10 @@ public class InflexionFinderTest {
 		
 		List<Double> firstOrder = SavitzkyGolay.convolute(coords, SavitzkyGolay.derivative_5_quad(1D), false);
 		
-		System.out.print(firstOrder);
+		System.out.println(firstOrder);
 		
 		Result r = InflexionFinder.find(
-				Arrays.asList(2D,3D,4D,4.5D,4.6D,4.5D, 4D, 3.9D, 4D,5D, 6D)
+				coords
 				, 1D);
 		System.out.print(r.toString());
 		;
