@@ -78,7 +78,7 @@ public class Analysis {
 	    
 		new SwingWrapper<XYChart>(charts).displayChartMatrix();
 		for (Chart chart: charts) {
-			BitmapEncoder.saveBitmapWithDPI(chart, "~/"+chart.getTitle(), BitmapFormat.PNG, 300);
+			BitmapEncoder.saveBitmapWithDPI(chart, "/home/terminological/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
 		}
 		
 		List<XYChart> charts2 = new ArrayList<XYChart>();
