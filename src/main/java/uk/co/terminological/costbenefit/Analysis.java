@@ -101,6 +101,11 @@ public class Analysis {
 				Lists.transform(filtered, c->c.getValue()),
 				Lists.transform(filtered, c->1/c.smoothedFOverGPrime())));
 		
+		charts.add(QuickChart.getChart("H", "cutoff", "value", "value", 
+				Lists.transform(filtered, c->c.getValue()),
+				Lists.transform(filtered, c->c->c.cost(0.1D, 100D, -1D, -10D, 11D))));
+				
+		
 		for (Chart chart: charts) {
 			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
 		}
@@ -136,26 +141,18 @@ public class Analysis {
 		
 		for (Double cost: costs) {
 			
-			Double prevalence = 0.5D;
+			Double prevalence = 0.1D;
 			Double valueTP = 1D;
 			Double valueFN = cost;
 			Double valueFP = cost;
 			Double valueTN = 1D;
 			
-			// String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
-			
-			//XYChart chart = QuickChart.getChart("value_"+name, "cutoff",name,name, 
 			chart2.addSeries(cost.toString(),
 					Lists.transform(filtered, c->c.getValue()),
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
-			BitmapEncoder.saveBitmapWithDPI(chart2, "/home/rc538/tmp/"+chart2.getTitle(), BitmapFormat.PNG, 300);
-					
-			/*for (Double valueTP: costs) {
-				
-			}*/
 		}
-		
+		BitmapEncoder.saveBitmapWithDPI(chart2, "/home/rc538/tmp/"+chart2.getTitle(), BitmapFormat.PNG, 300);
 	}
 
 	static Function<String,Boolean> convert01TF = s -> s.equals("1") ? true : (s.equals("0") ? false: null);
