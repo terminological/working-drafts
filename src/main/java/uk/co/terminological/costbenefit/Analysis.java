@@ -16,7 +16,9 @@ import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.internal.chartpart.Chart;
+import org.knowm.xchart.style.Styler.LegendPosition;
 
 import com.google.common.collect.Lists;
 
@@ -105,7 +107,12 @@ public class Analysis {
 		
 		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
 		
-		for (Double prevalence: Arrays.asList(0.5D,0.1D,0.01D,0.001D,0.0001D)) {
+		XYChart chart = new XYChartBuilder().width(1200).height(1200).title("Varying prevalences").xAxisTitle("X").yAxisTitle("Y").build();
+		 
+	    // Customize Chart
+	    chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
+	    
+	    for (Double prevalence: Arrays.asList(0.5D,0.1D,0.01D,0.001D,0.0001D)) {
 			
 			Double valueTP = 1D;
 			Double valueFN = -1D;
@@ -114,25 +121,31 @@ public class Analysis {
 			
 			String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
 			
-			XYChart chart = QuickChart.getChart("value_"+name, "cutoff",name,name, 
+			chart.addSeries(prevalence.toString(), 
 					Lists.transform(filtered, c->c.getValue()),
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
-			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
+			
 			
 		}
+		
+		BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
+		
+		XYChart chart2 = new XYChartBuilder().width(1200).height(1200).title("Varying incorrect costs").xAxisTitle("X").yAxisTitle("Y").build();
+		chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
 		
 		for (Double cost: costs) {
 			
 			Double prevalence = 0.5D;
 			Double valueTP = 1D;
 			Double valueFN = cost;
-			Double valueFP = cost/2;
+			Double valueFP = cost;
 			Double valueTN = 1D;
 			
-			String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
+			// String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
 			
-			XYChart chart = QuickChart.getChart("value_"+name, "cutoff",name,name, 
+			//XYChart chart = QuickChart.getChart("value_"+name, "cutoff",name,name, 
+			chart.addSeries(cost.toString(),
 					Lists.transform(filtered, c->c.getValue()),
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
