@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import uk.co.terminological.datatypes.Tuple;
 
-public class InflexionFinder {
+public class CoordinateFinder {
 
 	public static class Coordinate extends Tuple<Double,Double> {
 

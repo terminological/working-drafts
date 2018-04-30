@@ -9,7 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.terminological.costbenefit.InflexionFinder.Result;
+import uk.co.terminological.costbenefit.CoordinateFinder.Result;
 
 public class InflexionFinderTest {
 
@@ -30,7 +30,7 @@ public class InflexionFinderTest {
 		
 		System.out.println(firstOrder);
 		
-		Result r = InflexionFinder.find(
+		Result r = CoordinateFinder.find(
 				coords
 				, 1D);
 		System.out.print(r.toString());
