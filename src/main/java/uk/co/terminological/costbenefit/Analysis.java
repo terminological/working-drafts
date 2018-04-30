@@ -103,13 +103,34 @@ public class Analysis {
 			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
 		}
 		
-		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,0D,2.5D,5D,10D);
+		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
 		
 		for (Double prevalence: Arrays.asList(0.5D,0.1D,0.01D,0.001D,0.0001D)) {
 			
 			Double valueTP = 1D;
 			Double valueFN = -1D;
 			Double valueFP = -1D;
+			Double valueTN = 1D;
+			
+			String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
+			
+			XYChart chart = QuickChart.getChart("value_"+name, "cutoff",name,name, 
+					Lists.transform(filtered, c->c.getValue()),
+					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
+			
+			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
+					
+			/*for (Double valueTP: costs) {
+				
+			}*/
+		}
+		
+		for (Double cost: costs) {
+			
+			Double prevalence = 0.1D;
+			Double valueTP = 1D;
+			Double valueFN = cost;
+			Double valueFP = cost;
 			Double valueTN = 1D;
 			
 			String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
