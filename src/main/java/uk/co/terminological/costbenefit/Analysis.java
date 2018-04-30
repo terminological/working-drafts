@@ -1,6 +1,7 @@
 package uk.co.terminological.costbenefit;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -8,9 +9,12 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.knowm.xchart.BitmapEncoder;
+import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
+import org.knowm.xchart.internal.chartpart.Chart;
 
 import com.google.common.collect.Lists;
 
@@ -22,7 +26,7 @@ public class Analysis {
 
 
 
-	public static void main(String[] args) throws FileNotFoundException, ParserException {
+	public static void main(String[] args) throws ParserException, IOException {
 
 		Path input = Paths.get(args[0]);
 
@@ -73,6 +77,9 @@ public class Analysis {
 				Lists.transform(binned, c->c.smoothedProbabilityDensity())));
 	    
 		new SwingWrapper<XYChart>(charts).displayChartMatrix();
+		for (Chart chart: charts) {
+			BitmapEncoder.saveBitmapWithDPI(chart, "~/"+chart.getTitle(), BitmapFormat.PNG, 300);
+		}
 		
 		List<XYChart> charts2 = new ArrayList<XYChart>();
 				
