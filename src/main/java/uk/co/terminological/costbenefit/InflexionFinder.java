@@ -72,7 +72,7 @@ public class InflexionFinder {
 				Double x = last/(last-current);
 				Double yLast = coords.get(i-1);
 				Double yCurrent = coords.get(i);
-				Double y = yLast+(yCurrent-yLast)*x;
+				Double y = Math.max(yLast,yCurrent);
 				out.minima.add(Coordinate.create(((i-1)+x)/spacing, y));
 				
 			}
@@ -82,7 +82,7 @@ public class InflexionFinder {
 				Double x = last/(last-current);
 				Double yLast = coords.get(i-1);
 				Double yCurrent = coords.get(i);
-				Double y = yLast+(yCurrent-yLast)*x;
+				Double y = Math.max(yLast,yCurrent);
 				out.maxima.add(Coordinate.create(((i-1)+x)/spacing, y));
 			}
 		}
