@@ -76,7 +76,7 @@ public class Cutoff {
 	Double deltaS = null;
 	public Double deltaSensitivity() {
 		if (deltaS == null) deltaS = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 5, 1, resolution), false, index, c -> c.smoothedSensitivity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 6, 1, resolution), false, index, c -> c.smoothedSensitivity());
 		return deltaS;
 	}
 
