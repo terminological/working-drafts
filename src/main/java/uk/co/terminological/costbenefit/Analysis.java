@@ -117,20 +117,18 @@ public class Analysis {
 	    // Customize Chart
 	    chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
 	    
-	    for (Double prevalence: Arrays.asList(0.5D,0.1D,0.01D,0.001D,0.0001D)) {
+	    for (Double prevalence: Arrays.asList(0.5D,0.4D,0.3D,0.2D,0.1D,0.05D,0.01D,0.001D)) {
 			
-			Double valueTP = 1D;
+			Double valueTP = 100D;
 			Double valueFN = -1D;
-			Double valueFP = -1D;
-			Double valueTN = 1D;
+			Double valueFP = -10D;
+			Double valueTN = 11D;
 			
-			String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
+			Double kappa = prevalence*(1-(valueTP-valueFP)/(valueTN+valueFN));
 			
-			chart.addSeries(prevalence.toString(), 
+			chart.addSeries("f(x)/g'(x)="+kappa, 
 					Lists.transform(filtered, c->c.getValue()),
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
-			
-			
 			
 		}
 		
