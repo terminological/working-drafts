@@ -67,7 +67,7 @@ public class ClassifierResult {
 				falseNeg += pred.getActual() ? 1 : 0;
 			});
 
-		Cutoff c = new Cutoff(cutoff, falseNeg, predNeg, totalPositive(), total(), out, out.size(), resolution);
+		Cutoff c = new Cutoff(cutoff, falseNeg, predNeg, totalPositive(), total(), out, out.size(), resolution); //replace with "this". resolution can be stored. out.size is position term.
 		return c;
 	}
 
