@@ -145,11 +145,11 @@ public class Analysis {
 			// String name = StringUtils.joinWith("_",prevalence,valueTP,valueFN,valueFP,valueTN);
 			
 			//XYChart chart = QuickChart.getChart("value_"+name, "cutoff",name,name, 
-			chart.addSeries(cost.toString(),
+			chart2.addSeries(cost.toString(),
 					Lists.transform(filtered, c->c.getValue()),
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
-			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
+			BitmapEncoder.saveBitmapWithDPI(chart2, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
 					
 			/*for (Double valueTP: costs) {
 				
