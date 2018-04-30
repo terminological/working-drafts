@@ -183,10 +183,10 @@ public class SavitzkyGolay {
 			Collections.reverse(out);
 			out.addAll(input.subList(0, end));
 		} else if (end > input.size()) {
-			List<X> tmp = input.subList(2*input.size()-end-1, input.size()-1);
+			List<X> tmp = new ArrayList<>(input.subList(2*input.size()-end-1, input.size()-1));
 			Collections.reverse(tmp);
 			out.addAll(input.subList(start, input.size()));
-			out.addAll(new ArrayList<>(tmp));
+			out.addAll(tmp);
 		} else {
 			out.addAll(input.subList(start, end));
 		}
