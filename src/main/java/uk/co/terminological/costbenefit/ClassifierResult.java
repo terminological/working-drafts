@@ -61,11 +61,12 @@ public class ClassifierResult {
 		int predNeg = 0;
 		int falseNeg = 0;
 
-		this.getPredictions().stream().filter(p->p.getPredicted()<=cutoff)
-			.forEach(pred-> {
+		for (Prediction pred :this.getPredictions()) {
+			 if (pred.getPredicted() <= cutoff) {
 				predNeg += 1;
 				falseNeg += pred.getActual() ? 1 : 0;
-			});
+			 }
+		}
 
 		Cutoff c = new Cutoff(cutoff, falseNeg, predNeg, totalPositive(), total(), null,0,null); //out, out.size(), resolution); //replace with "this". resolution can be stored. out.size is position term.
 		return c;
