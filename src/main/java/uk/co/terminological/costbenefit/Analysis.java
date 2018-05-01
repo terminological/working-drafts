@@ -50,7 +50,7 @@ public class Analysis {
 				Double.parseDouble(m.get("prob_pos"))))
 		.forEach(p -> res.add(p));;
 
-		List<Cutoff> binned = res.getCutoffs(0.01D);
+		List<Cutoff> binned = res.getCutoffs();
 		
 		System.out.println(Cutoff.columns());
 		binned.stream().forEach(System.out::println);
