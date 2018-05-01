@@ -10,4 +10,6 @@ package uk.co.terminological.charts;
  */
 public interface Series extends LabelledComponent {
 
+	Geometry getGeometry();
+	Series withGeometry(Geometry geom);
 }

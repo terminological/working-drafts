@@ -11,6 +11,7 @@ public interface Scale extends LabelledComponent {
 
 	String getLabel();
 	String getUnit();
+	Dimension getDimension();
 	
 	default String getDisplayText() {
 		if (getLabel() == null) return (getUnit() == null) ? "" : getUnit();
