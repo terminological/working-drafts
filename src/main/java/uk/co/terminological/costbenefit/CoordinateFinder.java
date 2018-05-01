@@ -85,7 +85,7 @@ public class CoordinateFinder {
 				Double yLast = coords.get(i-1);
 				Double yCurrent = coords.get(i);
 				Double y = Math.min(yLast,yCurrent);
-				out.minima.add(Coordinate.create(((i-1)+x)/spacing, y));	
+				out.minima.add(Coordinate.create(((i-1)+x)*spacing, y));	
 			}
 			
 			if (last > 0 && current <= 0) {

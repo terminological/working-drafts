@@ -30,7 +30,7 @@ public class CoordinateFinderTest {
 		List<Double> firstOrder = SavitzkyGolay.convolute(coords, SavitzkyGolay.derivative_5_quad(1D), false);
 		System.out.println(firstOrder);
 		
-		Inflexions r = CoordinateFinder.inflexion(coords,1D);
+		Inflexions r = CoordinateFinder.inflexion(coords,0.5D);
 		System.out.println(r.toString());
 		
 	}
