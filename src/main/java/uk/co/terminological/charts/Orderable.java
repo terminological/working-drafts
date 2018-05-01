@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import uk.co.terminological.charts.Scale.Discrete;
+
 public class Orderable<X> implements Comparable<Orderable<X>> {
 
 	private int order;
@@ -17,9 +19,32 @@ public class Orderable<X> implements Comparable<Orderable<X>> {
 		this.order = i;
 	}
 	
+	private Orderable() {}
+	
 	@Override
 	public int compareTo(Orderable<X> arg0) {
 		return this.getOrder()-arg0.getOrder();
+	}
+	
+	public void addToList(List<Orderable<X>> list) {
+		setOrder(list.size());
+		list.add(this);
+	}
+	
+	public static <X> Orderable<X> create(X value, String label, Discrete<X> scale) {
+		Orderable<X> out = new Orderable<X>();
+		out.value = value;
+		out.label = label;
+		out.addToList(scale.getCategories());
+		return out;
+	}
+	
+	public static Orderable<String> create(String label, Discrete<String> scale) {
+		Orderable<String> out = new Orderable<String>();
+		out.value = label;
+		out.label = label;
+		out.addToList(scale.getCategories());
+		return out;
 	}
 	
 	public static <X> List<Orderable<X>> sortByLabel(List<Orderable<X>> items, Comparator<String> comparator) {
@@ -52,5 +77,6 @@ public class Orderable<X> implements Comparable<Orderable<X>> {
 		}
 		return items;
 	}
+	
 	
 }

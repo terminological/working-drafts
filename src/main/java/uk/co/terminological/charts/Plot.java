@@ -1,5 +1,15 @@
 package uk.co.terminological.charts;
 
-public interface Plot {
+/**
+ * A plot is a scaled 2D projection representing scales, units and labels of 2 or more dimensions.
+ * Dimensions may be X, Y, Z, colour, size, shape
+ * 
+ * Plots have coordinate schemes.  
+ * Plots define the scales axes.
+ * Plots contain the ranges of continuous
+ * @author rc538
+ *
+ */
+public interface Plot extends FigureElement {
 
 }

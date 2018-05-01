@@ -1,5 +1,8 @@
 package uk.co.terminological.charts;
 
-public class Image {
+/**
+ * An image such as a bitmap
+ */
+public interface Image extends FigureElement {
 
 }
