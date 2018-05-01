@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
 
-public class InflexionFinderTest {
+public class CoordinateFinderTest {
 
 	@Before
 	public void setUp() throws Exception {
