@@ -7,12 +7,12 @@ import java.util.List;
  * @author rc538
  *
  */
-public interface Scale {
+public interface Scale extends LabelledComponent {
 
 	String getLabel();
 	String getUnit();
 	
-	default String getText() {
+	default String getDisplayText() {
 		if (getLabel() == null) return (getUnit() == null) ? "" : getUnit();
 		return getLabel()+ (getUnit() == null ? "":" ("+getUnit()+")");
 	}
