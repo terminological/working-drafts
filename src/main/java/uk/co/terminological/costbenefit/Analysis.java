@@ -22,6 +22,9 @@ import org.knowm.xchart.style.Styler.LegendPosition;
 
 import com.google.common.collect.Lists;
 
+import uk.co.terminological.costbenefit.CoordinateFinder.Coordinate;
+import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
+import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.parser.ParserException;
 import uk.co.terminological.tabular.Delimited;
@@ -153,7 +156,32 @@ public class Analysis {
 		}
 		BitmapEncoder.saveBitmapWithDPI(chart2, output.resolve(chart2.getTitle()).toString(), BitmapFormat.PNG, 300);
 		
+		Inflexions inf = CoordinateFinder.inflexion(Lists.transform(binned, c->c.smoothedFOverGPrime()), res.getResolution());
+		System.out.println("==== f(x)/g'(x) inflexions =====");
+		System.out.println(inf);
 		
+		List<Double> xAxis = new ArrayList<>();
+		List<Cutoff> yAxis = new ArrayList<>();
+		
+		
+		for (Double kappa = inf.getMin().getY()-1; kappa < inf.getMax().getY()+1; kappa+=(inf.getMax().getY()-inf.getMin().getY()+2)/1000) {
+			xAxis.add(kappa);
+			Interceptions inter = CoordinateFinder.intercept(kappa, 
+					Lists.transform(binned, c->c.smoothedFOverGPrime()), res.getResolution());
+			for (Coordinate coord: inter.getIntercepts()) {
+				Cutoff c = res.getValue(coord.getX());
+				yAxis.add(c);
+			}
+		}
+		
+		XYChart chart3 = new XYChartBuilder().width(1200).height(1200).title("Varying kappa").xAxisTitle("kappa").yAxisTitle("Y").build();
+		chart3.getStyler().setLegendPosition(LegendPosition.InsideNW);
+	    
+		chart3.addSeries("sensitivity",xAxis,Lists.transform(yAxis, c->c.sensitivity()));
+		chart3.addSeries("specificity",xAxis,Lists.transform(yAxis, c->c.specificity()));
+		chart3.addSeries("cum prob",xAxis,Lists.transform(yAxis, c->c.cumulativeProbability()));
+		
+		BitmapEncoder.saveBitmapWithDPI(chart3, output.resolve(chart3.getTitle()).toString(), BitmapFormat.PNG, 300);
 	}
 
 	static Function<String,Boolean> convert01TF = s -> s.equals("1") ? true : (s.equals("0") ? false: null);

@@ -11,6 +11,15 @@ public class ClassifierResult {
 	List<Prediction> predictions = new ArrayList<>();
 	int totalPositive = 0;
 	int total = 0;
+	double resolution = 0.01D;
+
+	public double getResolution() {
+		return resolution;
+	}
+
+	public void setResolution(double resolution) {
+		this.resolution = resolution;
+	}
 
 	public void add(Prediction p) {
 		this.predictions.add(p);
@@ -32,7 +41,7 @@ public class ClassifierResult {
 		return total;
 	}
 
-	public List<Cutoff> getCutoffs(Double resolution) {
+	public List<Cutoff> getCutoffs() {
 
 		PeekingIterator<Prediction> preds = new PeekingIterator<>(getPredictions().iterator()); 
 		Cutoff c = null;
