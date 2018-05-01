@@ -27,8 +27,9 @@ public class CoordinateFinder {
 			return intercepts;
 		}
 		public String toString() {
-			return "intercepts: \n"
-					+getIntercepts().stream().map(c -> c.toString()).collect(Collectors.joining("\n"))
+			return "intercepts: \t"
+					+getIntercepts().stream().map(c -> c.toString()).collect(Collectors.joining("\t"))
+					+"\n"
 					;
 		}
 	}
@@ -52,10 +53,11 @@ public class CoordinateFinder {
 		Coordinate min = null;
 		
 		public String toString() {
-			return "range: "+min+" - "+max+"\nminima: \n"
-					+getMinima().stream().map(c -> c.toString()).collect(Collectors.joining("\n"))
-					+"\nmaxima: \n"
-					+getMaxima().stream().map(c -> c.toString()).collect(Collectors.joining("\n"))
+			return "range: "+min+" - "+max+"\nminima: \t"
+					+getMinima().stream().map(c -> c.toString()).collect(Collectors.joining("\t"))
+					+"\nmaxima: \t"
+					+getMaxima().stream().map(c -> c.toString()).collect(Collectors.joining("\t"))
+					+"\n"
 					;
 		}
 	}
@@ -92,7 +94,7 @@ public class CoordinateFinder {
 				Double yLast = coords.get(i-1);
 				Double yCurrent = coords.get(i);
 				Double y = Math.max(yLast,yCurrent);
-				out.maxima.add(Coordinate.create(((i-1)+x)/spacing, y));
+				out.maxima.add(Coordinate.create(((i-1)+x)*spacing, y));
 			}
 		}
 		
@@ -110,7 +112,7 @@ public class CoordinateFinder {
 			if ((last < yValue && current >= yValue) || (last > yValue && current <= yValue)) {
 				// a local minimum
 				Double x = last/(last-current);
-				out.intercepts.add(Coordinate.create(((i-1)+x)/spacing, yValue));	
+				out.intercepts.add(Coordinate.create(((i-1)+x)*spacing, yValue));	
 			}
 			
 		}

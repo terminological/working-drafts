@@ -31,7 +31,7 @@ public class CoordinateFinderTest {
 		System.out.println(firstOrder);
 		
 		Inflexions r = CoordinateFinder.inflexion(coords,1D);
-		System.out.print(r.toString());
+		System.out.println(r.toString());
 		
 	}
 
@@ -40,8 +40,8 @@ public class CoordinateFinderTest {
 		
 		List<Double> coords = Arrays.asList(2D,3D,4D,4.5D,4.6D,4.5D, 4D, 3.9D, 4D,5D, 6D);
 		
-		Interceptions r = CoordinateFinder.intercept(3.5D, coords, 1D);
-		System.out.print(r.toString());
+		Interceptions r = CoordinateFinder.intercept(4.1D, coords, 1D);
+		System.out.println(r.toString());
 		
 	}
 	
