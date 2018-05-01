@@ -22,7 +22,7 @@ public class CoordinateFinder {
 	}
 	
 	public static class Interceptions {
-		List<Coordinate> intercepts;
+		List<Coordinate> intercepts = new ArrayList<>();
 		public List<Coordinate> getIntercepts() {
 			return intercepts;
 		}
