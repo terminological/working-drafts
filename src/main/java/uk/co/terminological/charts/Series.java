@@ -8,6 +8,6 @@ package uk.co.terminological.charts;
  * @author rc538
  *
  */
-public interface Graph {
+public interface Series extends LabelledComponent {
 
 }
