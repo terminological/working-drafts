@@ -111,7 +111,7 @@ public class Analysis {
 				
 		
 		for (Chart<?,?> chart: charts) {
-			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
+			BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
 		}
 		
 		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
