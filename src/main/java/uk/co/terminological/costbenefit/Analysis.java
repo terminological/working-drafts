@@ -165,11 +165,11 @@ public class Analysis {
 		
 		
 		for (Double kappa = inf.getMin().getY()-1; kappa < inf.getMax().getY()+1; kappa+=(inf.getMax().getY()-inf.getMin().getY()+2)/1000) {
-			xAxis.add(kappa);
 			Interceptions inter = CoordinateFinder.intercept(kappa, 
 					Lists.transform(binned, c->c.smoothedFOverGPrime()), res.getResolution());
 			for (Coordinate coord: inter.getIntercepts()) {
 				Cutoff c = res.getValue(coord.getX());
+				xAxis.add(kappa);
 				yAxis.add(c);
 			}
 		}
