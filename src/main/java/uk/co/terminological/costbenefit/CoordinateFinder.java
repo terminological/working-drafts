@@ -111,7 +111,7 @@ public class CoordinateFinder {
 			
 			if ((last < yValue && current >= yValue) || (last > yValue && current <= yValue)) {
 				// a local minimum
-				Double x = last/(last-current);
+				Double x = (yValue-last)/(current-last);
 				out.intercepts.add(Coordinate.create(((i-1)+x)*spacing, yValue));	
 			}
 			
