@@ -17,6 +17,7 @@ import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.Styler.LegendPosition;
 
@@ -176,6 +177,7 @@ public class Analysis {
 		
 		XYChart chart3 = new XYChartBuilder().width(1200).height(1200).title("Varying kappa").xAxisTitle("kappa").yAxisTitle("Y").build();
 		chart3.getStyler().setLegendPosition(LegendPosition.InsideNW);
+		chart3.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
 	    
 		chart3.addSeries("sensitivity",xAxis,Lists.transform(yAxis, c->c.sensitivity()));
 		chart3.addSeries("specificity",xAxis,Lists.transform(yAxis, c->c.specificity()));
