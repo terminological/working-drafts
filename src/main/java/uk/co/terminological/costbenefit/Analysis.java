@@ -33,6 +33,7 @@ public class Analysis {
 	public static void main(String[] args) throws ParserException, IOException {
 
 		Path input = Paths.get(args[0]);
+		Path output = Paths.get(args[1]);
 
 		Delimited in = Delimited.fromFile(input.toFile()).tsv().noIdentifiers().withLabels("actual","predicted","prob_pos","prob_neg").begin();
 		EavMap<String,String,String> tmp = in.getContents();
@@ -81,9 +82,9 @@ public class Analysis {
 				Lists.transform(binned, c->c.smoothedProbabilityDensity())));
 	    
 		//new SwingWrapper<XYChart>(charts).displayChartMatrix();
-		for (Chart chart: charts) {
-			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
-		}
+		/*for (Chart chart: charts) {
+			BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
+		}*/
 		
 		// List<XYChart> charts2 = new ArrayList<XYChart>();
 				
@@ -106,7 +107,7 @@ public class Analysis {
 				Lists.transform(filtered, c->c.cost(0.1D, 100D, -1D, -10D, 11D))));
 				
 		
-		for (Chart chart: charts) {
+		for (Chart<?,?> chart: charts) {
 			BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
 		}
 		
@@ -132,7 +133,7 @@ public class Analysis {
 			
 		}
 		
-		BitmapEncoder.saveBitmapWithDPI(chart, "/home/rc538/tmp/"+chart.getTitle(), BitmapFormat.PNG, 300);
+		BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
 		
 		XYChart chart2 = new XYChartBuilder().width(1200).height(1200).title("Varying incorrect costs").xAxisTitle("X").yAxisTitle("Y").build();
 		chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
@@ -150,7 +151,9 @@ public class Analysis {
 					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
 		}
-		BitmapEncoder.saveBitmapWithDPI(chart2, "/home/rc538/tmp/"+chart2.getTitle(), BitmapFormat.PNG, 300);
+		BitmapEncoder.saveBitmapWithDPI(chart2, output.resolve(chart2.getTitle()).toString(), BitmapFormat.PNG, 300);
+		
+		
 	}
 
 	static Function<String,Boolean> convert01TF = s -> s.equals("1") ? true : (s.equals("0") ? false: null);

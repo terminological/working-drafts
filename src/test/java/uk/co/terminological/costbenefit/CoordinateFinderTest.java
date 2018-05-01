@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
+import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
 
 public class CoordinateFinderTest {
 
@@ -34,4 +35,14 @@ public class CoordinateFinderTest {
 		
 	}
 
+	@Test
+	public void testInterceptions() {
+		
+		List<Double> coords = Arrays.asList(2D,3D,4D,4.5D,4.6D,4.5D, 4D, 3.9D, 4D,5D, 6D);
+		
+		Interceptions r = CoordinateFinder.intercept(3.5D, coords, 1D);
+		System.out.print(r.toString());
+		
+	}
+	
 }
