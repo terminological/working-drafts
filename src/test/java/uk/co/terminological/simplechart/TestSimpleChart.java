@@ -1,5 +1,6 @@
 package uk.co.terminological.simplechart;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,12 +27,13 @@ public class TestSimpleChart {
 				Tuple.create(5D, 3D)
 				);
 		
-		Chart<?> tmp = Chart.create(example, ChartType.XY_LINE)
+		Chart<?> tmp = Figure.outputTo(new File("~/tmp/gnuplot"))
+			.withDefaultData(example)
+			.withNewChart("Hello", ChartType.XY_LINE)
 			.bind(X, t -> t.getFirst())
 			.bind(Y, t -> t.getSecond())
 			.config()
 				.withOutputTarget(SCREEN)
-				.withTitle("Hello")
 				.withXLabel("x-axis")
 				.withYLabel("y-axis")
 			.done();
