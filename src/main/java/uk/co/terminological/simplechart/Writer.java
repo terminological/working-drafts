@@ -85,7 +85,7 @@ public class Writer {
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		template.process(root, out);
 		out.close();
-		Process process = new ProcessBuilder("gnuplot","-p","-c "+f.getAbsolutePath(), chart.getFile("png").getAbsolutePath())
+		Process process = new ProcessBuilder("gnuplot","-p","-c "+f.getAbsolutePath(), "-")
 				.redirectOutput(Redirect.to(chart.getFile("output")))
 				.start();
 		for (String line: extractData(chart)) { 
