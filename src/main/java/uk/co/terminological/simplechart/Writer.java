@@ -12,11 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
 import uk.co.terminological.datatypes.Tuple;
 
 
