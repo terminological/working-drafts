@@ -1,8 +1,24 @@
 package uk.co.terminological.charts;
 
+import static uk.co.terminological.charts.Dimension.*;
+
 public enum Geometry {
 
-	XY_LINE,
-	XY_SCATTER,
+	LINE(1,new Dimension[] {X,Y,Z}),
+	POINT(1),
+	SHAPE,
+	BAR,
+	RECTANGLE,
+	AREA,
+	RIBBON,
+	ERROR_BAR
+	;
+	// WHISKER,
 	
+	int dataPoints;
+	Dimension[] validDimensions;
+	Geometry(int dataPoints, Dimension[] validDimensions) {
+	 this.dataPoints = dataPoints;
+	 this.validDimensions = validDimensions;
+	}
 }
