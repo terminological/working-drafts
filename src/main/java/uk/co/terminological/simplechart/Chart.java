@@ -12,6 +12,7 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Tuple;
 
 public class Chart<X> {
@@ -65,11 +66,11 @@ public class Chart<X> {
 	
 	public Config config() {return config;}
 	
-	public void render(ChartType type) throws IOException {
+	public void render(ChartType type) throws IOException, TemplateException {
 		Writer.write(this, type);
 	}
 	
-	public void render(File template) throws IOException {
+	public void render(File template) throws IOException, TemplateException {
 		Writer.write(this, template);
 	}
 	
