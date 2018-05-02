@@ -1,5 +1,8 @@
 package uk.co.terminological.charts;
 
+import java.util.List;
+import java.util.function.Function;
+
 /**
  * Binds a plot to a (potentially interrupted) ordered data set.
  * The data set may define things about the plot e.g. min-max ranges for a given / scale or axis
@@ -8,8 +11,11 @@ package uk.co.terminological.charts;
  * @author rc538
  *
  */
-public interface Series extends LabelledComponent {
+public interface Series<X> extends LabelledComponent, DataBound<X> {
 
 	Geometry getGeometry();
-	Series withGeometry(Geometry geom);
+	Series<X> withGeometry(Geometry geom);
+	<Y> Series<X> withScale(Scale<Y> scale, @SuppressWarnings("unchecked") Function<X,Y>... mapper);
+	List<Scale<?>> getScales();
+	
 }
