@@ -17,13 +17,27 @@ public class Chart<X> {
 	Config config = new Config();
 	List<Tuple<Dimension,Function<X,Object>>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
+	File workingDirectory; 
 	
-	public Chart(List<X> data) {
+	public Chart(List<X> data, File workingDirectory) {
 		this.data = data;
+		this.workingDirectory = workingDirectory;
 	}
 	
 	public static <X> Chart<X> create(List<X> data) {
-		return new Chart<>(data);
+		try {
+			return new Chart<>(data,File.createTempFile("tmp", Long.toString(System.nanoTime())));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static <X> Chart<X> create(List<X> data, File outputDirectory) {
+		try {
+			return new Chart<>(data,File.createTempFile("tmp", Long.toString(System.nanoTime())));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public Chart<X> bind(Dimension dimension, Function<X,Object> binding) {
@@ -66,9 +80,13 @@ public class Chart<X> {
 			return this;
 		}
 		
-		String title; Config withTitle(String title) {this.title = title; return this; }
-		String xLabel; Config withXLabel(String xLabel) {this.xLabel = xLabel; return this; }
-		String yLabel; Config withYLabel(String yLabel) {this.yLabel = yLabel; return this; }
+		String title; Config withTitle(String title) {this.title = title; return this; } String getTitle() {return title;}
+		String xLabel; Config withXLabel(String xLabel) {this.xLabel = xLabel; return this; } String getXLabel() {return xLabel;}
+		String yLabel; Config withYLabel(String yLabel) {this.yLabel = yLabel; return this; } String getYLabel() {return yLabel;}
+	}
+
+	public File getWorkingDirectory() {
+		return this.workingDirectory;
 	}
 	
 }
