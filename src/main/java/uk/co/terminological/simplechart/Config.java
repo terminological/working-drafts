@@ -6,9 +6,10 @@ public class Config {
 	
 	private Config() {}
 	
-	public static Config create(Chart<?> chart) {
+	public static Config create(Chart<?> chart, String title) {
 		Config out = new Config();
 		out.chart =chart;
+		out.title = title;
 		return out;
 	}
 	
