@@ -54,7 +54,7 @@ public class Writer {
 		cfg.setDefaultEncoding("UTF-8");
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
 		cfg.setClassForTemplateLoading(Writer.class, "/gnuplot");
-		root.put("data", extractData(chart));
+		//root.put("data", extractData());
 		root.put("config", chart.config());
 		for (Entry<String,String> custom: this.chart.customField.entrySet()) {
 			root.put(custom.getKey(), custom.getValue());

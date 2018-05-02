@@ -95,4 +95,5 @@ public class Chart<X> {
 		return this.workingDirectory;
 	}
 	
+	public File getFile(String extension) {return new File(getWorkingDirectory(),filename+"."+extension);}
 }
