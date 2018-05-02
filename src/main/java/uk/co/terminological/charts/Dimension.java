@@ -7,6 +7,7 @@ public enum Dimension {
 	Z,
 	SIZE,
 	COLOUR,
+	LABEL,
 	ALPHA,
 	SHAPE,
 	OMEGA,
