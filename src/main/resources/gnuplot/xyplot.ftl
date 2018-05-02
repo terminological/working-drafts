@@ -1,4 +1,4 @@
-${test}
+# ${test}
 set title '${config.getTitle()}';
 set xlabel '${config.getXLabel()}'; 
 set title '${config.getYLabel()}';
