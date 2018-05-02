@@ -34,7 +34,8 @@ public class TestSimpleChart {
 				.withTitle("Hello")
 				.withXLabel("x-axis")
 				.withYLabel("y-axis")
-			.done().render(ChartType.XY_LINE);
+			.done()
+			.render(ChartType.XY_LINE);
 		;
 	}
 
