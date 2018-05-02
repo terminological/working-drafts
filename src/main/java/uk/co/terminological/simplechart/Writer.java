@@ -22,37 +22,19 @@ import uk.co.terminological.datatypes.Tuple;
 
 public class Writer {
 
-	private Configuration cfg;
 	private Chart<?> chart;
 	private Template template;
 	private Map<String,Object> root = new HashMap<String,Object>();
 	
-	public static <X> void write(Chart<X> chart, ChartType type) throws IOException, TemplateException {
+	public static <X> void write(Chart<X> chart) throws IOException, TemplateException {
 		Writer out = new Writer(chart);
-		out.template = out.cfg.getTemplate(type.getTemplateFilename());
+		out.template = chart.template;
 		out.process();
 	}
 	
-	public static <X> void write(Chart<X> chart, File template) throws IOException, TemplateException {
-		Writer out = new Writer(chart);
-		out.template = out.cfg.getTemplate(template.getAbsolutePath());
-		out.process();
-	}
-	
-	public static <X> void write(Chart<X> chart, Class<?> callingClass, String resource) throws IOException, TemplateException {
-		Writer out = new Writer(chart);
-		out.cfg.setClassForTemplateLoading(callingClass, "/");
-		out.template = out.cfg.getTemplate(resource);
-		out.process();
-	}
-	
-
 	public Writer(Chart<?> chart) {
 		this.chart = chart;
-		
-		//root.put("data", extractData());
 		root.put("data", extractData(chart));
-		//root.put("test", "value");
 		root.put("config", chart.config());
 		for (Entry<String,String> custom: this.chart.customField.entrySet()) {
 			root.put(custom.getKey(), custom.getValue());
@@ -86,17 +68,6 @@ public class Writer {
 		out.close();
 		Chart.log.info("Starting GNUPlot...");
 		
-		Process process = new ProcessBuilder("echo","-e","hello\\n\\nworld")
-				.redirectOutput(Redirect.INHERIT)
-				.start();
-		
-		try {
-			System.out.println(process.waitFor());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		Process process2 = new ProcessBuilder("/usr/bin/gnuplot","-c",f.getAbsolutePath())
 		.redirectOutput(Redirect.INHERIT)
 		.start();
@@ -104,21 +75,9 @@ public class Writer {
 		try {
 			System.out.println(process2.waitFor());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		/*for (String line: extractData(chart)) { 
-			process.getOutputStream().write(line.getBytes());
-			process.getOutputStream().write('\n');
-		}
-		process.getOutputStream().write(4);
-		process.getOutputStream().flush();
-		process.getOutputStream().close();*/
-		
-		process.getInputStream().transferTo(System.out);
-		process.getInputStream().close();
-		process.destroy();
 		Chart.log.info("Ending GNUPlot...");
 	}
 	
