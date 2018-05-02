@@ -1,5 +1,8 @@
 package uk.co.terminological.simplechart;
 
+import java.io.IOException;
+
+import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 
@@ -91,4 +94,7 @@ public class Config {
 		return chart;
 	}
 	
+	public void render() throws IOException, TemplateException {
+		chart.render();
+	}
 }

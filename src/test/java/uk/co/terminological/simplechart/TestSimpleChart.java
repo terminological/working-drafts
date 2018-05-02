@@ -34,7 +34,6 @@ public class TestSimpleChart {
 			.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
 			.bind(Y_FIT, t -> t.getSecond())
 			.config()
-				.withOutputTarget(SCREEN)
 				.withXLabel("x-axis")
 				.withYLabel("y-axis")
 			.done();
