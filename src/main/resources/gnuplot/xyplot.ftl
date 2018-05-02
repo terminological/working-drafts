@@ -4,9 +4,9 @@ $data << EOD
 ${line}
 </#list>
 EOD
-set title '${config.getTitle()}';
-set xlabel '${config.getXLabel()}'; 
-set ylabel '${config.getYLabel()}';
+set title "${config.getTitle()}";
+set xlabel "${config.getXLabel()}"; 
+set ylabel "${config.getYLabel()}";
 unset key;
 set term png;
 set output "${config.getOutputFile()}";
