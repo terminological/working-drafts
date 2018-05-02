@@ -13,40 +13,30 @@ import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Tuple;
 
 public class Chart<X> {
 
 	List<X> data;
-	Config config = Config.create(this);
+	Template template;
+	Config config;
 	List<Tuple<Dimension,Function<X,Object>>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
-	File workingDirectory;
 	String filename;
 	
 	public static Logger log = LoggerFactory.getLogger(Chart.class);
 	
-	public Chart(List<X> data, File workingDirectory, String filename) {
+	protected Chart(List<X> data, String title, Template template, File workingDirectory) {
 		this.data = data;
-		this.workingDirectory = workingDirectory;
-		this.filename = filename;
+		this.template = template;
+		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
+		this.config = Config.create(this, title);
 		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
 	}
 	
-	public static <X> Chart<X> create(List<X> data) {
-		try {
-			File tmp = Files.createTempDirectory("gnuplotTmp").toFile();
-			tmp.mkdirs();
-			return new Chart<>(data,tmp,Long.toString(System.nanoTime()));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
 	
-	public static <X> Chart<X> create(List<X> data, File outputDirectory, String filename) {
-		return new Chart<X>(data,outputDirectory,filename);
-	}
 	
 	public Chart<X> bind(Dimension dimension, Function<X,Object> binding) {
 		bindings.add(Tuple.create(dimension, binding));
@@ -67,7 +57,7 @@ public class Chart<X> {
 	
 	public Config config() {return config;}
 	
-	public void render(ChartType type) throws IOException, TemplateException {
+	public void render() throws IOException, TemplateException {
 		Writer.write(this, type);
 	}
 	
