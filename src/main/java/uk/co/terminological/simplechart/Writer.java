@@ -7,15 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
-import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
-import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateNotFoundException;
 import uk.co.terminological.datatypes.Tuple;
 
 
@@ -25,16 +21,22 @@ public class Writer {
 	private Chart<?> chart;
 	private Template template;
 	
-	public static <X> void write(Chart<X> chart, ChartType type) {
+	public static <X> void write(Chart<X> chart, ChartType type) throws IOException {
 		Writer out = new Writer(chart);
 		out.template = out.cfg.getTemplate(type.getTemplateFilename());
 		
 	}
 	
-	public static <X> void write(Chart<X> chart, File template) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException {
+	public static <X> void write(Chart<X> chart, File template) throws IOException {
 		Writer out = new Writer(chart);
 		out.template = out.cfg.getTemplate(template.getAbsolutePath());
 		
+	}
+	
+	public static <X> void write(Chart<X> chart, Class<?> callingClass, String resource) throws IOException {
+		Writer out = new Writer(chart);
+		out.cfg.setClassForTemplateLoading(callingClass, "/");
+		out.template = out.cfg.getTemplate(resource);
 	}
 	
 
