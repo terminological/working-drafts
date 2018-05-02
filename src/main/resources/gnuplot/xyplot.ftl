@@ -1,4 +1,3 @@
-
 $data << EOD
 <#list data as line>
 ${line}

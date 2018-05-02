@@ -92,13 +92,13 @@ public class Writer {
 				//.redirectOutput(Redirect.to(chart.getFile("output")))
 				.start();
 		
-		for (String line: extractData(chart)) { 
+		/*for (String line: extractData(chart)) { 
 			process.getOutputStream().write(line.getBytes());
 			process.getOutputStream().write('\n');
 		}
 		process.getOutputStream().write(4);
 		process.getOutputStream().flush();
-		process.getOutputStream().close();
+		process.getOutputStream().close();*/
 		
 		process.getInputStream().transferTo(System.out);
 		process.getInputStream().close();
