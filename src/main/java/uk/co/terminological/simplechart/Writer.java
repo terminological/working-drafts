@@ -89,9 +89,21 @@ public class Writer {
 		template.process(root, out);
 		out.close();
 		Chart.log.info("Starting GNUPlot...");
-		Process process = new ProcessBuilder("/usr/bin/gnuplot","-c "+f.getAbsolutePath())
-				//.redirectOutput(Redirect.to(chart.getFile("output")))
-		.start();
+		
+		Process process = new ProcessBuilder("echo","hello world")
+				.redirectOutput(Redirect.INHERIT)
+				.start();
+		
+		try {
+			System.out.println(process.waitFor());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*Process process = new ProcessBuilder("/usr/bin/gnuplot","-c "+f.getAbsolutePath())
+		.redirectOutput(Redirect.INHERIT)
+		.start();*/
 		
 		/*for (String line: extractData(chart)) { 
 			process.getOutputStream().write(line.getBytes());
