@@ -91,8 +91,9 @@ public class Writer {
 		for (String line: extractData(chart)) { 
 			process.getOutputStream().write(line.getBytes());
 			process.getOutputStream().write('\n');
-			process.getOutputStream().flush();
 		}
+		process.getOutputStream().write(4);
+		process.getOutputStream().flush();
 		process.getOutputStream().close();
 		
 	}
