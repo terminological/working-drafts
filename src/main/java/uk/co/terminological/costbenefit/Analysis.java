@@ -75,67 +75,51 @@ public class Analysis {
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.smoothedSensitivity())
 			.bind(Y_FIT, t -> t.sensitivity())
-			.config()
-				.withXLabel("cutoff")
-				.withYLabel("sensitivity")
+			.withAxes("cutoff","sensitivity - g(x)")
 			.render();
 		
 		figures.withNewChart("B", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.specificity())
-			.config()
-				.withXLabel("cutoff")
-				.withYLabel("specificity")
+			.withAxes("cutoff","specificity")
 			.render();
 		
+		figures.withNewChart("C", ChartType.XY_LINE)
+			.bind(X, t -> 1-t.sensitivity())
+			.bind(Y, t -> t.specificity())
+			.withAxes("1-sensitivity","specificity")
+			.render();
 		
-		List<XYChart> charts = new ArrayList<XYChart>();
+		figures.withNewChart("D", ChartType.XY_LINE)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.probabilityDensity())
+			.bind(Y_FIT, t->t.smoothedProbabilityDensity())
+			.withAxes("cutoff","density - f(x)")
+			.render();
 		
-		charts.add(QuickChart.getChart("A", "cutoff", "sensitivity","g(x)",
-				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.smoothedSensitivity())));
-	    
-		charts.add(QuickChart.getChart("B", "cutoff", "specificity","specificity", 
-				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.specificity())));
-	    
-		charts.add(QuickChart.getChart("C", "1-sensitivity", "specificity","roc", 
-				Lists.transform(binned, c->1-c.sensitivity()),
-				Lists.transform(binned, c->c.specificity())));
-	    
-		charts.add(QuickChart.getChart("D", "cutoff", "probability density","f(x)", 
-				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.smoothedProbabilityDensity())));
-	    
-		//new SwingWrapper<XYChart>(charts).displayChartMatrix();
-		/*for (Chart chart: charts) {
-			BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
-		}*/
+		figures.withNewChart("E", ChartType.XY_LINE)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.deltaSensitivity())
+			.withAxes("cutoff","first derivative sensitivity - g'(x)")
+			.render();
 		
-		// List<XYChart> charts2 = new ArrayList<XYChart>();
-				
-		charts.add(QuickChart.getChart("E", "cutoff", "first derivative sensitivity","g'(x)", 
-				Lists.transform(binned, c->c.getValue()),
-				Lists.transform(binned, c->c.deltaSensitivity())));
-	    
-		List<Cutoff> filtered = binned.stream().filter(c -> c.probabilityDensityOverDeltaSensitivity() < 0 && c.probabilityDensityOverDeltaSensitivity() > -1000).collect(Collectors.toList());
+		figures.withNewChart("F", ChartType.XY_LINE)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.smoothedFOverGPrime())
+			.withAxes("cutoff","f(x)/g'(x)")
+			.render();
 		
-		charts.add(QuickChart.getChart("F", "cutoff", "f(x)/g'(x)","f(x)/g'(x)", 
-				Lists.transform(filtered, c->c.getValue()),
-				Lists.transform(filtered, c->c.smoothedFOverGPrime())));
-	    
-		charts.add(QuickChart.getChart("G", "cutoff", "g'(x)/f(x)","g'(x)/f(x)", 
-				Lists.transform(filtered, c->c.getValue()),
-				Lists.transform(filtered, c->1/c.smoothedFOverGPrime())));
+		figures.withNewChart("G", ChartType.XY_LINE)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> 1/t.smoothedFOverGPrime())
+			.withAxes("cutoff","g'(x)/f'(x)")
+			.render();
 		
-		charts.add(QuickChart.getChart("H", "cutoff", "value", "value", 
-				Lists.transform(filtered, c->c.getValue()),
-				Lists.transform(filtered, c->c.cost(0.1D, 100D, -1D, -10D, 11D))));
-				
-		
-		for (Chart<?,?> chart: charts) {
-			BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
-		}
+		figures.withNewChart("G", ChartType.XY_LINE)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.cost(0.1D, 100D, -1D, -10D, 11D))
+			.withAxes("cutoff","value")
+			.render();
 		
 		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
 		
@@ -154,8 +138,8 @@ public class Analysis {
 			Double kappa = prevalence*(1-(valueTP-valueFP)/(valueTN+valueFN));
 			
 			chart.addSeries("f(x)/g'(x)="+kappa, 
-					Lists.transform(filtered, c->c.getValue()),
-					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
+					Lists.transform(binned, c->c.getValue()),
+					Lists.transform(binned, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
 		}
 		
@@ -173,8 +157,8 @@ public class Analysis {
 			Double valueTN = 1D;
 			
 			chart2.addSeries(cost.toString(),
-					Lists.transform(filtered, c->c.getValue()),
-					Lists.transform(filtered, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
+					Lists.transform(binned, c->c.getValue()),
+					Lists.transform(binned, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			
 		}
 		BitmapEncoder.saveBitmapWithDPI(chart2, output.resolve(chart2.getTitle()).toString(), BitmapFormat.PNG, 300);
