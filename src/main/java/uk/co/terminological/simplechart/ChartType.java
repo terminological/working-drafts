@@ -1,7 +1,7 @@
 package uk.co.terminological.simplechart;
 
 public enum ChartType {
-	XY_LINE("gnuplot/xyline.ftl");
+	XY_LINE("xyline.ftl");
 
 	String templateFilename;
 	
