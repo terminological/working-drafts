@@ -3,6 +3,8 @@ package uk.co.terminological.simplechart;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.log4j.BasicConfigurator;
+
 import freemarker.template.TemplateException;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.*;
@@ -13,6 +15,8 @@ import uk.co.terminological.datatypes.Tuple;
 public class TestSimpleChart {
 
 	public static void main(String[] args) throws IOException, TemplateException {
+		
+		BasicConfigurator.configure();
 		
 		List<Tuple<Double,Double>> example = FluentList.create(
 				Tuple.create(1D, 3D),
