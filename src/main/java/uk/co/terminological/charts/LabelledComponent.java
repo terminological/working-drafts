@@ -8,4 +8,6 @@ public interface LabelledComponent {
 	
 	default boolean isDisplayed() {return isHidden()==null?false:!isHidden();}
 	default String getDisplayText() {return getLabel();}
+	
+	
 }
