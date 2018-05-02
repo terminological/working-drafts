@@ -2,7 +2,7 @@ package uk.co.terminological.charts;
 
 public enum Dimension {
 	
-	X_AXIS,
+	X,
 	Y_AXIS,
 	Z_AXIS,
 	SIZE,
