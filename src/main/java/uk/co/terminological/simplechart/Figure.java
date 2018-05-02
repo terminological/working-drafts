@@ -45,7 +45,7 @@ public class Figure {
 	}
 	
 	public <X> Data<X> withDefaultData(List<X> data) {
-		Data<X> out = new Data<X>();
+		Data<X> out = new Data<X>(title);
 		out.cfg = this.cfg;
 		out.charts = this.charts;
 		out.defaultData = data;
@@ -96,6 +96,10 @@ public class Figure {
 	}
 	
 	public static class Data<X> extends Figure {
+		
+		private Data(String title) {
+			super(title);
+		}
 		
 		List<X> defaultData;
 		
