@@ -2,6 +2,7 @@ package uk.co.terminological.simplechart;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class Chart<X> {
 	
 	public static <X> Chart<X> create(List<X> data) {
 		try {
-			File tmp = File.createTempFile("gnuplotTmp","");
+			File tmp = Files.createTempDirectory("gnuplotTmp").toFile();
 			tmp.mkdirs();
 			return new Chart<>(data,tmp,Long.toString(System.nanoTime()));
 		} catch (IOException e) {
