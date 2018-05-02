@@ -14,9 +14,11 @@ public class Figure {
 
 	List<Chart<?>> charts = new ArrayList<>();
 	File workingDirectory;
+	String title;
+	String filename;
 	Configuration cfg;
 	
-	private Figure() {
+	private Figure(String title) {
 		try { 
 			workingDirectory = Files.createTempDirectory("gnuplotTmp").toFile();
 			workingDirectory.mkdirs();
@@ -28,6 +30,8 @@ public class Figure {
 		cfg.setDefaultEncoding("UTF-8");
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
 		cfg.setClassForTemplateLoading(Figure.class, "/gnuplot");
+		this.title = title;
+		filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
 	}
 	
 	public Figure withTemplateClass(Class<?> base) {
@@ -74,19 +78,19 @@ public class Figure {
 	}
 	
 	public <X> Chart<X> withNewChart(List<X> data, String title, ChartType chartType) {
-		Chart<X> out = new Chart<X>(data,title, getTemplate(chartType),workingDirectory);
+		Chart<X> out = new Chart<X>(data,title, getTemplate(chartType),workingDirectory, this);
 		this.charts.add(out);
 		return out;
 	}
 	
 	public <X> Chart<X> withNewChart(List<X> data, String title, String resourceName) {
-		Chart<X> out = new Chart<X>(data,title, getTemplate(resourceName),workingDirectory);
+		Chart<X> out = new Chart<X>(data,title, getTemplate(resourceName),workingDirectory, this);
 		this.charts.add(out);
 		return out;
 	}
 	
 	public <X> Chart<X> withNewChart(List<X> data, String title, File templateFile) {
-		Chart<X> out = new Chart<X>(data,title, getTemplate(templateFile),workingDirectory);
+		Chart<X> out = new Chart<X>(data,title, getTemplate(templateFile),workingDirectory, this);
 		this.charts.add(out);
 		return out;
 	}
@@ -96,19 +100,19 @@ public class Figure {
 		List<X> defaultData;
 		
 		public Chart<X> withNewChart(String title, ChartType chartType) {
-			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(chartType),workingDirectory);
+			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(chartType),workingDirectory, this);
 			this.charts.add(out);
 			return out;
 		}
 		
 		public Chart<X> withNewChart(String title, String resourceName) {
-			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(resourceName),workingDirectory);
+			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(resourceName),workingDirectory, this);
 			this.charts.add(out);
 			return out;
 		}
 		
 		public Chart<X> withNewChart(String title, File templateFile) {
-			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(templateFile),workingDirectory);
+			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(templateFile),workingDirectory, this);
 			this.charts.add(out);
 			return out;
 		}
