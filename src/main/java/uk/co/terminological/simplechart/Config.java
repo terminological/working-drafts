@@ -1,0 +1,19 @@
+package uk.co.terminological.simplechart;
+
+import uk.co.terminological.simplechart.Chart.OutputTarget;
+
+public class Config {
+	
+	Chart<?> chart;
+	Config withChart(Chart<?> chart) {
+		this.chart = chart;
+		this.chart.config = this;
+		return this;
+	}
+	
+	String title; Config withTitle(String title) {this.title = title; return this; } String getTitle() {return title;}
+	String xLabel; Config withXLabel(String xLabel) {this.xLabel = xLabel; return this; } String getXLabel() {return xLabel;}
+	String yLabel; Config withYLabel(String yLabel) {this.yLabel = yLabel; return this; } String getYLabel() {return yLabel;}
+	OutputTarget target = OutputTarget.SCREEN; Config withOutputTarget(OutputTarget target) {this.target = target; return this;} OutputTarget getOutputTarget() {return target;}
+	
+}
