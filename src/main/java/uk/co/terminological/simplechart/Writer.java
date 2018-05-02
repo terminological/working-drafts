@@ -90,7 +90,7 @@ public class Writer {
 		out.close();
 		Chart.log.info("Starting GNUPlot...");
 		
-		Process process = new ProcessBuilder("echo","hello world")
+		Process process = new ProcessBuilder("echo","-e","hello\\n\\nworld")
 				.redirectOutput(Redirect.INHERIT)
 				.start();
 		
