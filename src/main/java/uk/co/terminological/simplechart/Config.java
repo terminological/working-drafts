@@ -36,7 +36,7 @@ public class Config {
 
 	// ======= Freemarker accessories ======
 	
-	public int getIndex(String dim) {
+	public int indexOf(String dim) {
 		int i=0;
 		for (Tuple<Dimension, ?> binding: chart.bindings) {
 			if (binding.getFirst().equals(Chart.Dimension.valueOf(dim))) return i;
