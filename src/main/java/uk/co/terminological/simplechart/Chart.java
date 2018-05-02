@@ -1,5 +1,7 @@
 package uk.co.terminological.simplechart;
 
+import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -21,8 +23,13 @@ public class Chart<X> {
 	}
 	
 	public Chart<X> with(Dimension dimension, Function<X,Object> binding) {
-		
+		bindings.add(Tuple.create(dimension, binding));
+		return this;
 	};
+	
+	public void render() {
+		Writer.write(this);
+	}
 	
 	public enum Dimension {
 		X,Y,Z,COLOUR,SIZE,LABEL
