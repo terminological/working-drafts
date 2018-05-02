@@ -45,7 +45,7 @@ public class Config {
 	}
 	
 	public boolean hasDimension(String dim) {
-		return getIndex(dim) != -1;
+		return indexOf(dim) != -1;
 	}
 	
 	// ====== Fluent Builders =======
