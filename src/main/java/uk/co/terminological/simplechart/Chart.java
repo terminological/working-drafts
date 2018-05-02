@@ -18,7 +18,7 @@ import uk.co.terminological.datatypes.Tuple;
 public class Chart<X> {
 
 	List<X> data;
-	Config config = new Config();
+	Config config = Config.create(this);
 	List<Tuple<Dimension,Function<X,Object>>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
 	File workingDirectory;

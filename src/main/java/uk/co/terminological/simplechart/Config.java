@@ -4,6 +4,8 @@ public class Config {
 	
 	Chart<?> chart;
 	
+	private Config() {}
+	
 	public static Config create(Chart<?> chart) {
 		Config out = new Config();
 		out.chart =chart;
