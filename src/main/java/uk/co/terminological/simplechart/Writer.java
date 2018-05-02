@@ -55,6 +55,8 @@ public class Writer {
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
 		cfg.setClassForTemplateLoading(Writer.class, "/gnuplot");
 		//root.put("data", extractData());
+		root.put("data", extractData(chart));
+		root.put("test", "value");
 		root.put("config", chart.config());
 		for (Entry<String,String> custom: this.chart.customField.entrySet()) {
 			root.put(custom.getKey(), custom.getValue());
