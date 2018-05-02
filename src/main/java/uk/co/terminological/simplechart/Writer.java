@@ -28,19 +28,19 @@ public class Writer {
 	private Template template;
 	private Map<String,Object> root = new HashMap<String,Object>();
 	
-	public static <X> void write(Chart<X> chart, ChartType type) throws IOException {
+	public static <X> void write(Chart<X> chart, ChartType type) throws IOException, TemplateException {
 		Writer out = new Writer(chart);
 		out.template = out.cfg.getTemplate(type.getTemplateFilename());
 		out.process();
 	}
 	
-	public static <X> void write(Chart<X> chart, File template) throws IOException {
+	public static <X> void write(Chart<X> chart, File template) throws IOException, TemplateException {
 		Writer out = new Writer(chart);
 		out.template = out.cfg.getTemplate(template.getAbsolutePath());
 		out.process();
 	}
 	
-	public static <X> void write(Chart<X> chart, Class<?> callingClass, String resource) throws IOException {
+	public static <X> void write(Chart<X> chart, Class<?> callingClass, String resource) throws IOException, TemplateException {
 		Writer out = new Writer(chart);
 		out.cfg.setClassForTemplateLoading(callingClass, "/");
 		out.template = out.cfg.getTemplate(resource);
@@ -61,7 +61,7 @@ public class Writer {
 		}
 	}
 		
-	private <X> List<String> extractData() {
+	private static <X> List<String> extractData(Chart<X> chart) {
 		List<String> out = new ArrayList<>();
 		
 		StringBuilder tmp = new StringBuilder();
@@ -89,7 +89,7 @@ public class Writer {
 		Process process = new ProcessBuilder("gnuplot","-p","-c "+f.getAbsolutePath(), chart.getFile("png").getAbsolutePath())
 				.redirectOutput(Redirect.to(chart.getFile("output")))
 				.start();
-		for (String line:extractData()) { 
+		for (String line: extractData(chart)) { 
 			process.getOutputStream().write(line.getBytes());
 			process.getOutputStream().write('\n');
 			process.getOutputStream().flush();
