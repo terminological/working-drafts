@@ -1,7 +1,10 @@
 package uk.co.terminological.simplechart;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +16,7 @@ import java.util.function.Function;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import uk.co.terminological.datatypes.Tuple;
 
@@ -57,7 +61,7 @@ public class Writer {
 		}
 	}
 		
-	private <X> List<String> extractData(Chart<X> chart) {
+	private <X> List<String> extractData() {
 		List<String> out = new ArrayList<>();
 		
 		StringBuilder tmp = new StringBuilder();
@@ -77,8 +81,21 @@ public class Writer {
 		return out;
 	}
 
-	private void process() {
-		File out = new File(chart.getWorkingDirectory(),chart.getFileName()+".gplot";
+	private void process() throws IOException, TemplateException {
+		File f = chart.getFile("gplot");
+		PrintWriter out = new PrintWriter(new FileWriter(f));
+		template.process(root, out);
+		out.close();
+		Process process = new ProcessBuilder("gnuplot","-p","-c "+f.getAbsolutePath(), chart.getFile("png").getAbsolutePath())
+				.redirectOutput(Redirect.to(chart.getFile("output")))
+				.start();
+		for (String line:extractData()) { 
+			process.getOutputStream().write(line.getBytes());
+			process.getOutputStream().write('\n');
+			process.getOutputStream().flush();
+		}
+		process.getOutputStream().close();
+		
 	}
 	
 	
