@@ -33,7 +33,7 @@ public class Chart<X> {
 		this.data = data;
 		this.template = template;
 		this.figure = figure;
-		
+		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
 		this.config = Config.create(this, title);
 		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
 	}
@@ -60,11 +60,7 @@ public class Chart<X> {
 	public Config config() {return config;}
 	
 	public void render() throws IOException, TemplateException {
-		Writer.write(this, type);
-	}
-	
-	public void render(File template) throws IOException, TemplateException {
-		Writer.write(this, template);
+		Writer.write(this);
 	}
 	
 	public enum Dimension {
@@ -72,7 +68,7 @@ public class Chart<X> {
 	}
 	
 	public File getWorkingDirectory() {
-		return this.workingDirectory;
+		return figure.workingDirectory;
 	}
 	
 	public File getFile(String extension) {return new File(getWorkingDirectory(),filename+"."+extension);}
