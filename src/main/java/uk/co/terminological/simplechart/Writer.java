@@ -89,8 +89,9 @@ public class Writer {
 		template.process(root, out);
 		out.close();
 		Process process = new ProcessBuilder("gnuplot","-p","-c "+f.getAbsolutePath(), "-")
-				.redirectOutput(Redirect.to(chart.getFile("output")))
+				//.redirectOutput(Redirect.to(chart.getFile("output")))
 				.start();
+		
 		for (String line: extractData(chart)) { 
 			process.getOutputStream().write(line.getBytes());
 			process.getOutputStream().write('\n');
@@ -99,6 +100,8 @@ public class Writer {
 		process.getOutputStream().flush();
 		process.getOutputStream().close();
 		
+		process.getInputStream().transferTo(System.out);
+		process.getInputStream().close();
 	}
 	
 	
