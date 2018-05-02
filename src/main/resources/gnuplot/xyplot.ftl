@@ -11,7 +11,7 @@ unset key;
 set term png;
 set output "${config.getOutputFile()}";
 plot \
-<#if config.hasDimension(Y_FIT)>
+<#if config.hasDimension("Y_FIT")>
 "$data" using ${config.indexOf("X")}:${config.indexOf("Y_FIT")} with lines, \
 "$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with points;
 <#else>
