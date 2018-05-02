@@ -25,6 +25,7 @@ import org.knowm.xchart.style.Styler.LegendPosition;
 
 import com.google.common.collect.Lists;
 
+import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.CoordinateFinder.Coordinate;
 import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
@@ -38,7 +39,7 @@ public class Analysis {
 
 
 
-	public static void main(String[] args) throws ParserException, IOException {
+	public static void main(String[] args) throws ParserException, IOException, TemplateException {
 
 		Path input = Paths.get(args[0]);
 		Path output = Paths.get(args[1]);
@@ -70,16 +71,22 @@ public class Analysis {
 		Figure.Data<Cutoff> figures = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
 				.withDefaultData(binned);
 		
-		figures.withNewChart("Hello", ChartType.XY_LINE)
-				.bind(X, t -> t.getValue())
-				.bind(Y, t -> t.smoothedSensitivity())
-				.bind(Y_FIT, t -> t.sensitivity())
-				.config()
-					.withXLabel("x-axis")
-					.withYLabel("y-axis")
-				.render();
+		figures.withNewChart("A", ChartType.XY_LINE)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.smoothedSensitivity())
+			.bind(Y_FIT, t -> t.sensitivity())
+			.config()
+				.withXLabel("cutoff")
+				.withYLabel("sensitivity")
+			.render();
 		
-		
+		figures.withNewChart("B", ChartType.XY_LINE)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.specificity())
+			.config()
+				.withXLabel("cutoff")
+				.withYLabel("specificity")
+			.render();
 		
 		
 		List<XYChart> charts = new ArrayList<XYChart>();

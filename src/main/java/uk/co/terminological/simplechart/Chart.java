@@ -50,6 +50,12 @@ public class Chart<X> {
 		return this;
 	}
 	
+	public Chart<X> withAxes(String x,String y) {
+		this.config().withXLabel(x);
+		this.config().withYLabel(y);
+		return this;
+	}
+	
 	public Chart<X> withCustomField(String key, Object value) {
 		if (Arrays.asList("data","config").contains(key)) throw new RuntimeException("Cannot use the custom key: "+key);
 		this.customField.put(key, value.toString());
