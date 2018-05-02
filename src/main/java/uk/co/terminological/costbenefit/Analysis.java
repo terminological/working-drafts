@@ -115,7 +115,7 @@ public class Analysis {
 			.withAxes("cutoff","g'(x)/f'(x)")
 			.render();
 		
-		figures.withNewChart("G", ChartType.XY_LINE)
+		figures.withNewChart("H", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.cost(0.1D, 100D, -1D, -10D, 11D))
 			.withAxes("cutoff","value")
