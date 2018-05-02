@@ -1,7 +1,5 @@
 package uk.co.terminological.simplechart;
 
-import uk.co.terminological.simplechart.Chart.OutputTarget;
-
 public class Config {
 	
 	Chart<?> chart;
