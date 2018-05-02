@@ -14,4 +14,8 @@ public class Config {
 	String yLabel; Config withYLabel(String yLabel) {this.yLabel = yLabel; return this; } String getYLabel() {return yLabel;}
 	OutputTarget target = OutputTarget.SCREEN; Config withOutputTarget(OutputTarget target) {this.target = target; return this;} OutputTarget getOutputTarget() {return target;}
 	
+	public String getOutputFile() {
+		return chart.getFile(target.getFileType()).getAbsolutePath();
+	}
+	
 }
