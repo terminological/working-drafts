@@ -1,18 +1,14 @@
 package uk.co.terminological.simplechart;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
-import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateNotFoundException;
 
 public class Figure {
 
