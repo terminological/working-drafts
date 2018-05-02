@@ -1,4 +1,4 @@
-${}
+${test}
 set title '${config.title}';
 set xlabel '${config.xLabel}'; 
 set title '${config.yLabel}';
