@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 
 import freemarker.template.Configuration;
@@ -49,7 +50,9 @@ public class Writer {
 		Map<String,Object> root = new HashMap<String,Object>();
 		root.put("data", extractData(chart));
 		root.put("config", chart.config());
-		
+		for (Entry<String,String> custom: this.chart.customField.entrySet()) {
+			root.put(custom.getKey(), custom.getValue());
+		}
 	}
 		
 	private <X> List<String> extractData(Chart<X> chart) {
