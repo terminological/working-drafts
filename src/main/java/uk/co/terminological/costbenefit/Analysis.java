@@ -68,7 +68,7 @@ public class Analysis {
 
 		
 
-		Figure.Data<Cutoff> figures = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
+		Figure.Data<Cutoff> figures = Figure.outputTo(output.toFile())
 				.withDefaultData(binned);
 		
 		figures.withNewChart("A", ChartType.XY_LINE)
