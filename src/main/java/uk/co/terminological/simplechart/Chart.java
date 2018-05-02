@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import freemarker.core.ParseException;
-import freemarker.template.MalformedTemplateNameException;
-import freemarker.template.TemplateNotFoundException;
 import uk.co.terminological.datatypes.Tuple;
 
 public class Chart<X> {
