@@ -1,5 +1,8 @@
 package uk.co.terminological.simplechart;
 
+import uk.co.terminological.datatypes.Tuple;
+import uk.co.terminological.simplechart.Chart.Dimension;
+
 public class Config {
 
 	Chart<?> chart;
@@ -31,6 +34,19 @@ public class Config {
 		return xLabel;
 	}
 
+	// ======= Freemarker accessories ======
+	
+	public int getIndex(String dim) {
+		int i=0;
+		for (Tuple<Dimension, ?> binding: chart.bindings) {
+			if (binding.getFirst().equals(Chart.Dimension.valueOf(dim))) return i;
+		}
+		return -1;
+	}
+	
+	public boolean hasDimension(String dim) {
+		return getIndex(dim) != -1;
+	}
 	
 	// ====== Fluent Builders =======
 	
