@@ -101,9 +101,16 @@ public class Writer {
 			e.printStackTrace();
 		}
 		
-		/*Process process = new ProcessBuilder("/usr/bin/gnuplot","-c "+f.getAbsolutePath())
+		Process process2 = new ProcessBuilder("/usr/bin/gnuplot","-c",f.getAbsolutePath())
 		.redirectOutput(Redirect.INHERIT)
-		.start();*/
+		.start();
+		
+		try {
+			System.out.println(process2.waitFor());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		/*for (String line: extractData(chart)) { 
 			process.getOutputStream().write(line.getBytes());
