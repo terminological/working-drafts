@@ -21,6 +21,7 @@ public class Chart<X> {
 
 	List<X> data;
 	Template template;
+	Figure figure;
 	Config config;
 	List<Tuple<Dimension,Function<X,Object>>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
@@ -28,10 +29,11 @@ public class Chart<X> {
 	
 	public static Logger log = LoggerFactory.getLogger(Chart.class);
 	
-	protected Chart(List<X> data, String title, Template template, File workingDirectory) {
+	protected Chart(List<X> data, String title, Template template, File workingDirectory, Figure figure) {
 		this.data = data;
 		this.template = template;
-		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
+		this.figure = figure;
+		
 		this.config = Config.create(this, title);
 		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
 	}
