@@ -1,6 +1,5 @@
 package uk.co.terminological.simplechart;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -9,17 +8,15 @@ import uk.co.terminological.datatypes.Tuple;
 
 public class Chart<X> {
 
-	ChartType type;
 	List<X> data;
 	List<Tuple<Dimension,Function<X,Object>>> bindings = new ArrayList<>();
 	
-	public Chart(ChartType type,List<X> data) {
+	public Chart(List<X> data) {
 		this.data = data;
-		this.type = type;
 	}
 	
-	public static <X> Chart<X> create(ChartType type,List<X> data) {
-		return new Chart<>(type,data);
+	public static <X> Chart<X> create(List<X> data) {
+		return new Chart<>(data);
 	}
 	
 	public Chart<X> with(Dimension dimension, Function<X,Object> binding) {
@@ -27,7 +24,11 @@ public class Chart<X> {
 		return this;
 	};
 	
-	public void render() {
+	public void render(ChartType type) {
+		Writer.write(this);
+	}
+	
+	public void render(String templateName) {
 		Writer.write(this);
 	}
 	
