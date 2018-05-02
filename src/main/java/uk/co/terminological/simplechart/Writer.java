@@ -88,7 +88,8 @@ public class Writer {
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		template.process(root, out);
 		out.close();
-		Process process = new ProcessBuilder("gnuplot","-c "+f.getAbsolutePath())
+		Chart.log.info("Starting GNUPlot...");
+		Process process = new ProcessBuilder("/usr/bin/gnuplot","-c "+f.getAbsolutePath())
 				//.redirectOutput(Redirect.to(chart.getFile("output")))
 		.start();
 		
@@ -102,6 +103,8 @@ public class Writer {
 		
 		process.getInputStream().transferTo(System.out);
 		process.getInputStream().close();
+		process.destroy();
+		Chart.log.info("Ending GNUPlot...");
 	}
 	
 	
