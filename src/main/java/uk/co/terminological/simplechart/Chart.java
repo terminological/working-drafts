@@ -78,20 +78,6 @@ public class Chart<X> {
 		X,Y,Z,COLOUR,SIZE,LABEL,Y_LOW,Y_HIGH
 	}
 	
-	public static class Config {
-		
-		private Chart<?> chart;
-		Config withChart(Chart<?> chart) {
-			this.chart = chart;
-			this.chart.config = this;
-			return this;
-		}
-		
-		String title; Config withTitle(String title) {this.title = title; return this; } String getTitle() {return title;}
-		String xLabel; Config withXLabel(String xLabel) {this.xLabel = xLabel; return this; } String getXLabel() {return xLabel;}
-		String yLabel; Config withYLabel(String yLabel) {this.yLabel = yLabel; return this; } String getYLabel() {return yLabel;}
-	}
-
 	public File getWorkingDirectory() {
 		return this.workingDirectory;
 	}
