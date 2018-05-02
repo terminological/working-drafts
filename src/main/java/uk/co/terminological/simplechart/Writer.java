@@ -48,6 +48,7 @@ public class Writer {
 	
 
 	public Writer(Chart<?> chart) {
+		this.chart = chart;
 		cfg = new Configuration(Configuration.VERSION_2_3_25);
 		cfg.setObjectWrapper(new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_25).build());
 		cfg.setDefaultEncoding("UTF-8");
