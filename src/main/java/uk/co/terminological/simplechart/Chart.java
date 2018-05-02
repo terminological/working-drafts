@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.co.terminological.datatypes.Tuple;
 
 public class Chart<X> {
@@ -17,27 +20,30 @@ public class Chart<X> {
 	Config config = new Config();
 	List<Tuple<Dimension,Function<X,Object>>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
-	File workingDirectory; 
+	File workingDirectory;
+	String filename;
 	
-	public Chart(List<X> data, File workingDirectory) {
+	public static Logger log = LoggerFactory.getLogger(Chart.class);
+	
+	public Chart(List<X> data, File workingDirectory, String filename) {
 		this.data = data;
 		this.workingDirectory = workingDirectory;
+		this.filename = filename;
+		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
 	}
 	
 	public static <X> Chart<X> create(List<X> data) {
 		try {
-			return new Chart<>(data,File.createTempFile("tmp", Long.toString(System.nanoTime())));
+			File tmp = File.createTempFile("gnuplotTmp","");
+			tmp.mkdirs();
+			return new Chart<>(data,tmp,Long.toString(System.nanoTime()));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
-	public static <X> Chart<X> create(List<X> data, File outputDirectory) {
-		try {
-			return new Chart<>(data,File.createTempFile("tmp", Long.toString(System.nanoTime())));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+	public static <X> Chart<X> create(List<X> data, File outputDirectory, String filename) {
+		return new Chart<X>(data,outputDirectory,filename);
 	}
 	
 	public Chart<X> bind(Dimension dimension, Function<X,Object> binding) {
@@ -68,7 +74,7 @@ public class Chart<X> {
 	}
 	
 	public enum Dimension {
-		X,Y,Z,COLOUR,SIZE,LABEL
+		X,Y,Z,COLOUR,SIZE,LABEL,Y_LOW,Y_HIGH
 	}
 	
 	public static class Config {

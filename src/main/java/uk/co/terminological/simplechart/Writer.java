@@ -2,6 +2,7 @@ package uk.co.terminological.simplechart;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,23 +22,25 @@ public class Writer {
 	private Configuration cfg;
 	private Chart<?> chart;
 	private Template template;
+	private Map<String,Object> root = new HashMap<String,Object>();
 	
 	public static <X> void write(Chart<X> chart, ChartType type) throws IOException {
 		Writer out = new Writer(chart);
 		out.template = out.cfg.getTemplate(type.getTemplateFilename());
-		
+		out.process();
 	}
 	
 	public static <X> void write(Chart<X> chart, File template) throws IOException {
 		Writer out = new Writer(chart);
 		out.template = out.cfg.getTemplate(template.getAbsolutePath());
-		
+		out.process();
 	}
 	
 	public static <X> void write(Chart<X> chart, Class<?> callingClass, String resource) throws IOException {
 		Writer out = new Writer(chart);
 		out.cfg.setClassForTemplateLoading(callingClass, "/");
 		out.template = out.cfg.getTemplate(resource);
+		out.process();
 	}
 	
 
@@ -47,7 +50,6 @@ public class Writer {
 		cfg.setDefaultEncoding("UTF-8");
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
 		cfg.setClassForTemplateLoading(Writer.class, "/gnuplot");
-		Map<String,Object> root = new HashMap<String,Object>();
 		root.put("data", extractData(chart));
 		root.put("config", chart.config());
 		for (Entry<String,String> custom: this.chart.customField.entrySet()) {
@@ -75,7 +77,9 @@ public class Writer {
 		return out;
 	}
 
-	
+	private void process() {
+		File out = new File(chart.getWorkingDirectory(),chart.getFileName()+".gplot";
+	}
 	
 	
 	
