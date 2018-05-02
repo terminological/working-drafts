@@ -18,4 +18,5 @@ public class Config {
 		return chart.getFile(target.getFileType()).getAbsolutePath();
 	}
 	
+	public Chart<?> done() {return chart;}
 }
