@@ -1,5 +1,10 @@
 package uk.co.terminological.costbenefit;
 
+import static uk.co.terminological.simplechart.Chart.Dimension.X;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y_FIT;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +30,8 @@ import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.parser.ParserException;
+import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.tabular.Delimited;
 
 public class Analysis {
@@ -60,6 +67,17 @@ public class Analysis {
 
 		
 
+		Figure.Data<Cutoff> figures = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
+				.withDefaultData(binned);
+		
+		figures.withNewChart("Hello", ChartType.XY_LINE)
+				.bind(X, t -> t.getValue())
+				.bind(Y, t -> t.smoothedSensitivity())
+				.bind(Y_FIT, t -> t.sensitivity())
+				.config()
+					.withXLabel("x-axis")
+					.withYLabel("y-axis")
+				.render();
 		
 		
 		

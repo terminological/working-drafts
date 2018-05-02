@@ -64,28 +64,28 @@ public class Config {
 		return out;
 	}
 
-	Config withChart(Chart<?> chart) {
+	public Config withChart(Chart<?> chart) {
 		this.chart = chart;
 		this.chart.config = this;
 		return this;
 	}
 
-	Config withTitle(String title) {
+	public Config withTitle(String title) {
 		this.title = title;
 		return this;
 	}
 
-	Config withXLabel(String xLabel) {
+	public Config withXLabel(String xLabel) {
 		this.xLabel = xLabel;
 		return this;
 	}
 
-	Config withYLabel(String yLabel) {
+	public Config withYLabel(String yLabel) {
 		this.yLabel = yLabel;
 		return this;
 	}
 
-	Config withOutputTarget(OutputTarget target) {
+	public Config withOutputTarget(OutputTarget target) {
 		this.target = target;
 		return this;
 	}
