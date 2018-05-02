@@ -26,7 +26,7 @@ public class TestSimpleChart {
 				Tuple.create(5D, 3D)
 				);
 		
-		Chart.create(example)
+		Chart<?> tmp = Chart.create(example)
 			.bind(X, t -> t.getFirst())
 			.bind(Y, t -> t.getSecond())
 			.config()
@@ -34,8 +34,8 @@ public class TestSimpleChart {
 				.withTitle("Hello")
 				.withXLabel("x-axis")
 				.withYLabel("y-axis")
-			.done()
-			.render(ChartType.XY_LINE);
+			.done();
+		tmp.render(ChartType.XY_LINE);
 		;
 	}
 
