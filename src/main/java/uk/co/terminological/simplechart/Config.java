@@ -3,6 +3,13 @@ package uk.co.terminological.simplechart;
 public class Config {
 	
 	Chart<?> chart;
+	
+	public static Config create(Chart<?> chart) {
+		Config out = new Config();
+		out.chart =chart;
+		return out;
+	}
+	
 	Config withChart(Chart<?> chart) {
 		this.chart = chart;
 		this.chart.config = this;
