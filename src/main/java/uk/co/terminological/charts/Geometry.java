@@ -4,8 +4,8 @@ import static uk.co.terminological.charts.Dimension.*;
 
 public enum Geometry {
 
-	LINE(1,new Dimension[] {X,Y,Z}),
-	POINT(1),
+	LINE, //(1,new Dimension[] {X,Y,Z}),
+	POINT, //(1),
 	SHAPE,
 	BAR,
 	RECTANGLE,
@@ -15,10 +15,10 @@ public enum Geometry {
 	;
 	// WHISKER,
 	
-	int dataPoints;
+	/*int dataPoints;
 	Dimension[] validDimensions;
 	Geometry(int dataPoints, Dimension[] validDimensions) {
 	 this.dataPoints = dataPoints;
 	 this.validDimensions = validDimensions;
-	}
+	}*/
 }
