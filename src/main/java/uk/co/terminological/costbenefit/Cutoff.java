@@ -122,10 +122,10 @@ public class Cutoff {
 	}
 	
 	public Double cost(Double prevalence, Double valueTP, Double valueFN, Double valueFP, Double valueTN) {
-		return valueTP * prevalence * smoothedSensitivity() +
-				valueFN * (1- cumulativeProbability() - prevalence * smoothedSensitivity()) +
-				valueFP * (prevalence - smoothedSensitivity()*prevalence) +
-				valueTN * (prevalence + cumulativeProbability() - smoothedSensitivity()*prevalence);
+		return valueFN
+				+ (-valueTN+valueFP)*prevalence
+				+ (valueTN-valueFN)*cumulativeProbability()
+				+ (valueTN-valueFP-valueFN+valueTP)*prevalence*smoothedSensitivity();
 	}
 	
 }
