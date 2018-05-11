@@ -38,7 +38,10 @@ public class Chart<X> {
 		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
 	}
 	
-	
+	public Chart<X> bind(Dimension dimension, Function<X,Object> binding) {
+		bindings.add(Triple.create(dimension, binding,""));
+		return this;
+	};
 	
 	public Chart<X> bind(Dimension dimension, Function<X,Object> binding, String label) {
 		bindings.add(Triple.create(dimension, binding,label));
