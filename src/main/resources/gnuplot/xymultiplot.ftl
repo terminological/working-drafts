@@ -9,19 +9,15 @@ set xlabel "${config.getXLabel()}";
 set ylabel "${config.getYLabel()}";
 set xr ${config.getXScale()};
 set yr ${config.getYScale()};
-unset key;
 set term pngcairo enhanced font 'Verdana,10';
 set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
 plot \
-<#if config.hasDimension("Y_FIT")>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y_FIT")} with lines, \
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with points;
-<#else>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with lines;
-</#if>
+<#list config.indexesOf("Y") as yIndex>
+"$data" using ${config.indexOf("X")}:${yIndex} with lines,
+</#list>
 
 <#-- 
      set   autoscale                        # scale axes automatically

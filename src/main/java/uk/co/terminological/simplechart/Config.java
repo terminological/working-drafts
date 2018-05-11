@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import freemarker.template.TemplateException;
-import uk.co.terminological.datatypes.Tuple;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class Config {
@@ -62,7 +62,7 @@ public class Config {
 	public List<Integer> indexesOf(String dim) {
 		List<Integer> out = new ArrayList<>();
 		int i=1;
-		for (Tuple<Dimension, ?> binding: chart.bindings) {
+		for (Triple<Dimension, ?, String> binding: chart.bindings) {
 			if (binding.getFirst().equals(Chart.Dimension.valueOf(dim))) out.add(i);
 			i++;
 		}
@@ -71,7 +71,7 @@ public class Config {
 	
 	public int indexOf(String dim) {
 		int i=1;
-		for (Tuple<Dimension, ?> binding: chart.bindings) {
+		for (Triple<Dimension, ?, String> binding: chart.bindings) {
 			if (binding.getFirst().equals(Chart.Dimension.valueOf(dim))) return i;
 			i++;
 		}
@@ -80,6 +80,10 @@ public class Config {
 	
 	public boolean hasDimension(String dim) {
 		return indexOf(dim) != -1;
+	}
+	
+	public String getLabelForPlot(int i) {
+		return chart.bindings.get(i).getThird();
 	}
 	
 	// ====== Fluent Builders =======
