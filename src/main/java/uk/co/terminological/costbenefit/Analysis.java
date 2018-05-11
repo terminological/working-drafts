@@ -216,6 +216,8 @@ public class Analysis {
 			.withXScale(0F, 1F)
 			.withYScale(0F, 1F)
 			.withCustomCommand("set view 50,20")
+			.withCustomCommand("set contour surface")
+			.withCustomCommand("set cntrparam levels discrete 0")
 		.render();
 	
 			

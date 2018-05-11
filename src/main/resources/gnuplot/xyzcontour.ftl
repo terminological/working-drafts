@@ -12,8 +12,12 @@ set ylabel "${config.getYLabel()}";
 unset key;
 set hidden3d
 set dgrid3d 50,50 qnorm 2
+set pm3d
+set palette gray
+
 set term pngcairo enhanced font 'Verdana,10';
 set output "${config.getOutputFile()}";
+
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
