@@ -14,6 +14,7 @@ import java.util.function.Function;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 
 
@@ -42,14 +43,16 @@ public class Writer {
 		List<String> out = new ArrayList<>();
 		
 		StringBuilder tmp = new StringBuilder();
-		for (Tuple<Chart.Dimension,Function<X,Object>> binding: chart.bindings) {
-			tmp.append(binding.getFirst().toString()+"\t");
+		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: chart.bindings) {
+			tmp.append(binding.getFirst().toString()+
+					binding.getThird() == null ? "" : " ("+binding.getThird()+")"
+					+"\t");
 		}
 		out.add("# "+tmp.toString().trim());
 		
 		for (X item: chart.data) {
 			tmp = new StringBuilder();
-			for (Tuple<Chart.Dimension,Function<X,Object>> binding: chart.bindings) {
+			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: chart.bindings) {
 				tmp.append(binding.getSecond().apply(item).toString()+"\t");
 			}
 			out.add(tmp.toString().trim());
