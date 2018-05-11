@@ -109,7 +109,7 @@ public class Analysis {
 		.config().withXScale(0F, 1F)
 		.render();
 		
-		figures.withNewChart("Fx", ChartType.XY_LINE)
+		figures.withNewChart("bigFx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.cumulativeProbability())
 			.withAxes("cutoff","cumulative probability: F(x)")
