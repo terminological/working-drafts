@@ -76,7 +76,7 @@ public class Cutoff {
 	Double deltaGX = null;
 	public Double deltaSensitivity() {
 		if (deltaGX == null) deltaGX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 6, 1, resolution), false, index, c -> c.smoothedSensitivity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 3, 1, resolution), false, index, c -> c.smoothedSensitivity());
 		return deltaGX;
 	}
 
@@ -89,7 +89,7 @@ public class Cutoff {
 	Double deltaHX = null;
 	public Double deltaSpecificity() {
 		if (deltaHX == null) deltaHX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 6, 1, resolution), false, index, c -> c.smoothedSpecificity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 3, 1, resolution), false, index, c -> c.smoothedSpecificity());
 		return deltaHX;
 	}
 	
