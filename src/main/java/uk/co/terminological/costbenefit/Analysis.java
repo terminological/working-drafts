@@ -207,7 +207,7 @@ public class Analysis {
 			}
 		}
 		
-		figures.withNewChart(tmpData, "Operating points by prevalence", ChartType.XYZ_CONTOUR)
+		figures.withNewChart(tmpData, "Operating point surface", ChartType.XYZ_CONTOUR)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird())
