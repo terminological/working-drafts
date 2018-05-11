@@ -7,8 +7,8 @@ EOD
 set title "${config.getTitle()}";
 set xlabel "${config.getXLabel()}"; 
 set ylabel "${config.getYLabel()}";
-set xr ${config.getXScale()};
-set yr ${config.getYScale()};
+<#if config.getXScale()??>set xr ${config.getXScale()};</#if>
+<#if config.getYScale()??>set yr ${config.getYScale()};</#if>
 unset key;
 set term pngcairo enhanced font 'Verdana,10';
 set output "${config.getOutputFile()}";

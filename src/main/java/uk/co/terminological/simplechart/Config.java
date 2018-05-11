@@ -16,8 +16,8 @@ public class Config {
 	String title;
 	String xLabel;
 	String yLabel;
-	String xScale = "auto";
-	String yScale = "auto";
+	String xScale;
+	String yScale;
 	OutputTarget target = OutputTarget.SCREEN;
 	List<String> customCommands = new ArrayList<>();
 
@@ -45,11 +45,11 @@ public class Config {
 	}
 
 	public String getXScale() {
-		return xScale == null ? "auto" : xScale;
+		return xScale;
 	}
 	
 	public String getYScale() {
-		return yScale == null ? "auto" : yScale;
+		return yScale;
 	}
 
 	
