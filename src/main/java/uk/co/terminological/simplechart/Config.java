@@ -82,7 +82,7 @@ public class Config {
 		return indexOf(dim) != -1;
 	}
 	
-	public String getLabelForPlot(int i) {
+	public String getLabelFor(int i) {
 		return chart.bindings.get(i).getThird();
 	}
 	

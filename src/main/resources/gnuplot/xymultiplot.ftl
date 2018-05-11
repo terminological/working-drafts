@@ -16,7 +16,7 @@ ${command};
 </#list>
 plot \
 <#list config.indexesOf("Y") as yIndex>
-"$data" using ${config.indexOf("X")}:${yIndex} with lines,
+"$data" using ${config.indexOf("X")}:${yIndex} title '${config.labelFor(yIndex)}' with lines,
 </#list>
 
 <#-- 
