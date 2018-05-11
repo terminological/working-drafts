@@ -128,4 +128,10 @@ public class Cutoff {
 				+ (valueTN-valueFP-valueFN+valueTP)*prevalence*smoothedSensitivity();
 	}
 	
+	public Double deltaCost(Double prevalence) {
+		return probabilityDensity()
+				+prevalence*deltaSensitivity() 
+				-(1-prevalence)*deltaSpecificity();
+	}
+	
 }
