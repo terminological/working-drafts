@@ -16,12 +16,8 @@ set output "${config.getOutputFile()}";
 ${command};
 </#list>
 plot \
-<#if config.hasDimension("Y_FIT")>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y_FIT")} with lines, \
 "$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with points;
-<#else>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with lines;
-</#if>
+
 
 <#-- 
      set   autoscale                        # scale axes automatically
