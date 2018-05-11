@@ -123,7 +123,7 @@ public class Analysis {
 			.config().withXScale(0F, 1F)
 			.render();
 		
-		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
+		//List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
 		
 		Chart<Cutoff> chart = 
 				figures.withNewChart("costByPrevalence", ChartType.XY_MULTI_LINE)
@@ -138,7 +138,7 @@ public class Analysis {
 			Double valueFP = -10D;
 			Double valueTN = 11D;
 			
-			chart.bind(Y, t -> t.cost(0.1D, 100D, -1D, -10D, 11D), String.format("%2G", prevalence));
+			chart.bind(Y, t -> t.cost(prevalence, valueTP, valueFN, valueFP, valueTN), String.format("%2G", prevalence));
 			
 		}
 		
@@ -180,9 +180,10 @@ public class Analysis {
 		List<Tuple<Double,Cutoff>> data = new ArrayList<>();
 		
 		
-		for (Double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
+		for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
+			final double tmp2 = prevalence;
 			Interceptions inter = CoordinateFinder.intercept(0D, 
-					Lists.transform(binned, c->c.deltaCost(prevalence)), res.getResolution());
+					Lists.transform(binned, c->c.deltaCost(tmp2)), res.getResolution());
 			for (Coordinate coord: inter.getIntercepts()) {
 				Cutoff c = res.getValue(coord.getX());
 				data.add(Tuple.create(prevalence,c));
@@ -190,9 +191,9 @@ public class Analysis {
 		}
 		
 		figures.withNewChart(data, "Operating points by prevalence", ChartType.XY_SCATTER)
-			.bind(X, t -> t.getValue())
-			.bind(Y, t -> t.deltaSpecificity())
-			.withAxes("cutoff","rate of change specificity: h'(x)")
+			.bind(X, t -> t.getFirst())
+			.bind(Y, t -> t.getSecond().getValue())
+			.withAxes("prevalence","operating point")
 			.config().withXScale(0F, 1F)
 			.render();
 		
