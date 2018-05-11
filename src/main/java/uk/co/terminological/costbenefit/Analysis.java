@@ -132,13 +132,15 @@ public class Analysis {
 				.bind(X, t -> t.getValue())
 				.withAxes("cutoff","value");
 		chart.config().withXScale(0F, 1F);
-		 
+		
+		Double valueTP = 100D;
+		Double valueFN = -1D;
+		Double valueFP = -10D;
+		Double valueTN = 11D;
+		
 	    for (Double prevalence: Arrays.asList(0.5D,0.4D,0.3D,0.2D,0.1D,0.05D,0.01D,0.001D)) {
 			
-			Double valueTP = 100D;
-			Double valueFN = -1D;
-			Double valueFP = -10D;
-			Double valueTN = 11D;
+			
 			
 			chart.bind(Y, t -> t.cost(prevalence, valueTP, valueFN, valueFP, valueTN), String.format("%2G", prevalence));
 			
@@ -207,7 +209,7 @@ public class Analysis {
 			}
 		}
 		
-		figures.withNewChart(tmpData, "Operating point surface", ChartType.XYZ_CONTOUR)
+		figures.withNewChart(tmpData, "Value surface rate of change", ChartType.XYZ_CONTOUR)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird())
@@ -220,7 +222,26 @@ public class Analysis {
 			.withCustomCommand("set cntrparam levels discrete 0")
 		.render();
 	
-			
+		List<Triple<Double,Double,Double>> tmpData2 = new ArrayList<>();
+		for (Cutoff c: binned) {
+			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
+				tmpData2.add(Triple.create(c.getValue(), prevalence, 
+						c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
+			}
+		}
+		
+		figures.withNewChart(tmpData2, "Value surface", ChartType.XYZ_CONTOUR)
+		.bind(X, t -> t.getFirst())
+		.bind(Y, t -> t.getSecond())
+		.bind(Z, t -> t.getThird())
+		.withAxes("prevalence","operating point")
+		.config()
+			.withXScale(0F, 1F)
+			.withYScale(0F, 1F)
+			//.withCustomCommand("set view 50,20")
+			//.withCustomCommand("set contour surface")
+			//.withCustomCommand("set cntrparam levels discrete 0")
+		.render();	
 		
 	}
 
