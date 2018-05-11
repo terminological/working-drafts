@@ -1,6 +1,10 @@
 package uk.co.terminological.simplechart;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Tuple;
@@ -12,7 +16,10 @@ public class Config {
 	String title;
 	String xLabel;
 	String yLabel;
+	String xScale = "auto";
+	String yScale = "auto";
 	OutputTarget target = OutputTarget.SCREEN;
+	List<String> customCommands = new ArrayList<>();
 
 	
 	// ====== Getters =======
@@ -25,16 +32,29 @@ public class Config {
 		return chart.getFile(target.getFileType()).getAbsolutePath();
 	}
 
-	public String getYLabel() {
-		return yLabel;
-	}
-
 	public String getTitle() {
 		return title;
 	}
 	
 	public String getXLabel() {
 		return xLabel;
+	}
+	
+	public String getYLabel() {
+		return yLabel;
+	}
+
+	public String getXScale() {
+		return xScale == null ? "auto" : xScale;
+	}
+	
+	public String getYScale() {
+		return yScale == null ? "auto" : yScale;
+	}
+
+	
+	public List<String> getCustomCommands() {
+		return customCommands;
 	}
 
 	// ======= Freemarker accessories ======
@@ -84,9 +104,24 @@ public class Config {
 		this.yLabel = yLabel;
 		return this;
 	}
+	
+	public Config withXScale(float start, float end) {
+		this.xScale = "["+StringUtils.joinWith(":", Float.toString(start),Float.toString(end))+"]";
+		return this;
+	}
 
+	public Config withYScale(float start, float end) {
+		this.yScale = "["+StringUtils.joinWith(":", Float.toString(start),Float.toString(end))+"]";
+		return this;
+	}
+	
 	public Config withOutputTarget(OutputTarget target) {
 		this.target = target;
+		return this;
+	}
+	
+	public Config withCustomCommand(String command) {
+		this.customCommands.add(command);
 		return this;
 	}
 	
