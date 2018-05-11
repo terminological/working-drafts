@@ -71,54 +71,63 @@ public class Analysis {
 		Figure.Data<Cutoff> figures = Figure.outputTo(output.toFile())
 				.withDefaultData(binned);
 		
-		figures.withNewChart("A", ChartType.XY_LINE)
+		figures.withNewChart("gx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.smoothedSensitivity())
 			.bind(Y_FIT, t -> t.sensitivity())
 			.withAxes("cutoff","sensitivity - g(x)")
+			.config().withXScale(0F, 1F)
 			.render();
 		
-		figures.withNewChart("B", ChartType.XY_LINE)
+		figures.withNewChart("hx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
-			.bind(Y, t -> t.specificity())
-			.withAxes("cutoff","specificity")
+			.bind(Y, t -> t.smoothedSpecificity())
+			.bind(Y_FIT, t -> t.specificity())
+			.withAxes("cutoff","specificity - h(x)")
+			.config().withXScale(0F, 1F)
 			.render();
 		
-		figures.withNewChart("C", ChartType.XY_LINE)
+		figures.withNewChart("roc", ChartType.XY_LINE)
 			.bind(X, t -> 1-t.sensitivity())
 			.bind(Y, t -> t.specificity())
 			.withAxes("1-sensitivity","specificity")
+			.config().withXScale(0F, 1F)
 			.render();
 		
-		figures.withNewChart("D", ChartType.XY_LINE)
+		figures.withNewChart("fx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.probabilityDensity())
 			.bind(Y_FIT, t->t.smoothedProbabilityDensity())
 			.withAxes("cutoff","density - f(x)")
+			.config().withXScale(0F, 1F)
 			.render();
 		
-		figures.withNewChart("E", ChartType.XY_LINE)
+		figures.withNewChart("gprimex", ChartType.XY_LINE)
+		.bind(X, t -> t.getValue())
+		.bind(Y, t -> t.deltaSensitivity())
+		.withAxes("cutoff","rate of change sensitivity: g'(x)")
+		.config().withXScale(0F, 1F)
+		.render();
+	
+	figures.withNewChart("hprimex", ChartType.XY_LINE)
+		.bind(X, t -> t.getValue())
+		.bind(Y, t -> t.deltaSpecificity())
+		.withAxes("cutoff","rate of change specificity: h'(x)")
+		.config().withXScale(0F, 1F)
+		.render();
+		
+		figures.withNewChart("Fx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
-			.bind(Y, t -> t.deltaSensitivity())
-			.withAxes("cutoff","first derivative sensitivity - g'(x)")
+			.bind(Y, t -> t.cumulativeProbability())
+			.withAxes("cutoff","cumulative probability: F(x)")
+			.config().withXScale(0F, 1F)
 			.render();
 		
-		figures.withNewChart("F", ChartType.XY_LINE)
-			.bind(X, t -> t.getValue())
-			.bind(Y, t -> t.smoothedFOverGPrime())
-			.withAxes("cutoff","f(x)/g'(x)")
-			.render();
-		
-		figures.withNewChart("G", ChartType.XY_LINE)
-			.bind(X, t -> t.getValue())
-			.bind(Y, t -> 1/t.smoothedFOverGPrime())
-			.withAxes("cutoff","g'(x)/f'(x)")
-			.render();
-		
-		figures.withNewChart("H", ChartType.XY_LINE)
+		figures.withNewChart("costExample", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.cost(0.1D, 100D, -1D, -10D, 11D))
 			.withAxes("cutoff","value")
+			.config().withXScale(0F, 1F)
 			.render();
 		
 		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);

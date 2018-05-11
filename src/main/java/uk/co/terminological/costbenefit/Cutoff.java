@@ -67,19 +67,32 @@ public class Cutoff {
 		return ((double) tn())/(total-totalPositives);
 	}
 
-	Double smoothedS = null;
+	Double smoothedGX = null;
 	public Double smoothedSensitivity() {
-		if (smoothedS == null) smoothedS = SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13), false, index, c -> c.sensitivity());
-		return smoothedS;
+		if (smoothedGX == null) smoothedGX = SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13), false, index, c -> c.sensitivity());
+		return smoothedGX;
 	}
 	
-	Double deltaS = null;
+	Double deltaGX = null;
 	public Double deltaSensitivity() {
-		if (deltaS == null) deltaS = 
+		if (deltaGX == null) deltaGX = 
 				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 6, 1, resolution), false, index, c -> c.smoothedSensitivity());
-		return deltaS;
+		return deltaGX;
 	}
 
+	Double smoothedHX = null;
+	public Double smoothedSpecificity() {
+		if (smoothedHX == null) smoothedHX = SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13), false, index, c -> c.specificity());
+		return smoothedHX;
+	}
+	
+	Double deltaHX = null;
+	public Double deltaSpecificity() {
+		if (deltaHX == null) deltaHX = 
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 6, 1, resolution), false, index, c -> c.smoothedSpecificity());
+		return deltaHX;
+	}
+	
 	public Double cumulativeProbability() {
 		return ((double) predictedNegatives)/total;
 	}

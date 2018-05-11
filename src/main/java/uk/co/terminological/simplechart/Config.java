@@ -59,6 +59,16 @@ public class Config {
 
 	// ======= Freemarker accessories ======
 	
+	public List<Integer> indexesOf(String dim) {
+		List<Integer> out = new ArrayList<>();
+		int i=1;
+		for (Tuple<Dimension, ?> binding: chart.bindings) {
+			if (binding.getFirst().equals(Chart.Dimension.valueOf(dim))) out.add(i);
+			i++;
+		}
+		return out;
+	}
+	
 	public int indexOf(String dim) {
 		int i=1;
 		for (Tuple<Dimension, ?> binding: chart.bindings) {
