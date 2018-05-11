@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 
 public class Chart<X> {
@@ -22,7 +23,7 @@ public class Chart<X> {
 	Template template;
 	Figure figure;
 	Config config;
-	List<Tuple<Dimension,Function<X,Object>>> bindings = new ArrayList<>();
+	List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
 	String filename;
 	
@@ -39,8 +40,8 @@ public class Chart<X> {
 	
 	
 	
-	public Chart<X> bind(Dimension dimension, Function<X,Object> binding) {
-		bindings.add(Tuple.create(dimension, binding));
+	public Chart<X> bind(Dimension dimension, Function<X,Object> binding, String label) {
+		bindings.add(Triple.create(dimension, binding,label));
 		return this;
 	};
 	
