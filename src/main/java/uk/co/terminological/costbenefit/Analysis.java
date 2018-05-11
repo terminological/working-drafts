@@ -212,7 +212,10 @@ public class Analysis {
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird())
 		.withAxes("prevalence","operating point")
-		.config().withXScale(0F, 1F)
+		.config()
+			.withXScale(0F, 1F)
+			.withYScale(0F, 1F)
+			.withCustomCommand("set view 50,20")
 		.render();
 	
 			

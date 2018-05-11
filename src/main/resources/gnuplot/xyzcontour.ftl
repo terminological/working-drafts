@@ -11,6 +11,7 @@ set ylabel "${config.getYLabel()}";
 <#if config.getYScale()??>set yr ${config.getYScale()};</#if>
 unset key;
 set hidden3d
+set dgrid3d 50,50 qnorm 2
 set term pngcairo enhanced font 'Verdana,10';
 set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
@@ -20,6 +21,8 @@ splot \
 "$data" using ${config.indexOf("X")}:${config.indexOf("Y")}:${config.indexOf("Z")} with lines ;
 
 <#-- 
+
+http://www.gnuplot.info/demo/dgrid3d.html
 
 set title "contours on both base and surface"
 set contour both
