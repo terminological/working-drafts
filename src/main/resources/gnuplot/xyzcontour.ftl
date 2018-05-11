@@ -15,15 +15,18 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
-plot \
-<#if config.hasDimension("Y_FIT")>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y_FIT")} with lines, \
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with points;
-<#else>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with lines;
-</#if>
+splot \
+"$data" using ${config.indexOf("X")}:${config.indexOf("Y")}:${config.indexOf("Z")} with lines, \
+"$data" using ${config.indexOf("X")}:${config.indexOf("Y")}:${config.indexOf("Z")} with labels boxed notitle ;
 
 <#-- 
+
+set title "contours on both base and surface"
+set contour both
+set hidden3d
+splot x**2-y**2 with lines, x**2-y**2 with labels boxed notitle
+
+
      set   autoscale                        # scale axes automatically
       unset log                              # remove any log-scaling
       unset label                            # remove any previous labels
