@@ -202,7 +202,7 @@ public class Analysis {
 		
 		List<Triple<Double,Double,Double>> tmpData = new ArrayList<>();
 		for (Cutoff c: binned) {
-			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.05D) {
+			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
 				tmpData.add(Triple.create(c.getValue(), prevalence, c.deltaCost(prevalence)));
 			}
 		}
