@@ -2,6 +2,7 @@ package uk.co.terminological.costbenefit;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
+import static uk.co.terminological.simplechart.Chart.Dimension.Z;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y_FIT;
 
 import java.io.File;
@@ -21,6 +22,7 @@ import uk.co.terminological.costbenefit.CoordinateFinder.Coordinate;
 import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
 import uk.co.terminological.datatypes.EavMap;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.parser.ParserException;
 import uk.co.terminological.simplechart.Chart;
@@ -197,6 +199,23 @@ public class Analysis {
 			.config().withXScale(0F, 1F)
 			.render();
 		
+		
+		List<Triple<Double,Double,Double>> tmpData = new ArrayList<>();
+		for (Cutoff c: binned) {
+			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
+				tmpData.add(Triple.create(c.getValue(), prevalence, c.deltaCost(prevalence)));
+			}
+		}
+		
+		figures.withNewChart(tmpData, "Operating points by prevalence", ChartType.XYZ_CONTOUR)
+		.bind(X, t -> t.getFirst())
+		.bind(Y, t -> t.getSecond())
+		.bind(Z, t -> t.getThird())
+		.withAxes("prevalence","operating point")
+		.config().withXScale(0F, 1F)
+		.render();
+	
+			
 		
 	}
 
