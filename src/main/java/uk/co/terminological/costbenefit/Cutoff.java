@@ -129,7 +129,7 @@ public class Cutoff {
 	}
 	
 	public Double deltaCost(Double prevalence) {
-		return probabilityDensity()
+		return this.smoothedProbabilityDensity()
 				+prevalence*deltaSensitivity() 
 				-(1-prevalence)*deltaSpecificity();
 	}
