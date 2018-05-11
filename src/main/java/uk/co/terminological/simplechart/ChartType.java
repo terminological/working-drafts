@@ -2,7 +2,8 @@ package uk.co.terminological.simplechart;
 
 public enum ChartType {
 	XY_LINE("xyplot.ftl"),
-	XY_MULTI_LINE("xymultiplot.ftl");
+	XY_MULTI_LINE("xymultiplot.ftl"), 
+	XY_SCATTER("xyscatter.ftl");
 
 	String templateFilename;
 	
