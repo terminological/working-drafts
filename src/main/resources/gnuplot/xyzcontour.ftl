@@ -10,14 +10,14 @@ set ylabel "${config.getYLabel()}";
 <#if config.getXScale()??>set xr ${config.getXScale()};</#if>
 <#if config.getYScale()??>set yr ${config.getYScale()};</#if>
 unset key;
+set hidden3d
 set term pngcairo enhanced font 'Verdana,10';
 set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
 splot \
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")}:${config.indexOf("Z")} with lines, \
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")}:${config.indexOf("Z")} with labels boxed notitle ;
+"$data" using ${config.indexOf("X")}:${config.indexOf("Y")}:${config.indexOf("Z")} with lines ;
 
 <#-- 
 
