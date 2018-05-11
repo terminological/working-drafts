@@ -82,8 +82,9 @@ public class Config {
 		return indexOf(dim) != -1;
 	}
 	
+	//i is one based as based on GNUplot
 	public String getLabelFor(int i) {
-		return chart.bindings.get(i).getThird();
+		return chart.bindings.get(i-1).getThird();
 	}
 	
 	// ====== Fluent Builders =======
