@@ -14,15 +14,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.knowm.xchart.BitmapEncoder;
-import org.knowm.xchart.BitmapEncoder.BitmapFormat;
-import org.knowm.xchart.QuickChart;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.internal.chartpart.Chart;
-import org.knowm.xchart.style.Styler.LegendPosition;
-
 import com.google.common.collect.Lists;
 
 import freemarker.template.TemplateException;
@@ -30,7 +21,9 @@ import uk.co.terminological.costbenefit.CoordinateFinder.Coordinate;
 import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
 import uk.co.terminological.datatypes.EavMap;
+import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.parser.ParserException;
+import uk.co.terminological.simplechart.Chart;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.tabular.Delimited;
@@ -132,11 +125,12 @@ public class Analysis {
 		
 		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
 		
-		XYChart chart = new XYChartBuilder().width(1200).height(1200).title("Varying prevalences").xAxisTitle("X").yAxisTitle("Y").build();
+		Chart<Cutoff> chart = 
+				figures.withNewChart("costByPrevalence", ChartType.XY_MULTI_LINE)
+				.bind(X, t -> t.getValue())
+				.withAxes("cutoff","value");
+		chart.config().withXScale(0F, 1F);
 		 
-	    // Customize Chart
-	    chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
-	    
 	    for (Double prevalence: Arrays.asList(0.5D,0.4D,0.3D,0.2D,0.1D,0.05D,0.01D,0.001D)) {
 			
 			Double valueTP = 100D;
@@ -144,15 +138,21 @@ public class Analysis {
 			Double valueFP = -10D;
 			Double valueTN = 11D;
 			
-			Double kappa = prevalence*(1-(valueTP-valueFP)/(valueTN+valueFN));
-			
-			chart.addSeries("f(x)/g'(x)="+kappa, 
-					Lists.transform(binned, c->c.getValue()),
-					Lists.transform(binned, c->c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
+			chart.bind(Y, t -> t.cost(0.1D, 100D, -1D, -10D, 11D), String.format("%2G", prevalence));
 			
 		}
 		
-		BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
+	    chart.render();
+	    
+	    
+	    figures.withNewChart("costExample", ChartType.XY_LINE)
+		.bind(X, t -> t.getValue())
+		.bind(Y, t -> t.cost(0.1D, 100D, -1D, -10D, 11D))
+		.withAxes("cutoff","value")
+		.config().withXScale(0F, 1F)
+		.render();
+	    
+		/*BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
 		
 		XYChart chart2 = new XYChartBuilder().width(1200).height(1200).title("Varying incorrect costs").xAxisTitle("X").yAxisTitle("Y").build();
 		chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
@@ -171,34 +171,32 @@ public class Analysis {
 			
 		}
 		BitmapEncoder.saveBitmapWithDPI(chart2, output.resolve(chart2.getTitle()).toString(), BitmapFormat.PNG, 300);
-		
+		*/
+	    /*
 		Inflexions inf = CoordinateFinder.inflexion(Lists.transform(binned, c->c.smoothedFOverGPrime()), res.getResolution());
 		System.out.println("==== f(x)/g'(x) inflexions =====");
-		System.out.println(inf);
+		System.out.println(inf);*/
 		
-		List<Double> xAxis = new ArrayList<>();
-		List<Cutoff> yAxis = new ArrayList<>();
+		List<Tuple<Double,Cutoff>> data = new ArrayList<>();
 		
 		
-		for (Double kappa = inf.getMin().getY()-1; kappa < inf.getMax().getY()+1; kappa+=(inf.getMax().getY()-inf.getMin().getY()+2)/1000) {
-			Interceptions inter = CoordinateFinder.intercept(kappa, 
-					Lists.transform(binned, c->c.smoothedFOverGPrime()), res.getResolution());
+		for (Double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
+			Interceptions inter = CoordinateFinder.intercept(0D, 
+					Lists.transform(binned, c->c.deltaCost(prevalence)), res.getResolution());
 			for (Coordinate coord: inter.getIntercepts()) {
 				Cutoff c = res.getValue(coord.getX());
-				xAxis.add(kappa);
-				yAxis.add(c);
+				data.add(Tuple.create(prevalence,c));
 			}
 		}
 		
-		XYChart chart3 = new XYChartBuilder().width(1200).height(1200).title("Varying kappa").xAxisTitle("kappa").yAxisTitle("Y").build();
-		chart3.getStyler().setLegendPosition(LegendPosition.InsideNW);
-		chart3.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
-	    
-		chart3.addSeries("sensitivity",xAxis,Lists.transform(yAxis, c->c.sensitivity()));
-		chart3.addSeries("specificity",xAxis,Lists.transform(yAxis, c->c.specificity()));
-		chart3.addSeries("cum prob",xAxis,Lists.transform(yAxis, c->c.cumulativeProbability()));
+		figures.withNewChart(data, "Operating points by prevalence", ChartType.XY_SCATTER)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.deltaSpecificity())
+			.withAxes("cutoff","rate of change specificity: h'(x)")
+			.config().withXScale(0F, 1F)
+			.render();
 		
-		BitmapEncoder.saveBitmapWithDPI(chart3, output.resolve(chart3.getTitle()).toString(), BitmapFormat.PNG, 300);
+		
 	}
 
 	static Function<String,Boolean> convert01TF = s -> s.equals("1") ? true : (s.equals("0") ? false: null);
