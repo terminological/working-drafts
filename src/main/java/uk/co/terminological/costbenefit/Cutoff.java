@@ -105,7 +105,7 @@ public class Cutoff {
 	Double smoothPD = null;
 	public Double smoothedProbabilityDensity() {
 		if (smoothPD == null) smoothPD = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13) /*.filter(13, 3, 0, resolution)*/, false, index, c -> c.probabilityDensity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(25) /*.filter(13, 3, 0, resolution)*/, false, index, c -> c.probabilityDensity());
 		return smoothPD;
 	}
 	
