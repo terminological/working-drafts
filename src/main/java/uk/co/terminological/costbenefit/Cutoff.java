@@ -29,12 +29,12 @@ public class Cutoff {
 	
 	public static String columns() {
 		return StringUtils.joinWith("\t", "getValue", "tp","fp","fn","tn","sensitivity","specificity", "smoothedSensitivity","deltaSensitivity","cumulativeProbability",
-				"probabilityDensity","smoothedProbabilityDensity","probabilityDensityOverDeltaSensitivity","deltaFOverGPrime");
+				"probabilityDensity","smoothedProbabilityDensity","probabilityDensityOverDeltaSensitivity");
 	}
 	
 	public String toString() {
 		return StringUtils.joinWith("\t", getValue(), tp(),fp(),fn(),tn(),sensitivity(),specificity(), smoothedSensitivity(),deltaSensitivity(),cumulativeProbability(),
-				probabilityDensity(),smoothedProbabilityDensity(),probabilityDensityOverDeltaSensitivity(),deltaFOverGPrime());
+				probabilityDensity(),smoothedProbabilityDensity(),probabilityDensityOverDeltaSensitivity());
 	}
 	
 	// ======= Getter methods =========
@@ -76,7 +76,7 @@ public class Cutoff {
 	Double deltaGX = null;
 	public Double deltaSensitivity() {
 		if (deltaGX == null) deltaGX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 3, 1, resolution), false, index, c -> c.smoothedSensitivity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.smoothedSensitivity());
 		return deltaGX;
 	}
 
@@ -89,7 +89,7 @@ public class Cutoff {
 	Double deltaHX = null;
 	public Double deltaSpecificity() {
 		if (deltaHX == null) deltaHX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(13, 3, 1, resolution), false, index, c -> c.smoothedSpecificity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.smoothedSpecificity());
 		return deltaHX;
 	}
 	
@@ -111,14 +111,6 @@ public class Cutoff {
 	
 	public Double probabilityDensityOverDeltaSensitivity() {
 		return probabilityDensity()/deltaSensitivity(); 
-	}
-	
-	public Double smoothedFOverGPrime() {
-		return SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13), false, index, c -> c.probabilityDensityOverDeltaSensitivity());
-	}
-	
-	public Double deltaFOverGPrime() {
-		return SavitzkyGolay.convolute(all, SavitzkyGolay.derivative_5_quad(resolution), false, index, c -> c.smoothedFOverGPrime()); 
 	}
 	
 	public Double cost(Double prevalence, Double valueTP, Double valueFN, Double valueFP, Double valueTN) {
