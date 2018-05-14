@@ -140,10 +140,10 @@ public class Analysis {
 				.withAxes("cutoff","value");
 		chart.config().withXScale(0F, 1F);
 		
-		Double valueTP = 100D;
+		Double valueTP = 1D;
 		Double valueFN = -1D;
-		Double valueFP = -10D;
-		Double valueTN = 11D;
+		Double valueFP = -1D;
+		Double valueTN = 1D;
 		
 	    for (Double prevalence: Arrays.asList(0.5D,0.4D,0.3D,0.2D,0.1D,0.05D,0.01D,0.001D)) {
 			
