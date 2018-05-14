@@ -69,27 +69,27 @@ public class Cutoff {
 
 	Double smoothedGX = null;
 	public Double smoothedSensitivity() {
-		if (smoothedGX == null) smoothedGX = SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13), false, index, c -> c.sensitivity());
+		if (smoothedGX == null) smoothedGX = SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, resolution), false, index, c -> c.sensitivity());
 		return smoothedGX;
 	}
 	
 	Double deltaGX = null;
 	public Double deltaSensitivity() {
 		if (deltaGX == null) deltaGX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.smoothedSensitivity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.sensitivity());
 		return deltaGX;
 	}
 
 	Double smoothedHX = null;
 	public Double smoothedSpecificity() {
-		if (smoothedHX == null) smoothedHX = SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(13), false, index, c -> c.specificity());
+		if (smoothedHX == null) smoothedHX = SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, resolution), false, index, c -> c.specificity());
 		return smoothedHX;
 	}
 	
 	Double deltaHX = null;
 	public Double deltaSpecificity() {
 		if (deltaHX == null) deltaHX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.smoothedSpecificity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.specificity()); //?smoothedSpecificity
 		return deltaHX;
 	}
 	
@@ -105,7 +105,7 @@ public class Cutoff {
 	Double smoothPD = null;
 	public Double smoothedProbabilityDensity() {
 		if (smoothPD == null) smoothPD = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.smooth_N_sliding(25) /*.filter(13, 3, 0, resolution)*/, false, index, c -> c.probabilityDensity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, resolution), false, index, c -> c.probabilityDensity());
 		return smoothPD;
 	}
 	
@@ -115,15 +115,14 @@ public class Cutoff {
 	
 	public Double cost(Double prevalence, Double valueTP, Double valueFN, Double valueFP, Double valueTN) {
 		return valueFN
-				+ (-valueTN+valueFP)*prevalence
-				+ (valueTN-valueFN)*cumulativeProbability()
-				+ (valueTN-valueFP-valueFN+valueTP)*prevalence*smoothedSensitivity();
+				+ (valueFP-valueFN)*prevalence
+				+ (valueTN-valueFP)*prevalence*smoothedSensitivity()
+				+ (valueTN-valueFN)*prevalence*smoothedSpecificity();
 	}
 	
-	public Double deltaCost(Double prevalence) {
-		return this.smoothedProbabilityDensity()
-				+prevalence*deltaSensitivity() 
-				-(1-prevalence)*deltaSpecificity();
+	public Double deltaCost(Double prevalence, Double valueTP, Double valueFN, Double valueFP, Double valueTN) {
+		return (valueTN-valueFP)*prevalence*deltaSensitivity()
+				+ (valueTN-valueFN)*prevalence*deltaSpecificity();
 	}
 	
 }
