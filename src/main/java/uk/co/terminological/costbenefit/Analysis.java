@@ -111,7 +111,7 @@ public class Analysis {
 		.config().withXScale(0F, 1F)
 		.render();
 	
-	figures.withNewChart("gprimx_plus_hprimex", ChartType.XY_LINE)
+	figures.withNewChart("gprimex plus hprimex", ChartType.XY_LINE)
 		.bind(X, t -> t.getValue())
 		.bind(Y, t -> t.deltaSensitivity()+t.deltaSpecificity())
 		.withAxes("cutoff","rate of change specificity+sensitivity: g'(x)+h'(x)")
@@ -247,7 +247,7 @@ public class Analysis {
 			.withYScale(0F, 1F)
 			//.withCustomCommand("set view 50,20")
 			.withCustomCommand("set contour surface")
-			.withCustomCommand("set cntrparam levels discrete -1 0 1")
+			.withCustomCommand("set cntrparam levels discrete -1,0,1")
 		.render();	
 		
 	}
