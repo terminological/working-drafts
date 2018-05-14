@@ -110,6 +110,13 @@ public class Analysis {
 		.withAxes("cutoff","rate of change specificity: h'(x)")
 		.config().withXScale(0F, 1F)
 		.render();
+	
+	figures.withNewChart("gprimx_plus_hprimex", ChartType.XY_LINE)
+		.bind(X, t -> t.getValue())
+		.bind(Y, t -> t.deltaSensitivity()+t.deltaSpecificity())
+		.withAxes("cutoff","rate of change specificity+sensitivity: g'(x)+h'(x)")
+		.config().withXScale(0F, 1F)
+		.render();
 		
 		figures.withNewChart("bigFx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
@@ -187,7 +194,7 @@ public class Analysis {
 		for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
 			final double tmp2 = prevalence;
 			Interceptions inter = CoordinateFinder.intercept(0D, 
-					Lists.transform(binned, c->c.deltaCost(tmp2)), res.getResolution());
+					Lists.transform(binned, c->c.deltaCost(tmp2, valueTP,valueFN, valueFP, valueTN)), res.getResolution());
 			for (Coordinate coord: inter.getIntercepts()) {
 				Cutoff c = res.getValue(coord.getX());
 				data.add(Tuple.create(prevalence,c));
@@ -205,7 +212,7 @@ public class Analysis {
 		List<Triple<Double,Double,Double>> tmpData = new ArrayList<>();
 		for (Cutoff c: binned) {
 			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
-				tmpData.add(Triple.create(c.getValue(), prevalence, c.deltaCost(prevalence)));
+				tmpData.add(Triple.create(c.getValue(), prevalence, c.deltaCost(prevalence, valueTP, valueFN, valueFP, valueTN)));
 			}
 		}
 		
