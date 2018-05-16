@@ -235,7 +235,7 @@ public class Analysis {
 		List<Triple<Double,Double,Double>> tmpData2 = new ArrayList<>();
 		
 		for (Cutoff c: binned) {
-			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
+			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.1D) {
 				for (Double valueTP2: values) {
 					for (Double valueTN2: values) {
 						for (Double valueFP2: costs) {
@@ -260,10 +260,10 @@ public class Analysis {
 		.withAxes("prevalence","operating point")
 		.config()
 			.withXScale(0F, 1F)
-			.withYScale(0F, 1F)
+			//.withYScale(0F, 1F)
 			//.withCustomCommand("set view 50,20")
 			.withCustomCommand("set contour surface")
-			.withCustomCommand("set cntrparam levels discrete -1,0,1")
+			//.withCustomCommand("set cntrparam levels discrete -1,0,1")
 		.render();	
 		
 	}
