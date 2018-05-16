@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.collect.Lists;
 
 import freemarker.template.TemplateException;
@@ -241,6 +243,12 @@ public class Analysis {
 						for (Double valueFP2: costs) {
 							for (Double valueFN2: costs) {						
 								if (c.isSolvable(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)) {
+									
+									if (c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)<0) {
+										System.out.println(
+												StringUtils.joinWith("\t",prevalence, valueTP2, valueFN2, valueFP2, valueTN2,c));
+										throw new RuntimeException();
+									}
 								tmpData2.add(Triple.create(
 										c.getValue(),
 										c.nonDimValue(prevalence, valueTP2, valueFN2, valueFP2, valueTN2), 
