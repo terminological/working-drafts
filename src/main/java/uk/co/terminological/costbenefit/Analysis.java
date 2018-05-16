@@ -132,7 +132,7 @@ public class Analysis {
 			.config().withXScale(0F, 1F)
 			.render();
 		
-		//List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
+		
 		
 		Chart<Cutoff> chart = 
 				figures.withNewChart("costByPrevalence", ChartType.XY_MULTI_LINE)
@@ -229,11 +229,27 @@ public class Analysis {
 			.withCustomCommand("set cntrparam levels discrete 0")
 		.render();
 	
+		List<Double> costs = Arrays.asList(-10D,-5D,-2.5D,-1D,-0.1D,0D);
+		List<Double> values = Arrays.asList(0D,0.1D,1D,2.5D,5D,10D);
+		
 		List<Triple<Double,Double,Double>> tmpData2 = new ArrayList<>();
+		
 		for (Cutoff c: binned) {
 			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
-				tmpData2.add(Triple.create(c.getValue(), prevalence, 
-						c.cost(prevalence, valueTP, valueFN, valueFP, valueTN)));
+				for (Double valueTP2: values) {
+					for (Double valueTN2: values) {
+						for (Double valueFP2: costs) {
+							for (Double valueFN2: costs) {						
+								if (c.isSolvable(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)) {
+								tmpData2.add(Triple.create(
+										c.getValue(),
+										c.nonDimValue(prevalence, valueTP2, valueFN2, valueFP2, valueTN2), 
+										c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)));
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		
