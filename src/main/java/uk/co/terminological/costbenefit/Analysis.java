@@ -249,7 +249,7 @@ public class Analysis {
 												StringUtils.joinWith("\t",prevalence, valueTP2, valueFN2, valueFP2, valueTN2,c));
 										System.out.println(c);
 										System.out.println(c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2));
-										throw new RuntimeException();
+										// throw new RuntimeException();
 									}
 								tmpData2.add(Triple.create(
 										c.getValue(),
