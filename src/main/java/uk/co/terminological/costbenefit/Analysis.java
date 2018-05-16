@@ -237,7 +237,7 @@ public class Analysis {
 		List<Triple<Double,Double,Double>> tmpData2 = new ArrayList<>();
 		
 		for (Cutoff c: binned) {
-			for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.1D) {
+			for (double prevalence = 0.1D; prevalence <1.01D; prevalence += 0.1D) {
 				for (Double valueTP2: values) {
 					for (Double valueTN2: values) {
 						for (Double valueFP2: costs) {
