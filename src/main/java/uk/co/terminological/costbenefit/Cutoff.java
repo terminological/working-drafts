@@ -131,11 +131,13 @@ public class Cutoff {
 	
 	public Boolean isSolvable(Double prevalence, Double valueTP, Double valueFN, Double valueFP, Double valueTN) {
 		return
-				(0 <= (valueFN*(1-prevalence)+valueFP*prevalence)*(deltaSpecificity()+deltaSensitivity())) 
+				/*(0 <= (valueFN*(1-prevalence)+valueFP*prevalence)*(deltaSpecificity()+deltaSensitivity())) 
 				&&
 				(0 >= (valueTN*(1-prevalence)+valueTP*prevalence)*(deltaSpecificity()+deltaSensitivity()))
-				&&
-				(valueTN*(prevalence-1) <= valueTP*(prevalence));
+				&&*/
+				(valueFN*(prevalence-1) <= valueTP*(prevalence)) &&
+				(valueTN*(prevalence-1) <= valueTP*(prevalence)) &&
+				(valueTN*(prevalence-1) <= valueFP*(prevalence));
 	}
 		
 	
