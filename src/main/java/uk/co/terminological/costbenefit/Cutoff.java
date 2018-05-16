@@ -137,7 +137,9 @@ public class Cutoff {
 				&&*/
 				(valueFN*(prevalence-1) <= valueTP*(prevalence)) &&
 				(valueTN*(prevalence-1) <= valueTP*(prevalence)) &&
-				(valueTN*(prevalence-1) <= valueFP*(prevalence));
+				(valueTN*(prevalence-1) <= valueFP*(prevalence)) &&
+				(valueFP*(prevalence-1) >= valueFN*(prevalence))
+				;
 	}
 		
 	
