@@ -133,7 +133,9 @@ public class Cutoff {
 		return
 				(0 <= (valueFN*(1-prevalence)+valueFP*prevalence)*(deltaSpecificity()+deltaSensitivity())) 
 				&&
-				(0 >= (valueTN*(1-prevalence)+valueTP*prevalence)*(deltaSpecificity()+deltaSensitivity()));
+				(0 >= (valueTN*(1-prevalence)+valueTP*prevalence)*(deltaSpecificity()+deltaSensitivity()))
+				&&
+				(valueTN*(prevalence-1) <= valueTP*(prevalence));
 	}
 		
 	
