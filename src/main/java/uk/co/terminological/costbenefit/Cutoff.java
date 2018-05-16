@@ -125,4 +125,8 @@ public class Cutoff {
 				+ (valueTN-valueFN)*prevalence*deltaSpecificity();
 	}
 	
+	public Double nonDimValue(Double prevalence, Double valueTP, Double valueFN, Double valueFP, Double valueTN) {
+		return (valueTN-valueFN)/(valueTP-valueFP)*prevalence/(1-prevalence);
+	}
+	
 }
