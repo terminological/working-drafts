@@ -80,6 +80,13 @@ public class Cutoff {
 		return deltaGX;
 	}
 
+	Double d2GX = null;
+	public Double d2Sensitivity() {
+		if (d2GX == null) d2GX = 
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 2, resolution), false, index, c -> c.sensitivity());
+		return d2GX;
+	}
+	
 	Double smoothedHX = null;
 	public Double smoothedSpecificity() {
 		if (smoothedHX == null) smoothedHX = SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, resolution), false, index, c -> c.specificity());
@@ -91,6 +98,13 @@ public class Cutoff {
 		if (deltaHX == null) deltaHX = 
 				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.specificity()); //?smoothedSpecificity
 		return deltaHX;
+	}
+	
+	Double d2HX = null;
+	public Double d2Specificity() {
+		if (d2HX == null) d2HX = 
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 2, resolution), false, index, c -> c.specificity()); //?smoothedSpecificity
+		return d2HX;
 	}
 	
 	public Double cumulativeProbability() {
@@ -129,16 +143,21 @@ public class Cutoff {
 		return (valueTN-valueFN)/(valueTP-valueFP)*prevalence/(1-prevalence);
 	}
 	
+	//I think this is necessary but not sufficient.
+	//This function just means there is some value of cutoff that is positive - it doesn't mean every value is.
+	// it could also be finding minima
 	public Boolean isSolvable(Double prevalence, Double valueTP, Double valueFN, Double valueFP, Double valueTN) {
+		Double dValueTotByDx = valueTP*prevalence*deltaSensitivity()-valueFP*prevalence*deltaSensitivity()+valueTN*(1-prevalence)*deltaSpecificity()-valueFN*(1-prevalence)*deltaSpecificity();
+		Double d2ValueTotByDx = valueTP*prevalence*d2Sensitivity()-valueFP*prevalence*d2Sensitivity()+valueTN*(1-prevalence)*d2Specificity()-valueFN*(1-prevalence)*d2Specificity();
 		return
-				/*(0 <= (valueFN*(1-prevalence)+valueFP*prevalence)*(deltaSpecificity()+deltaSensitivity())) 
-				&&
-				(0 >= (valueTN*(1-prevalence)+valueTP*prevalence)*(deltaSpecificity()+deltaSensitivity()))
-				&&*/
-				(valueFN*(prevalence-1) <= valueTP*(prevalence)) &&
-				(valueTN*(prevalence-1) <= valueTP*(prevalence)) &&
-				(valueTN*(prevalence-1) <= valueFP*(prevalence)) &&
-				(valueFP*(prevalence-1) >= valueFN*(prevalence))
+				(0.1D > dValueTotByDx && dValueTotByDx > -0.1D) 
+				&& d2ValueTotByDx < 0
+				// && (0 <= (valueFN*(1-prevalence)+valueFP*prevalence)*(deltaSpecificity()+deltaSensitivity())) 
+				// && (0 >= (valueTN*(1-prevalence)+valueTP*prevalence)*(deltaSpecificity()+deltaSensitivity()))
+				&& (valueFN*(prevalence-1) <= valueTP*(prevalence))
+				&& (valueTN*(prevalence-1) <= valueTP*(prevalence))
+				&& (valueTN*(prevalence-1) <= valueFP*(prevalence))
+				&& (valueFP*(prevalence-1) >= valueFN*(prevalence))
 				;
 	}
 		

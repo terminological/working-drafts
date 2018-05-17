@@ -243,18 +243,22 @@ public class Analysis {
 						for (Double valueFP2: costs) {
 							for (Double valueFN2: costs) {						
 								if (c.isSolvable(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)) {
-									
 									if (c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)<0) {
+										//this should never happen - but it does.
+										//maybe this is also finding minima.
 										System.out.println(
-												StringUtils.joinWith("\t",prevalence, valueTP2, valueFN2, valueFP2, valueTN2,c));
+												StringUtils.joinWith("\t",c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2),
+														prevalence, valueTP2, valueFN2, valueFP2, valueTN2));
 										System.out.println(c);
-										System.out.println(c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2));
 										// throw new RuntimeException();
 									}
-								tmpData2.add(Triple.create(
-										c.getValue(),
-										c.nonDimValue(prevalence, valueTP2, valueFN2, valueFP2, valueTN2), 
-										c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)));
+								}
+								//This shoudl have been ensured by the issolvable function but this seems to be flaky
+								if (c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)>0) {
+									tmpData2.add(Triple.create(
+											c.getValue(),
+											c.nonDimValue(prevalence, valueTP2, valueFN2, valueFP2, valueTN2), 
+											c.cost(prevalence, valueTP2, valueFN2, valueFP2, valueTN2)));
 								}
 							}
 						}
