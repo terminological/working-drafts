@@ -2,7 +2,6 @@ package uk.co.terminological.costbenefit;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
-import static uk.co.terminological.simplechart.Chart.Dimension.Y_FIT;
 
 import java.io.File;
 import java.io.IOException;
