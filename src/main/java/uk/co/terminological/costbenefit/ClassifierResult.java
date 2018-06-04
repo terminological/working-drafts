@@ -91,7 +91,7 @@ public class ClassifierResult {
 				pred = preds.next();
 			}
 			falseNeg += pred.getActual() ? 1 : 0;
-			points.add(pred.getPredicted(), sensitivity(falseNeg));
+			points.add(pred.getPredicted(), 1-sensitivity(falseNeg));
 		}
 		// this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), 1-c.sensitivity()));
 		
