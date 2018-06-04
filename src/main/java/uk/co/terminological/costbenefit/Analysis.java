@@ -53,6 +53,8 @@ public class Analysis {
 				Double.parseDouble(m.get("prob_pos"))))
 		.forEach(p -> res.add(p));
 
+		
+		
 		Cutoff.List binned = res.getCutoffs(0.01D);
 		
 		System.out.println(Cutoff.columns());
@@ -63,7 +65,8 @@ public class Analysis {
 		//Double xIntercept = (binned.get(i-1).deltaFOverGPrime()*binned.get(i-1).getValue()+binned.get(i).deltaFOverGPrime()*binned.get(i).getValue()) / 
 		//		(binned.get(i-1).getValue()+binned.get(i).getValue());
 
-		
+		res.getFittedSensitivity().plot(output.toFile());
+		res.getFittedSpecificity().plot(output.toFile());
 
 		Figure.Data<Cutoff> figures = Figure.outputTo(output.toFile())
 				.withDefaultData(binned);
