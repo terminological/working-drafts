@@ -8,12 +8,14 @@ import org.apache.commons.lang3.StringUtils;
 public class Cutoff {
 
 	public static class List extends ArrayList<Cutoff> {
+
 		Double resolution;
 		public Double getResolution() {return resolution;} 
 		public List(Double resolution) {
 			super();
 			this.resolution = resolution;
 		}
+		
 	}
 	
 	Double value;
