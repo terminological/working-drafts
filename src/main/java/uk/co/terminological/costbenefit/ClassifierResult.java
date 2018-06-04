@@ -79,10 +79,11 @@ public class ClassifierResult {
 	
 	public Kumaraswamy.Fitted getFittedSensitivity() {
 		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
-		int falseNeg = 0;
 		WeightedObservedPoints points = new WeightedObservedPoints();
 		
-		/*for (Prediction pred: getPredictions()) {
+		/*
+		int falseNeg = 0;
+		for (Prediction pred: getPredictions()) {
 			double x = pred.getPredicted();
 			falseNeg += pred.getActual() ? 1 : 0;
 			points.add(x, sensitivity(falseNeg));
