@@ -1,21 +1,30 @@
 package uk.co.terminological.costbenefit;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
 public class Cutoff {
 
+	public static class List extends ArrayList<Cutoff> {
+		Double resolution;
+		public Double getResolution() {return resolution;} 
+		public List(Double resolution) {
+			super();
+			this.resolution = resolution;
+		}
+	}
+	
 	Double value;
 	Integer falseNegatives;
 	Integer predictedNegatives;
 	Integer totalPositives;
 	Integer total;
-	List<Cutoff> all;
+	List all;
 	int index;
-	Double resolution;
-
-	public Cutoff(Double value, Integer falseNegatives, Integer predictedNegatives, Integer totalPositives, Integer total, List<Cutoff> all, int index, Double resolution) {
+	
+	public Cutoff(Double value, Integer falseNegatives, Integer predictedNegatives, Integer totalPositives, Integer total, List all, int index) {
 		super();
 		this.value = value;
 		this.falseNegatives = falseNegatives;
@@ -24,7 +33,7 @@ public class Cutoff {
 		this.totalPositives = totalPositives;
 		this.all = all;
 		this.index = index;
-		this.resolution = resolution;
+		
 	}
 	
 	public static String columns() {
@@ -69,41 +78,41 @@ public class Cutoff {
 
 	Double smoothedGX = null;
 	public Double smoothedSensitivity() {
-		if (smoothedGX == null) smoothedGX = SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, resolution), false, index, c -> c.sensitivity());
+		if (smoothedGX == null) smoothedGX = SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, all.getResolution()), false, index, c -> c.sensitivity());
 		return smoothedGX;
 	}
 	
 	Double deltaGX = null;
 	public Double deltaSensitivity() {
 		if (deltaGX == null) deltaGX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.sensitivity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, all.getResolution()), false, index, c -> c.sensitivity());
 		return deltaGX;
 	}
 
 	Double d2GX = null;
 	public Double d2Sensitivity() {
 		if (d2GX == null) d2GX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 2, resolution), false, index, c -> c.sensitivity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 2, all.getResolution()), false, index, c -> c.sensitivity());
 		return d2GX;
 	}
 	
 	Double smoothedHX = null;
 	public Double smoothedSpecificity() {
-		if (smoothedHX == null) smoothedHX = SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, resolution), false, index, c -> c.specificity());
+		if (smoothedHX == null) smoothedHX = SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, all.getResolution()), false, index, c -> c.specificity());
 		return smoothedHX;
 	}
 	
 	Double deltaHX = null;
 	public Double deltaSpecificity() {
 		if (deltaHX == null) deltaHX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, resolution), false, index, c -> c.specificity()); //?smoothedSpecificity
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 1, all.getResolution()), false, index, c -> c.specificity()); //?smoothedSpecificity
 		return deltaHX;
 	}
 	
 	Double d2HX = null;
 	public Double d2Specificity() {
 		if (d2HX == null) d2HX = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 2, resolution), false, index, c -> c.specificity()); //?smoothedSpecificity
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 2, all.getResolution()), false, index, c -> c.specificity()); //?smoothedSpecificity
 		return d2HX;
 	}
 	
@@ -113,13 +122,13 @@ public class Cutoff {
 	
 	public Double probabilityDensity() {
 		if (index == 0) return cumulativeProbability();
-		return ((double) (predictedNegatives-all.get(index-1).predictedNegatives))/total/resolution;
+		return ((double) (predictedNegatives-all.get(index-1).predictedNegatives))/total/all.getResolution();
 	}
 	
 	Double smoothPD = null;
 	public Double smoothedProbabilityDensity() {
 		if (smoothPD == null) smoothPD = 
-				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, resolution), false, index, c -> c.probabilityDensity());
+				SavitzkyGolay.convolute(all, SavitzkyGolay.filter(25, 3, 0, all.getResolution()), false, index, c -> c.probabilityDensity());
 		return smoothPD;
 	}
 	
