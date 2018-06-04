@@ -112,7 +112,7 @@ public class ClassifierResult {
 				pred = preds.next();
 			}
 			trueNeg += pred.getActual() ? 0 : 1;
-			points.add(pred.getPredicted(), sensitivity(trueNeg));
+			points.add(pred.getPredicted(), specificity(trueNeg));
 		}
 		
 		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
