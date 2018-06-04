@@ -2,10 +2,9 @@ package uk.co.terminological.costbenefit;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
-import static uk.co.terminological.simplechart.Chart.Dimension.Z;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y_FIT;
+import static uk.co.terminological.simplechart.Chart.Dimension.Z;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +19,6 @@ import com.google.common.collect.Lists;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.CoordinateFinder.Coordinate;
-import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
 import uk.co.terminological.costbenefit.Kumaraswamy.Fitted;
 import uk.co.terminological.datatypes.EavMap;
