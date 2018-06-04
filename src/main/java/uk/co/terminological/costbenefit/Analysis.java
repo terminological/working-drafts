@@ -123,6 +123,7 @@ public class Analysis {
 	figures.withNewChart("gprimex plus hprimex", ChartType.XY_LINE)
 		.bind(X, t -> t.getValue())
 		.bind(Y, t -> t.deltaSensitivity()+t.deltaSpecificity())
+		.bind(Y_FIT, t -> fitSens.gradient(t.getValue())+fitSpec.gradient(t.getValue()))
 		.withAxes("cutoff","rate of change specificity+sensitivity: g'(x)+h'(x)")
 		.config().withXScale(0F, 1F)
 		.render();
