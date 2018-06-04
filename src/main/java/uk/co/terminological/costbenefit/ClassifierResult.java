@@ -86,6 +86,7 @@ public class ClassifierResult {
 			double x = pred.getPredicted();
 			falseNeg += pred.getActual() ? 1 : 0;
 			points.add(x, sensitivity(falseNeg));
+			System.out.println(x+"\t"+sensitivity(falseNeg));
 		}
 		
 		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
