@@ -82,12 +82,14 @@ public class ClassifierResult {
 		int falseNeg = 0;
 		WeightedObservedPoints points = new WeightedObservedPoints();
 		
-		for (Prediction pred: getPredictions()) {
+		/*for (Prediction pred: getPredictions()) {
 			double x = pred.getPredicted();
 			falseNeg += pred.getActual() ? 1 : 0;
 			points.add(x, sensitivity(falseNeg));
 			System.out.println(x+"\t"+sensitivity(falseNeg));
-		}
+		}*/
+		
+		this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), c.sensitivity()));
 		
 		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
 	}
