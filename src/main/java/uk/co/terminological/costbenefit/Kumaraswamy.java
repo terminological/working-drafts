@@ -48,4 +48,22 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 				,b);
 	}
 
+	public static class Fitted extends Kumaraswamy {
+		
+		double a;
+		double b;
+		
+		public Fitted(double[] params) {
+			a = params[0];
+			b = params[1];
+		}
+		
+		public double value(double x) {
+			return value(x, new double[] {a,b});
+		}
+		
+		public double gradient(double x) {
+			return a*b*Math.pow(x, a-1)*Math.pow(1-Math.pow(x, a), b-1);
+		}
+	}
 }
