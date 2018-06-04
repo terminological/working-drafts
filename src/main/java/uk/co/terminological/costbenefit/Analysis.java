@@ -65,7 +65,7 @@ public class Analysis {
 		//Double xIntercept = (binned.get(i-1).deltaFOverGPrime()*binned.get(i-1).getValue()+binned.get(i).deltaFOverGPrime()*binned.get(i).getValue()) / 
 		//		(binned.get(i-1).getValue()+binned.get(i).getValue());
 
-		res.getFittedSensitivity().plot(output.toFile());
+		//res.getFittedSensitivity().plot(output.toFile());
 		res.getFittedSpecificity().plot(output.toFile());
 
 		Figure.Data<Cutoff> figures = Figure.outputTo(output.toFile())
