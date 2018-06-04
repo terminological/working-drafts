@@ -90,7 +90,7 @@ public class ClassifierResult {
 			System.out.println(x+"\t"+sensitivity(falseNeg));
 		}*/
 		
-		this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), c.sensitivity()));
+		this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), 1-c.sensitivity()));
 		
 		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
 	}
