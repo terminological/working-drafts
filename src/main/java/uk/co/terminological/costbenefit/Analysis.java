@@ -76,8 +76,8 @@ public class Analysis {
 		
 		figures.withNewChart("gx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
-			.bind(Y, t -> fitSens.value(t.getValue())) //t.smoothedSensitivity())
-			.bind(Y_FIT, t -> t.sensitivity())
+			.bind(Y_FIT, t -> fitSens.value(t.getValue())) //t.smoothedSensitivity())
+			.bind(Y, t -> t.sensitivity())
 			.withAxes("cutoff","sensitivity - g(x)")
 			.config().withXScale(0F, 1F)
 			.withYScale(0F, 1F)
@@ -85,8 +85,8 @@ public class Analysis {
 		
 		figures.withNewChart("hx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
-			.bind(Y, t -> fitSpec.value(t.getValue()))//t.smoothedSpecificity())
-			.bind(Y_FIT, t -> t.specificity())
+			.bind(Y_FIT, t -> fitSpec.value(t.getValue()))//t.smoothedSpecificity())
+			.bind(Y, t -> t.specificity())
 			.withAxes("cutoff","specificity - h(x)")
 			.config().withXScale(0F, 1F).withYScale(0F, 1F)
 			.render();
