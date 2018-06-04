@@ -109,6 +109,7 @@ public class Analysis {
 		figures.withNewChart("gprimex", ChartType.XY_LINE)
 		.bind(X, t -> t.getValue())
 		.bind(Y, t -> t.deltaSensitivity())
+		.bind(Y_FIT, t -> fitSens.gradient(t.getValue()))
 		.withAxes("cutoff","rate of change sensitivity: g'(x)")
 		.config().withXScale(0F, 1F)
 		.render();
@@ -116,6 +117,7 @@ public class Analysis {
 	figures.withNewChart("hprimex", ChartType.XY_LINE)
 		.bind(X, t -> t.getValue())
 		.bind(Y, t -> t.deltaSpecificity())
+		.bind(Y_FIT, t -> fitSpec.gradient(t.getValue()))
 		.withAxes("cutoff","rate of change specificity: h'(x)")
 		.config().withXScale(0F, 1F)
 		.render();
