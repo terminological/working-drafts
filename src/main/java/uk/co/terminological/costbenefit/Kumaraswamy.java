@@ -34,6 +34,7 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 	public double[] gradient(double x, double... parameters) throws NullArgumentException, DimensionMismatchException {
 		if (parameters.length != 2) throw new DimensionMismatchException(parameters.length, 2);
 		if (x < 0 || x > 1) throw new NullArgumentException();
+		if (x==0 || x==1) return new double[] {0,0};
 		double a = parameters[0];
 		double b = parameters[1];
 		double xa = Math.pow(x, a); 
