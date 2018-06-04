@@ -1,8 +1,17 @@
 package uk.co.terminological.costbenefit;
 
+import static uk.co.terminological.simplechart.Chart.Dimension.X;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y_FIT;
+
+import java.io.File;
+
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.NullArgumentException;
+
+import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.Figure;
 
 /**
  * Implementation of a parametric Kumaraswamy distribution where we fit the cumulative distribution function
@@ -65,5 +74,23 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 		public double gradient(double x) {
 			return a*b*Math.pow(x, a-1)*Math.pow(1-Math.pow(x, a), b-1);
 		}
+		
+		public String toString() {
+			return "a="+Double.toString(a)+"; b="+Double.toString(b);
+		}
+		
+		public void plot(File outfile) {
+			Figure.Data<Double> figures = Figure.outputTo(outfile)
+					.withDefaultData(Figure.Parameter.fromRange(0,1));
+			
+			figures.withNewChart("gx", ChartType.XY_LINE)
+				.bind(X, x -> x)
+				.bind(Y, x -> value(x))
+				.withAxes("x","kumaraswamy")
+				.config().withTitle(this.toString())
+				.withXScale(0F, 1F)
+				.render();
+		}
+		
 	}
 }
