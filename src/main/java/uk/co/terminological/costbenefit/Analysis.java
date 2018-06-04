@@ -51,9 +51,9 @@ public class Analysis {
 		.map(m -> new Prediction(
 				convert01TF.apply(m.get("actual")),
 				Double.parseDouble(m.get("prob_pos"))))
-		.forEach(p -> res.add(p));;
+		.forEach(p -> res.add(p));
 
-		List<Cutoff> binned = res.getCutoffs();
+		Cutoff.List binned = res.getCutoffs(0.01D);
 		
 		System.out.println(Cutoff.columns());
 		binned.stream().forEach(System.out::println);
