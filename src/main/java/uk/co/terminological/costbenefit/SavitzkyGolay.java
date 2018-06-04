@@ -10,6 +10,8 @@ import java.util.function.Function;
 
 public class SavitzkyGolay {
 
+	//TODO: https://dsp.stackexchange.com/questions/1676/savitzky-golay-smoothing-filter-for-not-equally-spaced-data
+	
 	//https://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter#Appendix
 
 	static double[] smooth_5_cubic() {return new double[]{-3D/35,12D/35,17D/35,12D/35,-3D/35};}
