@@ -23,6 +23,7 @@ import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.CoordinateFinder.Coordinate;
 import uk.co.terminological.costbenefit.CoordinateFinder.Inflexions;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
+import uk.co.terminological.costbenefit.Kumaraswamy.Fitted;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
@@ -65,33 +66,36 @@ public class Analysis {
 		//Double xIntercept = (binned.get(i-1).deltaFOverGPrime()*binned.get(i-1).getValue()+binned.get(i).deltaFOverGPrime()*binned.get(i).getValue()) / 
 		//		(binned.get(i-1).getValue()+binned.get(i).getValue());
 
-		res.getFittedSensitivity().plot(output.toFile(),"fitted sensitivity");
-		res.getFittedSpecificity().plot(output.toFile(),"fitted specificity");
+		Fitted fitSens = res.getFittedSensitivity(); 
+		fitSens.plot(output.toFile(),"fitted sensitivity");
+		Fitted fitSpec = res.getFittedSpecificity();
+		fitSpec.plot(output.toFile(),"fitted specificity");
 
 		Figure.Data<Cutoff> figures = Figure.outputTo(output.toFile())
 				.withDefaultData(binned);
 		
 		figures.withNewChart("gx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
-			.bind(Y, t -> t.smoothedSensitivity())
+			.bind(Y, t -> fitSens.value(t.getValue())) //t.smoothedSensitivity())
 			.bind(Y_FIT, t -> t.sensitivity())
 			.withAxes("cutoff","sensitivity - g(x)")
 			.config().withXScale(0F, 1F)
+			.withYScale(0F, 1F)
 			.render();
 		
 		figures.withNewChart("hx", ChartType.XY_LINE)
 			.bind(X, t -> t.getValue())
-			.bind(Y, t -> t.smoothedSpecificity())
+			.bind(Y, t -> fitSpec.value(t.getValue()))//t.smoothedSpecificity())
 			.bind(Y_FIT, t -> t.specificity())
 			.withAxes("cutoff","specificity - h(x)")
-			.config().withXScale(0F, 1F)
+			.config().withXScale(0F, 1F).withYScale(0F, 1F)
 			.render();
 		
 		figures.withNewChart("roc", ChartType.XY_LINE)
 			.bind(X, t -> 1-t.sensitivity())
 			.bind(Y, t -> t.specificity())
 			.withAxes("1-sensitivity","specificity")
-			.config().withXScale(0F, 1F)
+			.config().withXScale(0F, 1F).withYScale(0F, 1F)
 			.render();
 		
 		figures.withNewChart("fx", ChartType.XY_LINE)
