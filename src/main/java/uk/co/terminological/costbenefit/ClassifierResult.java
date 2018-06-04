@@ -86,7 +86,7 @@ public class ClassifierResult {
 		
 		while (preds.hasNext()) {
 			Prediction pred = preds.next();
-			while (preds.peek().getPredicted() == pred.getPredicted()) {
+			while (preds.hasNext() && preds.peek().getPredicted() == pred.getPredicted()) {
 				falseNeg += pred.getActual() ? 1 : 0;
 				pred = preds.next();
 			}
@@ -107,7 +107,7 @@ public class ClassifierResult {
 		
 		while (preds.hasNext()) {
 			Prediction pred = preds.next();
-			while (preds.peek().getPredicted() == pred.getPredicted()) {
+			while (preds.hasNext() && preds.peek().getPredicted() == pred.getPredicted()) {
 				trueNeg += pred.getActual() ? 0 : 1;
 				pred = preds.next();
 			}
