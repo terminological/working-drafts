@@ -38,8 +38,7 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 		double b = parameters[1];
 		double xa = Math.pow(x, a); 
 		return new double[] {
-				b*xa*Math.pow(1-xa,b-1)*Math.log(x)
-				,
+				b*xa*Math.pow(1-xa,b-1)*Math.log(x)	,
 				-Math.pow(1-xa,b)*Math.log(1-xa)
 		};
 		
