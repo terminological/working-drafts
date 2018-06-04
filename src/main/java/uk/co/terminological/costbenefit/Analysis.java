@@ -196,7 +196,7 @@ public class Analysis {
 		for (double prevalence = 0D; prevalence <1.01D; prevalence += 0.01D) {
 			final double tmp2 = prevalence;
 			Interceptions inter = CoordinateFinder.intercept(0D, 
-					Lists.transform(binned, c->c.deltaCost(tmp2, valueTP,valueFN, valueFP, valueTN)), res.getResolution());
+					Lists.transform(binned, c->c.deltaCost(tmp2, valueTP,valueFN, valueFP, valueTN)), binned.getResolution());
 			for (Coordinate coord: inter.getIntercepts()) {
 				Cutoff c = res.getValue(coord.getX());
 				data.add(Tuple.create(prevalence,c));
