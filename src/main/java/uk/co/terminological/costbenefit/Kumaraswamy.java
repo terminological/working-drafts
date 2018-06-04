@@ -85,7 +85,7 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 			Figure.Data<Double> figures = Figure.outputTo(outfile)
 					.withDefaultData(Figure.Parameter.fromRange(0,1));
 			
-			figures.withNewChart("gx", ChartType.XY_LINE)
+			figures.withNewChart("kumaraswamy", ChartType.XY_LINE)
 				.bind(X, x -> x)
 				.bind(Y, x -> value(x))
 				.withAxes("x","kumaraswamy")
