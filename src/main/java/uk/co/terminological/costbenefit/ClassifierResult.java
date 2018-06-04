@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections4.iterators.PeekingIterator;
+import org.apache.commons.math3.fitting.SimpleCurveFitter;
 
 public class ClassifierResult {
 
@@ -41,29 +42,27 @@ public class ClassifierResult {
 		return total;
 	}
 
-	public List<Cutoff> getCutoffs() {
-
+	/**
+	 * generates a list of classifier performance metrics based on a 
+	 * @return
+	 */
+	public Cutoff.List getCutoffs(Double resolution) {
 		PeekingIterator<Prediction> preds = new PeekingIterator<>(getPredictions().iterator()); 
 		Cutoff c = null;
-		List<Cutoff> out = new ArrayList<>();
+		Cutoff.List out = new Cutoff.List(resolution);
 
 		int predNeg = 0;
 		int falseNeg = 0;
 
 		for (Double i=resolution; i<1D; i+=resolution) {
-
 			while (preds.hasNext() && preds.peek().getPredicted() < i) {
 				predNeg += 1;
 				falseNeg += preds.next().getActual() ? 1 : 0;
 			}
-
-			c = new Cutoff(i, falseNeg, predNeg, totalPositive(), total(), out, out.size(), resolution);
+			c = new Cutoff(i, falseNeg, predNeg, totalPositive(), total(), out, out.size());
 			out.add(c);
-
 		}
-
 		return out;
-
 	}
 	
 	public Cutoff getValue(Double cutoff) {
@@ -79,6 +78,12 @@ public class ClassifierResult {
 
 		Cutoff c = new Cutoff(cutoff, falseNeg, predNeg, totalPositive(), total(), null,0,null); //out, out.size(), resolution); //replace with "this". resolution can be stored. out.size is position term.
 		return c;
+	}
+	
+	public Kumaraswamy.Fitted getFittedSensitivity() {
+		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
+		
+		fitter.
 	}
 
 }
