@@ -5,11 +5,13 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y_FIT;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.NullArgumentException;
 
+import freemarker.template.TemplateException;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.Figure;
 
@@ -79,7 +81,7 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 			return "a="+Double.toString(a)+"; b="+Double.toString(b);
 		}
 		
-		public void plot(File outfile) {
+		public void plot(File outfile) throws IOException, TemplateException {
 			Figure.Data<Double> figures = Figure.outputTo(outfile)
 					.withDefaultData(Figure.Parameter.fromRange(0,1));
 			
