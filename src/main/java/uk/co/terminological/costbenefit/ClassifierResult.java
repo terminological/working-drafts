@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.collections4.iterators.PeekingIterator;
 import org.apache.commons.math3.fitting.SimpleCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 public class ClassifierResult {
 
@@ -78,10 +79,32 @@ public class ClassifierResult {
 	
 	public Kumaraswamy.Fitted getFittedSensitivity() {
 		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
+		int falseNeg = 0;
+		WeightedObservedPoints points = new WeightedObservedPoints();
 		
-		fitter.
+		for (Prediction pred: getPredictions()) {
+			double x = pred.getPredicted();
+			falseNeg += pred.getActual() ? 1 : 0;
+			points.add(x, sensitivity(falseNeg));
+		}
+		
+		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
 	}
 
+	public Kumaraswamy.Fitted getFittedSpecificity() {
+		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
+		int trueNeg = 0;
+		WeightedObservedPoints points = new WeightedObservedPoints();
+		
+		for (Prediction pred: getPredictions()) {
+			double x = pred.getPredicted();
+			trueNeg += pred.getActual() ? 0 : 1;
+			points.add(x, specificity(trueNeg));
+		}
+		
+		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
+	}
+	
 	public double sensitivity(int falseNeg) {
 		// sensitivity = true positive rate = 1 - false negative rate
 		return 1D - ((double) falseNeg) / totalPositive();
