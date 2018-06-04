@@ -95,7 +95,7 @@ public class ClassifierResult {
 		}
 		// this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), 1-c.sensitivity()));
 		
-		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
+		return new Kumaraswamy.Fitted(fitter.fit(points.toList()), true);
 	}
 
 	public Kumaraswamy.Fitted getFittedSpecificity() {
@@ -115,7 +115,7 @@ public class ClassifierResult {
 			points.add(pred.getPredicted(), specificity(trueNeg));
 		}
 		
-		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
+		return new Kumaraswamy.Fitted(fitter.fit(points.toList()), false);
 	}
 	
 	public double sensitivity(int falseNeg) {

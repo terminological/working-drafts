@@ -63,32 +63,37 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 		
 		double a;
 		double b;
+		boolean invert;
 		
-		public Fitted(double[] params) {
+		public Fitted(double[] params, boolean c) {
 			a = params[0];
 			b = params[1];
+			invert = c;
 		}
 		
 		public double value(double x) {
-			return value(x, new double[] {a,b});
+			return invert ? 
+					1-value(x, new double[] {a,b}) :
+					value(x, new double[] {a,b});
 		}
 		
 		public double gradient(double x) {
-			return a*b*Math.pow(x, a-1)*Math.pow(1-Math.pow(x, a), b-1);
+			return (invert ? -1 : 1)*
+					a*b*Math.pow(x, a-1)*Math.pow(1-Math.pow(x, a), b-1);
 		}
 		
 		public String toString() {
 			return "a="+Double.toString(a)+"; b="+Double.toString(b);
 		}
 		
-		public void plot(File outfile) throws IOException, TemplateException {
+		public void plot(File outfile, String name) throws IOException, TemplateException {
 			Figure.Data<Double> figures = Figure.outputTo(outfile)
 					.withDefaultData(Figure.Parameter.fromRange(0,1));
 			
-			figures.withNewChart("kumaraswamy", ChartType.XY_LINE)
+			figures.withNewChart(name, ChartType.XY_LINE)
 				.bind(X, x -> x)
 				.bind(Y, x -> value(x))
-				.withAxes("x","kumaraswamy")
+				.withAxes("x","cumulative")
 				.config().withTitle(this.toString())
 				.withXScale(0F, 1F)
 				.render();
