@@ -14,6 +14,11 @@ import org.apache.commons.math3.exception.NullArgumentException;
  */
 public class Kumaraswamy implements ParametricUnivariateFunction {
 
+	/**
+	 * dx/da = b*x^a*(1-x^a)^(b-1)*log(x)
+	 * 
+	 * dx/db = -(1-x^a)^b*log(1-x^a)
+	 */
 	@Override
 	public double[] gradient(double x, double... parameters) throws NullArgumentException, DimensionMismatchException {
 		if (parameters.length != 2) throw new DimensionMismatchException(parameters.length, 2);
@@ -29,6 +34,9 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 		
 	}
 
+	/**
+	 * y = 1-(1-x^a)^b
+	 */
 	@Override
 	public double value(double x, double... parameters) throws NullArgumentException, DimensionMismatchException {
 		if (parameters.length != 2) throw new DimensionMismatchException(parameters.length, 2);
