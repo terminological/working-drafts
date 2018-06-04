@@ -81,29 +81,38 @@ public class ClassifierResult {
 		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
 		WeightedObservedPoints points = new WeightedObservedPoints();
 		
-		/*
+		PeekingIterator<Prediction> preds = new PeekingIterator<>(getPredictions().iterator()); 
 		int falseNeg = 0;
-		for (Prediction pred: getPredictions()) {
-			double x = pred.getPredicted();
-			falseNeg += pred.getActual() ? 1 : 0;
-			points.add(x, sensitivity(falseNeg));
-			System.out.println(x+"\t"+sensitivity(falseNeg));
-		}*/
 		
-		this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), 1-c.sensitivity()));
+		while (preds.hasNext()) {
+			Prediction pred = preds.next();
+			while (preds.peek().getPredicted() == pred.getPredicted()) {
+				falseNeg += pred.getActual() ? 1 : 0;
+				pred = preds.next();
+			}
+			falseNeg += pred.getActual() ? 1 : 0;
+			points.add(pred.getPredicted(), sensitivity(falseNeg));
+		}
+		// this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), 1-c.sensitivity()));
 		
 		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
 	}
 
 	public Kumaraswamy.Fitted getFittedSpecificity() {
 		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
-		int trueNeg = 0;
 		WeightedObservedPoints points = new WeightedObservedPoints();
 		
-		for (Prediction pred: getPredictions()) {
-			double x = pred.getPredicted();
+		PeekingIterator<Prediction> preds = new PeekingIterator<>(getPredictions().iterator()); 
+		int trueNeg = 0;
+		
+		while (preds.hasNext()) {
+			Prediction pred = preds.next();
+			while (preds.peek().getPredicted() == pred.getPredicted()) {
+				trueNeg += pred.getActual() ? 0 : 1;
+				pred = preds.next();
+			}
 			trueNeg += pred.getActual() ? 0 : 1;
-			points.add(x, specificity(trueNeg));
+			points.add(pred.getPredicted(), sensitivity(trueNeg));
 		}
 		
 		return new Kumaraswamy.Fitted(fitter.fit(points.toList()));
