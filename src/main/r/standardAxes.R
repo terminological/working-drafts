@@ -14,7 +14,7 @@ plot_weekday_xaxis <- function(plot) {
            geom_vline(xintercept = 144, colour='grey')+
            geom_vline(xintercept = 168, colour='grey')+
            xlab("hours from midnight sunday") +
-           scale_x_continuous(breaks = seq(0, 24*7, 6))
+           scale_x_continuous(breaks = seq(0, 24*7, 12))
   );
 }
 
