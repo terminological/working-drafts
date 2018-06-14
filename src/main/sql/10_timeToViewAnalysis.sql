@@ -32,6 +32,13 @@ CREATE TABLE [dbo].[aggTimeToView](
 	[first_user_id] [int] NULL,
 	[patient_age] [int] NULL,
 	[patient_gender] [varchar](11) NULL,
+	[emis] [int] NULL,
+	[nhsnos] [int] NULL,
+	[mrns] [int] NULL,
+	[rba_mrns] [int] NULL,
+	[patient_id_updated] [int] NULL,
+	[same_graph] [int] NULL,
+	[tsft_test] [int] NULL,
 	INDEX X_internal_id (internal_id),
 	INDEX X_first_viewed_date (first_viewed_date),
 	INDEX X_discipline_name (discipline_name),
@@ -39,6 +46,13 @@ CREATE TABLE [dbo].[aggTimeToView](
 	INDEX X_ward_name (ward_name),
 	INDEX X_dependency_level (dependency_level)
 ) ON [PRIMARY];
+
+USE [RobsDatabase]
+GO
+
+
+
+
 
 CREATE CLUSTERED INDEX X_date on dbo.aggTimeToView (date);
 GO
@@ -67,14 +81,22 @@ SELECT
 	IIF(Y.total_views IS NULL, 0, Y.total_views) as total_views, 
 	Y.first_user_id,
 	YEAR(t.date)-p.year_of_birth as patient_age,
-	p.sex as patient_gender
+	p.sex as patient_gender,
+	z.emis,
+	z.nhsnos,
+	z.mrns,
+	z.rba_mrns,
+	z.patient_id_updated,
+	z.same_graph,
+	z.tsft_test
 from
 	tsftRequestedTest t 
 	INNER JOIN tsftInpatientLocations loc ON  loc.location_id = t.location_id
 	INNER JOIN tsftUniquePatientIndex p ON t.patient_id = p.patient_id
 	LEFT OUTER JOIN tsftFirstResultView Y on t.internal_id = Y.report_id
-WHERE date <= '20170930'
-and date >= '20121001'
+	LEFT OUTER JOIN tsftIdResult z on t.internal_id=z.internal_id
+WHERE t.date <= '20170930'
+and t.date >= '20121001'
 order by date desc
 GO
 
