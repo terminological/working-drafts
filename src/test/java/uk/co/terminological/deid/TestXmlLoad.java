@@ -95,7 +95,7 @@ public class TestXmlLoad {
 	    List<RelationTriple> relations =
 	        document.sentences().get(4).relations();
 	    System.out.println("Example: relation");
-	    System.out.println(relations.get(0));
+	    if (relations.size() > 0) System.out.println(relations.get(0));
 	    System.out.println();
 
 	    // entity mentions in the second sentence
@@ -105,12 +105,14 @@ public class TestXmlLoad {
 	    System.out.println();
 
 	    // coreference between entity mentions
+	    if (document.sentences().get(3).entityMentions().size() > 0) {
 	    CoreEntityMention originalEntityMention = document.sentences().get(3).entityMentions().get(1);
 	    System.out.println("Example: original entity mention");
 	    System.out.println(originalEntityMention);
 	    System.out.println("Example: canonical entity mention");
 	    System.out.println(originalEntityMention.canonicalEntityMention().get());
 	    System.out.println();
+	    }
 
 	    // get document wide coref info
 	    Map<Integer, CorefChain> corefChains = document.corefChains();
@@ -120,22 +122,24 @@ public class TestXmlLoad {
 
 	    // get quotes in document
 	    List<CoreQuote> quotes = document.quotes();
-	    CoreQuote quote = quotes.get(0);
-	    System.out.println("Example: quote");
-	    System.out.println(quote);
-	    System.out.println();
+	    if (quotes.size()>0) {
+	    	CoreQuote quote = quotes.get(0);
+	    	System.out.println("Example: quote");
+	    	System.out.println(quote);
+	    	System.out.println();
 
-	    // original speaker of quote
-	    // note that quote.speaker() returns an Optional
-	    System.out.println("Example: original speaker of quote");
-	    System.out.println(quote.speaker().get());
-	    System.out.println();
 
-	    // canonical speaker of quote
-	    System.out.println("Example: canonical speaker of quote");
-	    System.out.println(quote.canonicalSpeaker().get());
-	    System.out.println();
-		
+	    	// original speaker of quote
+	    	// note that quote.speaker() returns an Optional
+	    	System.out.println("Example: original speaker of quote");
+	    	System.out.println(quote.speaker().get());
+	    	System.out.println();
+
+	    	// canonical speaker of quote
+	    	System.out.println("Example: canonical speaker of quote");
+	    	System.out.println(quote.canonicalSpeaker().get());
+	    	System.out.println();
+	    }
 	}
 	
 }
