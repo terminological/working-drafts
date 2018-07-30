@@ -12,6 +12,8 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -31,6 +33,8 @@ public class TestI2b2Extractor {
 	
 	static final String OUTFILE = "/home/terminological/CRFmodel.ser";
 	
+	static Logger log = LoggerFactory.getLogger(TestI2b2Extractor.class);
+	
 	public static void main(String[] args) throws FileNotFoundException, IOException, XmlException {
 		BasicConfigurator.configure();
 		I2b2Extractor extr = new I2b2Extractor();
@@ -48,6 +52,7 @@ public class TestI2b2Extractor {
 		
 		out.close();
 		
+		log.info("Training model");
 		trainAndWrite(OUTFILE);
 		
 	}
