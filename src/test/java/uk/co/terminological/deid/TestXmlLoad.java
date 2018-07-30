@@ -18,7 +18,8 @@ public class TestXmlLoad {
 		System.out.print(tmp.getValue());
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TEXT[1]/TAGS").getMany(XmlElement.class)) {
 			System.out.print("NAME: "+tags.getName());
-			System.out.print("NAME: "+tags.);
+			System.out.print("ID: "+tags.getAttributeValue("id"));
+			System.out.print("ID: "+tags.getAttributeValue("start"));
 		};
 		
 	}
