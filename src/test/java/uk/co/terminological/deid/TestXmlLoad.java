@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.fluentxml.XmlText;
 
 public class TestXmlLoad {
 
@@ -11,7 +12,7 @@ public class TestXmlLoad {
 		
 		InputStream in = TestXmlLoad.class.getClassLoader().getResourceAsStream("deid/i2b2example.xml");
 		Xml xml = Xml.fromStream(in);
-		Object tmp = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne();
+		Object tmp = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class);
 		System.out.print(tmp.toString());
 		
 	}
