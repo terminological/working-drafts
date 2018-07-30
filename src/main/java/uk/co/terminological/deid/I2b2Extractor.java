@@ -79,9 +79,9 @@ public class I2b2Extractor {
 		List<Triple<Integer,Integer,String>> types = new ArrayList<Triple<Integer,Integer,String>>();
 		
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
-			System.out.println("NAME: "+tags.getName());
-			System.out.println("ID: "+tags.getAttributeValue("id"));
-			System.out.println("START: "+tags.getAttributeValue("start"));
+			// System.out.println("NAME: "+tags.getName());
+			// System.out.println("ID: "+tags.getAttributeValue("id"));
+			// System.out.println("START: "+tags.getAttributeValue("start"));
 			types.add(
 					Triple.create(
 							Integer.parseInt(tags.getAttributeValue("start")),
