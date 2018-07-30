@@ -82,7 +82,7 @@ public class TestXmlLoad {
 	    for (CoreLabel token: document.tokens()) {
 	    	
 	    	while (tok != null && token.beginPosition() > tok.getSecond()) tok = typeIt.hasNext() ? typeIt.next() : null;
-	    	boolean spanning = token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
+	    	boolean spanning = tok != null && token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
 	    	
 	    	System.out.println(
 	    			token.originalText()+"\t"+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
