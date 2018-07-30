@@ -58,7 +58,7 @@ public class TestI2b2Extractor {
 	}
 	
 	public static void trainAndWrite(String modelOutPath) {
-		String prop = TestI2b2Extractor.class.getClassLoader().getResource("deid/i2b2example.xml").getFile();
+		String prop = TestI2b2Extractor.class.getClassLoader().getResource("deid/CRFmodel.prop").getFile();
 		Properties props = StringUtils.propFileToProperties(prop);
 		props.setProperty("serializeTo", modelOutPath);
 		props.setProperty("trainFile", TRAINING_FILE);
