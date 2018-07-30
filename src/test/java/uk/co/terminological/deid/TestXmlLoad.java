@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.BasicConfigurator;
+
 import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.ie.util.RelationTriple;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -24,6 +26,7 @@ import uk.co.terminological.fluentxml.XmlText;
 public class TestXmlLoad {
 
 	public static void main(String[] args) throws XmlException {
+		BasicConfigurator.configure();
 		
 		InputStream in = TestXmlLoad.class.getClassLoader().getResourceAsStream("deid/i2b2example.xml");
 		Xml xml = Xml.fromStream(in);
