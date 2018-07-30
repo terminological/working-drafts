@@ -135,7 +135,7 @@
 		</dependency>
 		<dependency>
 			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-kbp</artifactId>
+			<artifactId>stanford-parser</artifactId>
 			<version>1.0.0</version>
 		</dependency>
 		<dependency>
