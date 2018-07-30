@@ -1,7 +1,12 @@
 package uk.co.terminological.deid;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -18,6 +23,7 @@ import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.Tree;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
@@ -34,16 +40,26 @@ public class TestXmlLoad {
 		Xml xml = Xml.fromStream(in);
 		XmlText tmp = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class);
 		System.out.print(tmp.getValue());
-		Map<Tuple<Integer,Integer>,String> types = new HashMap<>();
+		List<Triple<Integer,Integer,String>> types = new ArrayList<Triple<Integer,Integer,String>>();
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
 			System.out.println("NAME: "+tags.getName());
 			System.out.println("ID: "+tags.getAttributeValue("id"));
 			System.out.println("START: "+tags.getAttributeValue("start"));
-			types.put(Tuple.create(
-					Integer.parseInt(tags.getAttributeValue("start")),
-					Integer.parseInt(tags.getAttributeValue("end"))
-					), tags.getName()+"-"+tags.getAttributeValue("TYPE"));
+			types.add(
+					Triple.create(
+							Integer.parseInt(tags.getAttributeValue("start")),
+							Integer.parseInt(tags.getAttributeValue("end")), 
+							tags.getName()+"-"+tags.getAttributeValue("TYPE")));
 		};
+		Collections.sort(types, new Comparator<Triple<Integer,Integer,String>>() {
+			public int compare(Triple<Integer, Integer, String> arg0, Triple<Integer, Integer, String> arg1) {
+				return 
+						arg0.getFirst().compareTo(arg1.getFirst()) <> 0 ?
+								arg0.getFirst().compareTo(arg1.getFirst()):
+								arg0.getSecond().compareTo(arg1.getSecond());
+			}
+			;
+		});
 
 		
 		Properties props = new Properties();
@@ -58,14 +74,20 @@ public class TestXmlLoad {
 	    CoreDocument document = new CoreDocument(tmp.getValue());
 	    // annnotate the document
 	    pipeline.annotate(document);
+	    
 	    // examples
-
+	    Iterator<Triple<Integer,Integer,String>> typeIt = types.iterator();
+	    Triple<Integer,Integer,String> tok = typeIt.next();
 	    // 10th token of the document
 	    for (CoreLabel token: document.tokens()) {
+	    	
+	    	while (tok != null && token.beginPosition() > tok.getSecond()) tok = typeIt.hasNext() ? typeIt.next() : null;
+	    	boolean spanning = token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
+	    	
 	    	System.out.println(
 	    			token.originalText()+"\t"+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
-	    			+
-	    			types.get(Tuple.create(token.beginPosition(),token.endPosition()))
+	    			+ (spanning ? tok.getThird() : "")
+	    			 
 	    			);
 	    };
 
