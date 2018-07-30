@@ -1,6 +1,7 @@
 package uk.co.terminological.deid;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -17,6 +18,7 @@ import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.trees.Tree;
+import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
@@ -32,16 +34,22 @@ public class TestXmlLoad {
 		Xml xml = Xml.fromStream(in);
 		XmlText tmp = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class);
 		System.out.print(tmp.getValue());
+		Map<Tuple<Integer,Integer>,String> types = new HashMap<>();
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
 			System.out.println("NAME: "+tags.getName());
 			System.out.println("ID: "+tags.getAttributeValue("id"));
 			System.out.println("START: "+tags.getAttributeValue("start"));
+			types.put(Tuple.create(
+					Integer.parseInt(tags.getAttributeValue("start")),
+					Integer.parseInt(tags.getAttributeValue("end"))
+					), tags.getName()+"-"+tags.getAttributeValue("TYPE"));
 		};
 
 		
 		Properties props = new Properties();
 	    // set the list of annotators to run
-	    props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,parse,depparse,coref,kbp,quote");
+	    // props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,parse,depparse,coref,kbp,quote");
+		props.setProperty("annotators", "tokenize,ssplit,ner");
 	    // set a property for an annotator, in this case the coref annotator is being set to use the neural algorithm
 	    props.setProperty("coref.algorithm", "neural");
 	    // build pipeline
@@ -53,11 +61,15 @@ public class TestXmlLoad {
 	    // examples
 
 	    // 10th token of the document
-	    CoreLabel token = document.tokens().get(10);
-	    System.out.println("Example: token");
-	    System.out.println(token);
-	    System.out.println();
+	    for (CoreLabel token: document.tokens()) {
+	    	System.out.print(
+	    			token.originalText()+" "+token.beginPosition()+":"+token.endPosition()+" "+token.ner()+" Match:"
+	    			+
+	    			types.get(Tuple.create(token.beginPosition(),token.endPosition()))
+	    			);
+	    };
 
+	    /*
 	    // text of the first sentence
 	    String sentenceText = document.sentences().get(0).text();
 	    System.out.println("Example: sentence");
@@ -140,6 +152,7 @@ public class TestXmlLoad {
 	    	System.out.println(quote.canonicalSpeaker().get());
 	    	System.out.println();
 	    }
+	    */
 	}
 	
 }
