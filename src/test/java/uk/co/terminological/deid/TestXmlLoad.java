@@ -12,8 +12,8 @@ public class TestXmlLoad {
 		
 		InputStream in = TestXmlLoad.class.getClassLoader().getResourceAsStream("deid/i2b2example.xml");
 		Xml xml = Xml.fromStream(in);
-		Object tmp = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class);
-		System.out.print(tmp.toString());
+		XmlText tmp = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class);
+		System.out.print(tmp.getValue());
 		
 	}
 	
