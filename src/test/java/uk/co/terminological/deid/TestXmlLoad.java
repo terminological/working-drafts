@@ -79,16 +79,19 @@ public class TestXmlLoad {
 	    Iterator<Triple<Integer,Integer,String>> typeIt = types.iterator();
 	    Triple<Integer,Integer,String> tok = typeIt.next();
 	    // 10th token of the document
-	    for (CoreLabel token: document.tokens()) {
-	    	
-	    	while (tok != null && token.beginPosition() > tok.getSecond()) tok = typeIt.hasNext() ? typeIt.next() : null;
-	    	boolean spanning = tok != null && token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
-	    	
-	    	System.out.println(
-	    			token.originalText()+"\t"+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
-	    			+ (spanning ? tok.getThird() : "0")
-	    			 
-	    			);
+	    for (CoreSentence sentence: document.sentences()) {
+		    for (CoreLabel token: sentence.tokens()) {
+		    	
+		    	while (tok != null && token.beginPosition() > tok.getSecond()) tok = typeIt.hasNext() ? typeIt.next() : null;
+		    	boolean spanning = tok != null && token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
+		    	
+		    	System.out.println(
+		    			token.originalText()+"\t"+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
+		    			+ (spanning ? tok.getThird() : "0")
+		    			 
+		    			);
+		    };
+	    System.out.println();
 	    };
 
 	    /*
