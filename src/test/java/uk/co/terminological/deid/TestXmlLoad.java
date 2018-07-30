@@ -86,7 +86,7 @@ public class TestXmlLoad {
 	    	
 	    	System.out.println(
 	    			token.originalText()+"\t"+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
-	    			+ (spanning ? tok.getThird() : "")
+	    			+ (spanning ? tok.getThird() : "0")
 	    			 
 	    			);
 	    };
