@@ -37,8 +37,6 @@ public class TestI2b2Extractor {
 		extr.convert(ais, out);
 		}
 		
-		
-		
 	}
 
 }
