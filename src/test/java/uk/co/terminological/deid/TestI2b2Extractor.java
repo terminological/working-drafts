@@ -48,17 +48,19 @@ public class TestI2b2Extractor {
 		
 		out.close();
 		
+		trainAndWrite(OUTFILE);
+		
 	}
 	
-	public static void trainAndWrite(String modelOutPath, String prop) {
-		   Properties props = StringUtils.propFileToProperties(prop);
-		   props.setProperty("serializeTo", modelOutPath);
-		   //if input use that, else use from properties file.
-		   props.setProperty("trainFile", TRAINING_FILE);
-		   SeqClassifierFlags flags = new SeqClassifierFlags(props);
-		   CRFClassifier<CoreLabel> crf = new CRFClassifier<>(flags);
-		   crf.train();
-		   crf.serializeClassifier(modelOutPath);
-		}
+	public static void trainAndWrite(String modelOutPath) {
+		String prop = TestI2b2Extractor.class.getClassLoader().getResource("deid/i2b2example.xml").getFile();
+		Properties props = StringUtils.propFileToProperties(prop);
+		props.setProperty("serializeTo", modelOutPath);
+		props.setProperty("trainFile", TRAINING_FILE);
+		SeqClassifierFlags flags = new SeqClassifierFlags(props);
+		CRFClassifier<CoreLabel> crf = new CRFClassifier<>(flags);
+		crf.train();
+		crf.serializeClassifier(modelOutPath);
+	}
 
 }
