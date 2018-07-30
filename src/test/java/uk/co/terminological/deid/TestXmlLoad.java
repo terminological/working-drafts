@@ -41,6 +41,7 @@ public class TestXmlLoad {
 		XmlText tmp = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class);
 		System.out.print(tmp.getValue());
 		List<Triple<Integer,Integer,String>> types = new ArrayList<Triple<Integer,Integer,String>>();
+		
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
 			System.out.println("NAME: "+tags.getName());
 			System.out.println("ID: "+tags.getAttributeValue("id"));
