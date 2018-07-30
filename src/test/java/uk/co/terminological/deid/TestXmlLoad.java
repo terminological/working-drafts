@@ -54,7 +54,7 @@ public class TestXmlLoad {
 		Collections.sort(types, new Comparator<Triple<Integer,Integer,String>>() {
 			public int compare(Triple<Integer, Integer, String> arg0, Triple<Integer, Integer, String> arg1) {
 				return 
-						arg0.getFirst().compareTo(arg1.getFirst()) <> 0 ?
+						arg0.getFirst().compareTo(arg1.getFirst()) != 0 ?
 								arg0.getFirst().compareTo(arg1.getFirst()):
 								arg0.getSecond().compareTo(arg1.getSecond());
 			}
