@@ -62,8 +62,8 @@ public class TestXmlLoad {
 
 	    // 10th token of the document
 	    for (CoreLabel token: document.tokens()) {
-	    	System.out.print(
-	    			token.originalText()+" "+token.beginPosition()+":"+token.endPosition()+" "+token.ner()+" Match:"
+	    	System.out.println(
+	    			token.originalText()+"\t"+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
 	    			+
 	    			types.get(Tuple.create(token.beginPosition(),token.endPosition()))
 	    			);
