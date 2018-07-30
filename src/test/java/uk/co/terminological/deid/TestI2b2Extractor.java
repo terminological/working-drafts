@@ -18,7 +18,11 @@ import uk.co.terminological.fluentxml.XmlException;
 
 public class TestI2b2Extractor {
 	
-	static final String INFILE = "/media/data/Data/i2b2/2014Track1/Track1-de-indentification.tar.gz";
+	static final String[] INFILE = {
+			"/media/data/Data/i2b2/2014Track1/Track1-de-indentification.tar.gz",
+			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set1.tar.gz",
+			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set2.tar.gz"
+	};
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException, XmlException {
 		BasicConfigurator.configure();
@@ -26,13 +30,16 @@ public class TestI2b2Extractor {
 		
 		Writer out = Files.newBufferedWriter(Paths.get("/home/terminological/output.txt"));
 		
+		for (String file: INFILE) {
 		ArchiveInputStream ais = new TarArchiveInputStream(
 			new GzipCompressorInputStream(
-				new FileInputStream(INFILE)
+				new FileInputStream(file)
 			)
 		);
-		
 		extr.convert(ais, out);
+		}
+		
+		
 		
 	}
 
