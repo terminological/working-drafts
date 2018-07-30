@@ -13,6 +13,8 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +45,9 @@ public class I2b2Extractor {
 	    
 	}
 	
-	public void convert(ZipInputStream zipIn, Writer out) throws XmlException, IOException {
+	public void convert(ArchiveInputStream zipIn, Writer out) throws XmlException, IOException {
 		//public void readZipStream(InputStream in) throws IOException {
-		ZipEntry entry;
+		ArchiveEntry entry;
 		while ((entry = zipIn.getNextEntry()) != null) {
 		    if (entry.getName().endsWith("xml")) {
 		    	log.debug("processing: "+entry.getName());
@@ -54,7 +56,7 @@ public class I2b2Extractor {
 		    	InputStream tmp = new FilterInputStream(zipIn) {
 		            @Override
 		            public void close() throws IOException {
-		                zipIn.closeEntry();
+		                // do nothing!
 		            }
 		        };
 		    	convert(tmp,out);
