@@ -115,7 +115,7 @@ public class I2b2Extractor {
 		    	out.append(
 		    			token.originalText()+"\t"
 		    					//+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
-		    			+ (spanning ? tok.getThird() : "0") + System.lineSeparator() 	);
+		    			+ (spanning ? tok.getThird() : "O") + System.lineSeparator() 	);
 		    };
 		    out.append(System.lineSeparator());
 	    };
