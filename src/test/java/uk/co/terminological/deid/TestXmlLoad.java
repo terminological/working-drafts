@@ -71,6 +71,7 @@ public class TestXmlLoad {
 	    props.setProperty("coref.algorithm", "neural");
 	    // build pipeline
 	    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+	    
 	    // create a document object
 	    CoreDocument document = new CoreDocument(tmp.getValue());
 	    // annnotate the document

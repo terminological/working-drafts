@@ -77,7 +77,7 @@ public class TestI2b2Extractor {
 		Properties props = StringUtils.propFileToProperties(PROP);
 		props.setProperty("serializeTo", modelOutPath);
 		props.setProperty("trainFile", TRAINING_FILE);
-		props.setProperty("gazette", GAZETTE);
+		// props.setProperty("gazette", GAZETTE);
 		props.setProperty("testFile", TESTING_FILE);
 		
 		SeqClassifierFlags flags = new SeqClassifierFlags(props);
