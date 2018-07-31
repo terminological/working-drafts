@@ -86,7 +86,7 @@ public class I2b2Extractor {
 					Triple.create(
 							Integer.parseInt(tags.getAttributeValue("start")),
 							Integer.parseInt(tags.getAttributeValue("end")), 
-							tags.getName()+"-"+tags.getAttributeValue("TYPE")));
+							tags.getName()+"\t"+tags.getAttributeValue("TYPE")));
 		};
 		
 		//Sort ascending
@@ -119,7 +119,7 @@ public class I2b2Extractor {
 		    	out.append(
 		    			token.originalText()+"\t"
 		    					//+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
-		    			+ (spanning ? tok.getThird() : "O") + System.lineSeparator() 	);
+		    			+ (spanning ? tok.getThird() : "O\tO") + System.lineSeparator() 	);
 		    };
 		    out.append(System.lineSeparator());
 	    };
