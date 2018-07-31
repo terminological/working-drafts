@@ -112,7 +112,9 @@ public class I2b2Extractor {
 		    for (CoreLabel token: sentence.tokens()) {
 		    	
 		    	while (tok != null && token.beginPosition() > tok.getSecond()) tok = typeIt.hasNext() ? typeIt.next() : null;
+		    	
 		    	boolean spanning = tok != null && token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
+		    	spanning = spanning && tok.getThird().startsWith("NAME");
 		    	
 		    	out.append(
 		    			token.originalText()+"\t"
