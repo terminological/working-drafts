@@ -29,13 +29,19 @@ public class TestI2b2Extractor {
 			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set2.tar.gz"
 	};
 	
-	static final String TRAINING_FILE = "/home/terminological/output.txt";
+	
+	static final String TRAINING_FILE = "/home/terminological/train.txt";
+	static final String TESTING_FILE = "/home/terminological/test.txt";
 	
 	static final String OUTFILE = "/home/terminological/CRFmodel.ser";
+	
+	static final String PROP = TestI2b2Extractor.class.getClassLoader().getResource("deid/CRFmodel.prop").getFile();
+	static final String GAZETTE = TestI2b2Extractor.class.getClassLoader().getResource("lastNames.txt").getFile();
 	
 	static Logger log = LoggerFactory.getLogger(TestI2b2Extractor.class);
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException, XmlException {
+		
 		BasicConfigurator.configure();
 		I2b2Extractor extr = new I2b2Extractor();
 		
@@ -58,14 +64,18 @@ public class TestI2b2Extractor {
 	}
 	
 	public static void trainAndWrite(String modelOutPath) {
-		String prop = TestI2b2Extractor.class.getClassLoader().getResource("deid/CRFmodel.prop").getFile();
-		Properties props = StringUtils.propFileToProperties(prop);
+		
+		Properties props = StringUtils.propFileToProperties(PROP);
 		props.setProperty("serializeTo", modelOutPath);
 		props.setProperty("trainFile", TRAINING_FILE);
+		props.setProperty("gazette", GAZETTE);
+		props.setProperty("testFile", TESTING_FILE);
+		
 		SeqClassifierFlags flags = new SeqClassifierFlags(props);
 		CRFClassifier<CoreLabel> crf = new CRFClassifier<>(flags);
 		crf.train();
 		crf.serializeClassifier(modelOutPath);
+		crf.
 	}
 
 }
