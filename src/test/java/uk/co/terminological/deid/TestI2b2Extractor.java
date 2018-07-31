@@ -58,10 +58,10 @@ public class TestI2b2Extractor {
 		
 	}
 	
-	private static void convert(String[] zips, String ouput, I2b2Extractor extr) throws FileNotFoundException, IOException, XmlException {
-		Writer out = Files.newBufferedWriter(Paths.get(TRAINING_FILE));
+	private static void convert(String[] zips, String output, I2b2Extractor extr) throws FileNotFoundException, IOException, XmlException {
+		Writer out = Files.newBufferedWriter(Paths.get(output));
 		
-		for (String file: INFILE) {
+		for (String file: zips) {
 			ArchiveInputStream ais = new TarArchiveInputStream(
 				new GzipCompressorInputStream(
 					new FileInputStream(file)
