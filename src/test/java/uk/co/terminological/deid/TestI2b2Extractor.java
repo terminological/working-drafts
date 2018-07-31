@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.sequences.DocumentReaderAndWriter;
 import edu.stanford.nlp.sequences.SeqClassifierFlags;
 import edu.stanford.nlp.util.StringUtils;
 import uk.co.terminological.fluentxml.XmlException;
@@ -29,6 +30,9 @@ public class TestI2b2Extractor {
 			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set2.tar.gz"
 	};
 	
+	static final String[] TESTFILE = {
+			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set1.tar.gz"
+	};
 	
 	static final String TRAINING_FILE = "/home/terminological/train.txt";
 	static final String TESTING_FILE = "/home/terminological/test.txt";
@@ -36,7 +40,7 @@ public class TestI2b2Extractor {
 	static final String OUTFILE = "/home/terminological/CRFmodel.ser";
 	
 	static final String PROP = TestI2b2Extractor.class.getClassLoader().getResource("deid/CRFmodel.prop").getFile();
-	static final String GAZETTE = TestI2b2Extractor.class.getClassLoader().getResource("lastNames.txt").getFile();
+	static final String GAZETTE = TestI2b2Extractor.class.getClassLoader().getResource("deid/lastNamesGazette.txt").getFile();
 	
 	static Logger log = LoggerFactory.getLogger(TestI2b2Extractor.class);
 	
@@ -45,22 +49,27 @@ public class TestI2b2Extractor {
 		BasicConfigurator.configure();
 		I2b2Extractor extr = new I2b2Extractor();
 		
-		Writer out = Files.newBufferedWriter(Paths.get(TRAINING_FILE));
+		log.info("Converting files");
 		
-		for (String file: INFILE) {
-		ArchiveInputStream ais = new TarArchiveInputStream(
-			new GzipCompressorInputStream(
-				new FileInputStream(file)
-			)
-		);
-		extr.convert(ais, out);
-		}
-		
-		out.close();
-		
+		convert(TESTFILE, TESTING_FILE, extr);
+		convert(INFILE, TRAINING_FILE, extr);
 		log.info("Training model");
 		trainAndWrite(OUTFILE);
 		
+	}
+	
+	private static void convert(String[] zips, String ouput, I2b2Extractor extr) throws FileNotFoundException, IOException, XmlException {
+		Writer out = Files.newBufferedWriter(Paths.get(TRAINING_FILE));
+		
+		for (String file: INFILE) {
+			ArchiveInputStream ais = new TarArchiveInputStream(
+				new GzipCompressorInputStream(
+					new FileInputStream(file)
+				)
+			);
+			extr.convert(ais, out);
+		}
+		out.close();
 	}
 	
 	public static void trainAndWrite(String modelOutPath) {
@@ -75,7 +84,8 @@ public class TestI2b2Extractor {
 		CRFClassifier<CoreLabel> crf = new CRFClassifier<>(flags);
 		crf.train();
 		crf.serializeClassifier(modelOutPath);
-		crf.
+		DocumentReaderAndWriter<CoreLabel> readerAndWriter = crf.defaultReaderAndWriter();
+		crf.printFirstOrderProbs(TESTING_FILE, readerAndWriter);
 	}
 
 }
