@@ -72,7 +72,7 @@ public class TestI2b2Extractor {
 		out.close();
 	}
 	
-	public static void trainAndWrite(String modelOutPath) {
+	public static void trainAndWrite(String modelOutPath) throws IOException {
 		
 		Properties props = StringUtils.propFileToProperties(PROP);
 		props.setProperty("serializeTo", modelOutPath);
@@ -85,7 +85,7 @@ public class TestI2b2Extractor {
 		crf.train();
 		crf.serializeClassifier(modelOutPath);
 		DocumentReaderAndWriter<CoreLabel> readerAndWriter = crf.defaultReaderAndWriter();
-		crf.printFirstOrderProbs(TESTING_FILE, readerAndWriter);
+		crf.classifyAndWriteAnswers(TESTING_FILE, readerAndWriter, true);
 	}
 
 }
