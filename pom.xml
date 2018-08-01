@@ -239,9 +239,9 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.8.3</version>
+				<<groupId>org.jvnet.jaxb2.maven2</groupId>
+    <artifactId>maven-jaxb23-plugin</artifactId>
+    <version>0.14.0</version>
 				<executions>
 					<execution>
 						<id>esearch</id>
@@ -264,8 +264,8 @@
 			</plugin>
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.8.3</version>
+    <artifactId>maven-jaxb23-plugin</artifactId>
+    <version>0.14.0</version>
 				<executions>
 					<execution>
 						<id>efetch</id>
@@ -288,8 +288,8 @@
 			</plugin>
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.8.3</version>
+    <artifactId>maven-jaxb23-plugin</artifactId>
+    <version>0.14.0</version>
 				<executions>
 					<execution>
 						<id>esummary</id>
@@ -312,8 +312,8 @@
 			</plugin>
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.8.3</version>
+    <artifactId>maven-jaxb23-plugin</artifactId>
+    <version>0.14.0</version>
 				<executions>
 					<execution>
 						<id>nlm-articleset</id>
