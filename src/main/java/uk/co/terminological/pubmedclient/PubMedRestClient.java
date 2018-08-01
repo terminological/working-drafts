@@ -41,17 +41,17 @@ public class PubMedRestClient {
 	private Unmarshaller fetchUnmarshaller;
 	private Unmarshaller pmcUnmarshaller;
 	private String baseUrl;
-	private static final Logger logger = LoggerFactory.getLogger(PubmedRestClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(PubMedRestClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
 	private static final String EFETCH = "efetch.fcgi";
 
-	public PubmedRestClient() throws JAXBException {
+	public PubMedRestClient() throws JAXBException {
 		this(DEFAULT_BASE_URL);
 
 	}
 
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-	public PubmedRestClient(String baseUrl) throws JAXBException {
+	public PubMedRestClient(String baseUrl) throws JAXBException {
 		this.baseUrl = baseUrl;
 		client = Client.create();
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
@@ -249,7 +249,7 @@ public class PubMedRestClient {
 	}
 
 	public static void main(String[] args) throws JAXBException {
-		PubmedRestClient restClient = new PubmedRestClient();
+		PubMedRestClient restClient = new PubMedRestClient();
 		
 		restClient.searchPubmed("Doxapram", 10);
 		restClient
