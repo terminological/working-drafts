@@ -270,7 +270,7 @@
 							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
 							<schemas>
 								<schema>
-									<url>https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_180601.dtd</url>
+									<url>https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_180101.dtd</url>
 								</schema>
 							</schemas>
 							<extension>true</extension>
