@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /*
@@ -33,6 +35,8 @@ public class PubMedRestClient {
 	private static final String DEFAULT_BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
 	private Client client;
 	private String apiKey;
+	private String appId;
+	private String developerEmail;
 	private WebResource eSearchResource;
 	private WebResource eFetchResource;
 	private JAXBContext jcSearch;
@@ -45,14 +49,15 @@ public class PubMedRestClient {
 	private static final Logger logger = LoggerFactory.getLogger(PubMedRestClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
 	private static final String EFETCH = "efetch.fcgi";
+	static Long timestamp = 0L;
+	
 
-	public PubMedRestClient(String apiKey) throws JAXBException {
-		this(DEFAULT_BASE_URL, apiKey);
-
+	public PubMedRestClient(String apiKey, String appId, String developerEmail) throws JAXBException {
+		this(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
 	}
 
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-	public PubMedRestClient(String baseUrl, String apiKey) throws JAXBException {
+	public PubMedRestClient(String baseUrl, String apiKey, String appId, String developerEmail) throws JAXBException {
 		this.baseUrl = baseUrl;
 		client = Client.create();
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
@@ -65,6 +70,26 @@ public class PubMedRestClient {
 		pmcUnmarshaller = pmcJaxbContext.createUnmarshaller();
 		this.apiKey = apiKey;
 	}
+	
+	private MultivaluedMap<String, String> defaultApiParams() {
+		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
+		out.add("api_key", apiKey);
+		out.add("tool", appId);
+		out.add("email", developerEmail);
+		return out;
+	}
+	
+	private void rateLimit() {
+		while (System.currentTimeMillis() < timestamp+100)
+			try {
+				synchronized(timestamp) {
+					timestamp.wait(5);
+				}
+			} catch (InterruptedException e1) {
+				//probably be OK to continue 
+			}
+		timestamp = System.currentTimeMillis();
+	}
 
 	/**
 	 * Retrieve PMIDs from PubMed for a search string
@@ -75,8 +100,7 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public ESearchResult searchPubmed(String searchTerm, int returnMax) throws JAXBException {
-		MultivaluedMap<String, String> searchParams = new MultivaluedMapImpl();
-		searchParams.add("api_key", apiKey);
+		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("term", searchTerm);
 		searchParams.add("retMax", ""+returnMax);
@@ -92,8 +116,7 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public ESearchResult searchPubmedByTitle(String title) throws JAXBException {
-		MultivaluedMap<String, String> searchParams = new MultivaluedMapImpl();
-		searchParams.add("api_key", apiKey);
+		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("field", "title");
 		searchParams.add("term", title);
@@ -108,8 +131,7 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public PubmedArticle fetchPubmedArticle(long pmid) throws JAXBException {
-		MultivaluedMap<String, String> fetchParams = new MultivaluedMapImpl();
-		fetchParams.add("api_key", apiKey);
+		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", String.valueOf(pmid));
 		fetchParams.add("format", "xml");
@@ -135,6 +157,7 @@ public class PubMedRestClient {
 	 */
 	public ESearchResult search(MultivaluedMap<String, String> queryParams) throws JAXBException {
 		logger.debug("making esearch query with params {}", queryParams.toString());
+		rateLimit();
 		InputStream is = eSearchResource.queryParams(queryParams).get(InputStream.class);
 		ESearchResult searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
 		try {
@@ -162,6 +185,7 @@ public class PubMedRestClient {
 	 */
 	public PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws JAXBException {
 		logger.debug("making efetch query with params {}", queryParams.toString());
+		rateLimit();
 		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
 		Object obj = fetchUnmarshaller.unmarshal(is);
 		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
@@ -182,8 +206,7 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws JAXBException {
-		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-		params.add("api_key", apiKey);
+		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pubmed");
 		params.add("retmode", "xml");
 		params.add("id", String.valueOf(pmid));
@@ -219,8 +242,7 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public ESearchResult seachPubmedCentralByTitle(String title) throws JAXBException {
-		MultivaluedMap<String, String> searchParams = new MultivaluedMapImpl();
-		searchParams.add("api_key", apiKey);
+		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pmc");
 		searchParams.add("field", "title");
 		searchParams.add("term", title);
@@ -234,8 +256,7 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public PmcArticleset fetchFullTextArticle(String pmcId) throws JAXBException {
-		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-		params.add("api_key", apiKey);
+		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pmc");
 		params.add("retmode", "xml");
 		params.add("id", String.valueOf(pmcId));
@@ -244,6 +265,7 @@ public class PubMedRestClient {
 
 	public PmcArticleset pmcFetch(MultivaluedMap<String, String> params) throws JAXBException {
 		logger.debug("making efetch query with params {}", params.toString());
+		rateLimit();
 		InputStream is = eFetchResource.queryParams(params).post(InputStream.class);
 		Object obj = pmcUnmarshaller.unmarshal(is);
 		PmcArticleset pmcArticleset = (PmcArticleset) obj;

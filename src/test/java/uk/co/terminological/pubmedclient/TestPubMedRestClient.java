@@ -14,11 +14,15 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
 public class TestPubMedRestClient {
 
 	public static Logger logger = LoggerFactory.getLogger(TestPubMedRestClient.class);
+	public static String APP_ID = "test_client";
+	public static String DEVELOPER_EMAIL = "rob@terminological.co.uk";
 	
 	public static void main(String[] args)  throws JAXBException {
 		BasicConfigurator.configure();
 		
-		PubMedRestClient restClient = new PubMedRestClient(args[0]);
+		
+		
+		PubMedRestClient restClient = new PubMedRestClient(args[0], APP_ID, DEVELOPER_EMAIL);
 			
 		restClient.searchPubmed("Doxapram", 10);
 		restClient
