@@ -32,7 +32,37 @@
 			<version>1.7.7</version>
 			<scope>test</scope>
 		</dependency>
-		
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.17</version>
+		</dependency>
+
+
+		<!-- https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j -->
+
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
+			<version>2.3.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
@@ -99,18 +129,231 @@
 			<artifactId>freemarker</artifactId>
 			<version>2.3.25-incubating</version>
 		</dependency>
-	</dependencies>
+		<dependency>
+			<groupId>uk.co.terminological</groupId>
+			<artifactId>fluentxml</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>maven-plugin</type>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.9.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-parser -->
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp</artifactId>
+			<version>3.9.1</version>
+			<classifier>models</classifier>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp-eng</artifactId>
+			<version>3.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>edu.stanford.nlp</groupId>
+			<artifactId>stanford-corenlp-eng-additional</artifactId>
+			<version>3.9.1</version>
+		</dependency>
+		<!-- </dependencies> -->
 
+		<!--Pubmed API <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+			xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"> 
+			<modelVersion>4.0.0</modelVersion> <groupId>gov.nih.nlm.ncbi</groupId> <artifactId>nlm-entrez-utility</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> <name>nlm-entrez-utility</name> <description>nlm-entrez-utility</description> 
+			<inceptionYear>2011</inceptionYear> <organization> <name>Department of Medical 
+			Informatics, Erasmus MC. Rotterdam.</name> <url>http://www.erasmusmc.nl/med_informatica/?lang=en</url> 
+			</organization> <dependencies> -->
+		<dependency>
+			<groupId>com.sun.xml.ws</groupId>
+			<artifactId>jaxws-rt</artifactId>
+			<version>2.2.7</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.6</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- Caused by: java.lang.IllegalArgumentException: com.sun.xml.internal.messaging.saaj.soap.LocalStrings 
+			!= com.sun.xml.messaging.saaj.soap.LocalStrings -->
+		<!-- http://forums.sun.com/thread.jspa?threadID=5265515 -->
+		<dependency>
+			<groupId>com.sun.xml.messaging.saaj</groupId>
+			<artifactId>saaj-impl</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<!-- CSV parsing and output -->
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>0.9.26</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.5</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>1.12</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>13.0</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb23-plugin</artifactId>
+				<version>0.14.0</version>
+				<executions>
+					<execution>
+						<id>esearch</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- <verbose>true</verbose> -->
+							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
+							<schemas>
+								<schema>
+									<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>
+								</schema>
+							</schemas>
+							<extension>true</extension>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb23-plugin</artifactId>
+				<version>0.14.0</version>
+				<executions>
+					<execution>
+						<id>efetch</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- <verbose>true</verbose> -->
+							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
+							<schemas>
+								<schema>
+									<url>https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_180101.dtd</url>
+								</schema>
+							</schemas>
+							<extension>true</extension>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb23-plugin</artifactId>
+				<version>0.14.0</version>
+				<executions>
+					<execution>
+						<id>esummary</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- <verbose>true</verbose> -->
+							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esummary</generatePackage>
+							<schemas>
+								<schema>
+									<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd</url>
+								</schema>
+							</schemas>
+							<extension>true</extension>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb23-plugin</artifactId>
+				<version>0.14.0</version>
+				<executions>
+					<execution>
+						<id>nlm-articleset</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<!-- <verbose>true</verbose> -->
+							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.articleset</generatePackage>
+							<schemas>
+								<schema>
+									<url>http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url>
+								</schema>
+							</schemas>
+							<extension>true</extension>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Java 6! -->
+			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
 				<configuration>
 					<source>${maven.compiler.source}</source>
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
+
+
