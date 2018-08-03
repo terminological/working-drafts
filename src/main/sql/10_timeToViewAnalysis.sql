@@ -25,9 +25,11 @@ CREATE TABLE [dbo].[aggTimeToView](
 	[ward_name] [nvarchar](50) NULL,
 	[dependency_level] [nvarchar](50) NULL,
 	[patient_group] [nvarchar](50) NULL,
+	[specimen_date] [smalldatetime] NULL,
 	[first_viewed_date] [smalldatetime] NULL,
 	[view_type] [tinyint] NULL,
 	[minutes_to_view] [int] NULL,
+	[minutes_processing] [int] NULL,
 	[total_views] [bigint] NULL,
 	[first_user_id] [int] NULL,
 	[patient_age] [int] NULL,
@@ -75,9 +77,11 @@ SELECT
 	loc.ward_name,
 	loc.dependency_level,
 	loc.patient_group,
+	rep.earliest_sri_date as specimen_date,
 	Y.first_viewed_date,
 	Y.view_type,
 	DATEDIFF(mi,t.date,Y.first_viewed_date) as minutes_to_view, 
+	DATEDIFF(mi,rep.earliest_sri_date,t.date) as minutes_processing,
 	IIF(Y.total_views IS NULL, 0, Y.total_views) as total_views, 
 	Y.first_user_id,
 	YEAR(t.date)-p.year_of_birth as patient_age,
@@ -95,6 +99,7 @@ from
 	INNER JOIN tsftUniquePatientIndex p ON t.patient_id = p.patient_id
 	LEFT OUTER JOIN tsftFirstResultView Y on t.internal_id = Y.report_id
 	LEFT OUTER JOIN tsftIdResult z on t.internal_id=z.internal_id
+	LEFT OUTER JOIN ordercomms_review.dbo.report rep on t.internal_id=rep.report_id
 WHERE t.date <= '20170930'
 and t.date >= '20121001'
 order by date desc
