@@ -229,7 +229,7 @@
 						</goals>
 						<configuration>
 							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
 							<schemas>
 								<schema>
@@ -246,7 +246,7 @@
 						</goals>
 						<configuration>
 							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
 							<schemas>
 								<schema>
@@ -263,7 +263,7 @@
 						</goals>
 						<configuration>
 							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esummary</generatePackage>
 							<schemas>
 								<schema>
@@ -280,7 +280,7 @@
 						</goals>
 						<configuration>
 							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.sourceDirectory}</generateDirectory>
+							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.articleset</generatePackage>
 							<schemas>
 								<schema>
@@ -288,6 +288,25 @@
 								</schema>
 							</schemas>
 							<extension>true</extension>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources</source>
+							</sources>
 						</configuration>
 					</execution>
 				</executions>
