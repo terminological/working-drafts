@@ -239,13 +239,6 @@
 							<extension>true</extension>
 						</configuration>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb23-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
 					<execution>
 						<id>efetch</id>
 						<goals>
