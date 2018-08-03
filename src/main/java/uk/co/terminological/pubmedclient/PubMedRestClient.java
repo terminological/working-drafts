@@ -69,6 +69,7 @@ public class PubMedRestClient {
 		pmcJaxbContext = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.articleset");
 		pmcUnmarshaller = pmcJaxbContext.createUnmarshaller();
 		this.apiKey = apiKey;
+		this.developerEmail = developerEmail;
 	}
 	
 	private MultivaluedMap<String, String> defaultApiParams() {
