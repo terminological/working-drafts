@@ -1,5 +1,7 @@
 package uk.co.terminological.pubmedclient;
 
+import java.util.Iterator;
+
 public class PubMedBatchQuery {
 	
 	private PubMedRestClient client;
@@ -10,12 +12,25 @@ public class PubMedBatchQuery {
 		return out;
 	}
 	
-	public PubMedBatch search(String searchQuery) {
+	public Iterator<PubMedBatch> search(String searchQuery) {
 		return search(searchQuery, Page.basic());
 	}
 	
-	public PubMedBatch search(String searchQuery, Page paging) {
-		return new PubMedBatch(this, searchQuery, paging);
+	public Iterator<PubMedBatch> search(String searchQuery, Page paging) {
+		return new Iterator<PubMedBatch>() { 
+			
+			PubMedBatch tmp = new PubMedBatch(PubMedBatchQuery.this, searchQuery, paging);
+
+			@Override
+			public boolean hasNext() {
+				return tmp.page.start+tmp.page.batchSize < tmp.resultSize ;
+			}
+
+			@Override
+			public PubMedBatch next() {
+				return new PubMedBatch(tmp.query, tmp.queryString, tmp.page.advance());
+			}
+		}
 	}
 	
 	protected PubMedRestClient getClient() {return client;}
@@ -38,5 +53,12 @@ public class PubMedBatchQuery {
 			return this;
 		}
 		
+		public Page advance() {
+			this.start = start+batchSize;
+			return this;
+		}
+		
 	}
+	
+	
 }

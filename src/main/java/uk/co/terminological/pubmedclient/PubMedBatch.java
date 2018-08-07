@@ -13,7 +13,7 @@ import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
 
 public class PubMedBatch {
 	
-	private PubMedBatchQuery.Page page;
+	protected  PubMedBatchQuery.Page page;
 	protected PubMedBatchQuery query;
 	protected  String queryString;
 	private ESearchResult search;
