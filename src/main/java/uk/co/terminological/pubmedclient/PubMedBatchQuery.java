@@ -30,7 +30,7 @@ public class PubMedBatchQuery {
 			public PubMedBatch next() {
 				return new PubMedBatch(tmp.query, tmp.queryString, tmp.page.advance());
 			}
-		}
+		};
 	}
 	
 	protected PubMedRestClient getClient() {return client;}
