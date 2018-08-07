@@ -11,14 +11,14 @@ import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
 
-public class PubMedBatch implements Iterator<PubMedBatch> {
+public class PubMedBatch {
 	
 	private PubMedBatchQuery.Page page;
-	private PubMedBatchQuery query;
-	private String queryString;
+	protected PubMedBatchQuery query;
+	protected  String queryString;
 	private ESearchResult search;
 	private List<PubmedArticle> articles;
-	private int resultSize = 0;
+	protected  int resultSize = 0;
 	
 	protected PubMedBatch(PubMedBatchQuery query, String queryString, PubMedBatchQuery.Page page) {
 		this.query = query;
@@ -56,13 +56,5 @@ public class PubMedBatch implements Iterator<PubMedBatch> {
 				
 	}
 	
-	@Override
-	public boolean hasNext() {
-		return page.start+page.batchSize < resultSize ;
-	}
-
-	@Override
-	public PubMedBatch next() {
-		return new PubMedBatch(query, queryString, page.withStart(page.start+page.batchSize));
-	}
+	
 }
