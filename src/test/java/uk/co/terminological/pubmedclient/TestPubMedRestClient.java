@@ -20,7 +20,7 @@ public class TestPubMedRestClient {
 	public static void main(String[] args)  throws JAXBException {
 		BasicConfigurator.configure();
 		
-		
+		// Taunton[Affiliation] AND UK[Affiliation] AND NHS[Affilitation] 
 		
 		PubMedRestClient restClient = new PubMedRestClient(args[0], APP_ID, DEVELOPER_EMAIL);
 			
