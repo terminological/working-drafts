@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 import javax.xml.bind.JAXBException;
 
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.*;
-import gov.nih.nlm.ncbi.eutils.generated.esummary.ESummaryResult;
+import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
+import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
+import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
 
 public class PubMedBatch implements Iterator<PubMedBatch> {
 	
