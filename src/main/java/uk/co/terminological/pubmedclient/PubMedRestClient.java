@@ -111,7 +111,8 @@ public class PubMedRestClient {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("term", searchTerm);
-		searchParams.add("retMax", ""+returnMax);
+		searchParams.add("retstart", ""+start);
+		searchParams.add("retmax", ""+returnMax);
 		return search(searchParams);
 	}
 	
