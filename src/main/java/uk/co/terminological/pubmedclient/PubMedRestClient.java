@@ -106,14 +106,14 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected ESearchResult searchPubmed(String searchTerm, int returnMax) throws JAXBException {
+	protected ESearchResult searchPubmed(String searchTerm, int start, int returnMax) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("term", searchTerm);
 		searchParams.add("retMax", ""+returnMax);
 		return search(searchParams);
 	}
-
+	
 	/**
 	 * Retrieve PMIDs from PubMed for a article title
 	 * 
