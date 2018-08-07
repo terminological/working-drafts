@@ -8,6 +8,8 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
+import gov.nih.nlm.ncbi.eutils.generated.esummary.DocSum;
+import gov.nih.nlm.ncbi.eutils.generated.esummary.ESummaryResult;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,22 +54,26 @@ public class PubMedRestClient {
 	static Long timestamp = 0L;
 	
 
-	public PubMedRestClient(String apiKey, String appId, String developerEmail) throws JAXBException {
+	protected PubMedRestClient(String apiKey, String appId, String developerEmail) { 
 		this(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
 	}
 
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-	public PubMedRestClient(String baseUrl, String apiKey, String appId, String developerEmail) throws JAXBException {
+	protected PubMedRestClient(String baseUrl, String apiKey, String appId, String developerEmail) {
 		this.baseUrl = baseUrl;
 		client = Client.create();
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
 		eFetchResource = client.resource(this.baseUrl + EFETCH);
-		jcSearch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.esearch");
-		searchUnmarshaller = jcSearch.createUnmarshaller();
-		jcFetch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.efetch");
-		fetchUnmarshaller = jcFetch.createUnmarshaller();
-		pmcJaxbContext = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.articleset");
-		pmcUnmarshaller = pmcJaxbContext.createUnmarshaller();
+		try {
+			jcSearch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.esearch");
+			searchUnmarshaller = jcSearch.createUnmarshaller();
+			jcFetch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.efetch");
+			fetchUnmarshaller = jcFetch.createUnmarshaller();
+			pmcJaxbContext = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.articleset");
+			pmcUnmarshaller = pmcJaxbContext.createUnmarshaller();
+		} catch (JAXBException e) {
+			throw new RuntimeException("Problem initialising JAXB",e);
+		}
 		this.apiKey = apiKey;
 		this.developerEmail = developerEmail;
 	}
@@ -100,7 +106,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public ESearchResult searchPubmed(String searchTerm, int returnMax) throws JAXBException {
+	protected ESearchResult searchPubmed(String searchTerm, int returnMax) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("term", searchTerm);
@@ -116,7 +122,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public ESearchResult searchPubmedByTitle(String title) throws JAXBException {
+	protected ESearchResult searchPubmedByTitle(String title) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("field", "title");
@@ -131,7 +137,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public PubmedArticle fetchPubmedArticle(long pmid) throws JAXBException {
+	protected PubmedArticle fetchPubmedArticle(long pmid) throws JAXBException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", String.valueOf(pmid));
@@ -156,7 +162,7 @@ public class PubMedRestClient {
 	 * &term=Accuracy%20of%20single%20progesterone%20test%20to%20predict%
 	 * 20early%20pregnancy%20outcome%20in%20women%20with%20pain%20or%20bleeding:%20meta-analysis%20of%20cohort%20studies.
 	 */
-	public ESearchResult search(MultivaluedMap<String, String> queryParams) throws JAXBException {
+	protected ESearchResult search(MultivaluedMap<String, String> queryParams) throws JAXBException {
 		logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = eSearchResource.queryParams(queryParams).get(InputStream.class);
@@ -179,12 +185,32 @@ public class PubMedRestClient {
 	}
 
 	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
+		/*
+		 * Pubmed central:
+		 * https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=protein&id=6678417,9507199,28558982,28558984,28558988,28558990
+		 */
+	protected ESummaryResult summary(MultivaluedMap<String, String> queryParams) throws JAXBException {
+		logger.debug("making efetch query with params {}", queryParams.toString());
+		rateLimit();
+		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
+		Object obj = fetchUnmarshaller.unmarshal(is);
+		ESummaryResult out = (ESummaryResult) obj;
+		try {
+			is.close();
+		} catch (IOException e) {
+			logger.error("could not close ioStream", e);
+		}
+		logger.debug("results count {}", out.getDocSumOrERROR().stream().filter(a -> a instanceof DocSum).map(a -> (DocSum) a).count());
+		return out;
+	}
+	
+	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
 	/*
 	 * Pubmed central:
 	 * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db
 	 * =pmc&id=3460254
 	 */
-	public PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws JAXBException {
+	protected PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws JAXBException {
 		logger.debug("making efetch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
@@ -206,7 +232,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws JAXBException {
+	protected MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws JAXBException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pubmed");
 		params.add("retmode", "xml");
@@ -228,7 +254,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public ESearchResult seachPubmedCentral(String searchTerm) throws JAXBException {
+	protected ESearchResult seachPubmedCentral(String searchTerm) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = new MultivaluedMapImpl();
 		searchParams.add("db", "pmc");
 		searchParams.add("term", searchTerm);
@@ -242,7 +268,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public ESearchResult seachPubmedCentralByTitle(String title) throws JAXBException {
+	protected ESearchResult seachPubmedCentralByTitle(String title) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pmc");
 		searchParams.add("field", "title");
@@ -256,7 +282,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public PmcArticleset fetchFullTextArticle(String pmcId) throws JAXBException {
+	protected PmcArticleset fetchFullTextArticle(String pmcId) throws JAXBException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pmc");
 		params.add("retmode", "xml");
@@ -264,7 +290,7 @@ public class PubMedRestClient {
 		return pmcFetch(params);
 	}
 
-	public PmcArticleset pmcFetch(MultivaluedMap<String, String> params) throws JAXBException {
+	protected PmcArticleset pmcFetch(MultivaluedMap<String, String> params) throws JAXBException {
 		logger.debug("making efetch query with params {}", params.toString());
 		rateLimit();
 		InputStream is = eFetchResource.queryParams(params).post(InputStream.class);
