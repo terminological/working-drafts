@@ -14,6 +14,7 @@ import gov.nih.nlm.ncbi.eutils.generated.esummary.ESummaryResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBContext;
@@ -137,24 +138,21 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected PubmedArticle fetchPubmedArticle(long pmid) throws JAXBException {
+	protected List<PubmedArticle> fetchPubmedArticle(List<String> pmids) throws JAXBException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
-		fetchParams.add("id", String.valueOf(pmid));
+		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
 		fetchParams.add("format", "xml");
 		PubmedArticleSet pubmedArticleSet = fetch(fetchParams);
 		if (pubmedArticleSet != null) {
-			List<Object> objects = pubmedArticleSet.getPubmedArticleOrPubmedBookArticle();
-			if (objects.size() == 1) {
-				if (objects.get(0) instanceof PubmedArticle) {
-					PubmedArticle pubmedArticle = (PubmedArticle) objects.get(0);
-					return pubmedArticle;
-				}
-			}
+			return pubmedArticleSet.getPubmedArticleOrPubmedBookArticle().stream()
+					.filter(a -> a instanceof PubmedArticle)
+					.map(a -> (PubmedArticle) a)
+					.collect(Collectors.toList());
 		}
 		throw new IllegalStateException();
 	}
-
+	
 	/*
 	 * Pubmed central:
 	 * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?
@@ -189,20 +187,20 @@ public class PubMedRestClient {
 		 * Pubmed central:
 		 * https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=protein&id=6678417,9507199,28558982,28558984,28558988,28558990
 		 */
-	protected ESummaryResult summary(MultivaluedMap<String, String> queryParams) throws JAXBException {
-		logger.debug("making efetch query with params {}", queryParams.toString());
-		rateLimit();
-		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
-		Object obj = fetchUnmarshaller.unmarshal(is);
-		ESummaryResult out = (ESummaryResult) obj;
-		try {
-			is.close();
-		} catch (IOException e) {
-			logger.error("could not close ioStream", e);
-		}
-		logger.debug("results count {}", out.getDocSumOrERROR().stream().filter(a -> a instanceof DocSum).map(a -> (DocSum) a).count());
-		return out;
-	}
+//	protected ESummaryResult summary(MultivaluedMap<String, String> queryParams) throws JAXBException {
+//		logger.debug("making efetch query with params {}", queryParams.toString());
+//		rateLimit();
+//		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
+//		Object obj = fetchUnmarshaller.unmarshal(is);
+//		ESummaryResult out = (ESummaryResult) obj;
+//		try {
+//			is.close();
+//		} catch (IOException e) {
+//			logger.error("could not close ioStream", e);
+//		}
+//		logger.debug("results count {}", out.getDocSumOrERROR().stream().filter(a -> a instanceof DocSum).map(a -> (DocSum) a).count());
+//		return out;
+//	}
 	
 	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
 	/*
