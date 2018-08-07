@@ -1,10 +1,5 @@
 package uk.co.terminological.pubmedclient;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.stanford.nlp.io.EncodingPrintWriter.out;
-
 public class PubMedBatchQuery {
 	
 	private PubMedRestClient client;
