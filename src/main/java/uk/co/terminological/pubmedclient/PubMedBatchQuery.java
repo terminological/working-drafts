@@ -2,8 +2,12 @@ package uk.co.terminological.pubmedclient;
 
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PubMedBatchQuery {
 	
+	private static Logger logger = LoggerFactory.getLogger(PubMedBatchQuery.class);
 	private PubMedRestClient client;
 	
 	public static PubMedBatchQuery newSession(String apiKey, String appId, String developerEmail) {
@@ -28,6 +32,7 @@ public class PubMedBatchQuery {
 
 			@Override
 			public PubMedBatch next() {
+				logger.info("Searching from:{}, to:{} ", tmp.page.start,tmp.page.start+tmp.page.batchSize);
 				return new PubMedBatch(tmp.query, tmp.queryString, tmp.page.advance());
 			}
 		};
