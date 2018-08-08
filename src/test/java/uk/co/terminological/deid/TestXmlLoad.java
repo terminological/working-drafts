@@ -44,13 +44,13 @@ public class TestXmlLoad {
 		
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
 			System.out.println("NAME: "+tags.getName());
-			System.out.println("ID: "+tags.getAttributeValue("id"));
-			System.out.println("START: "+tags.getAttributeValue("start"));
+			System.out.println("ID: "+tags.getAsElement().getAttribute("id"));
+			System.out.println("START: "+tags.getAsElement().getAttribute("start"));
 			types.add(
 					Triple.create(
-							Integer.parseInt(tags.getAttributeValue("start")),
-							Integer.parseInt(tags.getAttributeValue("end")), 
-							tags.getName()+"-"+tags.getAttributeValue("TYPE")));
+							Integer.parseInt(tags.getAsElement().getAttribute("start")),
+							Integer.parseInt(tags.getAsElement().getAttribute("end")), 
+							tags.getName()+"-"+tags.getAsElement().getAttribute("TYPE")));
 		};
 		Collections.sort(types, new Comparator<Triple<Integer,Integer,String>>() {
 			public int compare(Triple<Integer, Integer, String> arg0, Triple<Integer, Integer, String> arg1) {
