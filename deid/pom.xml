@@ -117,13 +117,13 @@
 			<artifactId>fluentxml</artifactId>
 			<version>1.0-SNAPSHOT</version>
 			<type>maven-plugin</type>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>edu.stanford.nlp</groupId>
 			<artifactId>stanford-corenlp</artifactId>
 			<version>3.9.1</version>
 		</dependency>
-		 -->
+		 
 		<dependency>
 			<groupId>edu.stanford.nlp</groupId>
 			<artifactId>stanford-corenlp</artifactId>
