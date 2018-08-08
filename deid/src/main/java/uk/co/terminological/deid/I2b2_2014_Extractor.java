@@ -94,10 +94,11 @@ public class I2b2_2014_Extractor {
 	    for (CoreSentence sentence: document.sentences()) {
 		    for (CoreLabel token: sentence.tokens()) {
 		    	
-		    	while (tok != null && span.before(token.beginPosition())) tok = typeIt.hasNext() ? typeIt.next() : null;
+		    	while (span != null && span.before(token.beginPosition())) 
+		    		span = typeIt.hasNext() ? typeIt.next() : null;
 		    	
-		    	boolean spanning = tok != null && token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
-		    	spanning = spanning && tok.getThird().startsWith("NAME");
+		    	boolean spanning = span != null && span.intersects(token.beginPosition(), token.endPosition());
+		    	spanning = spanning && span.isType("NAME");
 		    	
 		    	out.append(
 		    			token.originalText()+"\t"
