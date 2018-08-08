@@ -16,6 +16,7 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.fluentxml.XmlException;
 
@@ -68,12 +69,13 @@ public class I2b2_2014_Extractor {
 	public void convert(InputStream in, String id, Writer out) throws XmlException, IOException {
 		I2b2_2014_Format infile = new I2b2_2014_Format(in,id); 
 		
+		Record r = infile.getRecords().next();
 		// get document as tokens
-		CoreDocument document = new CoreDocument(infile.getText());
+		CoreDocument document = new CoreDocument(r.documentText);
 	    pipeline.annotate(document);
 	    
 	    // find existing tags examples
-	    Iterator<Span> typeIt = infile.getMarkup().iterator();
+	    Iterator<Span> typeIt = r.spans.iterator();
 	    Span span = typeIt.next();
 	    
 	    for (CoreSentence sentence: document.sentences()) {

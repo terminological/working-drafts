@@ -1,27 +1,65 @@
 package uk.co.terminological.deid;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import uk.co.terminological.datatypes.FluentList;
 
-public class CoNLL_U extends FluentList<CoNLL_U.Line> {
+public interface CoNLL_U  {
+	
+	public CoNLL_U addComment(String comment);
+	public CoNLL_U addBlank();
+	public CoNLL_U addEntry(Entry entry);
 
-	public CoNLL_U addComment(String comment) {
+	public static class List extends FluentList<CoNLL_U.Line> implements CoNLL_U {
+	
+	public CoNLL_U.List addComment(String comment) {
 		Comment toAdd = new Comment();
 		toAdd.text = comment;
 		this.add(toAdd);
 		return this;
 	}
 	
-	public CoNLL_U addBlank() {
+	public CoNLL_U.List addBlank() {
 		BlankLine toAdd = new BlankLine();
 		this.add(toAdd);
 		return this;
 	}
 	
-	public CoNLL_U addEntry(Entry toAdd) {
+	public CoNLL_U.List addEntry(Entry toAdd) {
 		this.add(toAdd);
 		return this;
 	}
  	
+	}
+	
+	public static class Printer implements CoNLL_U {
+	
+		Writer writer;
+		public Printer(Writer writer) {
+			this.writer = writer;
+		}
+		@Override
+		public CoNLL_U addComment(String comment) {
+			Comment toAdd = new Comment();
+			toAdd.text = comment;
+			writer.write(toAdd.toString());
+			return this;
+		}
+		@Override
+		public CoNLL_U addBlank() {
+			BlankLine toAdd = new BlankLine();
+			writer.write(toAdd.toString());
+			return this;
+		}
+		@Override
+		public CoNLL_U addEntry(Entry entry) {
+			writer.write(entry.toString());
+			return this;
+		}
+		
+	}
+	
 	public static abstract class Line {}
 	
 	public static class BlankLine extends Line {
