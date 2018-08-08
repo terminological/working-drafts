@@ -84,9 +84,9 @@ public class I2b2Extractor {
 			// System.out.println("START: "+tags.getAttributeValue("start"));
 			types.add(
 					Triple.create(
-							Integer.parseInt(tags.getAttributeValue("start")),
-							Integer.parseInt(tags.getAttributeValue("end")), 
-							tags.getName()+"\t"+tags.getAttributeValue("TYPE")));
+							Integer.parseInt(tags.getAsElement().getAttribute("start")),
+							Integer.parseInt(tags.getAsElement().getAttribute("end")), 
+							tags.getName()+"\t"+tags.getAsElement().getAttribute("TYPE")));
 		};
 		
 		//Sort ascending
