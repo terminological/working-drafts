@@ -217,7 +217,7 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<schemaLanguage>DTD</schemaLanguage>
+							<schemas>
 							<schema>
 								<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>
 								<!-- <fileset>
@@ -225,6 +225,7 @@
 									<includes><include>esearch.dtd</include></includes>
 								</fileset> -->
 							</schema>
+							</schemas>
 							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.esearch</generatePackage>
 						</configuration>
@@ -235,13 +236,14 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<schemaLanguage>DTD</schemaLanguage>
+							<schemas>
 							<schema>
 								<fileset>
 									<directory>/src/main/resources/schema</directory>
 									<includes><include>pubmed_180101.dtd</include></includes>
 								</fileset>
 							</schema>
+							</schemas>
 							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.efetch</generatePackage>
 						</configuration>
