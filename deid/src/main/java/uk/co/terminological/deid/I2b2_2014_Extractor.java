@@ -4,15 +4,8 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -23,17 +16,8 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
-import uk.co.terminological.datatypes.FluentList;
-import uk.co.terminological.datatypes.FluentMap;
-import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.deid.CommonFormat.Span;
-import uk.co.terminological.deid.CommonFormat.Spans;
-import uk.co.terminological.fluentxml.Xml;
-import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
-import uk.co.terminological.fluentxml.XmlText;
-
-import static uk.co.terminological.datatypes.FluentList.*;
 
 /**
  * Extract sentences / tokenise and match up existing resources from  
@@ -69,7 +53,7 @@ public class I2b2_2014_Extractor {
 		                // do nothing!
 		            }
 		        };
-		    	convert(tmp,out);
+		    	convert(tmp,entry.getName(),out);
 		    }
 		}
 	}
@@ -81,8 +65,8 @@ public class I2b2_2014_Extractor {
 	 * @throws XmlException - if it can't parse the XML
 	 * @throws IOException - if it can't write to the output
 	 */
-	public void convert(InputStream in, Writer out) throws XmlException, IOException {
-		I2b2_2014_Format infile = new I2b2_2014_Format(in); 
+	public void convert(InputStream in, String id, Writer out) throws XmlException, IOException {
+		I2b2_2014_Format infile = new I2b2_2014_Format(in,id); 
 		
 		// get document as tokens
 		CoreDocument document = new CoreDocument(infile.getText());
@@ -103,8 +87,7 @@ public class I2b2_2014_Extractor {
 		    	
 		    	out.append(
 		    			token.originalText()+"\t"
-		    					//+token.beginPosition()+":"+token.endPosition()+"\t"+token.ner()+"\t"
-		    			+ (spanning ? tok.getThird() : "O\tO") + System.lineSeparator() 	);
+		    			+ (spanning ? span.type+"\t"+span.subtype : "O\tO") + System.lineSeparator() 	);
 		    };
 		    out.append(System.lineSeparator());
 	    };
