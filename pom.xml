@@ -235,10 +235,12 @@
 						</goals>
 						<configuration>
 							<schemaLanguage>DTD</schemaLanguage>
-							<sources>
-								<source>${basedir}/src/main/resources/schema/pubmed_180101.dtd</source>
-							
-							</sources>
+							<schema>
+								<fileset>
+									<directory>${basedir}/src/main/resources/schema</directory>
+									<includes><include>pubmed_180101.dtd</include></includes>
+								</fileset>
+							</schema>
 							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.efetch</generatePackage>
 						</configuration>
