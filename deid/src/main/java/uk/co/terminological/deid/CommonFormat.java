@@ -1,6 +1,7 @@
 package uk.co.terminological.deid;
 
 import uk.co.terminological.datatypes.FluentList;
+import uk.co.terminological.deid.CommonFormat.Spans;
 
 public class CommonFormat {
 
@@ -8,7 +9,7 @@ public class CommonFormat {
 	
 	public static class Record {
 		String documentText;
-
+		Spans spans = new Spans();
 	}
 	
 	public static class Spans extends FluentList<Span> {}
