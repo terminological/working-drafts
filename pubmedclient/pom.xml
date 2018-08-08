@@ -199,7 +199,7 @@
 								</fileset>
 							</schema>
 							</schemas>
-							<generateDirectory>${project.build.directory}/pubmedclient/generated-sources/xjc/1</generateDirectory>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
 						</configuration>
 					</execution>
@@ -224,7 +224,7 @@
 								</fileset>
 							</schema>
 							</schemas>
-							<generateDirectory>${project.build.directory}/pubmedclient/generated-sources/xjc/2</generateDirectory>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
 						</configuration>
 						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
@@ -245,8 +245,8 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>${project.build.directory}/pubmedclient/generated-sources/xjc/1</source>
-								<source>${project.build.directory}/pubmedclient/generated-sources/xjc/2</source>
+								<source>${project.build.directory}/generated-sources/xjc/1</source>
+								<source>${project.build.directory}/generated-sources/xjc/2</source>
 							</sources>
 						</configuration>
 					</execution>
