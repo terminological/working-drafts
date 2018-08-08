@@ -252,6 +252,11 @@
 							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
 					</execution>
 				</executions>
+				<configuration>
+					<vmArgs>
+						<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+					</vmArgs>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
