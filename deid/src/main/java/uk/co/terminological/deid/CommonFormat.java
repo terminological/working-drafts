@@ -8,6 +8,7 @@ public class CommonFormat {
 	public static class Records extends FluentList<Record> {}
 	
 	public static class Record {
+		String id;
 		String documentText;
 		Spans spans = new Spans();
 	}
