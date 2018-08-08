@@ -219,10 +219,11 @@
 						<configuration>
 							<schemaLanguage>DTD</schemaLanguage>
 							<schema>
-								<fileset>
+								<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>
+								<!-- <fileset>
 									<directory>/src/main/resources/schema</directory>
 									<includes><include>esearch.dtd</include></includes>
-								</fileset>
+								</fileset> -->
 							</schema>
 							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
 							<generatePackage>gov.nih.nlm.ncbi.eutils.esearch</generatePackage>
