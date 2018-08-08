@@ -207,46 +207,40 @@
 				<version>1.1</version>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.4</version>
-				<dependencies>
-					<!-- https://mvnrepository.com/artifact/javax.activation/javax.activation-api -->
-					<dependency>
-						<groupId>javax.activation</groupId>
-						<artifactId>activation</artifactId>
-						<version>1.1.1</version>
-					</dependency>
-
-				</dependencies>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.14.0</version>
 				<executions>
 					<execution>
 						<id>xjc-schema1</id>
-						<phase>generate-sources</phase>
 						<goals>
-							<goal>xjc</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<sourceType>dtd</sourceType>
-							<sources>
-								<source>${basedir}/src/main/resources/schema/esearch.dtd</source>
-							</sources>
-							<packageName>gov.nih.nlm.ncbi.eutils.esearch</packageName>
+							<schemaLanguage>DTD</schemaLanguage>
+							<schema>
+								<fileset>
+									<directory>${basedir}/src/main/resources/schema</directory>
+									<includes><include>esearch.dtd</include></includes>
+								</fileset>
+							</schema>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.esearch</generatePackage>
 						</configuration>
 					</execution>
 					<execution>
 						<id>xjc-schema2</id>
-						<phase>generate-sources</phase>
 						<goals>
-							<goal>xjc</goal>
+							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<sourceType>dtd</sourceType>
+							<schemaLanguage>DTD</schemaLanguage>
 							<sources>
 								<source>${basedir}/src/main/resources/schema/pubmed_180101.dtd</source>
+							
 							</sources>
-							<packageName>gov.nih.nlm.ncbi.eutils.efetch</packageName>
-							<clearOutputDir>false</clearOutputDir>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.efetch</generatePackage>
 						</configuration>
 						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
 							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
@@ -271,7 +265,8 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>${project.build.directory}/generated-sources/jaxb</source>
+								<source>${project.build.directory}/generated-sources/xjc/1</source>
+								<source>${project.build.directory}/generated-sources/xjc/2</source>
 							</sources>
 						</configuration>
 					</execution>
