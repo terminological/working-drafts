@@ -5,13 +5,12 @@ import static uk.co.terminological.datatypes.FluentList.empty;
 
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.datatypes.FluentMap;
-import uk.co.terminological.datatypes.Triple;
+import uk.co.terminological.deid.CommonFormat.Span;
+import uk.co.terminological.deid.CommonFormat.Spans;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
