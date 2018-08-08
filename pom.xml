@@ -220,7 +220,7 @@
 							<schemaLanguage>DTD</schemaLanguage>
 							<schema>
 								<fileset>
-									<directory>${basedir}/src/main/resources/schema</directory>
+									<directory>/src/main/resources/schema</directory>
 									<includes><include>esearch.dtd</include></includes>
 								</fileset>
 							</schema>
@@ -237,7 +237,7 @@
 							<schemaLanguage>DTD</schemaLanguage>
 							<schema>
 								<fileset>
-									<directory>${basedir}/src/main/resources/schema</directory>
+									<directory>/src/main/resources/schema</directory>
 									<includes><include>pubmed_180101.dtd</include></includes>
 								</fileset>
 							</schema>
@@ -248,11 +248,6 @@
 							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
 					</execution>
 				</executions>
-				<configuration>
-					<vmArgs>
-						<vmArg>-Djavax.xml.accessExternalDTD=all</vmArg>
-					</vmArgs>
-				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
