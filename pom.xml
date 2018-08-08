@@ -230,6 +230,13 @@
 							<generatePackage>gov.nih.nlm.ncbi.eutils.esearch</generatePackage>
 						</configuration>
 					</execution>
+					</executions>
+					</plugin>
+					<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.14.0</version>
+				<executions>
 					<execution>
 						<id>xjc-schema2</id>
 						<goals>
@@ -239,7 +246,7 @@
 							<schemas>
 							<schema>
 								<fileset>
-									<directory>/src/main/resources/schema</directory>
+									<directory>${basedir}/src/main/resources/schema</directory>
 									<includes><include>pubmed_180101.dtd</include></includes>
 								</fileset>
 							</schema>
