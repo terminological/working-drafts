@@ -42,15 +42,14 @@ public class I2b2_2014_Extractor {
 	
 	static Logger log = LoggerFactory.getLogger(I2b2_2014_Extractor.class);
 	
-	static Map<String,? extends List<String>> types = FluentMap
+	static Map<String,? extends List<String>> elementSubtypes = FluentMap
 			.with("NAME", create("PATIENT", "DOCTOR", "USERNAME"))
 			.and("PROFESSION", empty())
-			.and("LOCATION", create("HOSPITAL", "ORGANIZATION", "STREET", "CITY"))
+			.and("LOCATION", create("HOSPITAL", "ORGANIZATION", "STREET", "CITY", "STATE", "COUNTRY", "ZIP", "LOCATION-OTHER"))
 			.and("AGE",empty())
 			.and("DATE", empty())
-			.and("CONTACT", create("PHONE", "FAX", "EMAIL", "URL", "IPADDRESS"))
-			.and("ID", create("SOCIAL SECURITY NUMBER", "MEDICAL RECORD NUMBER", "HEALTH PLAN NUMBER",
-					"ACCOUNT NUMBER", "LICENSE NUMBER", "VEHICLE ID", "DEVICE ID", "BIOMETRIC ID", "ID NUMBER"));
+			.and("CONTACT", create("PHONE", "FAX", "EMAIL", "URL", "IPADDR"))
+			.and("ID", create("SSN", "MEDICALRECORD", "HEALTHPLAN", "ACCOUNT", "LICENSE", "VEHICLE", "DEVICE", "BIOID", "IDNUM"));
 		
 	
 	public I2b2_2014_Extractor() {
