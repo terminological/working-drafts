@@ -254,7 +254,7 @@
 				</executions>
 				<configuration>
 					<vmArgs>
-						<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+						<vmArg>-Djavax.xml.accessExternalDTD=all</vmArg>
 					</vmArgs>
 				</configuration>
 			</plugin>
