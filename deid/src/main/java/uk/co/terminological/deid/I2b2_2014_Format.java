@@ -50,6 +50,10 @@ public class I2b2_2014_Format {
 	public String getText() {
 		return documentText;
 	}
+	
+	public Spans getMarkup() {
+		return spans;
+	}
 		
 	public static class Spans extends FluentList<Span> {}
 	
