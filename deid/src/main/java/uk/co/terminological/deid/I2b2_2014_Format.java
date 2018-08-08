@@ -79,11 +79,11 @@ public class I2b2_2014_Format {
 					(this.start <= end && this.end >= end);
 		}
 		
-		public boolean after(Integer start, Integer end) {
+		public boolean after(Integer end) {
 			return (this.start > end);
 		}
 		
-		public boolean before(Integer start, Integer end) {
+		public boolean before(Integer start) {
 			return (this.end < start);
 		}
 	}

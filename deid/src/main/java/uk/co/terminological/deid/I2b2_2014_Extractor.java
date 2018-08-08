@@ -26,6 +26,7 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.datatypes.Triple;
+import uk.co.terminological.deid.I2b2_2014_Format.Span;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
@@ -42,14 +43,7 @@ public class I2b2_2014_Extractor {
 	
 	static Logger log = LoggerFactory.getLogger(I2b2_2014_Extractor.class);
 	
-	static Map<String,? extends List<String>> elementSubtypes = FluentMap
-			.with("NAME", create("PATIENT", "DOCTOR", "USERNAME"))
-			.and("PROFESSION", empty())
-			.and("LOCATION", create("HOSPITAL", "ORGANIZATION", "STREET", "CITY", "STATE", "COUNTRY", "ZIP", "LOCATION-OTHER"))
-			.and("AGE",empty())
-			.and("DATE", empty())
-			.and("CONTACT", create("PHONE", "FAX", "EMAIL", "URL", "IPADDR"))
-			.and("ID", create("SSN", "MEDICALRECORD", "HEALTHPLAN", "ACCOUNT", "LICENSE", "VEHICLE", "DEVICE", "BIOID", "IDNUM"));
+	
 		
 	
 	public I2b2_2014_Extractor() {
@@ -87,46 +81,20 @@ public class I2b2_2014_Extractor {
 	 * @throws IOException - if it can't write to the output
 	 */
 	public void convert(InputStream in, Writer out) throws XmlException, IOException {
-		Xml xml = Xml.fromStream(in);
-		String documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
+		I2b2_2014_Format infile = new I2b2_2014_Format(in); 
 		
-		// extract existing tags
-		List<Triple<Integer,Integer,String>> types = new ArrayList<Triple<Integer,Integer,String>>();
-		
-		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
-			// System.out.println("NAME: "+tags.getName());
-			// System.out.println("ID: "+tags.getAttributeValue("id"));
-			// System.out.println("START: "+tags.getAttributeValue("start"));
-			types.add(
-					Triple.create(
-							Integer.parseInt(tags.getAsElement().getAttribute("start")),
-							Integer.parseInt(tags.getAsElement().getAttribute("end")), 
-							tags.getName()+"\t"+tags.getAsElement().getAttribute("TYPE")));
-		};
-		
-		//Sort tags ascending
-		Collections.sort(types, new Comparator<Triple<Integer,Integer,String>>() {
-			public int compare(Triple<Integer, Integer, String> arg0, Triple<Integer, Integer, String> arg1) {
-				return 
-						arg0.getFirst().compareTo(arg1.getFirst()) != 0 ?
-								arg0.getFirst().compareTo(arg1.getFirst()):
-								arg0.getSecond().compareTo(arg1.getSecond());
-			}
-			;
-		});
-		
-		// get tokens
-		CoreDocument document = new CoreDocument(documentText);
+		// get document as tokens
+		CoreDocument document = new CoreDocument(infile.getText());
 	    pipeline.annotate(document);
 	    
 	    // find existing tags examples
-	    Iterator<Triple<Integer,Integer,String>> typeIt = types.iterator();
+	    Iterator<Span> typeIt = infile.getMarkup().iterator();
+	    Span span = typeIt.next();
 	    
-	    Triple<Integer,Integer,String> tok = typeIt.next();
 	    for (CoreSentence sentence: document.sentences()) {
 		    for (CoreLabel token: sentence.tokens()) {
 		    	
-		    	while (tok != null && token.beginPosition() > tok.getSecond()) tok = typeIt.hasNext() ? typeIt.next() : null;
+		    	while (tok != null && span.before(token.beginPosition())) tok = typeIt.hasNext() ? typeIt.next() : null;
 		    	
 		    	boolean spanning = tok != null && token.endPosition() <= tok.getSecond() && token.beginPosition() >= tok.getFirst();
 		    	spanning = spanning && tok.getThird().startsWith("NAME");
