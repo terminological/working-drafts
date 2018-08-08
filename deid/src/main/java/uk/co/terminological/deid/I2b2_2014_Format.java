@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import uk.co.terminological.datatypes.FluentMap;
+import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.deid.CommonFormat.Spans;
 import uk.co.terminological.fluentxml.Xml;
@@ -28,30 +29,29 @@ public class I2b2_2014_Format {
 			.and("ID", create("SSN", "MEDICALRECORD", "HEALTHPLAN", "ACCOUNT", "LICENSE", "VEHICLE", "DEVICE", "BIOID", "IDNUM"));
 	
 	Xml xml;
-	String documentText;
-	Spans spans = new Spans();
+	Record record;
 	
 	public I2b2_2014_Format(InputStream is) throws XmlException {
 		xml = Xml.fromStream(is);
-		documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
+		record.documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
-			spans.add(
+			record.spans.add(
 					Span.from(
 							Integer.parseInt(tags.getAsElement().getAttribute("start")),
 							Integer.parseInt(tags.getAsElement().getAttribute("end")), 
 							tags.getName(),
 							tags.getAsElement().getAttribute("TYPE")));
 		};
-		Collections.sort(spans);
+		Collections.sort(record.spans);
 		
 	}
 	
 	public String getText() {
-		return documentText;
+		return record.documentText;
 	}
 	
 	public Spans getMarkup() {
-		return spans;
+		return record.spans;
 	}
 		
 	
