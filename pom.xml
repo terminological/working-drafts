@@ -5,7 +5,7 @@
 	<groupId>uk.co.terminological</groupId>
 	<artifactId>working-drafts</artifactId>
 	<version>0.01-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>working drafts</name>
 
