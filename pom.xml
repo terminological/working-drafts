@@ -39,16 +39,7 @@
 			<version>1.7.7</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-compress -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.17</version>
-		</dependency>
-
-
 		<!-- https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j -->
-
 		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
@@ -69,31 +60,10 @@
 			<artifactId>activation</artifactId>
 			<version>1.1.1</version>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
-		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>mssql-jdbc</artifactId>
-			<version>6.2.2.jre8</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-
-		<dependency>
-			<groupId>info.debatty</groupId>
-			<artifactId>java-string-similarity</artifactId>
-			<version>RELEASE</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-text</artifactId>
 			<version>1.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.mpkorstanje/simmetrics -->
-		<dependency>
-			<groupId>com.github.mpkorstanje</groupId>
-			<artifactId>simmetrics</artifactId>
-			<version>4.1.1</version>
-			<type>pom</type>
 		</dependency>
 		<dependency>
 			<groupId>uk.co.terminological</groupId>
@@ -104,12 +74,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 			<version>4.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.knowm.xchart/xchart -->
-		<dependency>
-			<groupId>org.knowm.xchart</groupId>
-			<artifactId>xchart</artifactId>
-			<version>3.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -128,70 +92,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>2.3.25-incubating</version>
-		</dependency>
-		<dependency>
 			<groupId>uk.co.terminological</groupId>
 			<artifactId>fluentxml</artifactId>
 			<version>1.0-SNAPSHOT</version>
 			<type>maven-plugin</type>
-		</dependency>
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp</artifactId>
-			<version>3.9.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-parser -->
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp</artifactId>
-			<version>3.9.1</version>
-			<classifier>models</classifier>
-		</dependency>
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp-eng</artifactId>
-			<version>3.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp-eng-additional</artifactId>
-			<version>3.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.ws</groupId>
-			<artifactId>jaxws-rt</artifactId>
-			<version>2.2.7</version>
-		</dependency>
-
-		<!-- Caused by: java.lang.IllegalArgumentException: com.sun.xml.internal.messaging.saaj.soap.LocalStrings 
-			!= com.sun.xml.messaging.saaj.soap.LocalStrings -->
-		<!-- http://forums.sun.com/thread.jspa?threadID=5265515 -->
-		<dependency>
-			<groupId>com.sun.xml.messaging.saaj</groupId>
-			<artifactId>saaj-impl</artifactId>
-			<version>1.3.1</version>
-		</dependency>
-		<!-- CSV parsing and output -->
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<!-- Logging -->
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>0.9.26</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -199,12 +103,6 @@
 			<version>2.5</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>1.12</version>
-		</dependency>
-
 	</dependencies>
 	<build>
 		<pluginManagement>
