@@ -2,6 +2,7 @@ package uk.co.terminological.deid;
 
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 
 import uk.co.terminological.deid.CommonFormat.Record;
@@ -37,4 +38,9 @@ public class I2b2_2006_Format {
 			records.add(record);
 		}
 	}
+	
+	public Iterator<Record> getRecords() {
+		return records.iterator();
+	}
+	
 }
