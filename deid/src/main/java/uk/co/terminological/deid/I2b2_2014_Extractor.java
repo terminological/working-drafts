@@ -31,12 +31,12 @@ import uk.co.terminological.fluentxml.XmlText;
 /**
  * Extract sentences / tokenise and match up existing resources from  
  */
-public class I2b2Extractor {
+public class I2b2_2014_Extractor {
 	
 	StanfordCoreNLP pipeline;
-	static Logger log = LoggerFactory.getLogger(I2b2Extractor.class); 
+	static Logger log = LoggerFactory.getLogger(I2b2_2014_Extractor.class); 
 	
-	public I2b2Extractor() {
+	public I2b2_2014_Extractor() {
 		
 		Properties props = new Properties();
 	    props.setProperty("annotators", "tokenize,ssplit,pos");

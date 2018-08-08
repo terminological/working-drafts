@@ -32,7 +32,7 @@ public class TestI2b2Extractor {
 	public static void main(String[] args) throws FileNotFoundException, IOException, XmlException {
 		
 		BasicConfigurator.configure();
-		I2b2Extractor extr = new I2b2Extractor();
+		I2b2_2014_Extractor extr = new I2b2_2014_Extractor();
 		
 		log.info("Converting files");
 		
@@ -43,7 +43,7 @@ public class TestI2b2Extractor {
 		
 	}
 	
-	private static void convert(String[] zips, String output, I2b2Extractor extr) throws FileNotFoundException, IOException, XmlException {
+	private static void convert(String[] zips, String output, I2b2_2014_Extractor extr) throws FileNotFoundException, IOException, XmlException {
 		Writer out = Files.newBufferedWriter(Paths.get(output));
 		
 		for (String file: zips) {
