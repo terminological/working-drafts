@@ -14,6 +14,13 @@
 		<maven.compiler.source>9</maven.compiler.source>
 		<maven.compiler.target>9</maven.compiler.target>
 	</properties>
+	
+	<modules>
+        <module>deid</module>
+        <module>graphs</module>
+        <module>costbenefit</module>
+        <module>pubmedclient</module>
+    </modules>
 
 	<dependencies>
 		<dependency>
@@ -200,86 +207,13 @@
 
 	</dependencies>
 	<build>
+		<pluginManagement>
 		<plugins>
-			<plugin>
+			<!--<plugin>
 				<groupId>com.github.johnpoth</groupId>
 				<artifactId>jshell-maven-plugin</artifactId>
 				<version>1.1</version>
-			</plugin>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
-					<execution>
-						<id>xjc-schema1</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemas>
-							<schema>
-								<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>
-								<!-- <fileset>
-									<directory>/src/main/resources/schema</directory>
-									<includes><include>esearch.dtd</include></includes>
-								</fileset> -->
-							</schema>
-							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
-						</configuration>
-					</execution>
-					</executions>
-					</plugin>
-					<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
-					<execution>
-						<id>xjc-schema2</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemas>
-							<schema>
-								<fileset>
-									<directory>${basedir}/src/main/resources/schema</directory>
-									<includes><include>pubmed_180101.dtd</include></includes>
-								</fileset>
-							</schema>
-							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
-						</configuration>
-						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
-							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${project.build.directory}/generated-sources/xjc/1</source>
-								<source>${project.build.directory}/generated-sources/xjc/2</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- Java 6! -->
+			</plugin>-->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
@@ -307,6 +241,7 @@
 				</executions>
 			</plugin>
 		</plugins>
+	</pluginManagement>
 	</build>
 </project>
 
