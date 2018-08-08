@@ -31,8 +31,9 @@ public class I2b2_2014_Format {
 	Xml xml;
 	Record record;
 	
-	public I2b2_2014_Format(InputStream is) throws XmlException {
+	public I2b2_2014_Format(InputStream is, String id) throws XmlException {
 		xml = Xml.fromStream(is);
+		record.id = id;
 		record.documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
 		for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
 			record.spans.add(
