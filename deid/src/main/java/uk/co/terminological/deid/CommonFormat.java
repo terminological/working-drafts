@@ -1,7 +1,6 @@
 package uk.co.terminological.deid;
 
 import uk.co.terminological.datatypes.FluentList;
-import uk.co.terminological.deid.I2b2_2014_Format.Span;
 
 public class CommonFormat {
 
