@@ -209,10 +209,11 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
-				<version>2.2</version>
+				<version>2.4</version>
 				<executions>
 					<execution>
 						<id>xjc-schema1</id>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>xjc</goal>
 						</goals>
@@ -225,30 +226,20 @@
 					</execution>
 					<execution>
 						<id>xjc-schema2</id>
+						<phase>generate-sources</phase>
 						<goals>
 							<goal>xjc</goal>
 						</goals>
 						<configuration>
-
 							<sources>
 								<source>${basedir}/src/main/resources/schema/pubmed_180101.dtd</source>
 							</sources>
 							<packageName>gov.nih.nlm.ncbi.eutils.efetch</packageName>
-							<!-- Don't clear the output directory before generating the sources. 
-								Clearing the output directory removes the se.west schema from above. -->
 							<clearOutputDir>false</clearOutputDir>
-
 						</configuration>
-						<!-- 	
-						esummary
-							gov.nih.nlm.ncbi.eutils.generated.esummary
-							https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd
-						
-						nlm-articleset
-							gov.nih.nlm.ncbi.eutils.generated.articleset
-							http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url>
-						-->	
-						</execution>
+						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
+							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
