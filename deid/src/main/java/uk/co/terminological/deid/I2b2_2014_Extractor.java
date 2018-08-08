@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -22,11 +23,15 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import uk.co.terminological.datatypes.FluentList;
+import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlText;
+
+import static uk.co.terminological.datatypes.FluentList.*;
 
 /**
  * Extract sentences / tokenise and match up existing resources from  
@@ -34,7 +39,19 @@ import uk.co.terminological.fluentxml.XmlText;
 public class I2b2_2014_Extractor {
 	
 	StanfordCoreNLP pipeline;
-	static Logger log = LoggerFactory.getLogger(I2b2_2014_Extractor.class); 
+	
+	static Logger log = LoggerFactory.getLogger(I2b2_2014_Extractor.class);
+	
+	static Map<String,List<String>> types = FluentMap
+			.with("NAME", create("PATIENT", "DOCTOR", "USERNAME")
+			.with("PROFESSION", empty())
+			.with("LOCATION", create("HOSPITAL", "ORGANIZATION", "STREET", "CITY")
+			.with("AGE",empty())
+			.with("DATE", empty())
+			.with("CONTACT", create("PHONE", "FAX", "EMAIL", "URL", "IPADDRESS"))
+			.with("ID", create("SOCIAL SECURITY NUMBER", "MEDICAL RECORD NUMBER", "HEALTH PLAN NUMBER",
+					"ACCOUNT NUMBER", "LICENSE NUMBER", "VEHICLE ID", "DEVICE ID", "BIOMETRIC ID", "ID NUMBER"));
+		
 	
 	public I2b2_2014_Extractor() {
 		
