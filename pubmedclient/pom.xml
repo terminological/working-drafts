@@ -194,7 +194,7 @@
 							<schema>
 								<!--<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>-->
 								<fileset>
-									<directory>/src/main/resources/schema</directory>
+									<directory>${basedir}/src/main/resources/schema</directory>
 									<includes><include>esearch.dtd</include></includes>
 								</fileset>
 							</schema>
