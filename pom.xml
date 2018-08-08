@@ -227,7 +227,7 @@
 							</schema>
 							</schemas>
 							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.esearch</generatePackage>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
 						</configuration>
 					</execution>
 					</executions>
@@ -252,7 +252,7 @@
 							</schema>
 							</schemas>
 							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.efetch</generatePackage>
+							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
 						</configuration>
 						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
 							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->

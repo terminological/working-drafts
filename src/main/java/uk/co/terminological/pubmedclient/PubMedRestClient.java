@@ -1,6 +1,5 @@
 package uk.co.terminological.pubmedclient;
 
-import gov.nih.nlm.ncbi.eutils.generated.articleset.PmcArticleset;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeading;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
@@ -8,8 +7,6 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
-import gov.nih.nlm.ncbi.eutils.generated.esummary.DocSum;
-import gov.nih.nlm.ncbi.eutils.generated.esummary.ESummaryResult;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -281,7 +278,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected PmcArticleset fetchFullTextArticle(String pmcId) throws JAXBException {
+	/*protected PmcArticleset fetchFullTextArticle(String pmcId) throws JAXBException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pmc");
 		params.add("retmode", "xml");
@@ -302,7 +299,7 @@ public class PubMedRestClient {
 		}
 		logger.debug("results count {}", pmcArticleset.getArticle().size());
 		return pmcArticleset;
-	}
+	}*/
 
 	
 
