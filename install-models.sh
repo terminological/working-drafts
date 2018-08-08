@@ -3,6 +3,8 @@
 # /media/data/Data/coreNLP
 # loc="$1"
 
+cd "/tmp"
+
 wget "http://nlp.stanford.edu/software/stanford-english-corenlp-2018-02-27-models.jar"
 wget "http://nlp.stanford.edu/software/stanford-english-kbp-corenlp-2018-02-27-models.jar"
 
