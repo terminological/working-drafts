@@ -5,9 +5,10 @@
 		<groupId>uk.co.terminological</groupId>
 		<artifactId>working-drafts</artifactId>
 		<version>0.01-SNAPSHOT</version>
-		<packaging>jar</packaging>
+		
 	</parent>
 	<artifactId>costbenefit</artifactId>
+	<packaging>jar</packaging>
 
 	<name>working drafts</name>
 
