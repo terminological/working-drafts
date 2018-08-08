@@ -5,6 +5,7 @@ import static uk.co.terminological.datatypes.FluentList.empty;
 
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -47,13 +48,10 @@ public class I2b2_2014_Format {
 		
 	}
 	
-	public String getText() {
-		return record.documentText;
+	public Iterator<Record> getRecords() {
+		return Collections.singletonList(record).iterator();
 	}
 	
-	public Spans getMarkup() {
-		return record.spans;
-	}
 		
 	
 }
