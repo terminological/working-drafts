@@ -1,33 +1,27 @@
 package uk.co.terminological.deid;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
-
 import uk.co.terminological.datatypes.FluentList;
 
 public class CoNLL_U extends FluentList<CoNLL_U.Line> {
 
- 	public Iterator<List<CoNLL_U.Line>> getSentences() {
- 		
- 		return new Iterator<List<CoNLL_U.Line>>() {
- 			
-			@Override
-			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public List<Line> next() {
-				// TODO Auto-generated method stub
-				return null;
-			}
- 			
- 		};
- 	}
+	public CoNLL_U addComment(String comment) {
+		Comment toAdd = new Comment();
+		toAdd.text = comment;
+		this.add(toAdd);
+		return this;
+	}
 	
+	public CoNLL_U addBlank() {
+		BlankLine toAdd = new BlankLine();
+		this.add(toAdd);
+		return this;
+	}
 	
+	public CoNLL_U addEntry(Entry toAdd) {
+		this.add(toAdd);
+		return this;
+	}
+ 	
 	public static abstract class Line {}
 	
 	public static class BlankLine extends Line {
@@ -67,6 +61,24 @@ MISC: Any other annotation.
 		
 		public String toString() {return ID+"\t"+FORM+"\t"+LEMMA+"\t"+UPOS+"\t"+XPOS+"\t"+FEATS+"\t"+HEAD+"\t"+DEPREL+"\t"+DEPS+"\t"+MISC+"\n";}
 		
+		public static Entry create(String ID, String FORM, String LEMMA, String UPOS) {
+			Entry toAdd = new Entry();
+			toAdd.ID = ID;
+			toAdd.FORM = FORM;
+			toAdd.LEMMA = LEMMA != null ? LEMMA : "_";
+			toAdd.UPOS = UPOS != null ? UPOS : "_";
+			return toAdd;
+		}
+		
+		public Entry withMisc(String key, String value) {
+			if (MISC != "_") {
+				MISC = MISC+"|";
+			} else {
+				MISC = "";
+			}
+			MISC = MISC + key+"="+value;
+			return this;
+		}
 	}
 	
 	
