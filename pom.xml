@@ -218,6 +218,7 @@
 							<goal>xjc</goal>
 						</goals>
 						<configuration>
+							<sourceType>dtd</sourceType>
 							<sources>
 								<source>${basedir}/src/main/resources/schema/esearch.dtd</source>
 							</sources>
@@ -231,6 +232,7 @@
 							<goal>xjc</goal>
 						</goals>
 						<configuration>
+							<sourceType>dtd</sourceType>
 							<sources>
 								<source>${basedir}/src/main/resources/schema/pubmed_180101.dtd</source>
 							</sources>
