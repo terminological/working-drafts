@@ -43,18 +43,30 @@ public interface CoNLL_U  {
 		public CoNLL_U addComment(String comment) {
 			Comment toAdd = new Comment();
 			toAdd.text = comment;
-			writer.write(toAdd.toString());
+			try {
+				writer.write(toAdd.toString());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			return this;
 		}
 		@Override
 		public CoNLL_U addBlank() {
 			BlankLine toAdd = new BlankLine();
-			writer.write(toAdd.toString());
+			try {
+				writer.write(toAdd.toString());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			return this;
 		}
 		@Override
 		public CoNLL_U addEntry(Entry entry) {
-			writer.write(entry.toString());
+			try {
+				writer.write(entry.toString());
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 			return this;
 		}
 		
