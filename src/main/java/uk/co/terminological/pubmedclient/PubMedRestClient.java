@@ -44,7 +44,7 @@ public class PubMedRestClient {
 	private JAXBContext pmcJaxbContext;
 	private Unmarshaller searchUnmarshaller;
 	private Unmarshaller fetchUnmarshaller;
-	private Unmarshaller pmcUnmarshaller;
+	//private Unmarshaller pmcUnmarshaller;
 	private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(PubMedRestClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
@@ -67,8 +67,8 @@ public class PubMedRestClient {
 			searchUnmarshaller = jcSearch.createUnmarshaller();
 			jcFetch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.efetch");
 			fetchUnmarshaller = jcFetch.createUnmarshaller();
-			pmcJaxbContext = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.articleset");
-			pmcUnmarshaller = pmcJaxbContext.createUnmarshaller();
+			//pmcJaxbContext = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.articleset");
+			//pmcUnmarshaller = pmcJaxbContext.createUnmarshaller();
 		} catch (JAXBException e) {
 			throw new RuntimeException("Problem initialising JAXB",e);
 		}
