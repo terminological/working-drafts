@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -71,7 +70,7 @@
 			<version>6.2.2.jre8</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-		
+
 		<dependency>
 			<groupId>info.debatty</groupId>
 			<artifactId>java-string-similarity</artifactId>
@@ -154,21 +153,12 @@
 			<artifactId>stanford-corenlp-eng-additional</artifactId>
 			<version>3.9.1</version>
 		</dependency>
-		<!-- </dependencies> -->
-
-		<!--Pubmed API <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-			xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"> 
-			<modelVersion>4.0.0</modelVersion> <groupId>gov.nih.nlm.ncbi</groupId> <artifactId>nlm-entrez-utility</artifactId> 
-			<version>0.0.1-SNAPSHOT</version> <name>nlm-entrez-utility</name> <description>nlm-entrez-utility</description> 
-			<inceptionYear>2011</inceptionYear> <organization> <name>Department of Medical 
-			Informatics, Erasmus MC. Rotterdam.</name> <url>http://www.erasmusmc.nl/med_informatica/?lang=en</url> 
-			</organization> <dependencies> -->
 		<dependency>
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>
 			<version>2.2.7</version>
 		</dependency>
-		
+
 		<!-- Caused by: java.lang.IllegalArgumentException: com.sun.xml.internal.messaging.saaj.soap.LocalStrings 
 			!= com.sun.xml.messaging.saaj.soap.LocalStrings -->
 		<!-- http://forums.sun.com/thread.jspa?threadID=5265515 -->
@@ -207,7 +197,7 @@
 			<artifactId>jersey-client</artifactId>
 			<version>1.12</version>
 		</dependency>
-		
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -216,80 +206,49 @@
 				<artifactId>jshell-maven-plugin</artifactId>
 				<version>1.1</version>
 			</plugin>
-
 			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb23-plugin</artifactId>
-				<version>0.14.0</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.2</version>
 				<executions>
 					<execution>
-						<id>esearch</id>
+						<id>xjc-schema1</id>
 						<goals>
-							<goal>generate</goal>
+							<goal>xjc</goal>
 						</goals>
 						<configuration>
-							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
-							<schemas>
-								<schema>
-									<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>
-								</schema>
-							</schemas>
-							<extension>true</extension>
+							<sources>
+								<source>${basedir}/src/main/resources/schema/esearch.dtd</source>
+							</sources>
+							<packageName>gov.nih.nlm.ncbi.eutils.esearch</packageName>
 						</configuration>
 					</execution>
 					<execution>
-						<id>efetch</id>
+						<id>xjc-schema2</id>
 						<goals>
-							<goal>generate</goal>
+							<goal>xjc</goal>
 						</goals>
 						<configuration>
-							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
-							<schemas>
-								<schema>
-									<url>https://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_180101.dtd</url>
-								</schema>
-							</schemas>
-							<extension>true</extension>
+
+							<sources>
+								<source>${basedir}/src/main/resources/schema/pubmed_180101.dtd</source>
+							</sources>
+							<packageName>gov.nih.nlm.ncbi.eutils.efetch</packageName>
+							<!-- Don't clear the output directory before generating the sources. 
+								Clearing the output directory removes the se.west schema from above. -->
+							<clearOutputDir>false</clearOutputDir>
+
 						</configuration>
-					</execution>
-					<execution>
-						<id>esummary</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esummary</generatePackage>
-							<schemas>
-								<schema>
-									<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd</url>
-								</schema>
-							</schemas>
-							<extension>true</extension>
-						</configuration>
-					</execution>
-					<execution>
-						<id>nlm-articleset</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<!-- <verbose>true</verbose> -->
-							<generateDirectory>${project.build.directory}/generated-sources</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.articleset</generatePackage>
-							<schemas>
-								<schema>
-									<url>http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url>
-								</schema>
-							</schemas>
-							<extension>true</extension>
-						</configuration>
-					</execution>
+						<!-- 	
+						esummary
+							gov.nih.nlm.ncbi.eutils.generated.esummary
+							https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd
+						
+						nlm-articleset
+							gov.nih.nlm.ncbi.eutils.generated.articleset
+							http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url>
+						-->	
+						</execution>
 				</executions>
 			</plugin>
 			<plugin>
