@@ -39,8 +39,7 @@ public class I2b2Extractor {
 	public I2b2Extractor() {
 		
 		Properties props = new Properties();
-	    props.setProperty("annotators", "tokenize,ssplit");
-	    props.setProperty("coref.algorithm", "neural");
+	    props.setProperty("annotators", "tokenize,ssplit,pos");
 	    pipeline = new StanfordCoreNLP(props);
 	    
 	}
@@ -89,7 +88,7 @@ public class I2b2Extractor {
 							tags.getName()+"\t"+tags.getAsElement().getAttribute("TYPE")));
 		};
 		
-		//Sort ascending
+		//Sort tags ascending
 		Collections.sort(types, new Comparator<Triple<Integer,Integer,String>>() {
 			public int compare(Triple<Integer, Integer, String> arg0, Triple<Integer, Integer, String> arg1) {
 				return 
