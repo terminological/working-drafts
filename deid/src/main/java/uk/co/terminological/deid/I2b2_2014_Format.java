@@ -86,5 +86,9 @@ public class I2b2_2014_Format {
 		public boolean before(Integer start) {
 			return (this.end < start);
 		}
+
+		public boolean isType(String string) {
+			return type.equals(string);
+		}
 	}
 }
