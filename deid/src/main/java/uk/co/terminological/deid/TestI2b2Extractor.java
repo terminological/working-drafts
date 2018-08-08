@@ -21,26 +21,11 @@ import edu.stanford.nlp.sequences.DocumentReaderAndWriter;
 import edu.stanford.nlp.sequences.SeqClassifierFlags;
 import edu.stanford.nlp.util.StringUtils;
 import uk.co.terminological.fluentxml.XmlException;
+import static uk.co.terminological.deid.Config.*;
 
 public class TestI2b2Extractor {
 	
-	static final String[] INFILE = {
-			"/media/data/Data/i2b2/2014Track1/Track1-de-indentification.tar.gz",
-			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set1.tar.gz",
-			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set2.tar.gz"
-	};
 	
-	static final String[] TESTFILE = {
-			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set1.tar.gz"
-	};
-	
-	static final String TRAINING_FILE = "/home/terminological/train.txt";
-	static final String TESTING_FILE = "/home/terminological/test.txt";
-	
-	static final String OUTFILE = "/home/terminological/CRFmodel.ser";
-	
-	static final String PROP = TestI2b2Extractor.class.getClassLoader().getResource("deid/CRFmodel.prop").getFile();
-	static final String GAZETTE = TestI2b2Extractor.class.getClassLoader().getResource("deid/lastNamesGazette.txt").getFile();
 	
 	static Logger log = LoggerFactory.getLogger(TestI2b2Extractor.class);
 	
