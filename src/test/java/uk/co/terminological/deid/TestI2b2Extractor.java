@@ -1,5 +1,7 @@
 package uk.co.terminological.deid;
 
+import static uk.co.terminological.deid.Config.*;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -12,8 +14,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -24,25 +24,6 @@ import uk.co.terminological.fluentxml.XmlException;
 
 public class TestI2b2Extractor {
 	
-	static final String[] INFILE = {
-			"/media/data/Data/i2b2/2014Track1/Track1-de-indentification.tar.gz",
-			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set1.tar.gz",
-			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set2.tar.gz"
-	};
-	
-	static final String[] TESTFILE = {
-			"/media/data/Data/i2b2/2014Track1/training-PHI-Gold-Set1.tar.gz"
-	};
-	
-	static final String TRAINING_FILE = "/home/terminological/train.txt";
-	static final String TESTING_FILE = "/home/terminological/test.txt";
-	
-	static final String OUTFILE = "/home/terminological/CRFmodel.ser";
-	
-	static final String PROP = TestI2b2Extractor.class.getClassLoader().getResource("deid/CRFmodel.prop").getFile();
-	static final String GAZETTE = TestI2b2Extractor.class.getClassLoader().getResource("deid/lastNamesGazette.txt").getFile();
-	
-	static Logger log = LoggerFactory.getLogger(TestI2b2Extractor.class);
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException, XmlException {
 		

@@ -1,5 +1,7 @@
 package uk.co.terminological.deid;
+import static uk.co.terminological.deid.Config.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,15 +16,24 @@ import java.util.Properties;
 import org.apache.log4j.BasicConfigurator;
 
 import edu.stanford.nlp.coref.data.CorefChain;
+import edu.stanford.nlp.ie.NERClassifierCombiner;
+import edu.stanford.nlp.ie.crf.CRFClassifier;
 import edu.stanford.nlp.ie.util.RelationTriple;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.pipeline.AnnotationPipeline;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreEntityMention;
 import edu.stanford.nlp.pipeline.CoreQuote;
 import edu.stanford.nlp.pipeline.CoreSentence;
+import edu.stanford.nlp.pipeline.NERCombinerAnnotator;
+import edu.stanford.nlp.pipeline.POSTaggerAnnotator;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.pipeline.TokenizerAnnotator;
+import edu.stanford.nlp.pipeline.WordsToSentencesAnnotator;
 import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.sequences.SeqClassifierFlags;
 import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.StringUtils;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.fluentxml.Xml;
@@ -33,7 +44,7 @@ import uk.co.terminological.fluentxml.XmlText;
 
 public class TestXmlLoad {
 
-	public static void main(String[] args) throws XmlException {
+	public static void main(String[] args) throws XmlException, IOException, ClassCastException, ClassNotFoundException {
 		BasicConfigurator.configure();
 		
 		InputStream in = TestXmlLoad.class.getClassLoader().getResourceAsStream("deid/i2b2example.xml");
@@ -62,20 +73,42 @@ public class TestXmlLoad {
 			;
 		});
 
+		// https://stanfordnlp.github.io/CoreNLP/pipelines.html
 		
-		Properties props = new Properties();
+		// Properties props = new Properties();
 	    // set the list of annotators to run
 	    // props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner,parse,depparse,coref,kbp,quote");
-		props.setProperty("annotators", "tokenize,ssplit,pos,lemma,ner");
+		// props.setProperty("annotators", "tokenize,ssplit,pos");
 	    // set a property for an annotator, in this case the coref annotator is being set to use the neural algorithm
-	    props.setProperty("coref.algorithm", "neural");
+	    // props.setProperty("coref.algorithm", "neural");
 	    // build pipeline
-	    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+	    // StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+	    Properties crfprops = StringUtils.propFileToProperties(PROP);
+		crfprops.setProperty("serializeTo", OUTFILE);
+		// props.setProperty("trainFile", TRAINING_FILE);
+		// props.setProperty("gazette", GAZETTE);
+		// props.setProperty("testFile", TESTING_FILE);
+		
+		// StanfordCoreNLP pl = new StanfordCoreNLP();
+		AnnotationPipeline pl = new AnnotationPipeline();
+	    pl.addAnnotator(new TokenizerAnnotator(false));
+	    pl.addAnnotator(new WordsToSentencesAnnotator(false));
+	    pl.addAnnotator(new POSTaggerAnnotator(false));
+		CRFClassifier<CoreLabel> crf = CRFClassifier.getClassifier(OUTFILE);
+	    NERClassifierCombiner ncc = new NERClassifierCombiner(
+	    		crf
+	    		
+	    		);
+	    NERCombinerAnnotator nca = new NERCombinerAnnotator(ncc, true);
 	    
+	    pl.addAnnotator(nca);
+		
+		
 	    // create a document object
 	    CoreDocument document = new CoreDocument(tmp.getValue());
 	    // annnotate the document
-	    pipeline.annotate(document);
+	    pl.annotate(document.annotation());
+	    document.wrapAnnotations();
 	    
 	    // examples
 	    Iterator<Triple<Integer,Integer,String>> typeIt = types.iterator();
