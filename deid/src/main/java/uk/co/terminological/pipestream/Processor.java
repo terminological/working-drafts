@@ -6,8 +6,6 @@ public interface Processor<X extends Job> {
 		manager.register(this);
 	};
 	
-	public boolean acceptJob(Job job);
-	
 	public X getJob();
 	
 	public void initialise();
