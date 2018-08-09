@@ -24,6 +24,7 @@ public class I2b2_2006_Format {
 			Record record = new Record();
 			record.id = el.getAttributeValue("ID");
 			record.documentText = el.getAsElement().getTextContent();
+			el.
 			for (XmlElement phiEl : el.doXpath("PHI").getMany(XmlElement.class)) {
 				Integer start = phiEl.doXpath("preceding::text()").getManyAsStream(XmlText.class)
 							.collect(Collectors.summingInt(xt -> xt.getValue().length()));
