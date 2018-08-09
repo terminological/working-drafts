@@ -71,6 +71,7 @@ public class BRATFormat {
 		public static AttributeAnnotation attribute(
 		public static NormalisedAnnotation normalisation(
 		*/
+		
 		public static NoteAnnotation note(String type, Annotation ann, String comment) {
 			NoteAnnotation out = new NoteAnnotation();
 			assignId(out,"#");
