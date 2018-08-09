@@ -3,7 +3,6 @@ package uk.co.terminological.deid;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.stream.Collectors;
 
 import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Records;
