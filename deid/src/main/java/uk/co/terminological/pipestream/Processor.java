@@ -1,6 +1,6 @@
 package uk.co.terminological.pipestream;
 
-public interface Worker {
+public interface Processor {
 
 	public default void registerWith(Manager manager) {
 		manager.register(this);
