@@ -1,5 +1,12 @@
 package uk.co.terminological.pipestream;
 
-public class Worker {
+public interface Worker {
 
+	public default void registerWith(Manager manager) {
+		manager.register(this);
+	};
+	
+	public boolean acceptJob(Job job);
+	
+	
 }

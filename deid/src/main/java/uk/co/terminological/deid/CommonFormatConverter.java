@@ -44,6 +44,7 @@ public class CommonFormatConverter {
 	    Span span = typeIt.next();
 	    
 	    for (CoreSentence sentence: document.sentences()) {
+	    	print.addComment(sentence.text());
 	    	for (CoreLabel token: sentence.tokens()) {
 		    	
 		    	while (span != null && span.before(token.beginPosition())) 
