@@ -13,6 +13,8 @@ public interface DirectoryWatcher {
 	public void watchDirectory(File directory, FilenameFilter filter);
 	public File getWatchedDirectory();
 	public List<File> getChangedFiles();
-	public void setProcessed(File file); 
+	public void setProcessed(File file, Job job); 
 	
+	public void registerJobType(Class<Job> jobType);
+	public List<Class<Job>> getJobTypes();
 }

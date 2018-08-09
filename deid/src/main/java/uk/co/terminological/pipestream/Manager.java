@@ -4,7 +4,7 @@ import java.io.File;
 
 public interface Manager {
 
-	public void register(Processor worker);
+	public void register(Processor<? extends Job> worker);
 	public void register(DirectoryWatcher watcher);
 	
 	public void pollChanges();
