@@ -11,6 +11,7 @@ import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.fluentxml.XmlNode;
 import uk.co.terminological.fluentxml.XmlText;
 
 public class I2b2_2006_Format {
@@ -24,16 +25,23 @@ public class I2b2_2006_Format {
 			Record record = new Record();
 			record.id = el.getAttributeValue("ID");
 			record.documentText = el.getAsElement().getTextContent();
-			el.
-			for (XmlElement phiEl : el.doXpath("PHI").getMany(XmlElement.class)) {
-				Integer start = phiEl.doXpath("preceding::text()").getManyAsStream(XmlText.class)
-							.collect(Collectors.summingInt(xt -> xt.getValue().length()));
-				Integer end = start+phiEl.getAsElement().getTextContent().length();
-				Span span = Span.from(
-						start, end, 
-						phiEl.getAttributeValue("TYPE"),
-						null);
-				record.spans.add(span);
+			StringBuilder docText = new StringBuilder();
+			for (XmlNode phiEl : el.walkTree()) {
+				if (phiEl.is(XmlText.class)) {
+					docText.append(phiEl.as(XmlText.class).getValue());
+				} else if (phiEl.is(XmlElement.class)) {
+					XmlElement tmp = phiEl.as(XmlElement.class); 
+					if (tmp.getName().equals("PHI")) {
+						Integer start = docText.length();
+						Integer end = tmp.getAsElement().getTextContent().length()+start;
+					Span span = Span.from(
+							start, end, 
+							tmp.getAttributeValue("TYPE"),
+							null);
+					record.spans.add(span);
+					}
+				}
+				
 			}
 			Collections.sort(record.spans);
 			records.add(record);
