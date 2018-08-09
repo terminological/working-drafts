@@ -1,5 +1,5 @@
 package uk.co.terminological.pipestream;
 
-public class JobContext {
+public class Worker {
 
 }
