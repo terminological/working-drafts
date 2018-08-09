@@ -11,8 +11,7 @@ import uk.co.terminological.datatypes.FluentList;
 public class BRATFormat {
 
 	String documentText;
-	List<Annotation> standoffAnnotations;
-	
+	FluentList<Annotation> standoffAnnotations = FluentList.empty();
 	
 	
 	
@@ -71,7 +70,15 @@ public class BRATFormat {
 			return id+"\t"+attribute+" "+targetId+(value.isEmpty()?"":" "+value);
 		}
 	}
-	// public static class NormalisedAnnotation extends Annotation {}
+	public static class NormalisedAnnotation extends Annotation {
+		String targetId;
+		String RID; //e.g.Wikipedia / SNOMED. defined in tools.conf  
+		String EID; //identifier in that data set
+		String text;
+		public String toString() {
+			return id+"\tReference "+targetId+" "+RID+":"+EID+"\t"+text;
+		}
+	}
 	public static class NoteAnnotation extends Annotation {
 		String type;
 		String targetId;
