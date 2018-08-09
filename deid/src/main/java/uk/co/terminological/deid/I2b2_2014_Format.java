@@ -12,7 +12,6 @@ import java.util.Map;
 import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Span;
-import uk.co.terminological.deid.CommonFormat.Spans;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
