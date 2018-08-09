@@ -2,10 +2,10 @@ package uk.co.terminological.pipestream;
 
 import java.io.File;
 
-public interface Sink {
+public interface Sink<X extends Job> {
 
 	public File getOutput();
-	public Job getJob();
+	public X getJob();
 	
 	public void consume(String output);
 }

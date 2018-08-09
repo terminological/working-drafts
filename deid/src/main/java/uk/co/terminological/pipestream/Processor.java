@@ -7,9 +7,12 @@ public interface Processor<X extends Job> {
 	};
 	
 	public boolean acceptJob(Job job);
+	
 	public Job getJob();
 	
-	
+	public void initialise();
+	public void process();
+	public void finalise();
 	
 	
 }
