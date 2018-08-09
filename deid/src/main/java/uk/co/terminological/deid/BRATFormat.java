@@ -3,32 +3,37 @@ package uk.co.terminological.deid;
 import java.util.List;
 
 import edu.stanford.nlp.util.StringUtils;
+import uk.co.terminological.datatypes.FluentList;
 
 /*
  * http://brat.nlplab.org/standoff.html
  */
 public class BRATFormat {
 
-	List<Annotation> standoffs;
+	String documentText;
+	List<Annotation> standoffAnnotations;
+	
+	
+	
+	
 	
 	public static abstract class Annotation {
 		String id;
 		
-		<X,Y> String join(X[] k, Y[] v, String sep, String sep2) {
+		<X,Y> String join(List<X> k, List<Y> v, String sep, String sep2) {
 			StringBuilder tmp = new StringBuilder();
-			for (int i=0; i<k.length; i++) {
+			for (int i=0; i<k.size(); i++) {
 				if (tmp.length() !=0) tmp.append(sep2);
-				tmp.append(k[i].toString()+sep+v[i].toString());
+				tmp.append(k.get(i).toString()+sep+v.get(i).toString());
 			}
 			return tmp.toString();
 		}
 	}
 	
-	
 	public static class TextBoundAnnotation extends Annotation {
 		String type;
-		Integer start[];
-		Integer end[];
+		FluentList<Integer> start = FluentList.empty();
+		FluentList<Integer> end = FluentList.empty();
 		String text;
 		
 		public String toString() {
@@ -37,8 +42,8 @@ public class BRATFormat {
 		
 	}
 	public static class EventAnnotation extends Annotation {
-		String role[];
-		String triggerId[];
+		FluentList<String> role = FluentList.empty();
+		FluentList<String> triggerId = FluentList.empty();
 		
 		public String toString() {
 			return id+"\t"+join(role,triggerId,":"," ");
@@ -53,7 +58,7 @@ public class BRATFormat {
 		}
 	}
 	public static class EquivalenceAnnotation extends Annotation {
-		String[] equivIds;
+		FluentList<String> equivIds = FluentList.empty();
 		public String toString() {
 			return "*\t"+StringUtils.join(equivIds," ");
 		}
