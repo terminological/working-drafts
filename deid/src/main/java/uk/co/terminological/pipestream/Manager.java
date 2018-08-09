@@ -1,6 +1,6 @@
 package uk.co.terminological.pipestream;
 
-import java.io.File;
+import java.io.PrintWriter;
 
 public interface Manager {
 
@@ -10,6 +10,7 @@ public interface Manager {
 	public void pollChanges();
 	public void createJob();
 	
-	
+	public PrintWriter errorMonitor();
+	public PrintWriter debugMonitor();
 	
 }

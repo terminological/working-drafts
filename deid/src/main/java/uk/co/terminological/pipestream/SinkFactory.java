@@ -1,7 +1,7 @@
 package uk.co.terminological.pipestream;
 
-public interface SinkFactory<X extends Job> {
+public interface SinkFactory {
 
-	public Sink buildSink(X job);
+	public Sink buildSink(Job job);
 	
 }
