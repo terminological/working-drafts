@@ -5,19 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
 import java.util.Iterator;
-import java.util.Properties;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.stanford.nlp.ling.CoreLabel;
-import edu.stanford.nlp.pipeline.CoreDocument;
-import edu.stanford.nlp.pipeline.CoreSentence;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import uk.co.terminological.deid.CommonFormat.Record;
-import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.fluentxml.XmlException;
 
 /**
@@ -25,22 +19,9 @@ import uk.co.terminological.fluentxml.XmlException;
  */
 public class I2b2_2014_Extractor {
 	
-	StanfordCoreNLP pipeline;
-	
 	static Logger log = LoggerFactory.getLogger(I2b2_2014_Extractor.class);
 	
-	
-		
-	
-	public I2b2_2014_Extractor() {
-		
-		Properties props = new Properties();
-	    props.setProperty("annotators", "tokenize,ssplit,pos");
-	    pipeline = new StanfordCoreNLP(props);
-	    
-	}
-	
-	public void convert(ArchiveInputStream zipIn, Writer out) throws XmlException, IOException {
+	public void convert_2014(ArchiveInputStream zipIn, Writer out) throws XmlException, IOException {
 		//public void readZipStream(InputStream in) throws IOException {
 		ArchiveEntry entry;
 		while ((entry = zipIn.getNextEntry()) != null) {
@@ -54,7 +35,13 @@ public class I2b2_2014_Extractor {
 		                // do nothing!
 		            }
 		        };
-		    	convert(tmp,entry.getName(),out);
+		    	
+		        I2b2_2014_Format infile = new I2b2_2014_Format(tmp,entry.getName());
+		        Iterator<Record> rit = infile.getRecords();
+		        while (rit.hasNext()) {
+		        	CommonFormatConverter.get().writeToCoNLL_2003(rit.next(),out);
+		        }
+		        out.flush();
 		    }
 		}
 	}
@@ -67,34 +54,15 @@ public class I2b2_2014_Extractor {
 	 * @throws IOException - if it can't write to the output
 	 */
 	public void convert(InputStream in, String id, Writer out) throws XmlException, IOException {
-		I2b2_2014_Format infile = new I2b2_2014_Format(in,id); 
 		
+		I2b2_2014_Format infile = new I2b2_2014_Format(in,id); 
 		Record r = infile.getRecords().next();
-		// get document as tokens
-		CoreDocument document = new CoreDocument(r.documentText);
-	    pipeline.annotate(document);
-	    
-	    // find existing tags examples
-	    Iterator<Span> typeIt = r.spans.iterator();
-	    Span span = typeIt.next();
-	    
-	    for (CoreSentence sentence: document.sentences()) {
-		    for (CoreLabel token: sentence.tokens()) {
-		    	
-		    	while (span != null && span.before(token.beginPosition())) 
-		    		span = typeIt.hasNext() ? typeIt.next() : null;
-		    	
-		    	boolean spanning = span != null && span.intersects(token.beginPosition(), token.endPosition());
-		    	spanning = spanning && span.isType("NAME");
-		    	
-		    	out.append(
-		    			token.originalText()+"\t"
-		    			+ (spanning ? span.type+"\t"+span.subtype : "O\tO") + System.lineSeparator() 	);
-		    };
-		    out.append(System.lineSeparator());
-	    };
-	    out.append(System.lineSeparator());
+		
+		
+		CommonFormatConverter.get().writeToCoNLL_2003(r,out);
+		
 		out.flush();
+		
 		
 	}
 
