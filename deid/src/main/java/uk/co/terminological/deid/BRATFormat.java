@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.stanford.nlp.util.StringUtils;
 import uk.co.terminological.datatypes.FluentList;
+import uk.co.terminological.datatypes.FluentMap;
 
 /*
  * http://brat.nlplab.org/standoff.html
@@ -13,11 +14,28 @@ public class BRATFormat {
 	String documentText;
 	FluentList<Annotation> standoffAnnotations = FluentList.empty();
 	
+	public static BRATFormat create(String text) {
+		BRATFormat out = new BRATFormat();
+		out.documentText = text;
+		return out;
+	}
 	
 	
+	
+	public BRATFormat withAnnotation(Annotation ann) {
+		standoffAnnotations.add(ann);
+		return this;
+	}
 	
 	public static abstract class Annotation {
 		String id;
+		
+		static FluentMap<Class<? extends Annotation>, Integer> counts = FluentMap.empty();
+		static <X extends Annotation> void assignId(X ann, String prefix) {
+			Integer tmp = counts.get(ann.getClass());
+			ann.id = prefix+tmp;
+			counts.put(ann.getClass(), tmp+1);
+		}
 		
 		<X,Y> String join(List<X> k, List<Y> v, String sep, String sep2) {
 			StringBuilder tmp = new StringBuilder();
@@ -27,6 +45,41 @@ public class BRATFormat {
 			}
 			return tmp.toString();
 		}
+		
+		public static TextBoundAnnotation textBound(long id,String type,int start,int end,String text) {
+			TextBoundAnnotation out = new TextBoundAnnotation();
+			assignId(out,"T");
+			out.type = type;
+			out.start.add(start);
+			out.end.add(end);
+			out.text = text;
+			return out;
+		}
+		
+		public static EventAnnotation event(String role, TextBoundAnnotation trigger) {
+			EventAnnotation out = new EventAnnotation();
+			assignId(out, "E");
+			out.role.add(role);
+			out.triggerId.add(trigger.id);
+			return out;
+		}
+		
+		/*TODO:
+		public static EventAnnotation event(
+		public static RelationAnnotation relation(
+		public static EquivalenceAnnotation equivalence(
+		public static AttributeAnnotation attribute(
+		public static NormalisedAnnotation normalisation(
+		*/
+		public static NoteAnnotation note(String type, Annotation ann, String comment) {
+			NoteAnnotation out = new NoteAnnotation();
+			assignId(out,"#");
+			out.type = type;
+			out.targetId = ann.id;
+			out.comment = comment;
+			return out;
+		}
+		
 	}
 	
 	public static class TextBoundAnnotation extends Annotation {
@@ -46,6 +99,12 @@ public class BRATFormat {
 		
 		public String toString() {
 			return id+"\t"+join(role,triggerId,":"," ");
+		}
+		
+		public EventAnnotation with(String role, TextBoundAnnotation trigger) {
+			this.role.add(role);
+			this.triggerId.add(trigger.id);
+			return this;
 		}
 	}
 	public static class RelationAnnotation extends Annotation {
