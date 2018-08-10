@@ -1,4 +1,4 @@
-package uk.co.terminological.pipestream;
+package uk.co.terminological.pipestream.idea1;
 
 import java.io.FilenameFilter;
 import java.util.Date;

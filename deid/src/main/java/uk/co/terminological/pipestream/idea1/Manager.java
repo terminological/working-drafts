@@ -1,4 +1,4 @@
-package uk.co.terminological.pipestream;
+package uk.co.terminological.pipestream.idea1;
 
 import java.io.PrintWriter;
 import java.util.List;

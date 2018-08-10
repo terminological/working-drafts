@@ -1,4 +1,4 @@
-package uk.co.terminological.pipestream;
+package uk.co.terminological.pipestream.idea1;
 
 public interface SinkFactory {
 
