@@ -14,7 +14,7 @@ public class Test {
 	}
 	
 	public interface Shape<X> {
-		Optional<String> name(String instanceId);
+		Optional<String> name(X instance);
 		String typeDescription();
 		Class<X> getType();
 	}
@@ -26,21 +26,24 @@ public class Test {
 		void register(Consumer consumer);
 		List<Consumer> consumers();
 		boolean consumersReady();
+		boolean pumpPrimed();
 		
 		void primePump(X x);
 		boolean sendToConsumers();
-		void recall();
+		//void recall();
 	}
 	
 	public interface DataSink<X> extends Drone {
 		Shape<X> expectsType();
 		String instanceId();
-		boolean recieve(X input);
+		boolean receive(X input);
+		X peek();
+		X pop();
 		boolean readyToProcess();
-		X get();
 	}
 	
 	public interface Drone {
+		public void initialise();
 		Supervisor supervisor();
 		void shutdown();
 		Status reportStatus();
@@ -51,13 +54,15 @@ public class Test {
 	}
 	
 	public interface Consumer extends Drone {
-		boolean readyToRecieve();
+		boolean readyToRecieve(String pumpInstanceId);
+	}
+	
+	public interface Reader<X> extends DataPump<X> {
+		public void read();
 	}
 	
 	public interface Writer<X> extends DataSink<X>,Consumer {
-		public void initialise();
 		public void write();
-		public void shutdown();
 	}
 	
 	public interface Processor extends Consumer {
