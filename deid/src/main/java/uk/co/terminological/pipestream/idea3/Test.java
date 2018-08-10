@@ -18,19 +18,33 @@ public class Test {
 	}
 	
 	public interface EventBus {
+		void registerHandlerGenerator(EventHandlerGenerator<?> handler);
 		void registerHandler(EventHandler<?> handler);
 		void receive(Event<?> event);
+		
+		void handleException(Exception e);
+		void logError(String message);
+		void logInfo(String message);
 	}
 	
+	public interface EventBusAware {
+		EventBus getEventBus();
+		void setEventBus(EventBus eventBus);
+	}
 		
-	public interface EventHandler<X extends Event<?>> {
+	public interface EventHandler<X extends Event<?>> extends EventBusAware {
 		boolean canHandle(X event);
 		void handle(X event);
 	}
 	
+	public interface EventHandlerGenerator<X extends Event<?>> extends EventBusAware {
+		EventBus getEventBus();
+		void setEventBus(EventBus eventBus);
+		boolean canCreateHandler(X event);
+		EventHandler<X> createHandlerAndHandle(X event);
+	}
 	
-	public interface EventGenerator<Y> {
-		EventBus eventBus();
+	public interface EventGenerator<Y> extends EventBusAware {
 		void send(Event<Y> event);
 	}
 
@@ -43,16 +57,17 @@ public class Test {
 	
 	public class InputStreamAvailableEvent implements Event<InputStream> {
 
-		Path file;
+		DeferredInputStream dis;
 		String key;
 		
-		InputStreamAvailableEvent(Path file, String key) {
-			this.file = file;
+		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
+			this.dis = dis;
+			this.key = key;
 		}
 		
 		@Override
 		public Optional<String> name(InputStream instance) {
-			return Optional.of(file.toString());
+			return Optional.of(dis.toString());
 		}
 
 		@Override
@@ -67,28 +82,51 @@ public class Test {
 
 		@Override
 		public InputStream getCopy() {
-			return Files.newInputStream(file);
+			return dis.get();
 		}
 		
+	}
+	
+	public class DeferredInputStream {
+		EventBus bus;
+		Path path;
+		DeferredInputStream(EventBus bus, Path path) {
+			this.bus = bus; this.path = path;
+		}
+		public InputStream get() {
+			try {
+				return Files.newInputStream(path);
+			} catch (IOException e) {
+				bus.handleException(e);
+				return null;
+			}
+		}
+		public String toString() {return path.toString();}
 	}
 	
 	public class Reader implements EventGenerator<InputStream> {
 
 		EventBus bus;
+		
 		public Reader(EventBus bus, Path file, String key) {
-			this.bus = bus;
-			file.toFile().exists()
-			send(new InputStreamAvailableEvent(file, key));
+			this.setEventBus(bus);
+			
+			send(new InputStreamAvailableEvent(new DeferredInputStream(bus,file), key));
 		}
 		
 		@Override
-		public EventBus eventBus() {
+		public void send(Event<InputStream> event) {
+			getEventBus().receive(event);
+		}
+
+		@Override
+		public EventBus getEventBus() {
 			return bus;
 		}
 
 		@Override
-		public void send(Event<InputStream> event) {
-			eventBus().receive(event);
+		public void setEventBus(EventBus eventBus) {
+			this.bus = eventBus;
 		}
 		
 	}
