@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface Source extends Iterator<InputStream> {
 
-	public List<File> getInputs();
+	public Map<String,File> getInputs();
 	public Job getJob();
 	
 }
