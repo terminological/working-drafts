@@ -5,13 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 
 public class Test {
 	
 	
 	public interface Event<Y> extends Cloneable {
-		Optional<String> name(Y instance);
+		Optional<String> name();
 		String typeDescription();
 		Class<Y> getType();
 		Y getCopy();
@@ -25,6 +26,11 @@ public class Test {
 		void handleException(Exception e);
 		void logError(String message);
 		void logInfo(String message);
+		
+		List<EventHandler<?>> getHandlers();
+		List<EventHandlerGenerator<?>> getHandlerGenerators();
+		
+		void releaseHandler(EventHandler<?> handler);
 	}
 	
 	public interface EventBusAware {
@@ -38,8 +44,6 @@ public class Test {
 	}
 	
 	public interface EventHandlerGenerator<X extends Event<?>> extends EventBusAware {
-		EventBus getEventBus();
-		void setEventBus(EventBus eventBus);
 		boolean canCreateHandler(X event);
 		EventHandler<X> createHandlerAndHandle(X event);
 	}
@@ -52,8 +56,15 @@ public class Test {
 		
 	}
 	
+	/*
+	public interface EventIntegrator extends EventHandler<Event<?>> {
+		public String eventName();
+	}
 	
-	
+	public interface EventIntegratorGenerator extends EventHandlerGenerator<Event<?>> {
+		public String eventName();
+	}
+	*/
 	
 	public class InputStreamAvailableEvent implements Event<InputStream> {
 
@@ -66,7 +77,7 @@ public class Test {
 		}
 		
 		@Override
-		public Optional<String> name(InputStream instance) {
+		public Optional<String> name() {
 			return Optional.of(dis.toString());
 		}
 
