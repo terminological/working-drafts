@@ -5,7 +5,7 @@ import java.io.FilenameFilter;
 import java.util.Date;
 import java.util.List;
 
-public interface DirectoryWatcher {
+public interface Watcher {
 
 	public default void registerWith(Manager manager) {
 		manager.register(this);
@@ -18,4 +18,9 @@ public interface DirectoryWatcher {
 	
 	public void registerJobType(Class<Job> jobType);
 	public List<Class<Job>> getJobTypes();
+	
+	
+	public static interface Directory extends Watcher {
+		
+	}
 }
