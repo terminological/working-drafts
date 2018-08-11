@@ -24,7 +24,7 @@ public class Test {
 	}
 	*/
 	
-	public class InputStreamAvailableEvent implements Event<InputStream> {
+	public class InputStreamAvailableEvent extends Event.Default<InputStream> {
 
 		DeferredInputStream dis;
 		String key;
@@ -35,18 +35,8 @@ public class Test {
 		}
 		
 		@Override
-		public Optional<String> name() {
-			return Optional.of(dis.toString());
-		}
-
-		@Override
 		public String typeDescription() {
 			return key;
-		}
-
-		@Override
-		public Class<InputStream> getType() {
-			return InputStream.class;
 		}
 
 		@Override
@@ -70,6 +60,7 @@ public class Test {
 			}
 		}
 		public String toString() {return path.toString();}
+		public int hashCode() {return path.hashCode();}
 	}
 	
 	public class Reader extends EventGenerator.Default<InputStream> {
@@ -78,13 +69,6 @@ public class Test {
 			super();
 			send(new InputStreamAvailableEvent(new DeferredInputStream(file), key));
 		}
-		
-		@Override
-		public void send(Event<InputStream> event) {
-			getEventBus().receive(event);
-		}
-
-		
 		
 	}
 	

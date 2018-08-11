@@ -9,16 +9,11 @@ public interface Event<Y> {
 	Y get();
 	default boolean multiProcess() {return true;}
 	
-	public static class Default<Y> implements Event<Y> {
+	public static abstract class Default<Y> implements Event<Y> {
 
-		Y message;
-		public Default(Y message) {
-			this.message = message;
-		};
-		
 		@Override
 		public Optional<String> name() {
-			return Optional.of(Integer.toHexString(message.hashCode()));
+			return Optional.of(Integer.toHexString(get().hashCode()));
 		}
 
 		@Override
@@ -29,13 +24,10 @@ public interface Event<Y> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public Class<Y> getType() {
-			return (Class<Y>) message.getClass();
+			return (Class<Y>) get().getClass();
 		}
 
-		@Override
-		public Y get() {
-			return message;
-		}
+		
 		
 	}
 }
