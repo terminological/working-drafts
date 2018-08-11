@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,24 +16,39 @@ public class EventBus {
 		return singleton;
 	}
 	
-	List<EventHandler<?>> handlers = new ArrayList<>();
-	List<EventHandlerGenerator<?>> handlerGenerators = new ArrayList<>();;
+	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
+	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();;
 	
 	Logger log = LoggerFactory.getLogger(EventBus.class);
 	
 	
-	void registerHandlerGenerator(EventHandlerGenerator<?> handlerGenerator) {
+	void registerHandlerGenerator(EventHandlerGenerator<Event<?>> handlerGenerator) {
 		handlerGenerators.add(handlerGenerator);
-	};
-	void registerHandler(EventHandler<?> handler) {
-		handlers.add(handler);
+		handlerGenerator.setEventBus(this);
 	};
 	
-	<X extends Event<?>> void receive(X event) {
+	void registerHandler(EventHandler<Event<?>> handler) {
+		handlers.add(handler);
+		handler.setEventBus(this);
+	};
+	
+	void receive(Event<?> event) {
 		//TODO do something in parallel here unsing ? fibers
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/
-		handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(h -> h.handle(event));
+		if (event.multiProcess()) {
+			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(h -> h.handle(event));
+			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
+					hg -> hg.createHandlerAndHandle(event)
+					);
+		} else {
+			handlers.stream().filter(h -> h.canHandle(event)).findFirst().ifPresentOrElse(
+					h -> h.handle(event),
+					() -> handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event)).findFirst().ifPresent(
+							hg -> hg.createHandlerAndHandle(event))
+					);
+		}
+		
 	};
 	
 	
@@ -52,8 +66,8 @@ public class EventBus {
 		log.info(message);
 	};
 	
-	List<EventHandler<?>> getHandlers() {return handlers;};
-	List<EventHandlerGenerator<?>> getHandlerGenerators() {return handlerGenerators;}
+	List<EventHandler<Event<?>>> getHandlers() {return handlers;};
+	List<EventHandlerGenerator<Event<?>>> getHandlerGenerators() {return handlerGenerators;}
 	
 	void releaseHandler(EventHandler<?> handler) {
 		handlers.remove(handler);
