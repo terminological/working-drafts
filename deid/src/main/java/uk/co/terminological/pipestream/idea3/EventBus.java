@@ -16,6 +16,7 @@ public class EventBus {
 		return singleton;
 	}
 	
+	List<Event<?>> history = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
 	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();;
 	
@@ -24,18 +25,19 @@ public class EventBus {
 	
 	void registerHandlerGenerator(EventHandlerGenerator<Event<?>> handlerGenerator) {
 		handlerGenerators.add(handlerGenerator);
-		handlerGenerator.setEventBus(this);
+		//handlerGenerator.setEventBus(this);
 	};
 	
 	public void registerHandler(EventHandler<Event<?>> handler) {
 		handlers.add(handler);
-		handler.setEventBus(this);
+		//handler.setEventBus(this);
 	};
 	
 	void receive(Event<?> event) {
 		//TODO do something in parallel here unsing ? fibers
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/
+		this.history.add(event);
 		if (event.multiProcess()) {
 			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(h -> h.handle(event));
 			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
@@ -48,6 +50,7 @@ public class EventBus {
 							hg -> hg.createHandlerAndHandle(event))
 					);
 		}
+		
 		
 	};
 	

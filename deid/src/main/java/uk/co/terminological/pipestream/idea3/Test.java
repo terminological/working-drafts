@@ -57,30 +57,26 @@ public class Test {
 	}
 	
 	public class DeferredInputStream {
-		EventBus bus;
 		Path path;
-		DeferredInputStream(EventBus bus, Path path) {
-			this.bus = bus; this.path = path;
+		DeferredInputStream(Path path) {
+			this.path = path;
 		}
 		public InputStream get() {
 			try {
 				return Files.newInputStream(path);
 			} catch (IOException e) {
-				bus.handleException(e);
+				EventBus.get().handleException(e);
 				return null;
 			}
 		}
 		public String toString() {return path.toString();}
 	}
 	
-	public class Reader implements EventGenerator<InputStream> {
+	public class Reader extends EventGenerator.Default<InputStream> {
 
-		EventBus bus;
-		
-		public Reader(EventBus bus, Path file, String key) {
-			this.setEventBus(bus);
-			
-			send(new InputStreamAvailableEvent(new DeferredInputStream(bus,file), key));
+		public Reader(Path file, String key) {
+			super();
+			send(new InputStreamAvailableEvent(new DeferredInputStream(file), key));
 		}
 		
 		@Override
@@ -88,15 +84,7 @@ public class Test {
 			getEventBus().receive(event);
 		}
 
-		@Override
-		public EventBus getEventBus() {
-			return bus;
-		}
-
-		@Override
-		public void setEventBus(EventBus eventBus) {
-			this.bus = eventBus;
-		}
+		
 		
 	}
 	

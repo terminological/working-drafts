@@ -6,21 +6,9 @@ public interface EventHandlerGenerator<X extends Event<?>> extends EventBusAware
 	
 	public static abstract class Default<X extends Event<?>> implements EventHandlerGenerator<X> {
 
-		EventBus bus;
-		
-		@Override
-		public EventBus getEventBus() {
-			return bus;
-		}
-
-		@Override
-		public void setEventBus(EventBus eventBus) {
-			this.bus = eventBus;
-		}
-		
 		@SuppressWarnings("unchecked")
 		public Default() {
-			EventBus.get().registerHandlerGenerator((EventHandlerGenerator<Event<?>>) this); 
+			getEventBus().registerHandlerGenerator((EventHandlerGenerator<Event<?>>) this); 
 		}
 
 		
