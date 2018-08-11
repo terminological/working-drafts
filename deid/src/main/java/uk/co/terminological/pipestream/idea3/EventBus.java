@@ -10,10 +10,22 @@ import org.slf4j.LoggerFactory;
 
 public class EventBus {
 	
-	static EventBus singleton;
-	public static EventBus get() {
-		if (singleton == null) singleton = new EventBus();
-		return singleton;
+	private static volatile EventBus instance;
+	private static Object mutex = new Object();
+
+	private EventBus () {
+	}
+
+	public static EventBus  getInstance() {
+		EventBus  result = instance;
+		if (result == null) {
+			synchronized (mutex) {
+				result = instance;
+				if (result == null)
+					instance = result = new EventBus();
+			}
+		}
+		return result;
 	}
 	
 	List<Event<?>> history = new ArrayList<>();
