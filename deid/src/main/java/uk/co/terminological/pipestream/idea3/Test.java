@@ -11,13 +11,6 @@ import java.util.Optional;
 public class Test {
 	
 	
-	public interface Event<Y> extends Cloneable {
-		Optional<String> name();
-		String typeDescription();
-		Class<Y> getType();
-		Y getCopy();
-	}
-	
 	public interface EventBus {
 		void registerHandlerGenerator(EventHandlerGenerator<?> handler);
 		void registerHandler(EventHandler<?> handler);
