@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class EventBus {       
 
+	//Thanks to: https://stackoverflow.com/questions/16106260/thread-safe-singleton-class/16106598#16106598
     private static class Holder {
        private static final EventBus INSTANCE = new EventBus();
     }
