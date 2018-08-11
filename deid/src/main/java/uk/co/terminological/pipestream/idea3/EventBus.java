@@ -8,25 +8,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventBus {
-	
-	private static volatile EventBus instance;
-	private static Object mutex = new Object();
+public class EventBus {       
 
-	private EventBus () {
-	}
+    private static class Holder {
+       private static final EventBus INSTANCE = new EventBus();
+    }
 
-	public static EventBus  getInstance() {
-		EventBus  result = instance;
-		if (result == null) {
-			synchronized (mutex) {
-				result = instance;
-				if (result == null)
-					instance = result = new EventBus();
-			}
-		}
-		return result;
-	}
+    public static EventBus get() {
+        return Holder.INSTANCE;
+    }
 	
 	List<Event<?>> history = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
