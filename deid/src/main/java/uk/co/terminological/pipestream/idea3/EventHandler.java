@@ -18,6 +18,7 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 			this.bus = eventBus;
 		}
 		
+		@SuppressWarnings("unchecked")
 		public Default() {
 			EventBus.get().registerHandler((EventHandler<Event<?>>) this); 
 		}

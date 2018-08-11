@@ -27,7 +27,7 @@ public class EventBus {
 		handlerGenerator.setEventBus(this);
 	};
 	
-	public <Y extends EventHandler<Event<?>>> void registerHandler(Y handler) {
+	public void registerHandler(EventHandler<Event<?>> handler) {
 		handlers.add(handler);
 		handler.setEventBus(this);
 	};
