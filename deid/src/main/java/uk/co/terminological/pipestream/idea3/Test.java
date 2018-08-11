@@ -50,7 +50,7 @@ public class Test {
 		}
 
 		@Override
-		public InputStream getCopy() {
+		public InputStream get() {
 			return dis.get();
 		}
 		

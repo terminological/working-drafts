@@ -7,6 +7,7 @@ public interface Event<Y> {
 	String typeDescription();
 	Class<Y> getType();
 	Y get();
+	default boolean multiProcess() {return true;}
 	
 	public static class Default<Y> implements Event<Y> {
 
