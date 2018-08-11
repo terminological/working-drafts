@@ -5,46 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
 
 public class Test {
 	
 	
-	public interface EventBus {
-		void registerHandlerGenerator(EventHandlerGenerator<?> handler);
-		void registerHandler(EventHandler<?> handler);
-		void receive(Event<?> event);
-		
-		void handleException(Exception e);
-		void logError(String message);
-		void logInfo(String message);
-		
-		List<EventHandler<?>> getHandlers();
-		List<EventHandlerGenerator<?>> getHandlerGenerators();
-		
-		void releaseHandler(EventHandler<?> handler);
-	}
-	
-	public interface EventBusAware {
-		EventBus getEventBus();
-		void setEventBus(EventBus eventBus);
-	}
-		
-	public interface EventHandler<X extends Event<?>> extends EventBusAware {
-		boolean canHandle(X event);
-		void handle(X event);
-	}
-	
-	public interface EventHandlerGenerator<X extends Event<?>> extends EventBusAware {
-		boolean canCreateHandler(X event);
-		EventHandler<X> createHandlerAndHandle(X event);
-	}
-	
-	public interface EventGenerator<Y> extends EventBusAware {
-		void send(Event<Y> event);
-	}
-
 	public interface Adaptor<X extends Event<?>,Y> extends EventHandler<X>, EventGenerator<Y> {
 		
 	}
