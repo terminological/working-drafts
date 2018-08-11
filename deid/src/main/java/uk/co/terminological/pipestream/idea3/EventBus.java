@@ -37,7 +37,7 @@ public class EventBus {
 	};
 	
 	void receive(Event<?> event) {
-		//TODO do something in parallel here unsing ? fibers
+		//TODO do something in parallel here using ? fibers
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/
 		this.history.add(event);
