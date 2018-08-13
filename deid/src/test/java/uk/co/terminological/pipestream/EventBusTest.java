@@ -16,6 +16,13 @@ import uk.co.terminological.pipestream.idea3.Metadata;
 
 public class EventBusTest {
 
+	
+	public static void main(String[] args) throws Exception {
+		EventBusTest tmp = new EventBusTest();
+		tmp.setUp();
+		tmp.test();
+	}
+	
 	@Before
 	public void setUp() throws Exception {
 
