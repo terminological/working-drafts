@@ -71,7 +71,7 @@ public class EventBus {
 			);
 			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
 					hg -> {
-						EventHandler h = hg.createHandlerFor(event);
+						EventHandler<Event<?>> h = hg.createHandlerFor(event);
 						processingHistory.and(event.getMetadata(),h.getMetadata());
 						h.handle(event);
 					}
@@ -86,7 +86,7 @@ public class EventBus {
 						handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event))
 							.findFirst().ifPresentOrElse(
 							(hg -> {
-								EventHandler h = hg.createHandlerFor(event);
+								EventHandler<Event<?>> h = hg.createHandlerFor(event);
 								processingHistory.and(event.getMetadata(),h.getMetadata());
 								h.handle(event);
 							}),
