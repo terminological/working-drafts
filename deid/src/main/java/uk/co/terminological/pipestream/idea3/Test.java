@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class Test {
 	
@@ -49,15 +50,23 @@ public class Test {
 	
 	public class Reader extends EventGenerator.Default<InputStream> {
 
+		Metadata metadata;
+		InputStreamAvailableEvent out;
+		
 		public Reader(Path file, String key) {
 			super();
-			send(new InputStreamAvailableEvent(new DeferredInputStream(file), key));
+			metadata = Metadata.named(file.toString(),"File reader");
+			out = new InputStreamAvailableEvent(new DeferredInputStream(file), key);
 		}
 
 		@Override
 		public Metadata getMetadata() {
-			// TODO Auto-generated method stub
-			return null;
+			return metadata;
+		}
+
+		@Override
+		public Optional<Event<InputStream>> generate() {
+			return Optional.of(out);
 		}
 		
 	}
