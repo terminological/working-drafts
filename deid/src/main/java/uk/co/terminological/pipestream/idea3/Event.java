@@ -52,7 +52,7 @@ public interface Event<Y> {
 
 	public static abstract class Default<Y> implements Event<Y> {
 
-		EventMetadata<Y> metadata = EventMetadata.defaultFor(this.get());
+		EventMetadata<Y> metadata = EventMetadata.defaultFor(get());
 		
 		public EventMetadata<Y> getMetadata() {
 			return metadata;
