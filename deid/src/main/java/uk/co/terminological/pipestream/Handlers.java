@@ -37,6 +37,10 @@ public class Handlers {
 		Map<String,Event<?>> dependencies = new HashMap<>();
 		HandlerMetadata metadata;
 		
+		public Collector(HandlerMetadata metadata) {
+			this.metadata = metadata;
+		}
+		
 		@Override
 		public boolean canHandle(Event<?> event) {
 			for (Map.Entry<String,Predicate<Event<?>>> test : tests.entrySet()) {
@@ -70,6 +74,13 @@ public class Handlers {
 			return dependencies.get(name);
 		}
 		
+		/**
+		 * Override this
+		 * 
+		 * Use getEventByName(String name) to get the events
+		 * and send(Event<?> event) to output onto the message bus
+		 * if required 
+		 */
 		public abstract void process();
 		
 		public void send(Event<?> event) {

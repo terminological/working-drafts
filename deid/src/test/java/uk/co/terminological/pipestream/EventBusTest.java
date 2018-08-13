@@ -178,5 +178,20 @@ public class EventBusTest {
 		}
 		
 	}
+	
+	public static class TestStringCollector extends Handlers.Collector {
+		
+		public TestStringCollector() {
+			super(HandlerMetadata.named("collector", "random"));
+			this.addDependency("ONE", e -> e instanceof TestStringEvent && e.get().equals("one"));
+			this.addDependency("TWO", e -> e instanceof TestStringNamedEvent && e.get().equals("ONE"));
+		}
+
+		@Override
+		public void process() {
+			System.out.println("Collected: "+this.getEventByName("ONE").get()+" and "+this.getEventByName("TWO").get());
+		}
+		
+	}
 
 }
