@@ -11,7 +11,9 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.co.terminological.datatypes.TupleList;
 import uk.co.terminological.pipestream.idea3.Event.EventMetadata;
+import uk.co.terminological.pipestream.idea3.EventHandler.HandlerMetadata;
 
 public class EventBus {       
 
@@ -25,7 +27,7 @@ public class EventBus {
     }
 	
 	List<EventMetadata<?>> eventHistory = new ArrayList<>();
-	List<Tuple<EventMetadata<?>,> processingHistory = new ArrayList<>();
+	TupleList<EventMetadata<?>,HandlerMetadata> processingHistory = TupleList.create();
 	
 	List<Event<?>> unhandled = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
@@ -59,25 +61,39 @@ public class EventBus {
 		//TODO do something in parallel here using ? fibers
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/
-		this.history.add(event.getMetadata());
+		this.eventHistory.add(event.getMetadata());
 		if (event.getMetadata().multiProcess()) {
 			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(
 					h -> {
-						processingHistory.add(e)
-						h.handle(event)
+						processingHistory.and(event.getMetadata(),h.getMetadata());
+						h.handle(event);
 					}
 			);
 			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
-					hg -> hg.createHandlerAndHandle(event)
+					hg -> {
+						EventHandler h = hg.createHandlerFor(event);
+						processingHistory.and(event.getMetadata(),h.getMetadata());
+						h.handle(event);
+					}
 					);
 		} else {
 			handlers.stream().filter(h -> h.canHandle(event)).findFirst().ifPresentOrElse(
-					h -> h.handle(event),
-					() -> handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event)).findFirst().ifPresentOrElse(
-							hg -> hg.createHandlerAndHandle(event),
-							() -> unhandled.add(event)
-							)
-					);
+					(h -> {
+						processingHistory.and(event.getMetadata(),h.getMetadata());
+						h.handle(event);
+					}),
+					(() -> {
+						handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event))
+							.findFirst().ifPresentOrElse(
+							(hg -> {
+								EventHandler h = hg.createHandlerFor(event);
+								processingHistory.and(event.getMetadata(),h.getMetadata());
+								h.handle(event);
+							}),
+							(() -> unhandled.add(event))
+							);
+					})
+			);
 		}
 		//TODO some process for dealing with unhandled events
 		
