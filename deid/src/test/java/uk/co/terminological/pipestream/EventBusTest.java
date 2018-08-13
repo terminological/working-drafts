@@ -85,6 +85,7 @@ public class EventBusTest {
 
 		String message;
 		public TestStringEvent(String string) {
+			super(string);
 			this.message = string;
 		}
 
@@ -101,6 +102,7 @@ public class EventBusTest {
 		EventMetadata<String> metadata;
 
 		public TestStringNamedEvent(String string, String name) {
+			super(string);
 			this.message = string;
 			this.metadata = EventMetadata.named(String.class, name);
 		}
