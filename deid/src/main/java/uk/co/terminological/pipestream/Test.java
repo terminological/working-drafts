@@ -94,7 +94,7 @@ public class Test {
 		}
 	}
 	
-	
+	//TODO: create test cases
 	public static class Watcher extends EventGenerator.Default<Path> {
 
 		WatchService watcher;
@@ -122,7 +122,8 @@ public class Test {
 				.collect(Collectors.toList());
 			
 		}
-		
 	}
+	
+	//TODO: check currency of files - files changed after certain date. File path filter.
 	
 }
