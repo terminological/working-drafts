@@ -23,8 +23,6 @@ public class EventBusTest {
 		EventBus.get().registerHandler(new TestStringReplaceEventHandler());
 		EventBus.get().registerHandler(new TestStringToSystemOutEventHandler());
 
-		
-		
 	}
 
 	@Test
