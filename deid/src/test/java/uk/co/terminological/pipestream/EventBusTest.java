@@ -38,7 +38,14 @@ public class EventBusTest {
 	public final void test() {
 		EventBus.get().logInfo("Starting");
 		TestGenerator stringLoader = new TestGenerator(); 
-		while (stringLoader.execute())
+		
+		stringLoader.execute();
+		stringLoader.execute();
+		stringLoader.execute();
+		stringLoader.execute();
+		stringLoader.execute();
+		stringLoader.execute();
+		
 		EventBus.get().logInfo("Finished");
 	}
 
