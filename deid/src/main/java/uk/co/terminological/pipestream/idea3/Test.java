@@ -33,8 +33,11 @@ public class Test {
 		}
 		
 		@Override
-		public String typeDescription() {
-			return key;
+		public EventMetadata<InputStream> getMetadata() {
+			return new EventMetadata<InputStream>(
+					Integer.toHexString(dis.hashCode()),
+					key, InputStream.class, true
+			);
 		}
 
 		@Override
