@@ -19,8 +19,11 @@ public interface EventGenerator<Y> extends EventBusAware {
 		
 		public abstract Optional<Event<Y>> generate();
 		
-		public void execute() {
-			generate().ifPresent(this::send);
+		public boolean execute() {
+			return generate().map(
+					e -> {this.send(e);
+						return true;
+					}).orElse(false);
 		}
 		
 	}
