@@ -35,7 +35,7 @@ public class EventBus {
 	
 	Map<Class<?>,Object> apis = new HashMap<Class<?>, Object>();
 	
-	public void registgerApi(Object api) {
+	public void registerApi(Object api) {
 		this.apis.put(api.getClass(),api);
 	}
 	
@@ -47,7 +47,7 @@ public class EventBus {
 	Logger log = LoggerFactory.getLogger(EventBus.class);
 	
 	
-	void registerHandlerGenerator(EventHandlerGenerator<Event<?>> handlerGenerator) {
+	public void registerHandlerGenerator(EventHandlerGenerator<Event<?>> handlerGenerator) {
 		handlerGenerators.add(handlerGenerator);
 		//handlerGenerator.setEventBus(this);
 	};
@@ -105,17 +105,17 @@ public class EventBus {
 	// do as a pipeline?
 	// do as d3 graph?
 	
-	void handleException(Exception e) {
+	public void handleException(Exception e) {
 		PrintStream ps = new PrintStream(new ByteArrayOutputStream());
 		e.printStackTrace(ps);
 		logError(ps.toString());
 	};
 	
 	
-	void logError(String message) {
+	public void logError(String message) {
 		log.error(message);
 	};
-	void logInfo(String message) {
+	public void logInfo(String message) {
 		log.info(message);
 	};
 	
