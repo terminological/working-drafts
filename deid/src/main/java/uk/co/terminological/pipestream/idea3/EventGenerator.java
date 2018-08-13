@@ -17,9 +17,11 @@ public interface EventGenerator<Y> extends EventBusAware {
 		
 		public boolean execute() {
 			return generate().map(
-					e -> {this.send(e);
+					e -> {
+						this.send(e);
 						return true;
-					}).orElse(false);
+					}).orElse(
+							false);
 		}
 		
 	}
