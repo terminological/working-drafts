@@ -50,18 +50,11 @@ public class Test {
 	
 	public class Reader extends EventGenerator.Default<InputStream> {
 
-		Metadata metadata;
 		InputStreamAvailableEvent out;
 		
 		public Reader(Path file, String key) {
-			super();
-			metadata = Metadata.named(file.toString(),"File reader");
+			super(Metadata.named(file.toString(),"File reader"));
 			out = new InputStreamAvailableEvent(new DeferredInputStream(file), key);
-		}
-
-		@Override
-		public Metadata getMetadata() {
-			return metadata;
 		}
 
 		@Override
