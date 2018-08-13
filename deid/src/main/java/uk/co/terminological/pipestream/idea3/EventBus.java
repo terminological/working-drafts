@@ -22,7 +22,7 @@ public class EventBus {
         return Holder.INSTANCE;
     }
 	
-	List<Event.Metadata<?>> history = new ArrayList<>();
+	List<Metadata<?>> history = new ArrayList<>();
 	List<Event<?>> unhandled = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
 	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();
@@ -70,7 +70,7 @@ public class EventBus {
 							)
 					);
 		}
-		
+		//TODO some process for dealing with unhandled events
 		
 	};
 	

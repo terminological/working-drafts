@@ -10,9 +10,7 @@ import java.util.Optional;
 public class Test {
 	
 	
-	public interface Adaptor<X extends Event<?>,Y> extends EventHandler<X>, EventGenerator<Y> {
-		
-	}
+	
 	
 	/*
 	public interface EventIntegrator extends EventHandler<Event<?>> {

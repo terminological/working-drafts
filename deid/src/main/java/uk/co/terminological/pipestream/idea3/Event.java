@@ -2,7 +2,7 @@ package uk.co.terminological.pipestream.idea3;
 
 public interface Event<Y> {
 
-	Metadata<Y> getMetadata();
+	EventMetadata<Y> getMetadata();
 	Y get();
 
 	public static class EventMetadata<Y> extends Metadata<Y> {
