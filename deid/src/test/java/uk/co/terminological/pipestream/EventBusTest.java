@@ -185,7 +185,7 @@ public class EventBusTest {
 		public TestStringCollector() {
 			super(HandlerMetadata.named("collector", "random"));
 			this.addDependency("ONE", e -> e instanceof TestStringEvent && e.get().equals("one"));
-			this.addDependency("TWO", e -> e instanceof TestStringNamedEvent && e.get().equals("ONE"));
+			this.addDependency("TWO", e -> e.get().equals("ONE"));
 		}
 
 		@Override
