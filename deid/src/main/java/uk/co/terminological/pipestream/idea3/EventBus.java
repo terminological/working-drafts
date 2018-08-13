@@ -11,6 +11,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.co.terminological.pipestream.idea3.Event.EventMetadata;
+
 public class EventBus {       
 
 	//Thanks to: https://stackoverflow.com/questions/16106260/thread-safe-singleton-class/16106598#16106598
@@ -22,7 +24,9 @@ public class EventBus {
         return Holder.INSTANCE;
     }
 	
-	List<Metadata<?>> history = new ArrayList<>();
+	List<EventMetadata<?>> eventHistory = new ArrayList<>();
+	List<Tuple<EventMetadata<?>,> processingHistory = new ArrayList<>();
+	
 	List<Event<?>> unhandled = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
 	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();
@@ -57,7 +61,12 @@ public class EventBus {
 		// http://www.paralleluniverse.co/quasar/
 		this.history.add(event.getMetadata());
 		if (event.getMetadata().multiProcess()) {
-			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(h -> h.handle(event));
+			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(
+					h -> {
+						processingHistory.add(e)
+						h.handle(event)
+					}
+			);
 			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
 					hg -> hg.createHandlerAndHandle(event)
 					);

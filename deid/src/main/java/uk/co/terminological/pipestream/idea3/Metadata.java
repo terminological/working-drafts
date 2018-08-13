@@ -7,7 +7,7 @@ public class Metadata<Y> implements Serializable {
 	
 	String name;
 	String typeDescription;
-	Class<Y> type;
+	
 	
 	
 	public Optional<String> name() {
@@ -16,13 +16,11 @@ public class Metadata<Y> implements Serializable {
 	public String typeDescription() {
 		return typeDescription;
 	};
-	public Class<Y> getType(){
-		return type;
-	};
 	
 	
-	public Metadata(String name, String typeDescription, Class<Y> type) {
-		this.name = name; this.typeDescription = typeDescription; this.type = type;
+	
+	public Metadata(String name, String typeDescription) {
+		this.name = name; this.typeDescription = typeDescription;
 	}
 	
 	

@@ -8,13 +8,20 @@ public interface Event<Y> {
 	public static class EventMetadata<Y> extends Metadata<Y> {
 		
 		boolean multiProcess;
+		Class<Y> type;
+		
 		public boolean multiProcess() {
 			return multiProcess;
 		}
+		
+		public Class<Y> getType(){
+			return type;
+		};
 
 		public EventMetadata(String name, String typeDescription, Class<Y> type, boolean multiProcess) {
-			super(name,typeDescription,type); 
-			this.multiProcess = multiProcess;
+			super(name,typeDescription); 
+			 this.type = type; 
+			 this.multiProcess = multiProcess;
 		}
 
 		@SuppressWarnings("unchecked")

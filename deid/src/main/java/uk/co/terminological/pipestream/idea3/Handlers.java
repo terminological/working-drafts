@@ -21,6 +21,12 @@ public class Handlers {
 			// TODO Auto-generated method stub
 			
 		}
+
+		@Override
+		public HandlerMetadata<? extends EventHandler<Event<?>>> getMetadata() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 	
