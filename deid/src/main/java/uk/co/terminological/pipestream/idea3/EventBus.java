@@ -59,6 +59,7 @@ public class EventBus {
 	};
 	
 	void receive(Event<?> event, Metadata metadata) {
+		log.debug("Recieved message: {}",event.getMetadata());
 		//TODO do something in parallel here using ? fibers
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/

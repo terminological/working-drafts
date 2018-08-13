@@ -28,4 +28,8 @@ public class Metadata implements Serializable {
 		return new Metadata(name,typeDescription);
 	}
 	
+	public String toString() {
+		return name+":"+typeDescription;
+	}
+	
 }
