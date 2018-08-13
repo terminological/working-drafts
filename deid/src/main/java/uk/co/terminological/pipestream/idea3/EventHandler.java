@@ -21,7 +21,13 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 			return out;
 		}
 		
+		public static HandlerMetadata basic(String typeDescription) {
+			return new HandlerMetadata(null,typeDescription);
+		}
 		
+		public static HandlerMetadata named(String name, String typeDescription) {
+			return new HandlerMetadata(name,typeDescription);
+		}
 	}
 	
 	
