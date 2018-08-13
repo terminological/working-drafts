@@ -17,6 +17,7 @@ import uk.co.terminological.pipestream.idea3.Metadata;
 
 public class EventBusTest {
 
+	EventBus bus;
 	
 	public static void main(String[] args) throws Exception {
 		EventBusTest tmp = new EventBusTest();
@@ -28,9 +29,10 @@ public class EventBusTest {
 	public void setUp() throws Exception {
 
 		BasicConfigurator.configure();
-		EventBus.get().registerHandler(new TestStringToUpperEventHandler());
-		EventBus.get().registerHandler(new TestStringReplaceEventHandler());
-		EventBus.get().registerHandler(new TestStringToSystemOutEventHandler());
+		bus = EventBus.get();
+		bus.registerHandler(new TestStringToUpperEventHandler());
+		bus.registerHandler(new TestStringReplaceEventHandler());
+		bus.registerHandler(new TestStringToSystemOutEventHandler());
 
 	}
 
