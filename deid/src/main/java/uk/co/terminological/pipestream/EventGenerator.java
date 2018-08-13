@@ -1,6 +1,6 @@
 package uk.co.terminological.pipestream;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface EventGenerator<Y> extends EventBusAware {
 	
@@ -13,15 +13,13 @@ public interface EventGenerator<Y> extends EventBusAware {
 			getEventBus().receive(event, getMetadata());
 		}
 
-		public abstract Optional<Event<Y>> generate();
+		public abstract List<Event<Y>> generate();
 		
 		public boolean execute() {
-			return generate().map(
-					e -> {
-						this.send(e);
-						return true;
-					}).orElse(
-						false);
+			List<Event<Y>> tmp = generate();
+			if (tmp.isEmpty()) return false;
+			generate().forEach(e -> this.send(e));
+			return true;
 		}
 		
 		Metadata metadata;

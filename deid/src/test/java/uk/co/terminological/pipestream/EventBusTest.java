@@ -1,11 +1,13 @@
 package uk.co.terminological.pipestream;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 
 public class EventBusTest {
@@ -57,15 +59,15 @@ public class EventBusTest {
 		int i = 0;
 
 		@Override
-		public Optional<Event<String>> generate() {
+		public List<Event<String>> generate() {
 			if (i<test.length) {
 				
-				Optional<Event<String>> out = Optional.of(new TestStringEvent(test[i]));
+				List<Event<String>> out = FluentList.create(new TestStringEvent(test[i]));
 				i++;
 				return out;
 				
 			}
-			return Optional.empty();
+			return FluentList.empty();
 			
 		}
 
@@ -86,18 +88,24 @@ public class EventBusTest {
 
 	}
 
-	public static class TestStringNamedEvent extends Event.Default<String> {
+	public static class TestStringNamedEvent implements Event<String> {
 
 		String message;
+		EventMetadata<String> metadata;
 		
 		public TestStringNamedEvent(String string, String name) {
-			super(EventMetadata.named(String.class, name));
+			this.metadata = EventMetadata.named(String.class, name);
 			this.message = string;
 		}
 
 		@Override
 		public String get() {
 			return message;
+		}
+
+		@Override
+		public EventMetadata<String> getMetadata() {
+			return metadata;
 		}
 
 	}
