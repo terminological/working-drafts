@@ -8,13 +8,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.terminological.pipestream.idea3.Event;
-import uk.co.terminological.pipestream.idea3.EventBus;
-import uk.co.terminological.pipestream.idea3.EventGenerator;
-import uk.co.terminological.pipestream.idea3.EventHandler;
-import uk.co.terminological.pipestream.idea3.Handlers;
-import uk.co.terminological.pipestream.idea3.Metadata;
-
 public class EventBusTest {
 
 	EventBus bus;

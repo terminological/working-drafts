@@ -1,4 +1,4 @@
-package uk.co.terminological.pipestream.idea3;
+package uk.co.terminological.pipestream;
 
 import java.io.Serializable;
 import java.util.Optional;

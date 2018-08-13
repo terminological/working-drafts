@@ -1,4 +1,4 @@
-package uk.co.terminological.pipestream.idea3;
+package uk.co.terminological.pipestream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.datatypes.TupleList;
-import uk.co.terminological.pipestream.idea3.Event.EventMetadata;
-import uk.co.terminological.pipestream.idea3.EventHandler.HandlerMetadata;
+import uk.co.terminological.pipestream.Event.EventMetadata;
+import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 
 public class EventBus {       
 

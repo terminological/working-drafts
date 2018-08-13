@@ -1,4 +1,4 @@
-package uk.co.terminological.pipestream.idea3;
+package uk.co.terminological.pipestream;
 
 public interface EventHandler<X extends Event<?>> extends EventBusAware {
 	
