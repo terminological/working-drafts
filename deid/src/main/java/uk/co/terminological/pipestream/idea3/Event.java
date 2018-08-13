@@ -38,8 +38,10 @@ public interface Event<Y> {
 
 	public static abstract class Default<Y> implements Event<Y> {
 
+		EventMetadata<Y> metadata = EventMetadata.defaultFor(this.get());
+		
 		public EventMetadata<Y> getMetadata() {
-			return EventMetadata.defaultFor(this.get());
+			return metadata;
 		}
 
 	}
