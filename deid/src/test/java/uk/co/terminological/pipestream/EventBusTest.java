@@ -52,6 +52,10 @@ public class EventBusTest {
 
 	public static class TestGenerator extends EventGenerator.Default<String> {
 
+		public TestGenerator() {
+			super(Metadata.basic("String message generator"));
+		}
+
 		String[] test = {
 				"one",
 				"two",
@@ -60,11 +64,6 @@ public class EventBusTest {
 		};
 
 		int i = 0;
-
-		@Override
-		public Metadata getMetadata() {
-			return Metadata.basic("String message generator");
-		}
 
 		@Override
 		public Optional<Event<String>> generate() {
@@ -99,12 +98,10 @@ public class EventBusTest {
 	public static class TestStringNamedEvent extends Event.Default<String> {
 
 		String message;
-		EventMetadata<String> metadata;
-
+		
 		public TestStringNamedEvent(String string, String name) {
-			super(string);
+			super(EventMetadata.named(String.class, name));
 			this.message = string;
-			this.metadata = EventMetadata.named(String.class, name);
 		}
 
 		@Override
