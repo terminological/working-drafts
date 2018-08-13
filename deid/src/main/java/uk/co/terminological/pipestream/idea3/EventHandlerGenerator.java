@@ -6,9 +6,8 @@ public interface EventHandlerGenerator<X extends Event<?>> extends EventBusAware
 	
 	public static abstract class Default<X extends Event<?>> implements EventHandlerGenerator<X> {
 
-		@SuppressWarnings("unchecked")
 		public Default() {
-			getEventBus().registerHandlerGenerator((EventHandlerGenerator<Event<?>>) this); 
+			
 		}
 
 		
