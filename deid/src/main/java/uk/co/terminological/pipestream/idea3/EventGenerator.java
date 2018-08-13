@@ -21,7 +21,7 @@ public interface EventGenerator<Y> extends EventBusAware {
 						this.send(e);
 						return true;
 					}).orElse(
-							false);
+						false);
 		}
 		
 	}
