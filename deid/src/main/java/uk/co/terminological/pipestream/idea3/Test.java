@@ -16,7 +16,6 @@ public class Test {
 
 		DeferredInputStream dis;
 		String key;
-		EventMetadata<InputStream> metadata;
 		
 		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
 			this.dis = dis;
@@ -24,11 +23,6 @@ public class Test {
 			this.metadata = EventMetadata.named(InputStream.class, key);
 		}
 		
-		@Override
-		public EventMetadata<InputStream> getMetadata() {
-			return metadata; 
-		}
-
 		@Override
 		public InputStream get() {
 			return dis.get();

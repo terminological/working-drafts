@@ -62,7 +62,7 @@ public class EventBus {
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/
 		this.eventHistory.add(event.getMetadata());
-		if (event.getMetadata().multiProcess()) {
+		if (event.getMetadata().reusable()) {
 			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(
 					h -> {
 						processingHistory.and(event.getMetadata(),h.getMetadata());
@@ -81,6 +81,7 @@ public class EventBus {
 					(h -> {
 						processingHistory.and(event.getMetadata(),h.getMetadata());
 						h.handle(event);
+						this.releaseHandler(h);
 					}),
 					(() -> {
 						handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event))
@@ -89,6 +90,7 @@ public class EventBus {
 								EventHandler<Event<?>> h = hg.createHandlerFor(event);
 								processingHistory.and(event.getMetadata(),h.getMetadata());
 								h.handle(event);
+								this.releaseHandler(h);
 							}),
 							(() -> unhandled.add(event))
 							);

@@ -7,11 +7,11 @@ public interface Event<Y> {
 
 	public static class EventMetadata<Y> extends Metadata {
 		
-		boolean multiProcess;
+		boolean reusable;
 		Class<Y> type;
 		
 		public boolean reusable() {
-			return multiProcess;
+			return reusable;
 		}
 		
 		public Class<Y> getType(){
@@ -21,7 +21,7 @@ public interface Event<Y> {
 		public EventMetadata(String name, String typeDescription, Class<Y> type, boolean multiProcess) {
 			super(name,typeDescription); 
 			 this.type = type; 
-			 this.multiProcess = multiProcess;
+			 this.reusable = multiProcess;
 		}
 
 		@SuppressWarnings("unchecked")
@@ -44,7 +44,7 @@ public interface Event<Y> {
 		}
 		
 		public EventMetadata<Y> singleShot() {
-			this.multiProcess = false;
+			this.reusable = false;
 			return this;
 		}
 	}
