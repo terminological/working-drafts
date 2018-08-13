@@ -39,16 +39,12 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 			return metadata;
 		};
 		
-		@SuppressWarnings("unchecked")
 		public Default() {
 			metadata = HandlerMetadata.defaultFor(this);
-			getEventBus().registerHandler((EventHandler<Event<?>>) this);
 		}
 		
-		@SuppressWarnings("unchecked")
 		public Default(HandlerMetadata metadata) {
 			this.metadata = metadata;
-			getEventBus().registerHandler((EventHandler<Event<?>>) this);
 		}
 
 		
