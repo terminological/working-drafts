@@ -8,9 +8,12 @@ public interface EventGenerator<Y> extends EventBusAware {
 	public static abstract class Default<Y> implements EventGenerator<Y> {
 		
 		public void send(Event<Y> event, Metadata sender) {
-			getEventBus().receive(event, getMetadata());
+			getEventBus().receive(event, sender);
 		}
 
+		public void send(Event<Y> event) {
+			send(event, getMetadata());
+		}
 		
 	}
 	
