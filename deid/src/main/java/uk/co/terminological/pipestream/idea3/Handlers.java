@@ -1,9 +1,11 @@
 package uk.co.terminological.pipestream.idea3;
 
+import java.util.Optional;
+
 public class Handlers {
 
 	
-	public class Adaptor<X,Y> extends EventGenerator.Default<Y> implements EventHandler<Event<X>>  {
+	public class Adaptor<X,Y> extends EventHandler.Default<Event<X>> implements EventGenerator<Y>  {
 
 		@Override
 		public boolean canHandle(Event<?> event) {
@@ -18,10 +20,11 @@ public class Handlers {
 		}
 
 		@Override
-		public HandlerMetadata getMetadata() {
-			// TODO Auto-generated method stub
-			return null;
+		public void send(Event<Y> event) {
+			getEventBus().receive(event, getMetadata());
 		}
+
+		
 		
 	}
 	
