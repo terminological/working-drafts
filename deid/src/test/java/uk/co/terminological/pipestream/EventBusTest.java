@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Optional;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ public class EventBusTest {
 	@Before
 	public void setUp() throws Exception {
 
+		BasicConfigurator.configure();
 		EventBus.get().registerHandler(new TestStringToUpperEventHandler());
 		EventBus.get().registerHandler(new TestStringReplaceEventHandler());
 		EventBus.get().registerHandler(new TestStringToSystemOutEventHandler());
