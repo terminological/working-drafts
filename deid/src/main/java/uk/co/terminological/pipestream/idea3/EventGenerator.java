@@ -24,6 +24,16 @@ public interface EventGenerator<Y> extends EventBusAware {
 						false);
 		}
 		
+		Metadata metadata;
+		
+		public Default(Metadata metadata) {
+			this.metadata = metadata;
+		}
+		
+		public Metadata getMetadata() {
+			return metadata;
+		}
+		
 	}
 	
 }
