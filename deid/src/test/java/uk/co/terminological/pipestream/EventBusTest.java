@@ -29,11 +29,10 @@ public class EventBusTest {
 	public void setUp() throws Exception {
 
 		BasicConfigurator.configure();
-		bus = EventBus.get();
-		bus
-			.withHandler(new TestStringToUpperEventHandler())
-			.withHandler(new TestStringReplaceEventHandler())
-			.withHandler(new TestStringToSystemOutEventHandler());
+		bus = EventBus.get()
+				.withHandler(new TestStringToUpperEventHandler())
+				.withHandler(new TestStringReplaceEventHandler())
+				.withHandler(new TestStringToSystemOutEventHandler());
 	}
 
 	@Test
