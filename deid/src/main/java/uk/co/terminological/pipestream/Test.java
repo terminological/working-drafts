@@ -19,9 +19,9 @@ public class Test {
 		String key;
 		
 		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
+			super(EventMetadata.named(InputStream.class, key));
 			this.dis = dis;
 			this.key = key;
-			this.metadata = EventMetadata.named(InputStream.class, key);
 		}
 		
 		@Override
