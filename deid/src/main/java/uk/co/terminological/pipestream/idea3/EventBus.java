@@ -52,8 +52,9 @@ public class EventBus {
 		//handlerGenerator.setEventBus(this);
 	};
 	
-	public void registerHandler(EventHandler<Event<?>> handler) {
-		handlers.add(handler);
+	@SuppressWarnings("unchecked")
+	public void registerHandler(EventHandler<? extends Event<?>> handler) {
+		handlers.add((EventHandler<Event<?>>) handler);
 		//handler.setEventBus(this);
 	};
 	
