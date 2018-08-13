@@ -5,7 +5,7 @@ public interface Event<Y> {
 	EventMetadata<Y> getMetadata();
 	Y get();
 
-	public static class EventMetadata<Y> extends Metadata<Y> {
+	public static class EventMetadata<Y> extends Metadata {
 		
 		boolean multiProcess;
 		Class<Y> type;

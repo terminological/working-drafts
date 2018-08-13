@@ -3,7 +3,7 @@ package uk.co.terminological.pipestream.idea3;
 import java.io.Serializable;
 import java.util.Optional;
 
-public class Metadata<Y> implements Serializable {
+public class Metadata implements Serializable {
 	
 	String name;
 	String typeDescription;
