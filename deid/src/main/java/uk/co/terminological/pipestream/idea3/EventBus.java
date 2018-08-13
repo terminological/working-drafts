@@ -26,7 +26,7 @@ public class EventBus {
         return Holder.INSTANCE;
     }
 	
-	List<EventMetadata<?>> eventHistory = new ArrayList<>();
+	TupleList<Metadata, EventMetadata<?>> eventHistory = TupleList.create();
 	TupleList<EventMetadata<?>,HandlerMetadata> processingHistory = TupleList.create();
 	
 	List<Event<?>> unhandled = new ArrayList<>();
@@ -57,11 +57,11 @@ public class EventBus {
 		//handler.setEventBus(this);
 	};
 	
-	void receive(Event<?> event) {
+	void receive(Event<?> event, Metadata metadata) {
 		//TODO do something in parallel here using ? fibers
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/
-		this.eventHistory.add(event.getMetadata());
+		this.eventHistory.and(metadata, event.getMetadata());
 		if (event.getMetadata().reusable()) {
 			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(
 					h -> {
@@ -101,6 +101,9 @@ public class EventBus {
 		
 	};
 	
+	//TODO: generate a processing graph from handlers
+	// do as a pipeline?
+	// do as d3 graph?
 	
 	void handleException(Exception e) {
 		PrintStream ps = new PrintStream(new ByteArrayOutputStream());
