@@ -3,7 +3,10 @@ package uk.co.terminological.pipestream.idea3;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +23,20 @@ public class EventBus {
     }
 	
 	List<Event.Metadata<?>> history = new ArrayList<>();
+	List<Event<?>> unhandled = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
-	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();;
+	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();
+	
+	Map<Class<?>,Object> apis = new HashMap<Class<?>, Object>();
+	
+	public void registgerApi(Object api) {
+		this.apis.put(api.getClass(),api);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <X> Optional<X> getApi(Class<X> apiClass) {
+		return Optional.ofNullable((X) apis.get(apiClass));
+	}
 	
 	Logger log = LoggerFactory.getLogger(EventBus.class);
 	
@@ -49,8 +64,10 @@ public class EventBus {
 		} else {
 			handlers.stream().filter(h -> h.canHandle(event)).findFirst().ifPresentOrElse(
 					h -> h.handle(event),
-					() -> handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event)).findFirst().ifPresent(
-							hg -> hg.createHandlerAndHandle(event))
+					() -> handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event)).findFirst().ifPresentOrElse(
+							hg -> hg.createHandlerAndHandle(event),
+							() -> unhandled.add(event)
+							)
 					);
 		}
 		
