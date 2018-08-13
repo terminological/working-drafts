@@ -30,10 +30,10 @@ public class EventBusTest {
 
 		BasicConfigurator.configure();
 		bus = EventBus.get();
-		new TestStringToUpperEventHandler();
-		new TestStringReplaceEventHandler();
-		new TestStringToSystemOutEventHandler();
-
+		bus
+			.withHandler(new TestStringToUpperEventHandler())
+			.withHandler(new TestStringReplaceEventHandler())
+			.withHandler(new TestStringToSystemOutEventHandler());
 	}
 
 	@Test
