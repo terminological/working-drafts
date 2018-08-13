@@ -1,5 +1,7 @@
 package uk.co.terminological.pipestream.idea3;
 
+import java.util.Optional;
+
 public interface EventGenerator<Y> extends EventBusAware {
 	
 	public Metadata getMetadata();
@@ -15,10 +17,10 @@ public interface EventGenerator<Y> extends EventBusAware {
 			send(event, getMetadata());
 		}
 		
-		public abstract Event<Y> generate();
+		public abstract Optional<Event<Y>> generate();
 		
 		public void execute() {
-			send(generate());
+			generate().ifPresent(this::send);
 		}
 		
 	}
