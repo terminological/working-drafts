@@ -53,22 +53,22 @@ public interface Event<Y> {
 	public static abstract class Default<Y> implements Event<Y> {
 
 		EventMetadata<Y> metadata;
-		
-		public Default() {
-			
-		}
+		Y message;
 		
 		public Default(Y input) {
-			 metadata = EventMetadata.defaultFor(input);
+			 this(EventMetadata.defaultFor(input),input);
 		}
 		
-		public Default(EventMetadata<Y> metadata) {
+		public Default(EventMetadata<Y> metadata,Y input) {
 			 this.metadata = metadata;
+			 this.message = input;
 		}
 		
 		public EventMetadata<Y> getMetadata() {
 			return metadata;
 		}
 
+		public Y get() {return message;}
+		
 	}
 }
