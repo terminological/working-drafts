@@ -3,8 +3,6 @@ package uk.co.terminological.pipestream.idea3;
 import java.io.Serializable;
 import java.util.Optional;
 
-import uk.co.terminological.pipestream.idea3.Event.Metadata;
-
 public class Metadata<Y> implements Serializable {
 	
 	String name;
