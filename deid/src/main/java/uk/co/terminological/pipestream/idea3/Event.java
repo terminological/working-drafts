@@ -10,7 +10,7 @@ public interface Event<Y> {
 		boolean multiProcess;
 		Class<Y> type;
 		
-		public boolean multiProcess() {
+		public boolean reusable() {
 			return multiProcess;
 		}
 		
