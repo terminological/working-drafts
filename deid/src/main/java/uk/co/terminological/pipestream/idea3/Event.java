@@ -62,6 +62,10 @@ public interface Event<Y> {
 			 metadata = EventMetadata.defaultFor(input);
 		}
 		
+		public Default(EventMetadata<Y> metadata) {
+			 this.metadata = metadata;
+		}
+		
 		public EventMetadata<Y> getMetadata() {
 			return metadata;
 		}
