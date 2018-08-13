@@ -33,6 +33,20 @@ public interface Event<Y> {
 					true);
 			return out;
 		}
+		
+		public static <Z> EventMetadata<Z> named(Class<Z> className, String name) {
+			EventMetadata<Z> out = new EventMetadata<Z>(
+					name,
+					className.getCanonicalName(),
+					className,
+					true);
+			return out;
+		}
+		
+		public EventMetadata<Y> singleShot() {
+			this.multiProcess = false;
+			return this;
+		}
 	}
 
 
