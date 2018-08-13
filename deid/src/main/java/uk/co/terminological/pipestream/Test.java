@@ -11,6 +11,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import uk.co.terminological.datatypes.FluentList;
 
@@ -21,25 +22,29 @@ public class Test {
 	
 	
 	
-	public class InputStreamAvailableEvent extends Event.Default<InputStream> {
+	public static class InputStreamAvailableEvent implements Event<InputStream> {
 
 		DeferredInputStream dis;
-		String key;
+		EventMetadata<InputStream> metadata;
 		
 		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
-			super(EventMetadata.named(InputStream.class, key));
+			metadata = EventMetadata.named(InputStream.class, key);
 			this.dis = dis;
-			this.key = key;
 		}
 		
 		@Override
 		public InputStream get() {
 			return dis.get();
 		}
+
+		@Override
+		public EventMetadata<InputStream> getMetadata() {
+			return metadata;
+		}
 		
 	}
 	
-	public class DeferredInputStream {
+	public static  class DeferredInputStream {
 		Path path;
 		DeferredInputStream(Path path) {
 			this.path = path;
@@ -57,7 +62,7 @@ public class Test {
 	}
 	
 	
-	public class Reader extends EventGenerator.Default<InputStream> {
+	public static  class Reader extends EventGenerator.Default<InputStream> {
 
 		InputStreamAvailableEvent out;
 		
@@ -74,21 +79,23 @@ public class Test {
 	}
 	
 	
-	public class FileChangedEvent extends Event.Default<Path> {
-
-		String key;
-		Path path;
+	public static  class FileChangedEvent extends Event.Default<Path> {
 		
-		FileChangedEvent(Path path, String fileType) {
-			
-			super(EventMetadata.named(Path.class, fileType));
-			this.path = path;
+		FileChangedEvent(Path path) {
+				super(EventMetadata.named(Path.class, type(path) ),path);
 		}
 		
+		static String type(Path p) {
+			try {
+				return Files.probeContentType(p);
+			} catch (IOException e) {
+				return "unknown";
+			}
+		}
 	}
 	
 	
-	public class Watcher extends EventGenerator.Default<Path> {
+	public static class Watcher extends EventGenerator.Default<Path> {
 
 		WatchService watcher;
 		WatchKey key;
@@ -110,9 +117,10 @@ public class Test {
 
 		@Override
 		public List<Event<Path>> generate() {
-			key = watcher.poll();
-			key.pollEvents().stream().map(we -> (Path) we.context());
-			return Optional.ofNullable(key).map(wk -> wk.);
+			return watcher.poll().pollEvents().stream().map(we -> (Path) we.context())
+				.map(p -> new FileChangedEvent(p))
+				.collect(Collectors.toList());
+			
 		}
 		
 	}
