@@ -17,11 +17,6 @@ import uk.co.terminological.datatypes.FluentList;
 
 public class FileUtils {
 	
-	
-	
-	
-	
-	
 	public static class InputStreamAvailableEvent implements Event<InputStream> {
 
 		DeferredInputStream dis;
@@ -117,9 +112,10 @@ public class FileUtils {
 
 		@Override
 		public List<Event<Path>> generate() {
-			return watcher.poll().pollEvents().stream().map(we -> (Path) we.context())
-				.map(p -> new FileChangedEvent(p))
-				.collect(Collectors.toList());
+			return watcher.poll().pollEvents()
+					.stream().map(we -> (Path) we.context())
+					.map(p -> new FileChangedEvent(p))
+					.collect(Collectors.toList());
 			
 		}
 	}
