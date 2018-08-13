@@ -54,6 +54,10 @@ public interface Event<Y> {
 
 		EventMetadata<Y> metadata;
 		
+		public Default() {
+			
+		}
+		
 		public Default(Y input) {
 			 metadata = EventMetadata.defaultFor(input);
 		}
