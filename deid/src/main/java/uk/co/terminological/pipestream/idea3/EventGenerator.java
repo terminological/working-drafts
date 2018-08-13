@@ -15,6 +15,12 @@ public interface EventGenerator<Y> extends EventBusAware {
 			send(event, getMetadata());
 		}
 		
+		public abstract Event<Y> generate();
+		
+		public void execute() {
+			send(generate());
+		}
+		
 	}
 	
 }
