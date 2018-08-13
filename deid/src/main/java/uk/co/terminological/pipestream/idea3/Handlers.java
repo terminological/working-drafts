@@ -5,19 +5,17 @@ import java.util.Optional;
 public class Handlers {
 
 	
-	public class Adaptor<X,Y> extends EventHandler.Default<Event<X>> implements EventGenerator<Y>  {
+	public abstract class Adaptor<X,Y> extends EventHandler.Default<Event<X>> implements EventGenerator<Y>  {
 
 		@Override
-		public boolean canHandle(Event<?> event) {
-			// TODO Auto-generated method stub
-			return false;
-		}
+		public abstract boolean canHandle(Event<?> event);
 
 		@Override
 		public void handle(Event<X> event) {
-			// TODO Auto-generated method stub
-			
+			send(convert(event.get()));
 		}
+		
+		public abstract Event<Y> convert(X input);
 
 		@Override
 		public void send(Event<Y> event) {
