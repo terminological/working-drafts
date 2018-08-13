@@ -30,9 +30,9 @@ public class EventBusTest {
 
 		BasicConfigurator.configure();
 		bus = EventBus.get();
-		bus.registerHandler(new TestStringToUpperEventHandler());
-		bus.registerHandler(new TestStringReplaceEventHandler());
-		bus.registerHandler(new TestStringToSystemOutEventHandler());
+		new TestStringToUpperEventHandler();
+		new TestStringReplaceEventHandler();
+		new TestStringToSystemOutEventHandler();
 
 	}
 
