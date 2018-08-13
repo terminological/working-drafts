@@ -1,43 +1,32 @@
 package uk.co.terminological.pipestream.idea3;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class Test {
 	
 	
 	
 	
-	/*
-	public interface EventIntegrator extends EventHandler<Event<?>> {
-		public String eventName();
-	}
 	
-	public interface EventIntegratorGenerator extends EventHandlerGenerator<Event<?>> {
-		public String eventName();
-	}
-	*/
 	
 	public class InputStreamAvailableEvent extends Event.Default<InputStream> {
 
 		DeferredInputStream dis;
 		String key;
+		EventMetadata<InputStream> metadata;
 		
 		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
 			this.dis = dis;
 			this.key = key;
+			this.metadata = EventMetadata.named(InputStream.class, key);
 		}
 		
 		@Override
 		public EventMetadata<InputStream> getMetadata() {
-			return new EventMetadata<InputStream>(
-					Integer.toHexString(dis.hashCode()),
-					key, InputStream.class, true
-			);
+			return metadata; 
 		}
 
 		@Override
