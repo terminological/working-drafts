@@ -1,11 +1,9 @@
 package uk.co.terminological.pipestream.idea3;
 
-import java.util.Optional;
-
 public class Handlers {
 
 	
-	public abstract class Adaptor<X,Y> extends EventHandler.Default<Event<X>> implements EventGenerator<Y>  {
+	public abstract static class Adaptor<X,Y> extends EventHandler.Default<Event<X>> implements EventGenerator<Y>  {
 
 		@Override
 		public abstract boolean canHandle(Event<?> event);
@@ -27,7 +25,7 @@ public class Handlers {
 	}
 	
 	
-	public class Collector implements EventHandler<Event<?>> {
+	public static class Collector implements EventHandler<Event<?>> {
 
 		@Override
 		public boolean canHandle(Event<?> event) {
