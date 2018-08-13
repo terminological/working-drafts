@@ -35,8 +35,9 @@ public class EventBus {
 	
 	Map<Class<?>,Object> apis = new HashMap<Class<?>, Object>();
 	
-	public void registerApi(Object api) {
+	public EventBus withApi(Object api) {
 		this.apis.put(api.getClass(),api);
+		return this;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -47,15 +48,15 @@ public class EventBus {
 	Logger log = LoggerFactory.getLogger(EventBus.class);
 	
 	
-	public void registerHandlerGenerator(EventHandlerGenerator<Event<?>> handlerGenerator) {
+	public EventBus withHandlerGenerator(EventHandlerGenerator<Event<?>> handlerGenerator) {
 		handlerGenerators.add(handlerGenerator);
-		//handlerGenerator.setEventBus(this);
+		return this;
 	};
 	
 	@SuppressWarnings("unchecked")
-	public void registerHandler(EventHandler<? extends Event<?>> handler) {
+	public EventBus withHandler(EventHandler<? extends Event<?>> handler) {
 		handlers.add((EventHandler<Event<?>>) handler);
-		//handler.setEventBus(this);
+		return this;
 	};
 	
 	void receive(Event<?> event, Metadata metadata) {
