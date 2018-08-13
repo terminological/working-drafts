@@ -8,6 +8,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.co.terminological.pipestream.Event.EventMetadata;
+import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
+
 public class EventBusTest {
 
 	EventBus bus;
@@ -139,6 +142,38 @@ public class EventBusTest {
 		public void handle(Event<String> event) {
 			this.getEventBus().logInfo("Writing...");
 			System.out.println(event.get());
+		}
+		
+	}
+	
+	public static class TestStringEventHandlerGenerator extends EventHandlerGenerator.Default<Event<String>> {
+
+		@Override
+		public boolean canCreateHandler(Event<?> event) {
+			return String.class.isAssignableFrom(event.getMetadata().getType());
+		}
+
+		@Override
+		public EventHandler<Event<String>> createHandlerFor(Event<String> event) {
+			return new EventHandler.Default<Event<String>>(
+					HandlerMetadata.named(event.getMetadata().name().orElseThrow(() -> new RuntimeException()), 
+							"Auto build")) {
+
+				@Override
+				public boolean canHandle(Event<?> event2) {
+					return TestStringEventHandlerGenerator.this.canCreateHandler(event2) &&
+							event2.getMetadata().name().equals(this.getMetadata().name())
+							;
+				}
+
+				@Override
+				public void handle(Event<String> event2) {
+					this.getEventBus().logInfo("Generated handler: "+this.getMetadata()+" operating on "+event2.getMetadata());
+					System.out.println("Generated:"+event.get());
+				}
+
+				
+			};
 		}
 		
 	}
