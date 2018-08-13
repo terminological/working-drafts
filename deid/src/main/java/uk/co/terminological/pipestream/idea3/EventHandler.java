@@ -33,7 +33,7 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 	
 	public static abstract class Default<X extends Event<?>> implements EventHandler<X> {
 
-		HandlerMetadata metadata;
+		private HandlerMetadata metadata;
 		
 		public HandlerMetadata getMetadata() {
 			return metadata;
@@ -42,6 +42,12 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 		@SuppressWarnings("unchecked")
 		public Default() {
 			metadata = HandlerMetadata.defaultFor(this);
+			getEventBus().registerHandler((EventHandler<Event<?>>) this);
+		}
+		
+		@SuppressWarnings("unchecked")
+		public Default(HandlerMetadata metadata) {
+			this.metadata = metadata;
 			getEventBus().registerHandler((EventHandler<Event<?>>) this);
 		}
 
