@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import uk.co.terminological.datatypes.Tuple;
-
 public class Handlers {
 
 	

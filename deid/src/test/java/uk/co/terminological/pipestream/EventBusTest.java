@@ -1,14 +1,11 @@
 package uk.co.terminological.pipestream;
 
-import static org.junit.Assert.*;
-
 import java.util.Optional;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 
 public class EventBusTest {
