@@ -1,5 +1,11 @@
 package uk.co.terminological.pipestream;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import uk.co.terminological.datatypes.Tuple;
+
 public class Handlers {
 
 	
@@ -25,24 +31,65 @@ public class Handlers {
 	}
 	
 	
-	public static class Collector implements EventHandler<Event<?>> {
-
+	public abstract static class Collector implements EventHandler<Event<?>> {
+		
+		Map<String,Predicate<Event<?>>> tests = new HashMap<>(); 
+		Map<String,Event<?>> dependencies = new HashMap<>();
+		HandlerMetadata metadata;
+		
 		@Override
 		public boolean canHandle(Event<?> event) {
-			// TODO Auto-generated method stub
+			for (Map.Entry<String,Predicate<Event<?>>> test : tests.entrySet()) {
+				if (test.getValue().test(event)) {
+					if (!dependencies.containsKey(test.getKey())) {
+						return true;
+					}
+				}
+			}
 			return false;
 		}
 
 		@Override
 		public void handle(Event<?> event) {
-			// TODO Auto-generated method stub
+			
+			for (Map.Entry<String,Predicate<Event<?>>> test : tests.entrySet()) {
+				if (test.getValue().test(event)) {
+					if (!dependencies.containsKey(test.getKey())) {
+						dependencies.put(test.getKey(), event);
+					}
+				}
+			}
+			
+			if (dependenciesMet()) {
+				process();
+			}
 			
 		}
-
+		
+		public Event<?> getEventByName(String name) {
+			return dependencies.get(name);
+		}
+		
+		public abstract void process();
+		
+		public void send(Event<?> event) {
+			getEventBus().receive(event, getMetadata());
+		}
+		
+		public void addDependency(String name, Predicate<Event<?>> test) {
+			if (tests.containsKey(name)) throw new UnsupportedOperationException("Name "+name+" already present as dependency");
+			this.tests.put(name, (Predicate<Event<?>>) test);
+		}
+		
+		
+		public boolean dependenciesMet() {
+			return tests.keySet().containsAll(dependencies.keySet()) &&
+					dependencies.keySet().containsAll(tests.keySet());
+		}
+		
 		@Override
 		public HandlerMetadata getMetadata() {
-			// TODO Auto-generated method stub
-			return null;
+			return metadata;
 		}
 		
 	}
