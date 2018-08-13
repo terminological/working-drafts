@@ -53,6 +53,12 @@ public class Test {
 			super();
 			send(new InputStreamAvailableEvent(new DeferredInputStream(file), key));
 		}
+
+		@Override
+		public Metadata getMetadata() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 	

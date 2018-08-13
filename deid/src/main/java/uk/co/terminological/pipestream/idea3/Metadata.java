@@ -3,8 +3,6 @@ package uk.co.terminological.pipestream.idea3;
 import java.io.Serializable;
 import java.util.Optional;
 
-import uk.co.terminological.pipestream.idea3.EventHandler.HandlerMetadata;
-
 public class Metadata implements Serializable {
 	
 	String name;
@@ -23,11 +21,11 @@ public class Metadata implements Serializable {
 	}
 	
 	public static Metadata basic(String typeDescription) {
-		return new HandlerMetadata(null,typeDescription);
+		return new Metadata(null,typeDescription);
 	}
 	
 	public static Metadata named(String name, String typeDescription) {
-		return new HandlerMetadata(name,typeDescription);
+		return new Metadata(name,typeDescription);
 	}
 	
 }
