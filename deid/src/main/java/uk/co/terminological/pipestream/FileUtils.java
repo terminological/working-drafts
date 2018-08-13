@@ -1,8 +1,9 @@
 package uk.co.terminological.pipestream;
 
-import java.io.IOException;
-import static java.nio.file.StandardWatchEventKinds.*;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -10,12 +11,11 @@ import java.nio.file.Path;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import uk.co.terminological.datatypes.FluentList;
 
-public class Test {
+public class FileUtils {
 	
 	
 	
