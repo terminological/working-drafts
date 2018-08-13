@@ -28,7 +28,8 @@ public class EventBusTest {
 		bus = EventBus.get()
 				.withHandler(new TestStringToUpperEventHandler())
 				.withHandler(new TestStringReplaceEventHandler())
-				.withHandler(new TestStringToSystemOutEventHandler());
+				.withHandler(new TestStringToSystemOutEventHandler())
+				.withHandlerGenerator(new TestStringEventHandlerGenerator());
 	}
 
 	@Test

@@ -48,8 +48,9 @@ public class EventBus {
 	Logger log = LoggerFactory.getLogger(EventBus.class);
 	
 	
-	public EventBus withHandlerGenerator(EventHandlerGenerator<Event<?>> handlerGenerator) {
-		handlerGenerators.add(handlerGenerator);
+	@SuppressWarnings("unchecked")
+	public EventBus withHandlerGenerator(EventHandlerGenerator<? extends Event<?>> handlerGenerator) {
+		handlerGenerators.add((EventHandlerGenerator<Event<?>>) handlerGenerator);
 		return this;
 	};
 	
