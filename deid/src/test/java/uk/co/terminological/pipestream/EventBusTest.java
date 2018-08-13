@@ -68,8 +68,15 @@ public class EventBusTest {
 
 		@Override
 		public Optional<Event<String>> generate() {
-			if (i<test.length) return Optional.of(new TestStringEvent(test[i]));
+			if (i<test.length) {
+				
+				Optional<Event<String>> out = Optional.of(new TestStringEvent(test[i]));
+				i++;
+				return out;
+				
+			}
 			return Optional.empty();
+			
 		}
 
 	}
