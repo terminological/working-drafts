@@ -5,21 +5,19 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 	
 	boolean canHandle(Event<?> event);
 	void handle(X event);
-	HandlerMetadata<? extends EventHandler<X>> getMetadata();
+	HandlerMetadata getMetadata();
 	
 	
-	public static class HandlerMetadata<Y> extends Metadata<Y> {
+	public static class HandlerMetadata extends Metadata {
 		
-		public HandlerMetadata(String name, String typeDescription, Class<Y> type) {
-			super(name,typeDescription,type); 
+		public HandlerMetadata(String name, String typeDescription) {
+			super(name,typeDescription); 
 		}
 
-		@SuppressWarnings("unchecked")
-		public static <Z> HandlerMetadata<Z> defaultFor(Z instance) {
-			HandlerMetadata<Z> out = new HandlerMetadata<Z>(
+		public static HandlerMetadata defaultFor(EventHandler<?> instance) {
+			HandlerMetadata out = new HandlerMetadata(
 					Integer.toHexString(instance.hashCode()),
-					instance.getClass().getCanonicalName(),
-					(Class<Z>) instance.getClass());
+					instance.getClass().getCanonicalName());
 			return out;
 		}
 	}
@@ -27,9 +25,9 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 	
 	public static abstract class Default<X extends Event<?>> implements EventHandler<X> {
 
-		HandlerMetadata<? extends Default<X>> metadata;
+		HandlerMetadata metadata;
 		
-		public HandlerMetadata<? extends Default<X>> getMetadata() {
+		public HandlerMetadata getMetadata() {
 			return metadata;
 		};
 		
