@@ -14,8 +14,12 @@ public class FluentEvents {
 			return event(instance,null,null);
 		}
 		
-		public static <Y> Event<Y> event(Y instance, Function<Y,String> nameMapper) {
+		public static <Y> Event<Y> namedEvent(Y instance, Function<Y,String> nameMapper) {
 			return event(instance,nameMapper,null);
+		}
+		
+		public static <Y> Event<Y> typedEvent(Y instance, Function<Y,String> typeMapper) {
+			return event(instance,null,typeMapper);
 		}
 		
 		public static <Y> Event<Y> namedEvent(Y instance, String name) {
@@ -48,16 +52,28 @@ public class FluentEvents {
 	}
 
 	public static class Predicates {
+		
 		public static Predicate<Event<?>> matchNameAndType(String name, String type) {
+			return matchName(name).and(matchType(type));
+		}
+
+		public static Predicate<Event<?>> matchName(String name) {
 			return new Predicate<Event<?>>() {
 				@Override
 				public boolean test(Event<?> t) {
-					return t.getMetadata().name().orElse("").equals(name) &&
-							t.getMetadata().typeDescription().equals(type);
+					return t.getMetadata().name().orElse("").equals(name);
 				}
 			};
 		}
-
+		
+		public static Predicate<Event<?>> matchType(String type) {
+			return new Predicate<Event<?>>() {
+				@Override
+				public boolean test(Event<?> t) {
+					return t.getMetadata().typeDescription().equals(type);
+				}
+			};
+		}
 
 		public static Predicate<Event<?>> matchEventClass(Class<? extends Event<?>> clazz) {
 			return new Predicate<Event<?>>() {
@@ -67,6 +83,17 @@ public class FluentEvents {
 				}
 			};
 		}
+		
+		public static Predicate<Event<?>> matchMessageClass(Class<?> clazz) {
+			return new Predicate<Event<?>>() {
+				@Override
+				public boolean test(Event<?> t) {
+					return clazz.equals(t.getMetadata().getType());
+				}
+			};
+		}
+		
+		
 	}
 
 	public static class Handlers {
@@ -86,7 +113,7 @@ public class FluentEvents {
 
 				@Override
 				public Event<Y> convert(X input) {
-					return event(
+					return Events.event(
 							converter.apply(input),
 							nameMapper, typeMapper);
 				}
