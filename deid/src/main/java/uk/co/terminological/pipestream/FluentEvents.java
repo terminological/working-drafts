@@ -1,10 +1,8 @@
 package uk.co.terminological.pipestream;
 
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
@@ -143,6 +141,10 @@ public class FluentEvents {
 			return matchName(s -> s.equals(name));
 		}
 		
+		public static Predicate<Event<?>> matchNameOf(Event<?> previousEvent) {
+			return matchName(s -> s.equals(previousEvent.getMetadata().name().orElse("undefined")));
+		}
+		
 		public static Predicate<Event<?>> matchType(String type) {
 			return matchType(s -> s.equals(type));
 		}
@@ -216,6 +218,30 @@ public class FluentEvents {
 							converter.apply(input),
 							nameMapper, typeMapper);
 				}
+			};
+		}
+		
+		
+	}
+	
+	public static class HandlerGenerators {
+		
+		public static <Y> EventHandlerGenerator<Event<Y>> create(
+				Predicate<Event<?>> acceptEventType,
+				Function<Event<Y>,EventHandler<Event<Y>>> handlerBuilder
+				) {
+			return new EventHandlerGenerator.Default<Event<Y>>() {
+
+				@Override
+				public boolean canCreateHandler(Event<?> event) {
+					return acceptEventType.test(event);
+				}
+
+				@Override
+				public EventHandler<Event<Y>> createHandlerFor(Event<Y> event) {
+					return handlerBuilder.apply(event);
+				}
+				
 			};
 		}
 		
