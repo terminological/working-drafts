@@ -164,10 +164,10 @@ public class FileUtils {
 	public static abstract class EventSerialiser<X> implements BiConsumer<Path,Event<X>>, Closeable {
 
 		public EventSerialiser() {
-			EventBus.get().registerCloseable(this);
+			if (leaveOpen()) EventBus.get().registerCloseable(this);
 		}
 		
-		public abstract void open(Path path);
+		public abstract void ensureOpen(Path path);
 		public abstract boolean leaveOpen();
 		public abstract void close() throws IOException;
 		
@@ -199,9 +199,17 @@ public class FileUtils {
 		@Override
 		public void handle(Event<X> event) {
 			Path out = nameStrategy.apply(event);
+			serialiser.ensureOpen(out);
 			this.getEventBus().logInfo("Started writing "+event.getMetadata().toString()+" to "+out.toString());
 			serialiser.accept(out, event);
 			this.getEventBus().logInfo("Finished writing "+event.getMetadata().toString()+" to "+out.toString());
+			if (!serialiser.leaveOpen()) {
+				try {
+					serialiser.close();
+				} catch (IOException e) {
+					this.getEventBus().handleException(e);
+				}
+			}
 		}
 		
 	}
