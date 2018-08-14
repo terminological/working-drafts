@@ -2,6 +2,7 @@ package uk.co.terminological.pipestream;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Predicate;
 
 import uk.co.terminological.datatypes.FluentMap;
@@ -37,6 +38,8 @@ public class Handlers {
 	public static class PredicateMap 
 		extends FluentMap<String,Predicate<Event<?>>>
 		implements Map<String,Predicate<Event<?>>> {} 
+	
+	
 	
 	public abstract static class Collector implements EventHandler<Event<?>> {
 		
@@ -118,9 +121,8 @@ public class Handlers {
 
 		Map<String,Predicate<Event<?>>> tests = new HashMap<>(); 
 		
-		public void addTypeDependency(String name, Predicate<Event<?>> test) {
-			if (tests.containsKey(name)) throw new UnsupportedOperationException("Name "+name+" already present as dependency");
-			this.tests.put(name, (Predicate<Event<?>>) test);
+		public CollectorGenerator(Map<String,Predicate<Event<?>>> predicateMap) {
+			this.tests = predicateMap;
 		}
 		
 		@Override
@@ -128,7 +130,21 @@ public class Handlers {
 			return tests.values().stream().anyMatch(p -> p.test(event));
 		}
 
-		//Collector create 
+		/**
+		 * Utility for creating and additional rule that must apply to all inputs of 
+		 * collector. 
+		 * @param additionalTest
+		 * @return
+		 */
+		public Map<String,Predicate<Event<?>>> instanceTests(Predicate<Event<?>> additionalTest) {
+			Map<String,Predicate<Event<?>>> out = new HashMap<String,Predicate<Event<?>>>();
+			for (Entry<String,Predicate<Event<?>>> old: tests.entrySet()) {
+				out.put(old.getKey(), 
+						old.getValue().and(additionalTest)
+						);
+			}
+			return out;
+		}
 		
 		@Override
 		public Collector createHandlerFor(Event<?> event) {
