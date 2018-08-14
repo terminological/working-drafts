@@ -32,6 +32,11 @@ public class FluentEvents {
 					true);
 		}
 		
+		public static <Y> EventMetadata<Y> forEvent(Y instance) {
+			return forEvent(instance, (Function<Y,String>) null, (Function<Y,String>) null);
+		}
+		
+		
 		public static <Y> EventMetadata<Y> forEvent(Y instance,
 				Function<Y,String> nameMapper,
 				String type) {
