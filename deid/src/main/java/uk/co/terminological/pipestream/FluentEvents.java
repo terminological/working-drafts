@@ -4,6 +4,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import uk.co.terminological.pipestream.Event.EventMetadata;
+import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
 
 public class FluentEvents {
@@ -67,7 +68,23 @@ public class FluentEvents {
 		public static <Y> EventMetadata<Y> forEvent(Class<Y> clazz, String type) {
 			return forEvent(clazz,(String) null,type);
 		}
-				
+		
+		public static HandlerMetadata forHandler(String name, String typeDescription) {
+			return new HandlerMetadata(name, typeDescription);
+		}
+		
+		public static HandlerMetadata forHandler(String typeDescription) {
+			return new HandlerMetadata(null, typeDescription);
+		}
+		
+		public static HandlerMetadata forHandler(EventHandler<?> instance) {
+			return forHandler(
+					defaultNameMapper().apply(instance), 
+					defaultTypeMapper().apply(instance)
+					);
+		}
+		
+		
 		
 	}
 	
