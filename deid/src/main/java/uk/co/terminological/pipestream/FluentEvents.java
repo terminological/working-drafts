@@ -11,31 +11,31 @@ public class FluentEvents {
 	public static class Events {
 		
 		public static <Y> Event<Y> event(Y instance) {
-			return event(instance,null,null);
+			return namedTypedEvent(instance,null,null);
 		}
 		
 		public static <Y> Event<Y> namedEvent(Y instance, Function<Y,String> nameMapper) {
-			return event(instance,nameMapper,null);
+			return namedTypedEvent(instance,nameMapper,null);
 		}
 		
 		public static <Y> Event<Y> typedEvent(Y instance, Function<Y,String> typeMapper) {
-			return event(instance,null,typeMapper);
+			return namedTypedEvent(instance,null,typeMapper);
 		}
 		
 		public static <Y> Event<Y> namedEvent(Y instance, String name) {
-			return event(instance,(y -> name),null);
+			return namedTypedEvent(instance,(y -> name),null);
 		}
 		
 		public static <Y> Event<Y> typedEvent(Y instance, String type) {
-			return event(instance,null,(y -> type));
+			return namedTypedEvent(instance,null,(y -> type));
 		}
 		
 		public static <Y> Event<Y> namedTypedEvent(Y instance, String name, String type) {
-			return event(instance,(y -> name),(y -> type));
+			return namedTypedEvent(instance,(y -> name),(y -> type));
 		}
 				
 		@SuppressWarnings("unchecked")
-		public static <Y> Event<Y> event(Y instance,
+		public static <Y> Event<Y> namedTypedEvent(Y instance,
 				Function<Y,String> nameMapper,
 				Function<Y,String> typeMapper
 				) {
@@ -113,7 +113,7 @@ public class FluentEvents {
 
 				@Override
 				public Event<Y> convert(X input) {
-					return Events.event(
+					return Events.namedTypedEvent(
 							converter.apply(input),
 							nameMapper, typeMapper);
 				}
