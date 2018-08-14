@@ -3,7 +3,6 @@ package uk.co.terminological.pipestream;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
-import java.io.Closeable;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +14,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -160,31 +158,14 @@ public class FileUtils {
 	
 	public static interface NamingStrategy extends Function<Event<?>,Path> {}
 	
-	public static abstract class EventSerialiser<X> implements BiConsumer<Path,Event<X>>, Closeable {
-
-		public EventSerialiser() {
-			if (leaveOpen()) EventBus.get().registerCloseable(this);
-		}
-		
-		public abstract void ensureOpen(Path path);
-		public abstract boolean leaveOpen();
-		public abstract void close() throws IOException;
-		
-		@Override
-		public abstract void accept(Path t, Event<X> u);
-
-		
-		
-	}
-	
 	public static class FileWriter<X> extends EventHandler.Default<Event<X>> {
 
 		NamingStrategy nameStrategy; 
-		EventSerialiser<X> serialiser;
+		EventSerializer<X> serialiser;
 		Predicate<Event<?>> acceptEvents;
 		
-		public FileWriter(Predicate<Event<?>> acceptEvents, NamingStrategy nameStrategy, EventSerialiser<X> serialiser) {
-			super(FluentEvents.Metadata.forHandler("FILE_WRITER"));
+		public FileWriter(Predicate<Event<?>> acceptEvents, NamingStrategy nameStrategy, EventSerializer<X> serialiser) {
+			super(FluentEvents.Metadata.forHandler(serialiser.getClass().getSimpleName()));
 			this.nameStrategy = nameStrategy;
 			this.serialiser = serialiser;
 			this.acceptEvents = acceptEvents;

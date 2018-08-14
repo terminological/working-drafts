@@ -2,10 +2,10 @@ package uk.co.terminological.pipestream;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.BiConsumer;
 
 public abstract class EventSerializer<X> implements Closeable {
 	public EventSerializer() {
@@ -20,29 +20,35 @@ public abstract class EventSerializer<X> implements Closeable {
 	
 	public static class JavaSerializer extends EventSerializer<Serializable> {
 
-		BufferedWriter os;
+		ObjectOutputStream os;
 		
 		@Override
 		public void ensureOpen(Path path) {
-			os = Files.newBufferedWriter(path);
+			if (os != null) return;
+			try {
+				os = new ObjectOutputStream(Files.newOutputStream(path));
+			} catch (IOException e) {
+				EventBus.get().handleException(e);
+			}
 		}
 
 		@Override
 		public boolean leaveOpen() {
-			// TODO Auto-generated method stub
-			return false;
+			return true;
 		}
 
 		@Override
 		public void close() throws IOException {
-			// TODO Auto-generated method stub
-			
+			os.close();
 		}
 
 		@Override
 		public void write(Event<Serializable> u) {
-			// TODO Auto-generated method stub
-			
+			try {
+				os.writeObject(u.get());
+			} catch (IOException e) {
+				EventBus.get().handleException(e);
+			}
 		}
 		
 	}
