@@ -7,6 +7,7 @@ public class Metadata implements Serializable {
 	
 	String name;
 	String typeDescription;
+	long timestamp;
 	
 	
 	public Optional<String> name() {
@@ -18,6 +19,7 @@ public class Metadata implements Serializable {
 	
 	public Metadata(String name, String typeDescription) {
 		this.name = name; this.typeDescription = typeDescription;
+		this.timestamp = System.currentTimeMillis();
 	}
 	
 	public static Metadata basic(String typeDescription) {
