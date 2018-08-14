@@ -14,7 +14,7 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 			super(name,typeDescription); 
 		}
 
-		public static HandlerMetadata defaultFor(EventHandler<?> instance) {
+		/*public static HandlerMetadata defaultFor(EventHandler<?> instance) {
 			HandlerMetadata out = new HandlerMetadata(
 					Integer.toHexString(instance.hashCode()),
 					instance.getClass().getCanonicalName());
@@ -27,7 +27,7 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 		
 		public static HandlerMetadata named(String name, String typeDescription) {
 			return new HandlerMetadata(name,typeDescription);
-		}
+		}*/
 	}
 	
 	
@@ -39,8 +39,9 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 			return metadata;
 		};
 		
+		@Deprecated
 		public Default() {
-			metadata = HandlerMetadata.defaultFor(this);
+			metadata = FluentEvents.Metadata.forHandler(this);
 		}
 		
 		public Default(HandlerMetadata metadata) {
