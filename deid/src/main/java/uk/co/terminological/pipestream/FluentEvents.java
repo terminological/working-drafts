@@ -10,12 +10,21 @@ public class FluentEvents {
 
 	public static class Metadata {
 		
+		private static <Y> Function<Y,String> defaultNameMapper() {
+			return (i -> Integer.toHexString(i.hashCode()));
+		}
+		private static <Y> Function<Y,String> defaultTypeMapper() {
+			return (i -> i.getClass().getCanonicalName());
+		}
+		
 		@SuppressWarnings("unchecked")
 		public static <Y> EventMetadata<Y> forEvent(Y instance,
 				Function<Y,String> nameMapper,
 				Function<Y,String> typeMapper) {
-			if (nameMapper == null) nameMapper = (i -> Integer.toHexString(i.hashCode()));
-			if (typeMapper == null) typeMapper = (i -> i.getClass().getCanonicalName());
+			if (nameMapper == null) nameMapper = defaultNameMapper();
+			if (typeMapper == null || typeMapper.apply(instance) == null) {
+					typeMapper = defaultTypeMapper();
+			}
 			return new EventMetadata<Y>(
 					nameMapper.apply(instance),
 					typeMapper.apply(instance),
@@ -23,6 +32,36 @@ public class FluentEvents {
 					true);
 		}
 		
+		public static <Y> EventMetadata<Y> forEvent(Y instance,
+				Function<Y,String> nameMapper,
+				String type) {
+			return forEvent(instance,nameMapper,(s -> type));
+		}
+		
+		public static <Y> EventMetadata<Y> forEvent(Y instance,
+				String name,
+				Function<Y,String> typeMapper) {
+			return forEvent(instance,(s -> name),typeMapper);
+		}
+		
+		public static <Y> EventMetadata<Y> forEvent(Y instance,
+				String name,
+				String type) {
+			return forEvent(instance,(s -> name),(s -> type));
+		}
+		
+		public static <Y> EventMetadata<Y> forEvent(Class<Y> clazz,String name,	String type) {
+			return new EventMetadata<Y>(
+					name,
+					type,
+					clazz,
+					true);
+		}
+		
+		public static <Y> EventMetadata<Y> forEvent(Class<Y> clazz, String type) {
+			return forEvent(clazz,(String) null,type);
+		}
+				
 		
 	}
 	

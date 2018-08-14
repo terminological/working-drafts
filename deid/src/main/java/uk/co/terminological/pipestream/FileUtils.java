@@ -23,7 +23,7 @@ public class FileUtils {
 		EventMetadata<InputStream> metadata;
 		
 		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
-			metadata = EventMetadata.named(InputStream.class, key);
+			metadata = FluentEvents.Metadata.named(InputStream.class, key);
 			this.dis = dis;
 		}
 		
