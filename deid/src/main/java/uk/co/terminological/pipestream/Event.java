@@ -49,6 +49,7 @@ public interface Event<Y> {
 		}
 	}
 
+	//TODO: Some extension of event or eventMetadata which includes a version date
 
 	public static class Default<Y> implements Event<Y> {
 

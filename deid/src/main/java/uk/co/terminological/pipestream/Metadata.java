@@ -34,4 +34,8 @@ public class Metadata implements Serializable {
 		return name+":"+typeDescription;
 	}
 	
+	public long timestamp() {
+		return timestamp;
+	}
+	
 }
