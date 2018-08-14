@@ -193,7 +193,7 @@ public class EventBusTest {
 		
 		public TestStringCollector() {
 			super(FluentEvents.Metadata.forHandler("collector", "RANDOM_COLLECTOR"),
-			new PredicateMap()
+				new FluentEvents.PredicateMap()
 				.and("ONE", (Predicate<Event<?>>) e -> e instanceof TestStringEvent && e.get().equals("one"))
 				.and("TWO", (Predicate<Event<?>>) e -> e.get().equals("ONE")));
 		}
