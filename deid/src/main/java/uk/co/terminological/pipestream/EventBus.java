@@ -67,13 +67,13 @@ public class EventBus {
 		// http://www.paralleluniverse.co/quasar/
 		this.eventHistory.and(metadata, event.getMetadata());
 		if (event.getMetadata().reusable()) {
-			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(
+			handlers.stream().filter(h -> h.canHandle(event)).forEach(
 					h -> {
 						processingHistory.and(event.getMetadata(),h.getMetadata());
 						h.handle(event);
 					}
 			);
-			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
+			handlerGenerators.stream().filter(hg -> hg.canCreateHandler(event)).forEach(
 					hg -> {
 						EventHandler<Event<?>> h = hg.createHandlerFor(event);
 						processingHistory.and(event.getMetadata(),h.getMetadata());
