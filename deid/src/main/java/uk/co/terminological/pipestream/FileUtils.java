@@ -3,6 +3,7 @@ package uk.co.terminological.pipestream;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+import java.io.Closeable;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,6 +15,10 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import uk.co.terminological.datatypes.FluentList;
@@ -150,6 +155,53 @@ public class FileUtils {
 							path -> type(path));
 					}
 			).collect(Collectors.toList());
+		}
+		
+	}
+	
+	public static interface NamingStrategy extends Function<Event<?>,Path> {}
+	
+	public static abstract class EventSerialiser<X> implements BiConsumer<Path,Event<X>>, Closeable {
+
+		public EventSerialiser() {
+			EventBus.get().registerCloseable(this);
+		}
+		
+		public abstract void open(Path path);
+		public abstract boolean leaveOpen();
+		public abstract void close() throws IOException;
+		
+		@Override
+		public abstract void accept(Path t, Event<X> u);
+
+		
+		
+	}
+	
+	public static class FileWriter<X> extends EventHandler.Default<Event<X>> {
+
+		NamingStrategy nameStrategy; 
+		EventSerialiser<X> serialiser;
+		Predicate<Event<?>> acceptEvents;
+		
+		public FileWriter(Predicate<Event<?>> acceptEvents, NamingStrategy nameStrategy, EventSerialiser<X> serialiser) {
+			super(FluentEvents.Metadata.forHandler("FILE_WRITER"));
+			this.nameStrategy = nameStrategy;
+			this.serialiser = serialiser;
+			this.acceptEvents = acceptEvents;
+		}
+		
+		@Override
+		public boolean canHandle(Event<?> event) {
+			return acceptEvents.test(event);
+		}
+
+		@Override
+		public void handle(Event<X> event) {
+			Path out = nameStrategy.apply(event);
+			this.getEventBus().logInfo("Started writing "+event.getMetadata().toString()+" to "+out.toString());
+			serialiser.accept(out, event);
+			this.getEventBus().logInfo("Finished writing "+event.getMetadata().toString()+" to "+out.toString());
 		}
 		
 	}

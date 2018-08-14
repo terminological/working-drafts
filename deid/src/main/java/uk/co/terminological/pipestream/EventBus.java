@@ -1,6 +1,8 @@
 package uk.co.terminological.pipestream;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +34,7 @@ public class EventBus {
 	List<Event<?>> unhandled = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
 	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();
+	List<Closeable> openResources = new ArrayList<>();
 	
 	Map<Class<?>,Object> apis = new HashMap<Class<?>, Object>();
 	
@@ -130,5 +133,20 @@ public class EventBus {
 	
 	void releaseHandler(EventHandler<?> handler) {
 		handlers.remove(handler);
+	}
+
+	public void registerCloseable(Closeable closeable) {
+		this.openResources.add(closeable);
 	};
+	
+	public void shutdown() {
+		for (Closeable toClose: openResources) {
+			try {
+				toClose.close();
+			} catch (IOException e) {
+				this.logError(e.getMessage());
+				//We tried
+			}
+		}
+	}
 }
