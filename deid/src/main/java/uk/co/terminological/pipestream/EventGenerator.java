@@ -18,7 +18,7 @@ public interface EventGenerator<Y> extends EventBusAware {
 		public boolean execute() {
 			List<Event<Y>> tmp = generate();
 			if (tmp.isEmpty()) return false;
-			generate().forEach(e -> this.send(e));
+			tmp.forEach(e -> this.send(e));
 			return true;
 		}
 		

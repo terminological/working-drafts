@@ -61,7 +61,6 @@ public class EventBusTest {
 		@Override
 		public List<Event<String>> generate() {
 			if (i<test.length) {
-				
 				List<Event<String>> out = FluentList.create(new TestStringEvent(test[i]));
 				i++;
 				return out;
