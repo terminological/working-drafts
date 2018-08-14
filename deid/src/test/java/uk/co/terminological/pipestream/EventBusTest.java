@@ -46,7 +46,7 @@ public class EventBusTest {
 	public static class TestGenerator extends EventGenerator.Default<String> {
 
 		public TestGenerator() {
-			super(Metadata.basic("String message generator"));
+			super(FluentEvents.Metadata.forGenerator("STRING_MESSAGE_GENERATOR"));
 		}
 
 		String[] test = {
@@ -162,8 +162,9 @@ public class EventBusTest {
 		@Override
 		public EventHandler<Event<String>> createHandlerFor(Event<String> event) {
 			return new EventHandler.Default<Event<String>>(
-					HandlerMetadata.named(event.getMetadata().name().orElseThrow(() -> new RuntimeException()), 
-							"Auto build")) {
+					FluentEvents.Metadata.forHandler(
+							event.getMetadata().name().orElseThrow(() -> new RuntimeException()), 
+							"AUTO_BUILD")) {
 
 				@Override
 				public boolean canHandle(Event<?> event2) {
@@ -187,7 +188,7 @@ public class EventBusTest {
 	public static class TestStringCollector extends Handlers.Collector {
 		
 		public TestStringCollector() {
-			super(HandlerMetadata.named("collector", "random"));
+			super(FluentEvents.Metadata.forHandler("collector", "RANDOM_COLLECTOR"));
 			this.addDependency("ONE", e -> e instanceof TestStringEvent && e.get().equals("one"));
 			this.addDependency("TWO", e -> e.get().equals("ONE"));
 		}
