@@ -37,6 +37,7 @@ public interface Event<Y> {
 		EventMetadata<Y> metadata;
 		Y message;
 		
+		@Deprecated
 		public Default(Y input) {
 			 this(FluentEvents.Metadata.forEvent(input),input);
 		}
