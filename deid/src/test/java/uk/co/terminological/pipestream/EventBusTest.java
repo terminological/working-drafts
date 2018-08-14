@@ -1,14 +1,12 @@
 package uk.co.terminological.pipestream;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.co.terminological.datatypes.FluentList;
-import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 
 public class EventBusTest {
 

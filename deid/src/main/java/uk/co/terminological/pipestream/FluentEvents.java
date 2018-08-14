@@ -97,7 +97,7 @@ public class FluentEvents {
 	
 	public static class Events {
 		
-		public static <Y> Event<Y> event(Y instance) {
+		public static <Y> Event<Y> defaultEvent(Y instance) {
 			return namedTypedEvent(instance, (Function<Y,String>) null,(Function<Y,String>) null);
 		}
 		
@@ -113,7 +113,7 @@ public class FluentEvents {
 			return namedTypedEvent(instance,(y -> name),null);
 		}
 		
-		public static <Y> Event<Y> typedEvent(Y instance, String type) {
+		public static <Y> Event<Y> unnamedTypedEvent(Y instance, String type) {
 			return namedTypedEvent(instance,null,(y -> type));
 		}
 		
