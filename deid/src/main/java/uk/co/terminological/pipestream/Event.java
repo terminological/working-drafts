@@ -38,7 +38,7 @@ public interface Event<Y> {
 		Y message;
 		
 		public Default(Y input) {
-			 this(FluentEvents.Metadata.forEvent(input, null, null),input);
+			 this(FluentEvents.Metadata.forEvent(input),input);
 		}
 		
 		public Default(EventMetadata<Y> metadata,Y input) {
