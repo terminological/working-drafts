@@ -76,7 +76,7 @@ public class EventBusTest {
 
 		String message;
 		public TestStringEvent(String string) {
-			super(string);
+			super(FluentEvents.Metadata.forEvent(string), string);
 			this.message = string;
 		}
 
@@ -139,6 +139,10 @@ public class EventBusTest {
 
 	public static class TestStringToSystemOutEventHandler extends EventHandler.Default<Event<String>> {
 
+		public TestStringToSystemOutEventHandler() {
+			super(FluentEvents.Metadata.forHandler("SYSTEM_OUT_WRITER"));
+		}
+		
 		@Override
 		public boolean canHandle(Event<?> event) {
 			return String.class.isAssignableFrom(event.getMetadata().getType());
