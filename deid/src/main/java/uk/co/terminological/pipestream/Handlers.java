@@ -9,6 +9,10 @@ public class Handlers {
 	
 	public abstract static class Adaptor<X,Y> extends EventHandler.Default<Event<X>> implements EventGenerator<Y>  {
 
+		public Adaptor() {
+			super(FluentEvents.Metadata.forHandler("ADAPTOR"));
+		}
+		
 		@Override
 		public abstract boolean canHandle(Event<?> event);
 
