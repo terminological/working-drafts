@@ -3,13 +3,16 @@ package uk.co.terminological.pipestream;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +77,7 @@ public class FileUtils {
 	}
 	
 	
-	public static  class FileChangedEvent extends Event.Default<Path> {
+	public static class FileChangedEvent extends Event.Default<Path> {
 		
 		FileChangedEvent(Path path) {
 				super(FluentEvents.Metadata.forEvent(path, 
@@ -82,12 +85,14 @@ public class FileUtils {
 						p -> type(p)),path);
 		}
 		
-		static String type(Path p) {
-			try {
-				return Files.probeContentType(p);
-			} catch (IOException e) {
-				return "unknown";
-			}
+		
+	}
+	
+	static String type(Path p) {
+		try {
+			return Files.probeContentType(p);
+		} catch (IOException e) {
+			return "unknown";
 		}
 	}
 	
@@ -122,5 +127,31 @@ public class FileUtils {
 	}
 	
 	//TODO: check currency of files - files changed after certain date. File path filter.
+	
+	public static class DirectoryScanner extends EventGenerator.Default<Path> {
+
+		private Path path;
+		private FilenameFilter filter;
+
+		public DirectoryScanner(Path directory, FilenameFilter filter) {
+			super(FluentEvents.Metadata.forGenerator(directory.toString(), "DIRECTORY_SCANNER"));
+			this.path = directory;
+			this.filter = filter;
+		}
+
+		@Override
+		public List<Event<Path>> generate() {
+			return Arrays.asList(path.toFile().list(filter)).stream().map(
+					filename -> {
+						Path tmp = Paths.get(filename); 
+						return FluentEvents.Events.namedTypedEvent(
+							tmp, 
+							path -> path.toString(), 
+							path -> type(path));
+					}
+			).collect(Collectors.toList());
+		}
+		
+	}
 	
 }

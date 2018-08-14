@@ -31,8 +31,25 @@ public class Handlers {
 			getEventBus().receive(event, getMetadata());
 		}
 
+	}
+	
+	public abstract static class Terminal<X> extends EventHandler.Default<Event<X>>  {
+
+		public Terminal() {
+			super(FluentEvents.Metadata.forHandler("TERMINAL"));
+		}
 		
+		@Override
+		public abstract boolean canHandle(Event<?> event);
+
+		@Override
+		public void handle(Event<X> event) {
+			consume(event.get());
+		}
 		
+		public abstract void consume(X input);
+
+
 	}
 	
 	public static class PredicateMap 

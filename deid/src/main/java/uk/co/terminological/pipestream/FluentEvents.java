@@ -1,11 +1,13 @@
 package uk.co.terminological.pipestream;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
+import uk.co.terminological.pipestream.Handlers.Terminal;
 
 public class FluentEvents {
 
@@ -221,6 +223,24 @@ public class FluentEvents {
 			};
 		}
 		
+		public static <X> Terminal<X> consumer(
+				Predicate<Event<?>> acceptEvent,
+				Consumer<X> consumer
+				) {
+
+			return new Terminal<X>() {
+
+				@Override
+				public boolean canHandle(Event<?> event) {
+					return acceptEvent.test(event);
+				}
+
+				@Override
+				public void consume(X input) {
+					consumer.accept(input);
+				}
+			};
+		}
 		
 	}
 	
@@ -238,8 +258,8 @@ public class FluentEvents {
 				}
 
 				@Override
-				public EventHandler<Event<Y>> createHandlerFor(Event<Y> event) {
-					return handlerBuilder.apply(event);
+				public EventHandler<Event<Y>> createHandlerFor(Event<Y> indexEvent) {
+					return handlerBuilder.apply(indexEvent);
 				}
 				
 			};
