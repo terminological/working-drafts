@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import uk.co.terminological.datatypes.FluentMap;
+
 public class Handlers {
 
 	
@@ -32,6 +34,9 @@ public class Handlers {
 		
 	}
 	
+	public static class PredicateMap 
+		extends FluentMap<String,Predicate<Event<?>>>
+		implements Map<String,Predicate<Event<?>>> {} 
 	
 	public abstract static class Collector implements EventHandler<Event<?>> {
 		

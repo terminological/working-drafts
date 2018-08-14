@@ -190,8 +190,7 @@ public class FluentEvents {
 		
 	}
 
-	public static class PredicateMap extends FluentMap<String,Predicate<Event<?>>>
-		implements Map<String,Predicate<Event<?>>> {} 
+	
 	
 	public static class Handlers {
 		
