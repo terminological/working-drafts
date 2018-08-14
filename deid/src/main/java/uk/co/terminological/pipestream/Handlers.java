@@ -35,6 +35,12 @@ public class Handlers {
 		Map<String,Event<?>> dependencies = new HashMap<>();
 		HandlerMetadata metadata;
 		
+		/**
+		 * extending this constructor to include many
+		 * 
+		 * addDependency(name, Predicate<Event>) stanzas
+		 * @param metadata
+		 */
 		public Collector(HandlerMetadata metadata) {
 			this.metadata = metadata;
 		}
@@ -75,7 +81,7 @@ public class Handlers {
 		/**
 		 * Override this
 		 * 
-		 * Use getEventByName(String name) to get the events
+		 * Use getEventByName(String name) to get the various events
 		 * and send(Event<?> event) to output onto the message bus
 		 * if required 
 		 */
@@ -85,6 +91,11 @@ public class Handlers {
 			getEventBus().receive(event, getMetadata());
 		}
 		
+		/**
+		 * define dependencies in constructor
+		 * @param name
+		 * @param test
+		 */
 		public void addDependency(String name, Predicate<Event<?>> test) {
 			if (tests.containsKey(name)) throw new UnsupportedOperationException("Name "+name+" already present as dependency");
 			this.tests.put(name, (Predicate<Event<?>>) test);
@@ -92,6 +103,7 @@ public class Handlers {
 		
 		
 		public boolean dependenciesMet() {
+			if (tests.isEmpty()) return false;
 			return tests.keySet().containsAll(dependencies.keySet()) &&
 					dependencies.keySet().containsAll(tests.keySet());
 		}

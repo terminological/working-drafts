@@ -50,7 +50,7 @@ public interface Event<Y> {
 	}
 
 
-	public static abstract class Default<Y> implements Event<Y> {
+	public static class Default<Y> implements Event<Y> {
 
 		EventMetadata<Y> metadata;
 		Y message;
