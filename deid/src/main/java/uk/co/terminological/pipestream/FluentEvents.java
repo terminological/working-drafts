@@ -47,7 +47,8 @@ public class FluentEvents {
 		public static <Y> EventMetadata<Y> forEvent(Y instance,
 				String name,
 				String type) {
-			return forEvent(instance,(s -> name),(s -> type));
+			Function<Y,String> typeMapper = (type == null ? defaultTypeMapper() : (s -> type));
+			return forEvent(instance,((Function<Y,String>) s -> name),typeMapper);
 		}
 		
 		public static <Y> EventMetadata<Y> forEvent(Class<Y> clazz,String name,	String type) {

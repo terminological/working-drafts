@@ -93,7 +93,7 @@ public class EventBusTest {
 		EventMetadata<String> metadata;
 		
 		public TestStringNamedEvent(String string, String name) {
-			this.metadata = EventMetadata.named(String.class, name);
+			this.metadata = FluentEvents.Metadata.forEvent(String.class, name, "TEST TYPE");
 			this.message = string;
 		}
 
