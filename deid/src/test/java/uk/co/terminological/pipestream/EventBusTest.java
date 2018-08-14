@@ -1,12 +1,14 @@
 package uk.co.terminological.pipestream;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
 import uk.co.terminological.datatypes.FluentList;
+import uk.co.terminological.datatypes.FluentMap;
 
 public class EventBusTest {
 
@@ -190,9 +192,10 @@ public class EventBusTest {
 	public static class TestStringCollector extends Handlers.Collector {
 		
 		public TestStringCollector() {
-			super(FluentEvents.Metadata.forHandler("collector", "RANDOM_COLLECTOR"));
-			this.addDependency("ONE", e -> e instanceof TestStringEvent && e.get().equals("one"));
-			this.addDependency("TWO", e -> e.get().equals("ONE"));
+			super(FluentEvents.Metadata.forHandler("collector", "RANDOM_COLLECTOR"),
+			new PredicateMap()
+				.and("ONE", (Predicate<Event<?>>) e -> e instanceof TestStringEvent && e.get().equals("one"))
+				.and("TWO", (Predicate<Event<?>>) e -> e.get().equals("ONE")));
 		}
 
 		@Override

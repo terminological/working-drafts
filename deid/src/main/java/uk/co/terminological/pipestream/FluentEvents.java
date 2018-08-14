@@ -1,8 +1,10 @@
 package uk.co.terminological.pipestream;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
@@ -188,7 +190,13 @@ public class FluentEvents {
 		
 	}
 
+	public static class PredicateMap extends FluentMap<String,Predicate<Event<?>>>
+		implements Map<String,Predicate<Event<?>>> {} 
+	
 	public static class Handlers {
+		
+		 
+		
 		public static <X,Y> Adaptor<X,Y> adaptor(
 				Predicate<Event<?>> acceptEvent,
 				Function<X,Y> converter,
