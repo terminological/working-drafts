@@ -181,7 +181,7 @@ public class FileUtils {
 			Path out = nameStrategy.apply(event);
 			serialiser.ensureOpen(out);
 			this.getEventBus().logInfo("Started writing "+event.getMetadata().toString()+" to "+out.toString());
-			serialiser.accept(out, event);
+			serialiser.write(event);
 			this.getEventBus().logInfo("Finished writing "+event.getMetadata().toString()+" to "+out.toString());
 			if (!serialiser.leaveOpen()) {
 				try {
