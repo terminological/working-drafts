@@ -23,7 +23,7 @@ public class FileUtils {
 		EventMetadata<InputStream> metadata;
 		
 		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
-			metadata = FluentEvents.Metadata.named(InputStream.class, key);
+			metadata = FluentEvents.Metadata.forEvent(InputStream.class, key);
 			this.dis = dis;
 		}
 		
@@ -77,7 +77,9 @@ public class FileUtils {
 	public static  class FileChangedEvent extends Event.Default<Path> {
 		
 		FileChangedEvent(Path path) {
-				super(EventMetadata.named(Path.class, type(path) ),path);
+				super(FluentEvents.Metadata.forEvent(path, 
+						p -> p.toString(),
+						p -> type(p)),path);
 		}
 		
 		static String type(Path p) {
