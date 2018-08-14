@@ -117,7 +117,39 @@ public class Handlers {
 		
 	}
 	
-	
+	public abstract class CollectorGenerator implements EventHandlerGenerator<Event<?>> {
+
+		Map<String,Predicate<Event<?>>> tests = new HashMap<>(); 
+		
+		public CollectorGenerator(Map<String,Predicate<Event<?>>> predicateMap) {
+			this.tests = predicateMap;
+		}
+		
+		@Override
+		public boolean canCreateHandler(Event<?> event) {
+			return tests.values().stream().anyMatch(p -> p.test(event));
+		}
+
+		/**
+		 * Utility for creating and additional rule that must apply to all inputs of 
+		 * collector. 
+		 * @param additionalTest
+		 * @return
+		 */
+		public Map<String,Predicate<Event<?>>> instanceTests(Predicate<Event<?>> additionalTest) {
+			Map<String,Predicate<Event<?>>> out = new HashMap<String,Predicate<Event<?>>>();
+			for (Entry<String,Predicate<Event<?>>> old: tests.entrySet()) {
+				out.put(old.getKey(), 
+						old.getValue().and(additionalTest)
+						);
+			}
+			return out;
+		}
+		
+		@Override
+		public abstract Collector createHandlerFor(Event<?> event);
+		
+	}
 	
 	
 }
