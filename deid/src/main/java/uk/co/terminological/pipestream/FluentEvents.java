@@ -84,6 +84,13 @@ public class FluentEvents {
 					);
 		}
 		
+		public static uk.co.terminological.pipestream.Metadata forGenerator(String name, String typeDescription) {
+			return new uk.co.terminological.pipestream.Metadata(name, typeDescription);
+		}
+		
+		public static uk.co.terminological.pipestream.Metadata forGenerator(String typeDescription) {
+			return new uk.co.terminological.pipestream.Metadata(null, typeDescription);
+		}
 		
 		
 	}

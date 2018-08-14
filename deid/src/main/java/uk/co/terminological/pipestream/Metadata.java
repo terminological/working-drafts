@@ -22,6 +22,7 @@ public class Metadata implements Serializable {
 		this.timestamp = System.currentTimeMillis();
 	}
 	
+	/*
 	public static Metadata basic(String typeDescription) {
 		return new Metadata(null,typeDescription);
 	}
@@ -29,6 +30,7 @@ public class Metadata implements Serializable {
 	public static Metadata named(String name, String typeDescription) {
 		return new Metadata(name,typeDescription);
 	}
+	*/
 	
 	public String toString() {
 		return name+":"+typeDescription;
