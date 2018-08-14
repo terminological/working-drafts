@@ -62,7 +62,7 @@ public class FileUtils {
 		InputStreamAvailableEvent out;
 		
 		public Reader(Path file, String key) {
-			super(Metadata.named(file.toString(),"File reader"));
+			super(FluentEvents.Metadata.forGenerator(file.toString(),"FILE_READER"));
 			out = new InputStreamAvailableEvent(new DeferredInputStream(file), key);
 		}
 
@@ -97,9 +97,8 @@ public class FileUtils {
 		WatchService watcher;
 		WatchKey key;
 		
-		public Watcher(Path dir, String name) {
-			super(Metadata.named(dir.toString(),name));
-			
+		public Watcher(Path dir) {
+			super(FluentEvents.Metadata.forGenerator(dir.toString(),"DIRECTORY_WATCHER"));
 			
 			try {
 				watcher = FileSystems.getDefault().newWatchService();
