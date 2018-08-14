@@ -8,6 +8,24 @@ import uk.co.terminological.pipestream.Handlers.Adaptor;
 
 public class FluentEvents {
 
+	public static class Metadata {
+		
+		@SuppressWarnings("unchecked")
+		public static <Y> EventMetadata<Y> forEvent(Y instance,
+				Function<Y,String> nameMapper,
+				Function<Y,String> typeMapper) {
+			if (nameMapper == null) nameMapper = (i -> Integer.toHexString(i.hashCode()));
+			if (typeMapper == null) typeMapper = (i -> i.getClass().getCanonicalName());
+			return new EventMetadata<Y>(
+					nameMapper.apply(instance),
+					typeMapper.apply(instance),
+					(Class<Y>) instance.getClass(),
+					true);
+		}
+		
+		
+	}
+	
 	public static class Events {
 		
 		public static <Y> Event<Y> event(Y instance) {
@@ -34,19 +52,12 @@ public class FluentEvents {
 			return namedTypedEvent(instance,(y -> name),(y -> type));
 		}
 				
-		@SuppressWarnings("unchecked")
 		public static <Y> Event<Y> namedTypedEvent(Y instance,
 				Function<Y,String> nameMapper,
 				Function<Y,String> typeMapper
 				) {
-			if (nameMapper == null) nameMapper = (i -> Integer.toHexString(i.hashCode()));
-			if (typeMapper == null) typeMapper = (i -> i.getClass().getCanonicalName());
 			return new Event.Default<Y>(
-					new EventMetadata<Y>(
-							nameMapper.apply(instance),
-							typeMapper.apply(instance),
-							(Class<Y>) instance.getClass(),
-							true),
+					Metadata.forEvent(instance, nameMapper, typeMapper),
 					instance);
 		}
 	}
