@@ -117,7 +117,7 @@ public class Handlers {
 		
 	}
 	
-	public class CollectorGenerator implements EventHandlerGenerator<Event<?>> {
+	public abstract class CollectorGenerator implements EventHandlerGenerator<Event<?>> {
 
 		Map<String,Predicate<Event<?>>> tests = new HashMap<>(); 
 		
@@ -147,10 +147,7 @@ public class Handlers {
 		}
 		
 		@Override
-		public Collector createHandlerFor(Event<?> event) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+		public abstract Collector createHandlerFor(Event<?> event);
 		
 	}
 	
