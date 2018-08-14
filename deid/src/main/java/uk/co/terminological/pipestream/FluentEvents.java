@@ -11,7 +11,7 @@ public class FluentEvents {
 	public static class Events {
 		
 		public static <Y> Event<Y> event(Y instance) {
-			return namedTypedEvent(instance,null,null);
+			return namedTypedEvent(instance, (Function<Y,String>) null,(Function<Y,String>) null);
 		}
 		
 		public static <Y> Event<Y> namedEvent(Y instance, Function<Y,String> nameMapper) {
@@ -58,23 +58,35 @@ public class FluentEvents {
 		}
 
 		public static Predicate<Event<?>> matchName(String name) {
+			return matchName(s -> s.equals(name));
+		}
+		
+		public static Predicate<Event<?>> matchType(String type) {
+			return matchType(s -> s.equals(type));
+		}
+
+		public static Predicate<Event<?>> matchNameAndType(Predicate<String> name, Predicate<String> type) {
+			return matchName(name).and(matchType(type));
+		}
+
+		public static Predicate<Event<?>> matchName(Predicate<String> name) {
 			return new Predicate<Event<?>>() {
 				@Override
 				public boolean test(Event<?> t) {
-					return t.getMetadata().name().orElse("").equals(name);
+					return name.test(t.getMetadata().name().orElse(""));
 				}
 			};
 		}
 		
-		public static Predicate<Event<?>> matchType(String type) {
+		public static Predicate<Event<?>> matchType(Predicate<String> type) {
 			return new Predicate<Event<?>>() {
 				@Override
 				public boolean test(Event<?> t) {
-					return t.getMetadata().typeDescription().equals(type);
+					return type.test(t.getMetadata().typeDescription());
 				}
 			};
 		}
-
+		
 		public static Predicate<Event<?>> matchEventClass(Class<? extends Event<?>> clazz) {
 			return new Predicate<Event<?>>() {
 				@Override
