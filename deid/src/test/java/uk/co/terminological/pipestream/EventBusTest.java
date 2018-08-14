@@ -196,6 +196,7 @@ public class EventBusTest {
 		@Override
 		public void process() {
 			System.out.println("Collected: "+this.getEventByName("ONE").get()+" and "+this.getEventByName("TWO").get());
+			throw new RuntimeException();
 		}
 		
 	}
