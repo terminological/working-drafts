@@ -45,8 +45,9 @@ public class Handlers {
 		 * addDependency(name, Predicate<Event>) stanzas
 		 * @param metadata
 		 */
-		public Collector(HandlerMetadata metadata) {
+		public Collector(HandlerMetadata metadata, Map<String,Predicate<Event<?>>> tests) {
 			this.metadata = metadata;
+			this.tests = tests;
 		}
 		
 		@Override
@@ -95,17 +96,6 @@ public class Handlers {
 			getEventBus().receive(event, getMetadata());
 		}
 		
-		/**
-		 * define dependencies in constructor
-		 * @param name
-		 * @param test
-		 */
-		public void addDependency(String name, Predicate<Event<?>> test) {
-			if (tests.containsKey(name)) throw new UnsupportedOperationException("Name "+name+" already present as dependency");
-			this.tests.put(name, (Predicate<Event<?>>) test);
-		}
-		
-		
 		public boolean dependenciesMet() {
 			if (tests.isEmpty()) return false;
 			return tests.keySet().containsAll(dependencies.keySet()) &&
@@ -119,14 +109,29 @@ public class Handlers {
 		
 	}
 	
-	/*
-	public interface EventIntegrator extends EventHandler<Event<?>> {
-		public String eventName();
+	public class CollectorGenerator implements EventHandlerGenerator<Event<?>> {
+
+		Map<String,Predicate<Event<?>>> tests = new HashMap<>(); 
+		
+		public void addTypeDependency(String name, Predicate<Event<?>> test) {
+			if (tests.containsKey(name)) throw new UnsupportedOperationException("Name "+name+" already present as dependency");
+			this.tests.put(name, (Predicate<Event<?>>) test);
+		}
+		
+		@Override
+		public boolean canCreateHandler(Event<?> event) {
+			return tests.values().stream().anyMatch(p -> p.test(event));
+		}
+
+		//Collector create 
+		
+		@Override
+		public Collector createHandlerFor(Event<?> event) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
 	}
 	
-	public interface EventIntegratorGenerator extends EventHandlerGenerator<Event<?>> {
-		public String eventName();
-	}
-	*/
 	
 }
