@@ -9,7 +9,11 @@ public class TestCommonFormatConverter {
 		
 		Xml xml = Xml.fromStream(TestCommonFormatConverter.class.getResourceAsStream("/deid_surrogate_test_all_groundtruth_version2.xml"));
 		CommonFormat.Records rec = new CommonFormatConverter().fromI2B2_2006_Xml(xml);
-		rec.stream().findFirst().get().spans.forEach(System.out::println);
+		CommonFormat.Record r = rec.stream().findFirst().get();
+		r.spans.forEach(span -> 
+				System.out.println(
+						span.start+"-"+span.start+" "+r.documentText.substring(span.start, span.end))
+				);
 
 	}
 
