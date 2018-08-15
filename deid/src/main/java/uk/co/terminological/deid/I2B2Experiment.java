@@ -43,7 +43,7 @@ public class I2B2Experiment {
 	}
 	
 	Adaptor<Path,DeferredInputStream<ArchiveInputStream>> zipLoader(Path file, String zipType) {
-		return Handlers.adaptor(
+		return Handlers.adaptor("TAR_LOADER",
 				
 				Predicates.matchNameAndType(zipType, "TAR_FILE_FOUND"), 
 	
@@ -57,7 +57,7 @@ public class I2B2Experiment {
 	}
 
 	Processor<DeferredInputStream<ArchiveInputStream>> xmlFromZip(String zipType, String xmlType) {
-		return Handlers.processor(
+		return Handlers.processor("TAR_TO_XML",
 				Predicates.matchNameAndType(zipType, "TAR_FILE_READY"), 
 				(zip, context) -> {
 					ArchiveInputStream ais = zip.get();
