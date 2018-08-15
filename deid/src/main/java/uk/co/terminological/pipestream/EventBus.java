@@ -41,6 +41,7 @@ public class EventBus {
 	
 	public EventBus withApi(Object api) {
 		this.apis.put(api.getClass(),api);
+		log.info("Added api: "+api.getClass().getCanonicalName());
 		return this;
 	}
 	
