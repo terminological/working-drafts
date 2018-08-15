@@ -1,56 +1,41 @@
 package uk.co.terminological.pipestream;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class EventSerializer<X> implements Closeable {
-	public EventSerializer() {
-		if (leaveOpen()) EventBus.get().registerCloseable(this);
-	}
-	public abstract void ensureOpen(Path path);
-	public abstract boolean leaveOpen();
-	public abstract void close() throws IOException;
-	public abstract void write(Event<X> u);
-	
-	
+public abstract class EventSerializer<X> {
+	public abstract void write(X u, Path path);
 	
 	public static class JavaSerializer extends EventSerializer<Serializable> {
 
-		ObjectOutputStream os;
-		
 		@Override
-		public void ensureOpen(Path path) {
-			if (os != null) return;
+		public void write(Serializable u, Path path) {
 			try {
-				os = new ObjectOutputStream(Files.newOutputStream(path));
+				ObjectOutputStream os = new ObjectOutputStream(Files.newOutputStream(path));
+				os.writeObject(u);
+				os.close();
 			} catch (IOException e) {
 				EventBus.get().handleException(e);
 			}
 		}
-
+	}
+	
+	public static class ToStringFileWriter extends EventSerializer<Object> {
 		@Override
-		public boolean leaveOpen() {
-			return true;
-		}
-
-		@Override
-		public void close() throws IOException {
-			os.close();
-		}
-
-		@Override
-		public void write(Event<Serializable> u) {
+		public void write(Object u, Path path) {
 			try {
-				os.writeObject(u.get());
+				OutputStream os = Files.newOutputStream(path);
+				os.write(u.toString().getBytes(Charset.defaultCharset()));
+				os.close();
 			} catch (IOException e) {
 				EventBus.get().handleException(e);
 			}
 		}
-		
 	}
 	
 }

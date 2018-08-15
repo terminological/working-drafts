@@ -209,17 +209,10 @@ public class FileUtils {
 		@Override
 		public void handle(Event<X> event) {
 			Path out = nameStrategy.apply(event);
-			serialiser.ensureOpen(out);
 			this.getEventBus().logInfo("Started writing "+event.getMetadata().toString()+" to "+out.toString());
 			serialiser.write(event);
 			this.getEventBus().logInfo("Finished writing "+event.getMetadata().toString()+" to "+out.toString());
-			if (!serialiser.leaveOpen()) {
-				try {
-					serialiser.close();
-				} catch (IOException e) {
-					this.getEventBus().handleException(e);
-				}
-			}
+			
 		}
 		
 	}

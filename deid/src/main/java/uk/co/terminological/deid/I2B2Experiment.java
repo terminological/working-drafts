@@ -38,6 +38,7 @@ public class I2B2Experiment {
 	public static final String ARCHIVE_FILE_READY = "ARCHIVE_FILE_READY";
 	public static final String XML_READY = "XML_READY";
 	private static final String COMMON_FORMAT_RECORD_READY = "COMMON_FORMAT_RECORD_READY";
+	private static final String BRAT_FORMAT_READY = "BRAT_FORMAT_READY";
 	
 	//Handler names
 	private static final String ARCHIVE_LOADER = "ARCHIVE_LOADER";
@@ -52,7 +53,7 @@ public class I2B2Experiment {
 	
 	//Event metadata key names
 	private static final String XML_FILENAME = "XML_FILENAME";
-	private static final String BRAT_FORMAT_READY = null;
+	
 	
 	
 	
@@ -166,10 +167,11 @@ public class I2B2Experiment {
 				Predicates.matchType(COMMON_FORMAT_RECORD_READY), 
 				(record, context) -> context.getEventBus().getApi(CommonFormatConverter.class).get()
 						.toBRATFormat(record),
-				name -> name,
+				name -> name.getId(),
 				type -> BRAT_FORMAT_READY	
 				);
 	}
+	
 	
 
 }
