@@ -43,6 +43,16 @@ public class FileUtils {
 		public EventMetadata<InputStream> getMetadata() {
 			return metadata;
 		}
+
+		@Override
+		public Event<InputStream> put(String key, Object o) {
+			return this;
+		}
+
+		@Override
+		public Object get(String key) {
+			return null;
+		}
 		
 	}
 	
