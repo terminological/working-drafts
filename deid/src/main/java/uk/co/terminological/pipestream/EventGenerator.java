@@ -6,6 +6,7 @@ public interface EventGenerator<Y> extends EventBusAware {
 	
 	public Metadata getMetadata();
 	void send(Event<Y> event);
+	public boolean execute();
 	
 	public static abstract class Default<Y> implements EventGenerator<Y> {
 		
