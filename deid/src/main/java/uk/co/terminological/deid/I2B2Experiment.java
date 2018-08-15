@@ -191,7 +191,7 @@ public class I2B2Experiment {
 						Xml xml = event.get();
 						Records records = 
 								context.getEventBus().getApi(CommonFormatConverter.class).get()
-								.fromI2B2_2006_Xml(xml);
+								.fromI2B2_2006_Xml(xml, event.get(XML_FILENAME).toString());
 						records.forEach(
 								r -> context.send(
 									Events.namedTypedEvent(r,r.id, 
