@@ -1,5 +1,7 @@
 package uk.co.terminological.pipestream;
 
+import java.io.FilenameFilter;
+import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -194,7 +196,15 @@ public class FluentEvents {
 		
 	}
 
-	
+	public static class Generators {
+		
+		public static DirectoryScanner directoryScanner(Path directory, FilenameFilter filter,
+				Function<Path,String> nameGenerator,
+				Function<Path,String> typeGenerator) {
+			return new DirectoryScanner(directory, filter, nameGenerator, typeGenerator);
+		}
+		
+	}
 	
 	public static class Handlers {
 		
