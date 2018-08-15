@@ -11,6 +11,8 @@ import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
 import uk.co.terminological.pipestream.Handlers.Terminal;
 
+import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
+
 public class FluentEvents {
 
 	public static class Metadata {
@@ -202,6 +204,12 @@ public class FluentEvents {
 				Function<Path,String> nameGenerator,
 				Function<Path,String> typeGenerator) {
 			return new DirectoryScanner(directory, filter, nameGenerator, typeGenerator);
+		}
+		
+		public static DirectoryScanner directoryScanner(Path directory, FilenameFilter filter,
+				String name,
+				String type) {
+			return new DirectoryScanner(directory, filter, s -> name, s -> type);
 		}
 		
 	}
