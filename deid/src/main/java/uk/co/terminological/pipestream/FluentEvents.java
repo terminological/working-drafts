@@ -1,7 +1,6 @@
 package uk.co.terminological.pipestream;
 
 import java.io.FileFilter;
-import java.io.FileWriter;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -12,6 +11,7 @@ import java.util.function.Predicate;
 import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
+import uk.co.terminological.pipestream.FileUtils.FileWriter;
 import uk.co.terminological.pipestream.FileUtils.NamingStrategy;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
 import uk.co.terminological.pipestream.Handlers.EventProcessor;
@@ -335,10 +335,10 @@ public class FluentEvents {
 		public static <X> FileWriter<X> writer(
 				String name,
 				Predicate<Event<?>> acceptEvent,
-				Function<Event<?>,Path> nameStrategy, 
+				Function<Event<X>,Path> nameStrategy, 
 				EventSerializer<X> serializer
 				) {
-			return new FileWriter(name, acceptEvent, nameStrategy, serializer);
+			return new FileWriter<X>(name, acceptEvent, nameStrategy, serializer);
 		}
 		
 	}

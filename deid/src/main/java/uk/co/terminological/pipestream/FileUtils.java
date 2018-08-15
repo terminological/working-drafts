@@ -188,11 +188,11 @@ public class FileUtils {
 	
 	public static class FileWriter<X> extends EventHandler.Default<Event<X>> {
 
-		Function<Event<?>,Path> nameStrategy; 
+		Function<Event<X>,Path> nameStrategy; 
 		EventSerializer<X> serialiser;
 		Predicate<Event<?>> acceptEvents;
 		
-		public FileWriter(String name, Predicate<Event<?>> acceptEvents, Function<Event<?>,Path> nameStrategy, EventSerializer<X> serialiser) {
+		public FileWriter(String name, Predicate<Event<?>> acceptEvents, Function<Event<X>,Path> nameStrategy, EventSerializer<X> serialiser) {
 			super(FluentEvents.Metadata.forHandler(name, "FILE_WRITER"));
 			this.nameStrategy = nameStrategy;
 			this.serialiser = serialiser;
