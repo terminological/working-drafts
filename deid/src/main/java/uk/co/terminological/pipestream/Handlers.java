@@ -10,7 +10,7 @@ import uk.co.terminological.datatypes.FluentMap;
 public class Handlers {
 
 	
-	public abstract static class Adaptor<X,Y> extends EventHandler.Default<Event<X>> implements EventGenerator<Y>  {
+	public abstract static class Adaptor<X,Y> extends EventHandler.Default<Event<X>> {
 
 		public Adaptor() {
 			super(FluentEvents.Metadata.forHandler("ADAPTOR"));
@@ -21,15 +21,11 @@ public class Handlers {
 
 		@Override
 		public void handle(Event<X> event) {
-			send(convert(event.get()));
+			Event<Y> event2 = convert(event.get());
+			getEventBus().receive(event2, getMetadata());
 		}
 		
 		public abstract Event<Y> convert(X input);
-
-		@Override
-		public void send(Event<Y> event) {
-			getEventBus().receive(event, getMetadata());
-		}
 
 	}
 	
