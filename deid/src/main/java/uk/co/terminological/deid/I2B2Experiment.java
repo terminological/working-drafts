@@ -74,7 +74,7 @@ public class I2B2Experiment {
 		Path outputDir = Paths.get("/media/data/Data/i2b2/brat");;
 		EventBus.get()
 			.withApi(new CommonFormatConverter())
-			//.withEventGenerator(tarGzFinder(inputDir1,I2B2_2014_FORMAT))
+			.withEventGenerator(tarGzFinder(inputDir1,I2B2_2014_FORMAT))
 			.withEventGenerator(zipFinder(inputDir2,I2B2_2006_FORMAT))
 			.withHandler(tarGzLoader(I2B2_2014_FORMAT))
 			.withHandler(zipLoader(I2B2_2006_FORMAT))
