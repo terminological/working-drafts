@@ -86,7 +86,7 @@ public class CommonFormatConverter {
 	}
 
 
-	public Records fromI2B2_2006_Xml(Xml xml) throws XmlException {
+	public Records fromI2B2_2006_Xml(Xml xml, String filename) throws XmlException {
 		Records records = new Records();
 		for (XmlElement el : xml.doXpath("/ROOT/RECORD").getMany(XmlElement.class)) {
 			Record record = new Record();
