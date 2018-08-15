@@ -7,16 +7,20 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.CoreDocument;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import uk.co.terminological.deid.CommonFormat.Record;
+import uk.co.terminological.deid.CommonFormat.Records;
 import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.fluentxml.XmlNode;
 import uk.co.terminological.fluentxml.XmlText;
 
 public class CommonFormatConverter {
@@ -84,6 +88,37 @@ public class CommonFormatConverter {
 		};
 		Collections.sort(record.spans);
 		return record;
+	}
+
+
+	public Records fromI2B2_2006_Xml(Xml xml) throws XmlException {
+		Records records = new Records();
+		for (XmlElement el : xml.doXpath("/ROOT/RECORD").getMany(XmlElement.class)) {
+			Record record = new Record();
+			record.id = el.getAttributeValue("ID");
+			record.documentText = el.getAsElement().getTextContent();
+			StringBuilder docText = new StringBuilder();
+			for (XmlNode phiEl : el.walkTree()) {
+				if (phiEl.is(XmlText.class)) {
+					docText.append(phiEl.as(XmlText.class).getValue());
+				} else if (phiEl.is(XmlElement.class)) {
+					XmlElement tmp = phiEl.as(XmlElement.class); 
+					if (tmp.getName().equals("PHI")) {
+						Integer start = docText.length();
+						Integer end = tmp.getAsElement().getTextContent().length()+start;
+					Span span = Span.from(
+							start, end, 
+							tmp.getAttributeValue("TYPE"),
+							null);
+					record.spans.add(span);
+					}
+				}
+				
+			}
+			Collections.sort(record.spans);
+			records.add(record);
+		}
+		return records;
 	}
 	
 }
