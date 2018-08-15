@@ -14,11 +14,8 @@ import org.apache.log4j.BasicConfigurator;
 
 import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Records;
-import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.fluentxml.Xml;
-import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
-import uk.co.terminological.fluentxml.XmlText;
 import uk.co.terminological.pipestream.EventSerializer;
 import uk.co.terminological.pipestream.FileUtils.DeferredInputStream;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
