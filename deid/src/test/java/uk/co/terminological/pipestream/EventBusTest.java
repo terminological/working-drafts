@@ -105,6 +105,16 @@ public class EventBusTest {
 			return metadata;
 		}
 
+		@Override
+		public Event<String> put(String key, Object o) {
+			return this;
+		}
+
+		@Override
+		public Object get(String key) {
+			return null;
+		}
+
 	}
 
 	public static class TestStringToUpperEventHandler extends Handlers.Adaptor<String, String> {
