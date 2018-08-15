@@ -246,9 +246,7 @@ public class FluentEvents {
 		public static <X,Y> Processor<X> processor(
 				String name,
 				Predicate<Event<?>> acceptEvent,
-				BiConsumer<X,Processor<X>> processor,
-				Function<Y,String> nameMapper,
-				Function<Y,String> typeMapper
+				BiConsumer<X,Processor<X>> processor
 				) {
 
 			return new Processor<X>(name) {

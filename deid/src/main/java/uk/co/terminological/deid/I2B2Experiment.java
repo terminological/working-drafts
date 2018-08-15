@@ -75,8 +75,8 @@ public class I2B2Experiment {
 									out = Xml.fromStream(tmp);
 									context.send(
 								        	Events.namedTypedEvent(out, 
-								        			xmlType, 
-								        			"XML_LOADED")	
+								        			entry.getName(), 
+								        			xmlType)	
 								        		);
 								} catch (XmlException e) {
 									context.getEventBus().logError("Cannot parse XML file:" +entry.getName());
