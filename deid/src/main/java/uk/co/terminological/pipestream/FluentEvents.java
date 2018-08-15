@@ -11,6 +11,7 @@ import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
+import uk.co.terminological.pipestream.Handlers.EventProcessor;
 import uk.co.terminological.pipestream.Handlers.Processor;
 import uk.co.terminological.pipestream.Handlers.Terminal;
 
@@ -264,7 +265,7 @@ public class FluentEvents {
 		}
 		
 		
-		public static <X,Y> EventProcessor<X> processor(
+		public static <X,Y> EventProcessor<X> eventProcessor(
 				String name,
 				Predicate<Event<?>> acceptEvent,
 				BiConsumer<Event<X>,EventProcessor<X>> processor
@@ -278,7 +279,7 @@ public class FluentEvents {
 				}
 
 				@Override
-				public void process(Event<X> event, Processor<X> context) {
+				public void process(Event<X> event, EventProcessor<X> context) {
 					processor.accept(event, context);	
 				}
 			};
