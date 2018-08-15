@@ -1,13 +1,11 @@
 package uk.co.terminological.deid;
 
-import java.io.Writer;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.DOMException;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
