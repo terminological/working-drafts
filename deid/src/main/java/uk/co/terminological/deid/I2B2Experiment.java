@@ -25,6 +25,7 @@ import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
+import uk.co.terminological.pipestream.Handlers.EventProcessor;
 import uk.co.terminological.pipestream.Handlers.Processor;
 
 
@@ -80,7 +81,7 @@ public class I2B2Experiment {
 									context.send(
 								        	Events.namedTypedEvent(out, 
 								        			xmlType, 
-								        			"XML_READY").put("filename", entry.getName())
+								        			"XML_READY").put("FILENAME", entry.getName())
 								        		);
 								} catch (XmlException e) {
 									context.getEventBus().logError("Cannot parse XML file:" +entry.getName());
@@ -96,13 +97,14 @@ public class I2B2Experiment {
 				});
 	}
 	
-	Processor<Xml> commonFormatFrom2014Xml() {
-		return Handlers.processor("I2B2_2014_TO_COMMON", 
+	EventProcessor<Xml> commonFormatFrom2014Xml() {
+		return Handlers.eventProcessor("I2B2_2014_TO_COMMON", 
 				Predicates.matchNameAndType("I2B2_2014_FORMAT", "XML_READY"), 
 				(event, context) -> {
+					try {
 					Xml xml = event.get();
-					Record record;
-					record.id = id;
+					Record record = new Record();
+					record.id = event.get("FILENAME").toString();
 					record.documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
 					for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
 						record.spans.add(
@@ -113,7 +115,9 @@ public class I2B2Experiment {
 								tags.getAsElement().getAttribute("TYPE")));
 					}
 					context.send(Events.namedTypedEvent(record, record.id, "COMMON_FORMAT_AVAILABLE"));
-					
+					} catch (XmlException e) {
+						context.getEventBus().handleException(e);
+					}
 				});
 		
 	}
