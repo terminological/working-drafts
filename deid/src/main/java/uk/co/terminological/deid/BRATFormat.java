@@ -20,6 +20,13 @@ public class BRATFormat {
 		return out;
 	}
 	
+	public String getDocumentText() {return documentText;}
+	
+	public String getStandoffOutput() {
+		StringBuilder out = new StringBuilder();
+		standoffAnnotations.forEach(s->out.append(s.toString()+System.lineSeparator()));
+		return out.toString();
+	}
 	
 	
 	public BRATFormat withAnnotation(Annotation ann) {
