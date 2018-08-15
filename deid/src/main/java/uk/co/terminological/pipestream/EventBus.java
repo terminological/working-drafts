@@ -32,7 +32,7 @@ public class EventBus {
 	TupleList<EventMetadata<?>,HandlerMetadata> processingHistory = TupleList.create();
 	
 	List<Event<?>> unhandled = new ArrayList<>();
-	List<EventGenerator<Event<?>>> generators = new ArrayList<>();
+	List<EventGenerator<?>> generators = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
 	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();
 	List<Closeable> openResources = new ArrayList<>();
@@ -59,8 +59,8 @@ public class EventBus {
 	};
 	
 	@SuppressWarnings("unchecked")
-	public EventBus withEventGenerator(EventGenerator<? extends Event<?>> eventGenerator) {
-		generators.add((EventGenerator<Event<?>>) eventGenerator);
+	public EventBus withEventGenerator(EventGenerator<?> eventGenerator) {
+		generators.add(eventGenerator);
 		return this;
 	};
 	

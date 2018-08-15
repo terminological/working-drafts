@@ -16,6 +16,7 @@ import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Records;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventSerializer;
 import uk.co.terminological.pipestream.FileUtils.DeferredInputStream;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
@@ -62,13 +63,17 @@ public class I2B2Experiment {
 	public static void main(String args[]) {
 
 		BasicConfigurator.configure();
-
+		Path INPUT_DIR_1;
+		EventBus.get()
+			.withApi(new CommonFormatConverter())
+			.withEventGenerator(zipFinder(INPUT_DIR_1,I2B2_2014_FORMAT))
+			
 
 
 	}
 
 
-	DirectoryScanner zipFinder(Path directory, String zipType) {
+	static DirectoryScanner zipFinder(Path directory, String zipType) {
 		return Generators.directoryScanner(directory, 
 				file -> (file.getAbsolutePath().endsWith(".tar.gz") ||
 						file.getAbsolutePath().endsWith(".zip")), 
