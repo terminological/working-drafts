@@ -48,6 +48,9 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 			this.metadata = metadata;
 		}
 
+		public void send(Event<?> event) {
+			this.getEventBus().receive(event, getMetadata());
+		}
 		
 	}
 	

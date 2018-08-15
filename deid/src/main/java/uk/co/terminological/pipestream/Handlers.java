@@ -3,6 +3,7 @@ package uk.co.terminological.pipestream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import uk.co.terminological.datatypes.FluentMap;
@@ -29,6 +30,25 @@ public class Handlers {
 
 	}
 	
+	public abstract static class Processor<X> extends EventHandler.Default<Event<X>>  {
+
+		public Processor() {
+			super(FluentEvents.Metadata.forHandler("PROCESSOR"));
+		}
+		
+		@Override
+		public abstract boolean canHandle(Event<?> event);
+
+		@Override
+		public void handle(Event<X> event) {
+			process(event.get(), this::send);
+		}
+		
+		public abstract void process(X x, Consumer<Event<?>> dispatcher);
+
+
+	}
+	
 	public abstract static class Terminal<X> extends EventHandler.Default<Event<X>>  {
 
 		public Terminal() {
@@ -43,7 +63,7 @@ public class Handlers {
 			consume(event.get());
 		}
 		
-		public abstract void consume(X input);
+		public abstract void consume(X x);
 
 
 	}
