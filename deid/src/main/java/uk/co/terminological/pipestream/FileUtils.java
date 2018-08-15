@@ -3,6 +3,7 @@ package uk.co.terminological.pipestream;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -145,11 +146,11 @@ public class FileUtils {
 	public static class DirectoryScanner extends EventGenerator.Default<Path> {
 
 		private Path path;
-		private FilenameFilter filter;
+		private FileFilter filter;
 		Function<Path,String> nameGenerator;
 		Function<Path,String> typeGenerator;
 
-		public DirectoryScanner(Path directory, FilenameFilter filter,
+		public DirectoryScanner(Path directory, FileFilter filter,
 				Function<Path,String> nameGenerator,
 				Function<Path,String> typeGenerator
 				) {
@@ -162,9 +163,9 @@ public class FileUtils {
 
 		@Override
 		public List<Event<Path>> generate() {
-			return Arrays.asList(path.toFile().list(filter)).stream().map(
-					filename -> {
-						Path tmp = Paths.get(filename); 
+			return Arrays.asList(path.toFile().listFiles(filter)).stream().map(
+					file -> {
+						Path tmp = file.toPath(); 
 						return FluentEvents.Events.namedTypedEvent(
 							tmp, 
 							path -> path.toString(), 
