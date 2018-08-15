@@ -12,8 +12,12 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
 
+import uk.co.terminological.deid.CommonFormat.Record;
+import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.fluentxml.Xml;
+import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.fluentxml.XmlText;
 import uk.co.terminological.pipestream.FileUtils.DeferredInputStream;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.FluentEvents.Events;
@@ -75,8 +79,8 @@ public class I2B2Experiment {
 									out = Xml.fromStream(tmp);
 									context.send(
 								        	Events.namedTypedEvent(out, 
-								        			entry.getName(), 
-								        			xmlType)	
+								        			xmlType, 
+								        			"XML_READY").put("filename", entry.getName())
 								        		);
 								} catch (XmlException e) {
 									context.getEventBus().logError("Cannot parse XML file:" +entry.getName());
@@ -92,7 +96,27 @@ public class I2B2Experiment {
 				});
 	}
 	
-	
+	Processor<Xml> commonFormatFrom2014Xml() {
+		return Handlers.processor("I2B2_2014_TO_COMMON", 
+				Predicates.matchNameAndType("I2B2_2014_FORMAT", "XML_READY"), 
+				(event, context) -> {
+					Xml xml = event.get();
+					Record record;
+					record.id = id;
+					record.documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
+					for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
+						record.spans.add(
+							Span.from(
+								Integer.parseInt(tags.getAsElement().getAttribute("start")),
+								Integer.parseInt(tags.getAsElement().getAttribute("end")), 
+								tags.getName(),
+								tags.getAsElement().getAttribute("TYPE")));
+					}
+					context.send(Events.namedTypedEvent(record, record.id, "COMMON_FORMAT_AVAILABLE"));
+					
+				});
+		
+	}
 	
 	
 	

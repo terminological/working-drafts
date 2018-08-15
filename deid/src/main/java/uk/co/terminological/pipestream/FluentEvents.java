@@ -263,6 +263,27 @@ public class FluentEvents {
 			};
 		}
 		
+		
+		public static <X,Y> EventProcessor<X> processor(
+				String name,
+				Predicate<Event<?>> acceptEvent,
+				BiConsumer<Event<X>,EventProcessor<X>> processor
+				) {
+
+			return new EventProcessor<X>(name) {
+
+				@Override
+				public boolean canHandle(Event<?> event) {
+					return acceptEvent.test(event);
+				}
+
+				@Override
+				public void process(Event<X> event, Processor<X> context) {
+					processor.accept(event, context);	
+				}
+			};
+		}
+		
 		public static <X> Terminal<X> consumer(
 				String name,
 				Predicate<Event<?>> acceptEvent,
