@@ -13,13 +13,15 @@ public class BRATFormat {
 
 	String documentText;
 	FluentList<Annotation> standoffAnnotations = FluentList.empty();
+	String id;
 	
-	public static BRATFormat create(String text) {
+	public static BRATFormat create(String text, String id) {
 		BRATFormat out = new BRATFormat();
 		out.documentText = text;
 		return out;
 	}
 	
+	public String getId() {return id;}
 	public String getDocumentText() {return documentText;}
 	
 	public String getStandoffOutput() {

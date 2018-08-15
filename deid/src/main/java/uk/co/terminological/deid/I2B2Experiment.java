@@ -37,20 +37,25 @@ public class I2B2Experiment {
 	public static final String ARCHIVE_FILE_FOUND = "ARCHIVE_FILE_FOUND";
 	public static final String ARCHIVE_FILE_READY = "ARCHIVE_FILE_READY";
 	public static final String XML_READY = "XML_READY";
-	private static final String COMMON_FORMAT_READY = "COMMON_FORMAT_READY";
+	private static final String COMMON_FORMAT_RECORD_READY = "COMMON_FORMAT_RECORD_READY";
 	
 	//Handler names
 	private static final String ARCHIVE_LOADER = "ARCHIVE_LOADER";
 	private static final String TAR_TO_XML = "TAR_TO_XML";
 	private static final String I2B2_2014_TO_COMMON = "I2B2_2014_TO_COMMON";
+	private static final String I2B2_2006_TO_COMMON = "I2B2_2006_TO_COMMON";
+	private static final String COMMON_FORMAT_TO_BRAT = "COMMON_FORMAT_TO_BRAT";
 	
 	//Event names
 	private static final String I2B2_2014_FORMAT = "I2B2_2014_FORMAT";
+	private static final String I2B2_2006_FORMAT = "I2B2_2006_FORMAT";
 	
 	//Event metadata key names
 	private static final String XML_FILENAME = "XML_FILENAME";
-	private static final String I2B2_2006_TO_COMMON = null;
-	private static final String I2B2_2006_FORMAT = null;
+	private static final String BRAT_FORMAT_READY = null;
+	
+	
+	
 	
 	
 	public static void main(String args[]) {
@@ -130,7 +135,7 @@ public class I2B2Experiment {
 						context.send(
 								Events.namedTypedEvent(record, 
 										record.id, 
-										COMMON_FORMAT_READY));
+										COMMON_FORMAT_RECORD_READY));
 					} catch (XmlException e) {
 						context.getEventBus().handleException(e);
 					}
@@ -149,13 +154,22 @@ public class I2B2Experiment {
 						records.forEach(
 								r -> context.send(
 									Events.namedTypedEvent(r,r.id, 
-										COMMON_FORMAT_READY)));
+										COMMON_FORMAT_RECORD_READY)));
 					} catch (XmlException e) {
 						context.getEventBus().handleException(e);
 					}
 				});
 	}
 	
+	Adaptor<CommonFormat.Record, BRATFormat> bratFormatFromCommon() {
+		return Handlers.adaptor(COMMON_FORMAT_TO_BRAT, 
+				Predicates.matchType(COMMON_FORMAT_RECORD_READY), 
+				(record, context) -> context.getEventBus().getApi(CommonFormatConverter.class).get()
+						.toBRATFormat(record),
+				name -> name,
+				type -> BRAT_FORMAT_READY	
+				);
+	}
 	
 
 }
