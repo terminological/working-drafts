@@ -83,6 +83,7 @@ public class EventBus {
 		if (event.getMetadata().reusable()) {
 			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(
 					h -> {
+						log.debug("handling message: {} with handler: {}",event.getMetadata(), h.getMetadata());
 						processingHistory.and(event.getMetadata(),h.getMetadata());
 						h.handle(event);
 					}
@@ -90,6 +91,7 @@ public class EventBus {
 			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
 					hg -> {
 						EventHandler<Event<?>> h = hg.createHandlerFor(event);
+						log.debug("handling message: {} with handler: {}",event.getMetadata(), h.getMetadata());
 						processingHistory.and(event.getMetadata(),h.getMetadata());
 						h.handle(event);
 					}
@@ -97,6 +99,7 @@ public class EventBus {
 		} else {
 			handlers.stream().filter(h -> h.canHandle(event)).findFirst().ifPresentOrElse(
 					(h -> {
+						log.debug("handling message: {} with handler: {}",event.getMetadata(), h.getMetadata());
 						processingHistory.and(event.getMetadata(),h.getMetadata());
 						h.handle(event);
 						this.releaseHandler(h);
@@ -106,11 +109,15 @@ public class EventBus {
 							.findFirst().ifPresentOrElse(
 							(hg -> {
 								EventHandler<Event<?>> h = hg.createHandlerFor(event);
+								log.debug("handling message: {} with handler: {}",event.getMetadata(), h.getMetadata());
 								processingHistory.and(event.getMetadata(),h.getMetadata());
 								h.handle(event);
 								this.releaseHandler(h);
 							}),
-							(() -> unhandled.add(event))
+							(() -> {
+								log.debug("unhandled message: {}",event.getMetadata();
+								unhandled.add(event);
+							})
 							);
 					})
 			);
