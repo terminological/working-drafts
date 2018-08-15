@@ -7,7 +7,7 @@ public interface Event<Y> {
 
 	EventMetadata<Y> getMetadata();
 	Y get();
-	void put(String key, Object o);
+	Event<Y> put(String key, Object o);
 	Object get(String key);
 
 	public static class EventMetadata<Y> extends Metadata {
@@ -60,8 +60,9 @@ public interface Event<Y> {
 		public Y get() {return message;}
 
 		@Override
-		public void put(String key, Object value) {
+		public Event<Y> put(String key, Object value) {
 			store.put(key, value);
+			return this;
 		}
 
 		@Override
