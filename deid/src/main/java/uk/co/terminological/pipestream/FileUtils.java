@@ -210,9 +210,8 @@ public class FileUtils {
 		public void handle(Event<X> event) {
 			Path out = nameStrategy.apply(event);
 			this.getEventBus().logInfo("Started writing "+event.getMetadata().toString()+" to "+out.toString());
-			serialiser.write(event);
+			serialiser.write(event.get(), nameStrategy.apply(event));
 			this.getEventBus().logInfo("Finished writing "+event.getMetadata().toString()+" to "+out.toString());
-			
 		}
 		
 	}
