@@ -1,5 +1,6 @@
 package uk.co.terminological.pipestream;
 
+import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.util.function.Consumer;
@@ -200,13 +201,13 @@ public class FluentEvents {
 
 	public static class Generators {
 		
-		public static DirectoryScanner directoryScanner(Path directory, FilenameFilter filter,
+		public static DirectoryScanner directoryScanner(Path directory, FileFilter filter,
 				Function<Path,String> nameGenerator,
 				Function<Path,String> typeGenerator) {
 			return new DirectoryScanner(directory, filter, nameGenerator, typeGenerator);
 		}
 		
-		public static DirectoryScanner directoryScanner(Path directory, FilenameFilter filter,
+		public static DirectoryScanner directoryScanner(Path directory, FileFilter filter,
 				String name,
 				String type) {
 			return new DirectoryScanner(directory, filter, s -> name, s -> type);
