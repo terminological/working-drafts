@@ -19,6 +19,7 @@ import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlText;
+import uk.co.terminological.pipestream.EventSerializer;
 import uk.co.terminological.pipestream.FileUtils.DeferredInputStream;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.FluentEvents.Events;
@@ -28,6 +29,7 @@ import uk.co.terminological.pipestream.FluentEvents.Predicates;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
 import uk.co.terminological.pipestream.Handlers.EventProcessor;
 import uk.co.terminological.pipestream.Handlers.Processor;
+import uk.co.terminological.pipestream.Handlers.Terminal;
 
 
 public class I2B2Experiment {
@@ -53,6 +55,7 @@ public class I2B2Experiment {
 	
 	//Event metadata key names
 	private static final String XML_FILENAME = "XML_FILENAME";
+	private static final String BRAT_FORMAT_WRITER = null;
 	
 	
 	
@@ -172,6 +175,15 @@ public class I2B2Experiment {
 				);
 	}
 	
-	FileWriter<BRATFormat> bratFormatWriter
+	Terminal<BRATFormat> bratFormatWriter(Path directory) {
+		return Handlers.consumer(BRAT_FORMAT_WRITER, 
+				Predicates.matchType(BRAT_FORMAT_READY), 
+				brat -> {
+					EventSerializer.TO_STRING_FILE_WRITER.write(
+							brat.getDocumentText(), directory.resolve(brat.getId()+".txt"));
+					EventSerializer.TO_STRING_FILE_WRITER.write(
+							brat.getStandoffOutput(), directory.resolve(brat.getId()+".ann"));
+				});
+	}
 
 }
