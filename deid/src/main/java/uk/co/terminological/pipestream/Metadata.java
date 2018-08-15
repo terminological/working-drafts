@@ -33,7 +33,7 @@ public class Metadata implements Serializable {
 	*/
 	
 	public String toString() {
-		return name+":"+typeDescription;
+		return name+":"+typeDescription+" ["+timestamp+"]";
 	}
 	
 	public long timestamp() {
