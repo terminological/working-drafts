@@ -19,15 +19,16 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import uk.co.terminological.datatypes.FluentList;
+import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
 
 public class FileUtils {
 	
 	public static class InputStreamAvailableEvent implements Event<InputStream> {
 
-		DeferredInputStream dis;
+		DeferredInputStream<?> dis;
 		EventMetadata<InputStream> metadata;
 		
-		InputStreamAvailableEvent(DeferredInputStream dis, String key) {
+		InputStreamAvailableEvent(DeferredInputStream<?> dis, String key) {
 			metadata = FluentEvents.Metadata.forEvent(InputStream.class, key);
 			this.dis = dis;
 		}
@@ -44,21 +45,34 @@ public class FileUtils {
 		
 	}
 	
-	public static  class DeferredInputStream {
+	public abstract static class DeferredInputStream<X extends InputStream> {
 		Path path;
 		DeferredInputStream(Path path) {
 			this.path = path;
 		}
-		public InputStream get() {
+		public X get() {
 			try {
-				return Files.newInputStream(path);
+				return pathToStream(path)
 			} catch (IOException e) {
 				EventBus.get().handleException(e);
 				return null;
 			}
 		}
+		
+		public abstract X pathToStream(Path path) throws Exception;
+		
 		public String toString() {return path.toString();}
 		public int hashCode() {return path.hashCode();}
+		
+		public static <Y extends InputStream> DeferredInputStream<Y> create(Path path, FunctionWithException<Path,Y> generator) {
+			return new DeferredInputStream<Y>(path) {
+				@Override
+				public Y pathToStream(Path path) throws Exception {
+					return generator.apply(path);
+				}
+				
+			};
+		}
 	}
 	
 	
@@ -68,7 +82,7 @@ public class FileUtils {
 		
 		public Reader(Path file, String key) {
 			super(FluentEvents.Metadata.forGenerator(file.toString(),"FILE_READER"));
-			out = new InputStreamAvailableEvent(new DeferredInputStream(file), key);
+			out = new InputStreamAvailableEvent(new DeferredInputStream<InputStream>(file), key);
 		}
 
 		@Override
