@@ -129,7 +129,7 @@ public class EventBus {
 		// Some sort of error handling policy
 		PrintStream ps = new PrintStream(new ByteArrayOutputStream());
 		e.printStackTrace(ps);
-		logError(ps.toString());
+		log.error(ps.toString());
 	};
 	
 	
@@ -153,6 +153,7 @@ public class EventBus {
 	
 	
 	public void execute() {
+		log.info("Starting eventBus generators");
 		generators.parallelStream().forEach(g -> {while(g.execute()) {};});
 	}
 	
