@@ -122,6 +122,7 @@ public class EventBus {
 	// do as d3 graph?
 	
 	public void handleException(Exception e) {
+		// Some sort of error handling policy
 		PrintStream ps = new PrintStream(new ByteArrayOutputStream());
 		e.printStackTrace(ps);
 		logError(ps.toString());
@@ -148,9 +149,8 @@ public class EventBus {
 	
 	
 	public void execute() {
-		generators.parallelStream().forEach(g -> while(g.execute()));
+		generators.parallelStream().forEach(g -> {while(g.execute()) {};});
 	}
-	
 	
 	public void shutdown() {
 		for (Closeable toClose: openResources) {
