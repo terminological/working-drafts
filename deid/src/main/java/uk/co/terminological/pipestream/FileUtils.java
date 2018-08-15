@@ -178,8 +178,8 @@ public class FileUtils {
 						Path tmp = file.toPath(); 
 						return FluentEvents.Events.namedTypedEvent(
 							tmp, 
-							path -> path.toString(), 
-							path -> type(path));
+							nameGenerator.apply(tmp),
+							typeGenerator.apply(tmp));
 					}
 			).collect(Collectors.toList());
 		}
