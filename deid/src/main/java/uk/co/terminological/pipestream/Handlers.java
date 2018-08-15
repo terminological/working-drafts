@@ -13,6 +13,10 @@ public class Handlers {
 	
 	public abstract static class Adaptor<X,Y> extends EventHandler.Default<Event<X>> {
 
+		public Adaptor(String name) {
+			super(FluentEvents.Metadata.forHandler(name,"ADAPTOR"));
+		}
+		
 		public Adaptor() {
 			super(FluentEvents.Metadata.forHandler("ADAPTOR"));
 		}
@@ -32,6 +36,10 @@ public class Handlers {
 	
 	public abstract static class Processor<X> extends EventHandler.Default<Event<X>>  {
 
+		public Processor(String name) {
+			super(FluentEvents.Metadata.forHandler(name,"PROCESSOR"));
+		}
+		
 		public Processor() {
 			super(FluentEvents.Metadata.forHandler("PROCESSOR"));
 		}
@@ -51,6 +59,10 @@ public class Handlers {
 	
 	public abstract static class Terminal<X> extends EventHandler.Default<Event<X>>  {
 
+		public Terminal(String name) {
+			super(FluentEvents.Metadata.forHandler(name,"TERMINAL"));
+		}
+		
 		public Terminal() {
 			super(FluentEvents.Metadata.forHandler("TERMINAL"));
 		}

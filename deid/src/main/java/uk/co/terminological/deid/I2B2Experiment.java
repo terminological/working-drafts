@@ -56,38 +56,44 @@ public class I2B2Experiment {
 				type -> "TAR_FILE_READY");
 	}
 
-	Processor<DeferredInputStream<ArchiveInputStream>> xmlGenerator(String zipType, String xmlType) {
+	Processor<DeferredInputStream<ArchiveInputStream>> xmlFromZip(String zipType, String xmlType) {
 		return Handlers.processor(
 				Predicates.matchNameAndType(zipType, "TAR_FILE_READY"), 
 				(zip, context) -> {
 					ArchiveInputStream ais = zip.get();
 					ArchiveEntry entry;
-					while ((entry = ais.getNextEntry()) != null) {
-					    if (entry.getName().endsWith(".xml")) {
-					    	InputStream tmp = new FilterInputStream(ais) {
-					            @Override
-					            public void close() throws IOException {}
-					        };
-					        Xml out;
-							try {
-								out = Xml.fromStream(tmp);
-								context.send(
-							        	Events.namedTypedEvent(out, 
-							        			xmlType, 
-							        			"XML_LOADED")	
-							        		);
-							} catch (XmlException e) {
-								context.getEventBus().logError("Cannot parse XML file:" +entry.getName());
-								context.getEventBus().handleException(e);
-							}
-					        
-					    }
+					try {
+						while ((entry = ais.getNextEntry()) != null) {
+						    if (entry.getName().endsWith(".xml")) {
+						    	InputStream tmp = new FilterInputStream(ais) {
+						            @Override
+						            public void close() throws IOException {}
+						        };
+						        Xml out;
+								try {
+									out = Xml.fromStream(tmp);
+									context.send(
+								        	Events.namedTypedEvent(out, 
+								        			xmlType, 
+								        			"XML_LOADED")	
+								        		);
+								} catch (XmlException e) {
+									context.getEventBus().logError("Cannot parse XML file:" +entry.getName());
+									context.getEventBus().handleException(e);
+								}
+						        
+						    }
+						}
+					} catch (IOException e) {
+						context.getEventBus().logError("Cannot read next zip entry");
+						context.getEventBus().handleException(e);
 					}
-					 
-					        
 				}, 
 				name -> xmlType, 
 				type -> "XML_READY");
 	}
+	
+	
+	
 	
 }

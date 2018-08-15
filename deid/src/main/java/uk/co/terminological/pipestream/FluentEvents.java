@@ -220,13 +220,14 @@ public class FluentEvents {
 		 
 		
 		public static <X,Y> Adaptor<X,Y> adaptor(
+				String name,
 				Predicate<Event<?>> acceptEvent,
 				Function<X,Y> converter,
 				Function<Y,String> nameMapper,
 				Function<Y,String> typeMapper
 				) {
 
-			return new Adaptor<X,Y>() {
+			return new Adaptor<X,Y>(name) {
 
 				@Override
 				public boolean canHandle(Event<?> event) {
@@ -243,13 +244,14 @@ public class FluentEvents {
 		}
 		
 		public static <X,Y> Processor<X> processor(
+				String name,
 				Predicate<Event<?>> acceptEvent,
 				BiConsumer<X,Processor<X>> processor,
 				Function<Y,String> nameMapper,
 				Function<Y,String> typeMapper
 				) {
 
-			return new Processor<X>() {
+			return new Processor<X>(name) {
 
 				@Override
 				public boolean canHandle(Event<?> event) {
@@ -264,11 +266,12 @@ public class FluentEvents {
 		}
 		
 		public static <X> Terminal<X> consumer(
+				String name,
 				Predicate<Event<?>> acceptEvent,
 				Consumer<X> consumer
 				) {
 
-			return new Terminal<X>() {
+			return new Terminal<X>(name) {
 
 				@Override
 				public boolean canHandle(Event<?> event) {
