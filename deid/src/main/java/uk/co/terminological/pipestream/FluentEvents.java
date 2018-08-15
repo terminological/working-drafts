@@ -2,6 +2,7 @@ package uk.co.terminological.pipestream;
 
 import java.io.FileFilter;
 import java.nio.file.Path;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -10,6 +11,7 @@ import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
+import uk.co.terminological.pipestream.Handlers.Processor;
 import uk.co.terminological.pipestream.Handlers.Terminal;
 
 public class FluentEvents {
@@ -236,6 +238,27 @@ public class FluentEvents {
 					return Events.namedTypedEvent(
 							converter.apply(input),
 							nameMapper, typeMapper);
+				}
+			};
+		}
+		
+		public static <X,Y> Processor<X> processor(
+				Predicate<Event<?>> acceptEvent,
+				BiConsumer<X,Consumer<Event<?>>> processor,
+				Function<Y,String> nameMapper,
+				Function<Y,String> typeMapper
+				) {
+
+			return new Processor<X>() {
+
+				@Override
+				public boolean canHandle(Event<?> event) {
+					return acceptEvent.test(event);
+				}
+
+				@Override
+				public void process(X x, Consumer<Event<?>> dispatcher) {
+					processor.accept(x, dispatcher);
 				}
 			};
 		}
