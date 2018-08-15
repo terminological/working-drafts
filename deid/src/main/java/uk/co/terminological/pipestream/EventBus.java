@@ -115,7 +115,7 @@ public class EventBus {
 								this.releaseHandler(h);
 							}),
 							(() -> {
-								log.debug("unhandled message: {}",event.getMetadata();
+								log.debug("unhandled message: {}",event.getMetadata());
 								unhandled.add(event);
 							})
 							);
