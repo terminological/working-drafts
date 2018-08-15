@@ -57,6 +57,29 @@ public class Handlers {
 
 	}
 	
+	public abstract static class EventProcessor<X> extends EventHandler.Default<Event<X>>  {
+
+		public EventProcessor(String name) {
+			super(FluentEvents.Metadata.forHandler(name,"PROCESSOR"));
+		}
+		
+		public EventProcessor() {
+			super(FluentEvents.Metadata.forHandler("PROCESSOR"));
+		}
+		
+		@Override
+		public abstract boolean canHandle(Event<?> event);
+
+		@Override
+		public void handle(Event<X> event) {
+			process(event, this);
+		}
+		
+		public abstract void process(Event<X> event, EventProcessor<X> context);
+
+
+	}
+	
 	public abstract static class Terminal<X> extends EventHandler.Default<Event<X>>  {
 
 		public Terminal(String name) {
