@@ -134,9 +134,10 @@ public class EventBus {
 	
 	public void handleException(Exception e) {
 		// Some sort of error handling policy
-		PrintStream ps = new PrintStream(new ByteArrayOutputStream());
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
 		e.printStackTrace(ps);
-		log.error(ps.toString());
+		log.error(baos.toString());
 	};
 	
 	
