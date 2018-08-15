@@ -16,6 +16,7 @@ public abstract class EventSerializer<X> {
 		@Override
 		public void write(Serializable u, Path path) {
 			try {
+				Files.createDirectories(path.getParent());
 				ObjectOutputStream os = new ObjectOutputStream(Files.newOutputStream(path));
 				os.writeObject(u);
 				os.close();
@@ -29,6 +30,7 @@ public abstract class EventSerializer<X> {
 			@Override
 			public void write(Object u, Path path) {
 				try {
+					Files.createDirectories(path.getParent());
 					OutputStream os = Files.newOutputStream(path);
 					os.write(u.toString().getBytes(Charset.defaultCharset()));
 					os.close();
