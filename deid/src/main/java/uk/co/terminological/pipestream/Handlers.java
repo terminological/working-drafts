@@ -44,7 +44,7 @@ public class Handlers {
 			process(event.get(), this::send);
 		}
 		
-		public abstract void process(X x, Consumer<Event<?>> dispatcher);
+		public abstract void process(X x, Consumer<Event<?>> dispatch);
 
 
 	}

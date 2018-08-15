@@ -257,8 +257,8 @@ public class FluentEvents {
 				}
 
 				@Override
-				public void process(X x, Consumer<Event<?>> dispatcher) {
-					processor.accept(x, dispatcher);
+				public void process(X x, Consumer<Event<?>> dispatch) {
+					processor.accept(x, dispatch);
 				}
 			};
 		}
