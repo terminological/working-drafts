@@ -67,7 +67,6 @@ public class EventBus {
 		return this;
 	};
 	
-	@SuppressWarnings("unchecked")
 	public EventBus withEventGenerator(EventGenerator<?> eventGenerator) {
 		generators.add(eventGenerator);
 		log.info("Added event generator: "+eventGenerator.getMetadata().toString());
@@ -145,6 +144,7 @@ public class EventBus {
 		PrintStream ps = new PrintStream(baos);
 		e.printStackTrace(ps);
 		log.error(baos.toString());
+		if (this.rethrowErrors) throw new RuntimeException(e);
 	};
 	
 	
