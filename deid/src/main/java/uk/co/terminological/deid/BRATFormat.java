@@ -42,6 +42,7 @@ public class BRATFormat {
 		static FluentMap<Class<? extends Annotation>, Integer> counts = FluentMap.empty();
 		static <X extends Annotation> void assignId(X ann, String prefix) {
 			Integer tmp = counts.get(ann.getClass());
+			tmp = (tmp == null ? 1 : tmp);
 			ann.id = prefix+tmp;
 			counts.put(ann.getClass(), tmp+1);
 		}
