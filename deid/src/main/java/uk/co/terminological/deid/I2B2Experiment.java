@@ -89,9 +89,7 @@ public class I2B2Experiment {
 						context.getEventBus().logError("Cannot read next zip entry");
 						context.getEventBus().handleException(e);
 					}
-				}, 
-				name -> xmlType, 
-				type -> "XML_READY");
+				});
 	}
 	
 	
