@@ -186,16 +186,14 @@ public class FileUtils {
 		
 	}
 	
-	public static interface NamingStrategy extends Function<Event<?>,Path> {}
-	
 	public static class FileWriter<X> extends EventHandler.Default<Event<X>> {
 
-		NamingStrategy nameStrategy; 
+		Function<Event<?>,Path> nameStrategy; 
 		EventSerializer<X> serialiser;
 		Predicate<Event<?>> acceptEvents;
 		
-		public FileWriter(Predicate<Event<?>> acceptEvents, NamingStrategy nameStrategy, EventSerializer<X> serialiser) {
-			super(FluentEvents.Metadata.forHandler(serialiser.getClass().getSimpleName()));
+		public FileWriter(String name, Predicate<Event<?>> acceptEvents, Function<Event<?>,Path> nameStrategy, EventSerializer<X> serialiser) {
+			super(FluentEvents.Metadata.forHandler(name, "FILE_WRITER"));
 			this.nameStrategy = nameStrategy;
 			this.serialiser = serialiser;
 			this.acceptEvents = acceptEvents;
