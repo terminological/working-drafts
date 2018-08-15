@@ -38,14 +38,15 @@ public class I2B2Experiment {
 	
 	DirectoryScanner zipFinder(Path directory, String zipType) {
 		return Generators.directoryScanner(directory, 
-				file -> file.getAbsolutePath().endsWith(".tar.gz"), 
-				zipType, "TAR_FILE_FOUND");
+				file -> (file.getAbsolutePath().endsWith(".tar.gz") ||
+						file.getAbsolutePath().endsWith(".zip")), 
+				zipType, "ARCHIVE_FILE_FOUND");
 	}
 	
 	Adaptor<Path,DeferredInputStream<ArchiveInputStream>> zipLoader(Path file, String zipType) {
-		return Handlers.adaptor("TAR_LOADER",
+		return Handlers.adaptor("ARCHIVE_LOADER",
 				
-				Predicates.matchNameAndType(zipType, "TAR_FILE_FOUND"), 
+				Predicates.matchNameAndType(zipType, "ARCHIVE_FILE_FOUND"), 
 	
 				p -> DeferredInputStream.create(p, 
 							p2 -> new TarArchiveInputStream(
@@ -53,12 +54,12 @@ public class I2B2Experiment {
 											Files.newInputStream(p2)))),
 					
 				name -> zipType,
-				type -> "TAR_FILE_READY");
+				type -> "ARCHIVE_FILE_READY");
 	}
 
 	Processor<DeferredInputStream<ArchiveInputStream>> xmlFromZip(String zipType, String xmlType) {
 		return Handlers.processor("TAR_TO_XML",
-				Predicates.matchNameAndType(zipType, "TAR_FILE_READY"), 
+				Predicates.matchNameAndType(zipType, "ARCHIVE_FILE_READY"), 
 				(zip, context) -> {
 					ArchiveInputStream ais = zip.get();
 					ArchiveEntry entry;
