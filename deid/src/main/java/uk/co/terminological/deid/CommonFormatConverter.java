@@ -117,7 +117,7 @@ public class CommonFormatConverter {
 	}
 	
 	public BRATFormat toBRATFormat(Record record) {
-		BRATFormat out = BRATFormat.create(record.documentText);
+		BRATFormat out = BRATFormat.create(record.documentText, record.id);
 		record.spans.forEach(
 				span -> out.withAnnotation(
 						BRATFormat.Annotation.textBound(
