@@ -32,6 +32,7 @@ public class EventBus {
 	TupleList<EventMetadata<?>,HandlerMetadata> processingHistory = TupleList.create();
 	
 	List<Event<?>> unhandled = new ArrayList<>();
+	List<EventGenerator<Event<?>>> generators = new ArrayList<>();
 	List<EventHandler<Event<?>>> handlers = new ArrayList<>();
 	List<EventHandlerGenerator<Event<?>>> handlerGenerators = new ArrayList<>();
 	List<Closeable> openResources = new ArrayList<>();
@@ -54,6 +55,12 @@ public class EventBus {
 	@SuppressWarnings("unchecked")
 	public EventBus withHandlerGenerator(EventHandlerGenerator<? extends Event<?>> handlerGenerator) {
 		handlerGenerators.add((EventHandlerGenerator<Event<?>>) handlerGenerator);
+		return this;
+	};
+	
+	@SuppressWarnings("unchecked")
+	public EventBus withEventGenerator(EventGenerator<? extends Event<?>> eventGenerator) {
+		generators.add((EventGenerator<Event<?>>) eventGenerator);
 		return this;
 	};
 	
@@ -138,6 +145,12 @@ public class EventBus {
 	public void registerCloseable(Closeable closeable) {
 		this.openResources.add(closeable);
 	};
+	
+	
+	public void execute() {
+		generators.parallelStream().forEach(g -> while(g.execute()));
+	}
+	
 	
 	public void shutdown() {
 		for (Closeable toClose: openResources) {
