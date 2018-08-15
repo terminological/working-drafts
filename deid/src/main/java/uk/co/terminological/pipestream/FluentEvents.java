@@ -3,6 +3,7 @@ package uk.co.terminological.pipestream;
 import java.io.FileFilter;
 import java.nio.file.Path;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -239,6 +240,30 @@ public class FluentEvents {
 				public Event<Y> convert(X input) {
 					return Events.namedTypedEvent(
 							converter.apply(input),
+							nameMapper, typeMapper);
+				}
+			};
+		}
+		
+		public static <X,Y> Adaptor<X,Y> adaptor(
+				String name,
+				Predicate<Event<?>> acceptEvent,
+				BiFunction<X,Adaptor<X,Y>,Y> converter,
+				Function<Y,String> nameMapper,
+				Function<Y,String> typeMapper
+				) {
+
+			return new Adaptor<X,Y>(name) {
+
+				@Override
+				public boolean canHandle(Event<?> event) {
+					return acceptEvent.test(event);
+				}
+
+				@Override
+				public Event<Y> convert(X input) {
+					return Events.namedTypedEvent(
+							converter.apply(input,this),
 							nameMapper, typeMapper);
 				}
 			};
