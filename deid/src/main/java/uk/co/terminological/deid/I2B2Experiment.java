@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -73,12 +74,12 @@ public class I2B2Experiment {
 		Path outputDir = Paths.get("/media/data/Data/i2b2/brat");;
 		EventBus.get()
 			.withApi(new CommonFormatConverter())
-			.withEventGenerator(zipFinder(inputDir1,I2B2_2014_FORMAT))
+			.withEventGenerator(tarGzFinder(inputDir1,I2B2_2014_FORMAT))
 			.withEventGenerator(zipFinder(inputDir2,I2B2_2006_FORMAT))
-			.withHandler(zipLoader(I2B2_2014_FORMAT))
+			.withHandler(tarGzLoader(I2B2_2014_FORMAT))
 			.withHandler(zipLoader(I2B2_2006_FORMAT))
-			.withHandler(xmlFromZip(I2B2_2014_FORMAT,I2B2_2014_FORMAT))
-			.withHandler(xmlFromZip(I2B2_2006_FORMAT,I2B2_2006_FORMAT))
+			.withHandler(xmlFromArchive(I2B2_2014_FORMAT,I2B2_2014_FORMAT))
+			.withHandler(xmlFromArchive(I2B2_2006_FORMAT,I2B2_2006_FORMAT))
 			.withHandler(commonFormatFrom2006Xml())
 			.withHandler(commonFormatFrom2014Xml())
 			.withHandler(bratFormatFromCommon())
@@ -89,14 +90,13 @@ public class I2B2Experiment {
 	}
 
 
-	static DirectoryScanner zipFinder(Path directory, String zipType) {
+	static DirectoryScanner tarGzFinder(Path directory, String zipType) {
 		return Generators.directoryScanner(directory, 
-				file -> (file.getAbsolutePath().endsWith(".tar.gz") ||
-						file.getAbsolutePath().endsWith(".zip")), 
+				file -> file.getAbsolutePath().endsWith(".tar.gz"), 
 				zipType, ARCHIVE_FILE_FOUND);
 	}
 
-	static Adaptor<Path,DeferredInputStream<ArchiveInputStream>> zipLoader(String zipType) {
+	static Adaptor<Path,DeferredInputStream<ArchiveInputStream>> tarGzLoader(String zipType) {
 		return Handlers.adaptor(ARCHIVE_LOADER,
 
 				Predicates.matchNameAndType(zipType, ARCHIVE_FILE_FOUND), 
@@ -110,7 +110,26 @@ public class I2B2Experiment {
 				type -> ARCHIVE_FILE_READY);
 	}
 
-	static Processor<DeferredInputStream<ArchiveInputStream>> xmlFromZip(String zipType, String xmlType) {
+	static DirectoryScanner zipFinder(Path directory, String zipType) {
+		return Generators.directoryScanner(directory, 
+				file -> file.getAbsolutePath().endsWith(".zip"), 
+				zipType, ARCHIVE_FILE_FOUND);
+	}
+
+	static Adaptor<Path,DeferredInputStream<ArchiveInputStream>> zipLoader(String zipType) {
+		return Handlers.adaptor(ARCHIVE_LOADER,
+
+				Predicates.matchNameAndType(zipType, ARCHIVE_FILE_FOUND), 
+
+				p -> DeferredInputStream.create(p, 
+						p2 -> new ZipArchiveInputStream(
+										Files.newInputStream(p2))),
+
+				name -> zipType,
+				type -> ARCHIVE_FILE_READY);
+	}
+	
+	static Processor<DeferredInputStream<ArchiveInputStream>> xmlFromArchive(String zipType, String xmlType) {
 		return Handlers.processor(TAR_TO_XML,
 				Predicates.matchNameAndType(zipType, ARCHIVE_FILE_READY), 
 				(zip, context) -> {
