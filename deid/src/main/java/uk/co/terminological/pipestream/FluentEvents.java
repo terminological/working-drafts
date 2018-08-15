@@ -244,7 +244,7 @@ public class FluentEvents {
 		
 		public static <X,Y> Processor<X> processor(
 				Predicate<Event<?>> acceptEvent,
-				BiConsumer<X,Consumer<Event<?>>> processor,
+				BiConsumer<X,Processor<X>> processor,
 				Function<Y,String> nameMapper,
 				Function<Y,String> typeMapper
 				) {
