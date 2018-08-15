@@ -12,6 +12,8 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Records;
@@ -64,6 +66,8 @@ public class I2B2Experiment {
 	public static void main(String args[]) {
 
 		BasicConfigurator.configure();
+		Logger.getRootLogger().setLevel(Level.DEBUG);
+		
 		Path inputDir1 = Paths.get("/media/data/Data/i2b2/2014Track1");
 		Path inputDir2 = Paths.get("/media/data/Data/i2b2/2006Set1B");
 		Path outputDir = Paths.get("/media/data/Data/i2b2/brat");;

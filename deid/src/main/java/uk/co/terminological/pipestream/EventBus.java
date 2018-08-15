@@ -56,18 +56,21 @@ public class EventBus {
 	@SuppressWarnings("unchecked")
 	public EventBus withHandlerGenerator(EventHandlerGenerator<? extends Event<?>> handlerGenerator) {
 		handlerGenerators.add((EventHandlerGenerator<Event<?>>) handlerGenerator);
+		log.info("Added handler generator: "+handlerGenerator.getClass().getCanonicalName());
 		return this;
 	};
 	
 	@SuppressWarnings("unchecked")
 	public EventBus withEventGenerator(EventGenerator<?> eventGenerator) {
 		generators.add(eventGenerator);
+		log.info("Added event generator: "+eventGenerator.getMetadata().toString());
 		return this;
 	};
 	
 	@SuppressWarnings("unchecked")
 	public EventBus withHandler(EventHandler<? extends Event<?>> handler) {
 		handlers.add((EventHandler<Event<?>>) handler);
+		log.info("Added event handler: "+handler.getMetadata().toString());
 		return this;
 	};
 	
