@@ -1,7 +1,6 @@
 package uk.co.terminological.pipestream;
 
 import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -9,10 +8,9 @@ import java.util.function.Predicate;
 
 import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
+import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
 import uk.co.terminological.pipestream.Handlers.Terminal;
-
-import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 
 public class FluentEvents {
 
