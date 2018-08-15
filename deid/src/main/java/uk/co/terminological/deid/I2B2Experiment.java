@@ -12,6 +12,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
 
+import com.sun.tools.doclets.internal.toolkit.builders.AbstractBuilder.Context;
+
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pipestream.FileUtils.DeferredInputStream;
@@ -59,7 +61,7 @@ public class I2B2Experiment {
 	Processor<DeferredInputStream<ArchiveInputStream>> xmlGenerator(String zipType, String xmlType) {
 		return Handlers.processor(
 				Predicates.matchNameAndType(zipType, "TAR_FILE_READY"), 
-				(zip, dispatcher) -> {
+				(zip, context) -> {
 					ArchiveInputStream ais = zip.get();
 					ArchiveEntry entry;
 					while ((entry = ais.getNextEntry()) != null) {
@@ -71,14 +73,14 @@ public class I2B2Experiment {
 					        Xml out;
 							try {
 								out = Xml.fromStream(tmp);
-								dispatcher.accept(
+								context.send(
 							        	Events.namedTypedEvent(out, 
 							        			xmlType, 
 							        			"XML_LOADED")	
 							        		);
 							} catch (XmlException e) {
-								
-								Processor.this.getEventBus().handleException(e);
+								context.getEventBus().logError("Cannot parse XML file:" +entry.getName());
+								context.getEventBus().handleException(e);
 							}
 					        
 					    }
