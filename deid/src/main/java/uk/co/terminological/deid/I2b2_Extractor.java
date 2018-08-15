@@ -65,7 +65,7 @@ public class I2b2_Extractor {
 					new FileInputStream(file)
 				)
 			);
-			extr.convert_2014(ais, out);
+			//extr.convert_2014(ais, out);
 		}
 		out.close();
 	}
@@ -86,7 +86,7 @@ public class I2b2_Extractor {
 		crf.classifyAndWriteAnswers(TESTING_FILE, readerAndWriter, true);
 	}
 	
-	public void convert_2014(ArchiveInputStream zipIn, Writer out) throws XmlException, IOException {
+	/*public void convert_2014(ArchiveInputStream zipIn, Writer out) throws XmlException, IOException {
 		//public void readZipStream(InputStream in) throws IOException {
 		ArchiveEntry entry;
 		while ((entry = zipIn.getNextEntry()) != null) {
@@ -104,12 +104,12 @@ public class I2b2_Extractor {
 		        I2b2_2014_Format infile = new I2b2_2014_Format(tmp,entry.getName());
 		        Iterator<Record> rit = infile.getRecords();
 		        while (rit.hasNext()) {
-		        	CommonFormatConverter.get().writeToCoNLL_2003(rit.next(),out);
+		        	new CommonFormatConverter().toCoNLL_2003(rit.next());
 		        }
 		        out.flush();
 		    }
 		}
-	}
+	}*/
 	
 	
 
