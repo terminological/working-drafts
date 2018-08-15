@@ -1,6 +1,7 @@
 package uk.co.terminological.deid;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.stanford.nlp.util.StringUtils;
 import uk.co.terminological.datatypes.FluentList;
@@ -14,6 +15,16 @@ public class BRATFormat {
 	String documentText;
 	FluentList<Annotation> standoffAnnotations = FluentList.empty();
 	String id;
+	
+	transient FluentMap<Class<? extends Annotation>, Integer> counts = FluentMap.empty();
+	transient Map<Class<? extends Annotation>,String> prefixes = FluentMap.create(Class<Annotation>.class, String.class)
+			.and(TextBoundAnnotation.class, "T")
+			.and(EventAnnotation.class, "E")
+			.and(RelationAnnotation.class, "R")
+			.and(EquivalenceAnnotation.class, "*")
+			.and(AttributeAnnotation.class, "M")
+			.and(NormalisedAnnotation.class, "N")
+			.and(NoteAnnotation.class, "#");
 	
 	public static BRATFormat create(String text, String id) {
 		BRATFormat out = new BRATFormat();
@@ -33,20 +44,21 @@ public class BRATFormat {
 	
 	
 	public BRATFormat withAnnotation(Annotation ann) {
-		standoffAnnotations.add(ann);
+		standoffAnnotations.add(assignId(ann));
 		return this;
+	}
+	
+	private <X extends Annotation> X assignId(X ann) {
+		Integer tmp = counts.get(ann.getClass());
+		
+		tmp = (tmp == null ? 1 : tmp);
+		ann.id = prefixes.get(ann.getClass())+tmp;
+		counts.put(ann.getClass(), tmp+1);
+		return ann;
 	}
 	
 	public static abstract class Annotation {
 		String id;
-		
-		static FluentMap<Class<? extends Annotation>, Integer> counts = FluentMap.empty();
-		static <X extends Annotation> void assignId(X ann, String prefix) {
-			Integer tmp = counts.get(ann.getClass());
-			tmp = (tmp == null ? 1 : tmp);
-			ann.id = prefix+tmp;
-			counts.put(ann.getClass(), tmp+1);
-		}
 		
 		<X,Y> String join(List<X> k, List<Y> v, String sep, String sep2) {
 			StringBuilder tmp = new StringBuilder();
@@ -59,7 +71,6 @@ public class BRATFormat {
 		
 		public static TextBoundAnnotation textBound(String type,int start,int end,String text) {
 			TextBoundAnnotation out = new TextBoundAnnotation();
-			assignId(out,"T");
 			out.type = type;
 			out.start.add(start);
 			out.end.add(end);
@@ -69,7 +80,6 @@ public class BRATFormat {
 		
 		public static EventAnnotation event(String role, TextBoundAnnotation trigger) {
 			EventAnnotation out = new EventAnnotation();
-			assignId(out, "E");
 			out.role.add(role);
 			out.triggerId.add(trigger.id);
 			return out;
@@ -85,7 +95,6 @@ public class BRATFormat {
 		
 		public static NoteAnnotation note(String type, Annotation ann, String comment) {
 			NoteAnnotation out = new NoteAnnotation();
-			assignId(out,"#");
 			out.type = type;
 			out.targetId = ann.id;
 			out.comment = comment;
