@@ -146,11 +146,18 @@ public class FileUtils {
 
 		private Path path;
 		private FilenameFilter filter;
+		Function<Path,String> nameGenerator;
+		Function<Path,String> typeGenerator;
 
-		public DirectoryScanner(Path directory, FilenameFilter filter) {
+		public DirectoryScanner(Path directory, FilenameFilter filter,
+				Function<Path,String> nameGenerator,
+				Function<Path,String> typeGenerator
+				) {
 			super(FluentEvents.Metadata.forGenerator(directory.toString(), "DIRECTORY_SCANNER"));
 			this.path = directory;
 			this.filter = filter;
+			this.nameGenerator = (nameGenerator == null ? (path -> path.toString()): nameGenerator);
+			this.typeGenerator = (typeGenerator == null ? (path -> type(path)): typeGenerator);
 		}
 
 		@Override
