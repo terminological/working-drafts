@@ -12,8 +12,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
 
-import com.sun.tools.doclets.internal.toolkit.builders.AbstractBuilder.Context;
-
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pipestream.FileUtils.DeferredInputStream;
