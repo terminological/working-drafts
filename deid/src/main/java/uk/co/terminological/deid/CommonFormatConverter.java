@@ -37,11 +37,6 @@ public class CommonFormatConverter {
 		return pipeline;
 	}
 	
-	
-	CommonFormatConverter() {
-		
-	}
-	
 	public CoNLL_2003.List toCoNLL_2003(CommonFormat.Record record) {
 		
 		CoreDocument document = new CoreDocument(record.documentText);
@@ -74,7 +69,7 @@ public class CommonFormatConverter {
 	    return list;
 	}
 	
-	public CommonFormat.Record fromI2B2_2014_Xml(Xml xml, String id) throws XmlException {
+	public Record fromI2B2_2014_Xml(Xml xml, String id) throws XmlException {
 		CommonFormat.Record record = new CommonFormat.Record();
 		record.id = id;
 		record.documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
@@ -119,6 +114,19 @@ public class CommonFormatConverter {
 			records.add(record);
 		}
 		return records;
+	}
+	
+	public BRATFormat toBRATFormat(Record record) {
+		BRATFormat out = BRATFormat.create(record.documentText);
+		record.spans.forEach(
+				span -> out.withAnnotation(
+						BRATFormat.Annotation.textBound(
+								span.type, span.start, span.end, 
+								record.documentText.substring(span.start, span.end)
+								))
+				);
+		return out;
+		
 	}
 	
 }

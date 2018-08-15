@@ -46,7 +46,7 @@ public class BRATFormat {
 			return tmp.toString();
 		}
 		
-		public static TextBoundAnnotation textBound(long id,String type,int start,int end,String text) {
+		public static TextBoundAnnotation textBound(String type,int start,int end,String text) {
 			TextBoundAnnotation out = new TextBoundAnnotation();
 			assignId(out,"T");
 			out.type = type;

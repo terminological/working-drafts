@@ -13,6 +13,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.log4j.BasicConfigurator;
 
 import uk.co.terminological.deid.CommonFormat.Record;
+import uk.co.terminological.deid.CommonFormat.Records;
 import uk.co.terminological.deid.CommonFormat.Span;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
@@ -30,65 +31,85 @@ import uk.co.terminological.pipestream.Handlers.Processor;
 
 
 public class I2B2Experiment {
+
+
+	//Event types
+	public static final String ARCHIVE_FILE_FOUND = "ARCHIVE_FILE_FOUND";
+	public static final String ARCHIVE_FILE_READY = "ARCHIVE_FILE_READY";
+	public static final String XML_READY = "XML_READY";
+	private static final String COMMON_FORMAT_READY = "COMMON_FORMAT_READY";
+	
+	//Handler names
+	private static final String ARCHIVE_LOADER = "ARCHIVE_LOADER";
+	private static final String TAR_TO_XML = "TAR_TO_XML";
+	private static final String I2B2_2014_TO_COMMON = "I2B2_2014_TO_COMMON";
+	
+	//Event names
+	private static final String I2B2_2014_FORMAT = "I2B2_2014_FORMAT";
+	
+	//Event metadata key names
+	private static final String XML_FILENAME = "XML_FILENAME";
+	private static final String I2B2_2006_TO_COMMON = null;
+	private static final String I2B2_2006_FORMAT = null;
 	
 	
 	public static void main(String args[]) {
-		
+
 		BasicConfigurator.configure();
-		
-		
-		
+
+
+
 	}
-	
-	
+
+
 	DirectoryScanner zipFinder(Path directory, String zipType) {
 		return Generators.directoryScanner(directory, 
 				file -> (file.getAbsolutePath().endsWith(".tar.gz") ||
 						file.getAbsolutePath().endsWith(".zip")), 
-				zipType, "ARCHIVE_FILE_FOUND");
+				zipType, ARCHIVE_FILE_FOUND);
 	}
-	
+
 	Adaptor<Path,DeferredInputStream<ArchiveInputStream>> zipLoader(Path file, String zipType) {
-		return Handlers.adaptor("ARCHIVE_LOADER",
-				
-				Predicates.matchNameAndType(zipType, "ARCHIVE_FILE_FOUND"), 
-	
+		return Handlers.adaptor(ARCHIVE_LOADER,
+
+				Predicates.matchNameAndType(zipType, ARCHIVE_FILE_FOUND), 
+
 				p -> DeferredInputStream.create(p, 
-							p2 -> new TarArchiveInputStream(
-									new GzipCompressorInputStream(
-											Files.newInputStream(p2)))),
-					
+						p2 -> new TarArchiveInputStream(
+								new GzipCompressorInputStream(
+										Files.newInputStream(p2)))),
+
 				name -> zipType,
-				type -> "ARCHIVE_FILE_READY");
+				type -> ARCHIVE_FILE_READY);
 	}
 
 	Processor<DeferredInputStream<ArchiveInputStream>> xmlFromZip(String zipType, String xmlType) {
-		return Handlers.processor("TAR_TO_XML",
-				Predicates.matchNameAndType(zipType, "ARCHIVE_FILE_READY"), 
+		return Handlers.processor(TAR_TO_XML,
+				Predicates.matchNameAndType(zipType, ARCHIVE_FILE_READY), 
 				(zip, context) -> {
 					ArchiveInputStream ais = zip.get();
 					ArchiveEntry entry;
 					try {
 						while ((entry = ais.getNextEntry()) != null) {
-						    if (entry.getName().endsWith(".xml")) {
-						    	InputStream tmp = new FilterInputStream(ais) {
-						            @Override
-						            public void close() throws IOException {}
-						        };
-						        Xml out;
+							if (entry.getName().endsWith(".xml")) {
+								InputStream tmp = new FilterInputStream(ais) {
+									@Override
+									public void close() throws IOException {}
+								};
+								Xml out;
 								try {
 									out = Xml.fromStream(tmp);
 									context.send(
-								        	Events.namedTypedEvent(out, 
-								        			xmlType, 
-								        			"XML_READY").put("FILENAME", entry.getName())
-								        		);
+											Events.namedTypedEvent(out, 
+													xmlType, 
+													XML_READY).put(XML_FILENAME, entry.getName())
+											);
 								} catch (XmlException e) {
 									context.getEventBus().logError("Cannot parse XML file:" +entry.getName());
 									context.getEventBus().handleException(e);
 								}
-						        
-						    }
+
+							}
 						}
 					} catch (IOException e) {
 						context.getEventBus().logError("Cannot read next zip entry");
@@ -96,25 +117,39 @@ public class I2B2Experiment {
 					}
 				});
 	}
-	
+
 	EventProcessor<Xml> commonFormatFrom2014Xml() {
-		return Handlers.eventProcessor("I2B2_2014_TO_COMMON", 
-				Predicates.matchNameAndType("I2B2_2014_FORMAT", "XML_READY"), 
+		return Handlers.eventProcessor(I2B2_2014_TO_COMMON, 
+				Predicates.matchNameAndType(I2B2_2014_FORMAT, XML_READY), 
 				(event, context) -> {
 					try {
-					Xml xml = event.get();
-					Record record = new Record();
-					record.id = event.get("FILENAME").toString();
-					record.documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
-					for (XmlElement tags: xml.doXpath("/deIdi2b2/TAGS/*").getMany(XmlElement.class)) {
-						record.spans.add(
-							Span.from(
-								Integer.parseInt(tags.getAsElement().getAttribute("start")),
-								Integer.parseInt(tags.getAsElement().getAttribute("end")), 
-								tags.getName(),
-								tags.getAsElement().getAttribute("TYPE")));
+						Xml xml = event.get();
+						Record record = 
+								context.getEventBus().getApi(CommonFormatConverter.class).get()
+								.fromI2B2_2014_Xml(xml, event.get(XML_FILENAME).toString());
+						context.send(
+								Events.namedTypedEvent(record, 
+										record.id, 
+										COMMON_FORMAT_READY));
+					} catch (XmlException e) {
+						context.getEventBus().handleException(e);
 					}
-					context.send(Events.namedTypedEvent(record, record.id, "COMMON_FORMAT_AVAILABLE"));
+				});
+	}
+
+	EventProcessor<Xml> commonFormatFrom2006Xml() {
+		return Handlers.eventProcessor(I2B2_2006_TO_COMMON, 
+				Predicates.matchNameAndType(I2B2_2006_FORMAT, XML_READY), 
+				(event, context) -> {
+					try {
+						Xml xml = event.get();
+						Records records = 
+								context.getEventBus().getApi(CommonFormatConverter.class).get()
+								.fromI2B2_2006_Xml(xml);
+						records.forEach(
+								r -> context.send(
+									Events.namedTypedEvent(r,r.id, 
+										COMMON_FORMAT_READY)));
 					} catch (XmlException e) {
 						context.getEventBus().handleException(e);
 					}
@@ -122,5 +157,5 @@ public class I2B2Experiment {
 	}
 	
 	
-	
+
 }
