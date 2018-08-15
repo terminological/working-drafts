@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -63,11 +64,22 @@ public class I2B2Experiment {
 	public static void main(String args[]) {
 
 		BasicConfigurator.configure();
-		Path INPUT_DIR_1;
+		Path inputDir1 = Paths.get("/media/data/Data/i2b2/2014Track1");
+		Path inputDir2 = Paths.get("/media/data/Data/i2b2/2006Set1B");
+		Path outputDir = Paths.get("/media/data/Data/i2b2/brat");;
 		EventBus.get()
 			.withApi(new CommonFormatConverter())
-			.withEventGenerator(zipFinder(INPUT_DIR_1,I2B2_2014_FORMAT))
-			
+			.withEventGenerator(zipFinder(inputDir1,I2B2_2014_FORMAT))
+			.withEventGenerator(zipFinder(inputDir2,I2B2_2006_FORMAT))
+			.withHandler(zipLoader(I2B2_2014_FORMAT))
+			.withHandler(zipLoader(I2B2_2006_FORMAT))
+			.withHandler(xmlFromZip(I2B2_2014_FORMAT,I2B2_2014_FORMAT))
+			.withHandler(xmlFromZip(I2B2_2006_FORMAT,I2B2_2006_FORMAT))
+			.withHandler(commonFormatFrom2006Xml())
+			.withHandler(commonFormatFrom2014Xml())
+			.withHandler(bratFormatFromCommon())
+			.withHandler(bratFormatWriter(outputDir))
+			.execute();
 
 
 	}
@@ -80,7 +92,7 @@ public class I2B2Experiment {
 				zipType, ARCHIVE_FILE_FOUND);
 	}
 
-	Adaptor<Path,DeferredInputStream<ArchiveInputStream>> zipLoader(Path file, String zipType) {
+	static Adaptor<Path,DeferredInputStream<ArchiveInputStream>> zipLoader(String zipType) {
 		return Handlers.adaptor(ARCHIVE_LOADER,
 
 				Predicates.matchNameAndType(zipType, ARCHIVE_FILE_FOUND), 
@@ -94,7 +106,7 @@ public class I2B2Experiment {
 				type -> ARCHIVE_FILE_READY);
 	}
 
-	Processor<DeferredInputStream<ArchiveInputStream>> xmlFromZip(String zipType, String xmlType) {
+	static Processor<DeferredInputStream<ArchiveInputStream>> xmlFromZip(String zipType, String xmlType) {
 		return Handlers.processor(TAR_TO_XML,
 				Predicates.matchNameAndType(zipType, ARCHIVE_FILE_READY), 
 				(zip, context) -> {
@@ -129,7 +141,7 @@ public class I2B2Experiment {
 				});
 	}
 
-	EventProcessor<Xml> commonFormatFrom2014Xml() {
+	static EventProcessor<Xml> commonFormatFrom2014Xml() {
 		return Handlers.eventProcessor(I2B2_2014_TO_COMMON, 
 				Predicates.matchNameAndType(I2B2_2014_FORMAT, XML_READY), 
 				(event, context) -> {
@@ -148,7 +160,7 @@ public class I2B2Experiment {
 				});
 	}
 
-	EventProcessor<Xml> commonFormatFrom2006Xml() {
+	static EventProcessor<Xml> commonFormatFrom2006Xml() {
 		return Handlers.eventProcessor(I2B2_2006_TO_COMMON, 
 				Predicates.matchNameAndType(I2B2_2006_FORMAT, XML_READY), 
 				(event, context) -> {
@@ -167,7 +179,7 @@ public class I2B2Experiment {
 				});
 	}
 	
-	Adaptor<CommonFormat.Record, BRATFormat> bratFormatFromCommon() {
+	static Adaptor<CommonFormat.Record, BRATFormat> bratFormatFromCommon() {
 		return Handlers.adaptor(COMMON_FORMAT_TO_BRAT, 
 				Predicates.matchType(COMMON_FORMAT_RECORD_READY), 
 				(record, context) -> context.getEventBus().getApi(CommonFormatConverter.class).get()
@@ -177,7 +189,7 @@ public class I2B2Experiment {
 				);
 	}
 	
-	Terminal<BRATFormat> bratFormatWriter(Path directory) {
+	static Terminal<BRATFormat> bratFormatWriter(Path directory) {
 		return Handlers.consumer(BRAT_FORMAT_WRITER, 
 				Predicates.matchType(BRAT_FORMAT_READY), 
 				brat -> {

@@ -11,7 +11,7 @@ public class Config {
 	};
 	
 	static String[] TESTFILE = {
-			HOME+"/Data/i2b2/2014Track1/training-PHI-Gold-Set1.tar.gz"
+			HOME+"/Data/i2b2/2014Track1/testing-PHI-Gold-Set1.tar.gz"
 	};
 	
 	static String TRAINING_FILE = HOME+"/Data/i2b2/train.txt";
