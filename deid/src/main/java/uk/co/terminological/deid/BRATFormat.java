@@ -18,6 +18,7 @@ public class BRATFormat {
 	public static BRATFormat create(String text, String id) {
 		BRATFormat out = new BRATFormat();
 		out.documentText = text;
+		out.id = id;
 		return out;
 	}
 	
