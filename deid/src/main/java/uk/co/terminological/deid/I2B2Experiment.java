@@ -84,6 +84,7 @@ public class I2B2Experiment {
 			.withHandler(commonFormatFrom2014Xml())
 			.withHandler(bratFormatFromCommon())
 			.withHandler(bratFormatWriter(outputDir))
+			.debugMode()
 			.execute();
 
 

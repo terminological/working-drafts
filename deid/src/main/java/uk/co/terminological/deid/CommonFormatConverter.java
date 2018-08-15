@@ -90,7 +90,7 @@ public class CommonFormatConverter {
 		Records records = new Records();
 		for (XmlElement el : xml.doXpath("/ROOT/RECORD").getMany(XmlElement.class)) {
 			Record record = new Record();
-			record.id = el.getAttributeValue("ID");
+			record.id = filename+"/"+el.getAttributeValue("ID");
 			record.documentText = el.getAsElement().getTextContent();
 			StringBuilder docText = new StringBuilder();
 			for (XmlNode phiEl : el.walkTree()) {

@@ -39,9 +39,16 @@ public class EventBus {
 	
 	Map<Class<?>,Object> apis = new HashMap<Class<?>, Object>();
 	
+	boolean rethrowErrors = false;
+	
 	public EventBus withApi(Object api) {
 		this.apis.put(api.getClass(),api);
 		log.info("Added api: "+api.getClass().getCanonicalName());
+		return this;
+	}
+	
+	public EventBus debugMode() {
+		rethrowErrors = true;
 		return this;
 	}
 	
