@@ -17,7 +17,7 @@ public class BRATFormat {
 	String id;
 	
 	transient FluentMap<Class<? extends Annotation>, Integer> counts = FluentMap.empty();
-	transient Map<Class<? extends Annotation>,String> prefixes = FluentMap.create(Class<Annotation>.class, String.class)
+	transient Map<Class<? extends Annotation>,String> prefixes = FluentMap.create(Class<? extends Annotation>.class, String.class)
 			.and(TextBoundAnnotation.class, "T")
 			.and(EventAnnotation.class, "E")
 			.and(RelationAnnotation.class, "R")
