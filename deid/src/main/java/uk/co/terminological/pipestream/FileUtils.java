@@ -70,7 +70,6 @@ public class FileUtils {
 				public Y pathToStream(Path path) throws Exception {
 					return generator.apply(path);
 				}
-				
 			};
 		}
 	}
@@ -96,14 +95,11 @@ public class FileUtils {
 	
 	
 	public static class FileChangedEvent extends Event.Default<Path> {
-		
 		FileChangedEvent(Path path) {
 				super(FluentEvents.Metadata.forEvent(path, 
 						p -> p.toString(),
 						p -> type(p)),path);
 		}
-		
-		
 	}
 	
 	static String type(Path p) {
