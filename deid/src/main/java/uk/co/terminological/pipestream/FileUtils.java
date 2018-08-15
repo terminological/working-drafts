@@ -52,8 +52,8 @@ public class FileUtils {
 		}
 		public X get() {
 			try {
-				return pathToStream(path)
-			} catch (IOException e) {
+				return pathToStream(path);
+			} catch (Exception e) {
 				EventBus.get().handleException(e);
 				return null;
 			}
@@ -64,7 +64,7 @@ public class FileUtils {
 		public String toString() {return path.toString();}
 		public int hashCode() {return path.hashCode();}
 		
-		public static <Y extends InputStream> DeferredInputStream<Y> create(Path path, FunctionWithException<Path,Y> generator) {
+		public static <Y extends InputStream> DeferredInputStream<Y> create(Path path, FunctionWithException<Path,Y,Exception> generator) {
 			return new DeferredInputStream<Y>(path) {
 				@Override
 				public Y pathToStream(Path path) throws Exception {
@@ -82,7 +82,9 @@ public class FileUtils {
 		
 		public Reader(Path file, String key) {
 			super(FluentEvents.Metadata.forGenerator(file.toString(),"FILE_READER"));
-			out = new InputStreamAvailableEvent(new DeferredInputStream<InputStream>(file), key);
+			
+			out = new InputStreamAvailableEvent(
+					DeferredInputStream.create(file, path -> Files.newInputStream(file)), key);
 		}
 
 		@Override
