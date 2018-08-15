@@ -41,10 +41,10 @@ public class Handlers {
 
 		@Override
 		public void handle(Event<X> event) {
-			process(event.get(), this::send);
+			process(event.get(), this);
 		}
 		
-		public abstract void process(X x, Consumer<Event<?>> dispatch);
+		public abstract void process(X x, Processor<X> context);
 
 
 	}
