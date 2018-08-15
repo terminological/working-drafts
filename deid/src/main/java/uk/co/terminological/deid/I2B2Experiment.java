@@ -119,7 +119,6 @@ public class I2B2Experiment {
 						context.getEventBus().handleException(e);
 					}
 				});
-		
 	}
 	
 	

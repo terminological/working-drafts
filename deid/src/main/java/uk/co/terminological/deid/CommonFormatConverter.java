@@ -22,28 +22,28 @@ import uk.co.terminological.fluentxml.XmlText;
 public class CommonFormatConverter {
 
 	StanfordCoreNLP pipeline;
-	
 	static Logger log = LoggerFactory.getLogger(CommonFormatConverter.class);
-	public static CommonFormatConverter singleton;
 	
-	public static CommonFormatConverter get() {
-		if (singleton == null) singleton = new CommonFormatConverter();
-		return singleton;
+	StanfordCoreNLP pipeline() {
+		if (pipeline == null) {
+			Properties props = new Properties();
+			props.setProperty("annotators", "tokenize,ssplit,pos");
+			pipeline = new StanfordCoreNLP(props);
+		}
+		return pipeline;
 	}
 	
+	
 	CommonFormatConverter() {
-		Properties props = new Properties();
-	    props.setProperty("annotators", "tokenize,ssplit,pos");
-	    pipeline = new StanfordCoreNLP(props);
+		
 	}
 	
 	public CoNLL_2003.List toCoNLL_2003(CommonFormat.Record record) {
 		
 		CoreDocument document = new CoreDocument(record.documentText);
-	    pipeline.annotate(document);
+	    pipeline().annotate(document);
 	    
 	    CoNLL_2003.List list = new CoNLL_2003.List(); 
-	    
 	    // find existing tags examples
 	    Iterator<Span> typeIt = record.spans.iterator();
 	    Span span = typeIt.next();
@@ -70,7 +70,7 @@ public class CommonFormatConverter {
 	    return list;
 	}
 	
-	public CommonFormat.Record fromI2B22014Xml(Xml xml, String id) throws XmlException {
+	public CommonFormat.Record fromI2B2_2014_Xml(Xml xml, String id) throws XmlException {
 		CommonFormat.Record record = new CommonFormat.Record();
 		record.id = id;
 		record.documentText = xml.doXpath("/deIdi2b2/TEXT[1]/text()").getOne(XmlText.class).getValue();
