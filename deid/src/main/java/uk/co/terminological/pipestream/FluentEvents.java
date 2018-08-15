@@ -12,7 +12,6 @@ import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.FileUtils.FileWriter;
-import uk.co.terminological.pipestream.FileUtils.NamingStrategy;
 import uk.co.terminological.pipestream.Handlers.Adaptor;
 import uk.co.terminological.pipestream.Handlers.EventProcessor;
 import uk.co.terminological.pipestream.Handlers.Processor;
