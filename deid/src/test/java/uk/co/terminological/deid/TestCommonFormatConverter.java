@@ -12,7 +12,7 @@ public class TestCommonFormatConverter {
 		CommonFormat.Record r = rec.stream().findFirst().get();
 		r.spans.forEach(span -> 
 				System.out.println(
-						span.start+"-"+span.start+" "+span.type+r.documentText.substring(span.start, span.end))
+						span.start+"-"+span.start+" "+span.type+":"+r.documentText.substring(span.start, span.end))
 				);
 
 	}
