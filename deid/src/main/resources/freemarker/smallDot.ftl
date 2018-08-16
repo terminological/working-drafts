@@ -1,16 +1,12 @@
 #!/usr/bin/dot -O -Tpng
 digraph ${name} {
 
-<#list model.uniqueEntryById as node>
+<#list model.uniqueEntryByType as node>
 ${node.id} [shape="Mrecord" label=<<table><tr>${node.type}</tr><tr>${node.name}</tr></table>>]
 </#list>
 
-<#list model.produced as produced>
-${produced.source.id} -> ${produced.target.id}
-</#list>
-
-<#list model.consumed as consumed>
-${consumed.source.id} -> ${consumed.target.id}
+<#list model.uniquePairAndCount as entry>
+${entry.first.source.id} -> ${entry.first.target.id} [label = ${entry.second}]
 </#list>
 
 }
