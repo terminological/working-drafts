@@ -2,7 +2,7 @@ package uk.co.terminological.deid;
 
 import uk.co.terminological.datatypes.FluentList;
 
-//TODO: proper java pojo.
+//TODO: proper java pojo. better interoperability with BRATFormat.
 public class CommonFormat {
 
 	public static class Records extends FluentList<Record> {}
