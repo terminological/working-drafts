@@ -351,7 +351,7 @@ public class FluentEvents {
 		
 		//TODO: a freemarker based writer might be useful here?
 		//TODO: writing to a stream output / like the collector implementation
-		//TODO: Collector: partially met dependencies
+		//TODO: Collector: partially met dependencies?
 		
 	}
 	

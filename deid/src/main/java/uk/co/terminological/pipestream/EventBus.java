@@ -18,6 +18,7 @@ import uk.co.terminological.datatypes.TupleList;
 import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 
+//TODO: Discuss whether worth writing this up as a architecture for data processing.
 //TODO: better error handling, e.g. retry on error.
 //TODO: file watcher that reports changes since last processing time.
 //TODO: some form of execution success status reported to the bus from the handlers
