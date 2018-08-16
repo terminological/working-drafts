@@ -8,13 +8,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +21,6 @@ import freemarker.template.TemplateExceptionHandler;
 import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.datatypes.TupleList;
-import uk.co.terminological.pipestream.Event.EventMetadata;
-import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 
 
 
@@ -81,6 +75,17 @@ public class ExecutionHistoryUtils implements EventBusAware {
 		log.info("Ending Graphviz...");
 	}
 
+	//TODO: This just about works but there are issues
+	//firstly there is a mix up between the ideas of an instance of the processor (usually 1)
+	//versus the instance of a message which means that we may want to be able to 
+	//display instances of processors and counts of messages. 
+	//I think this might be better by just putting everything into a flat list and
+	//doing SQL like operations on it.
+	
+	//This distinction is not well made throughout this framework and there is no separation between'
+	//the concepts of procesor name and message name... This could be achieved with the subtypes of metadata.
+	
+	
 	public static class Model {
 
 		List<Pair> produced = new ArrayList<>();
@@ -180,29 +185,12 @@ public class ExecutionHistoryUtils implements EventBusAware {
 				m = metadata;
 			}
 
-			public String getId() {return "I"+Integer.toHexString(m.hashCode());}
-			public String getTypeId() {return "I"+Integer.toHexString(m.typeDescription.hashCode());}
+			public String getId() {return "instance_"+Integer.toHexString(m.hashCode());}
+			public String getTypeId() {return "type_"+Integer.toHexString(m.typeDescription.hashCode());}
 			public String getName() {return m.name;}
 			public String getType() {return m.typeDescription;}
 
-			/*@Override
-			public int hashCode() {
-				return new HashCodeBuilder().append(m.name).append(m.typeDescription).build();
-			}
-			@Override
-			public boolean equals(Object obj) {
-				if (obj == null) { return false; }
-				if (obj == this) { return true; }
-				if (obj.getClass() != getClass()) {
-					return false;
-				}
-				Entry rhs = (Entry) obj;
-				return new EqualsBuilder()
-						.appendSuper(super.equals(obj))
-						.append(m.name, rhs.m.name)
-						.append(m.typeDescription, rhs.m.typeDescription)
-						.isEquals();
-			}*/
+			
 		}
 
 	}
