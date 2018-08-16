@@ -13,6 +13,7 @@ import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlNode;
 import uk.co.terminological.fluentxml.XmlText;
 
+@Deprecated
 public class I2b2_2006_Format {
 
 	Xml xml;

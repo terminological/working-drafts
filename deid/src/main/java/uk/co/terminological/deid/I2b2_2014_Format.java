@@ -17,6 +17,9 @@ import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlText;
 
+@Deprecated
+//TODO: this is mostly now in the CommonFormatConverter but elementSubtypes might be useful
+//
 public class I2b2_2014_Format {
 
 	static Map<String,? extends List<String>> elementSubtypes = FluentMap
