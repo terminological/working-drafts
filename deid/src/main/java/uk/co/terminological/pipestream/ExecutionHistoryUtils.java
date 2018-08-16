@@ -180,8 +180,8 @@ public class ExecutionHistoryUtils implements EventBusAware {
 				m = metadata;
 			}
 
-			public String getId() {return Integer.toHexString(m.hashCode());}
-			public String getTypeId() {return Integer.toHexString(m.typeDescription.hashCode());}
+			public String getId() {return "I"+Integer.toHexString(m.hashCode());}
+			public String getTypeId() {return "I"+Integer.toHexString(m.typeDescription.hashCode());}
 			public String getName() {return m.name;}
 			public String getType() {return m.typeDescription;}
 
