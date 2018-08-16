@@ -69,7 +69,7 @@ public class I2B2Experiment {
 	
 	
 	
-	public static void main(String args[]) {
+	public static void main(String args[]) throws IOException {
 
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.DEBUG);
@@ -94,6 +94,7 @@ public class I2B2Experiment {
 			.debugMode()
 			.execute()
 			.sendShutdownMessage()
+			.writeExecutionGraphs(outputDir)
 			.shutdown();
 
 
