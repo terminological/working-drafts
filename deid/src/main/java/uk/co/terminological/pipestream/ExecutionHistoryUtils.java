@@ -190,8 +190,8 @@ public class ExecutionHistoryUtils implements EventBusAware {
 				target = new Entry(t.getSecond());
 			}
 
-			Entry getSource() {return source;}
-			Entry getTarget() {return target;}
+			public Entry getSource() {return source;}
+			public Entry getTarget() {return target;}
 
 
 
