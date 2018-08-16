@@ -58,6 +58,7 @@ public class I2B2Experiment {
 	//Event metadata key names
 	private static final String XML_FILENAME = "XML_FILENAME";
 	private static final String BRAT_FORMAT_WRITER = null;
+	private static final String COMMON_FORMAT_TYPE_AGGREGATOR = null;
 	
 	
 	
@@ -86,7 +87,8 @@ public class I2B2Experiment {
 			.withHandler(bratFormatWriter(outputDir))
 			.debugMode()
 			.execute()
-			.sendShutdownMessage();
+			.sendShutdownMessage()
+			.shutdown();
 
 
 	}
@@ -225,4 +227,14 @@ public class I2B2Experiment {
 				});
 	}
 
+	static EventProcessor<Xml> commonFormatAggregator() {
+		return Handlers.eventProcessor(COMMON_FORMAT_TYPE_AGGREGATOR, 
+				Predicates.matchType(COMMON_FORMAT_RECORD_READY).or(
+						Predicates.shutdown()), 
+				(event, context) -> {
+					
+				});
+	}
+	
 }
+	
