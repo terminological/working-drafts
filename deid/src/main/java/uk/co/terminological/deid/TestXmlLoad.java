@@ -42,6 +42,7 @@ import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlNode;
 import uk.co.terminological.fluentxml.XmlText;
 
+
 public class TestXmlLoad {
 
 	public static void main(String[] args) throws XmlException, IOException, ClassCastException, ClassNotFoundException {
@@ -83,6 +84,8 @@ public class TestXmlLoad {
 	    // props.setProperty("coref.algorithm", "neural");
 	    // build pipeline
 	    // StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+		
+		//TODO: this is set up to use a pre trained classifier for NER. Need to build this into a proper experiment.  
 	    Properties crfprops = StringUtils.propFileToProperties(PROP);
 		crfprops.setProperty("serializeTo", OUTFILE);
 		// props.setProperty("trainFile", TRAINING_FILE);
