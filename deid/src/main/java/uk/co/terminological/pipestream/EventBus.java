@@ -180,7 +180,7 @@ public class EventBus {
 		return this;
 	}
 	
-	public EventBus writeExecutionGraphs(Path directory) {
+	public EventBus writeExecutionGraphs(Path directory) throws IOException {
 		ExecutionHistoryUtils e = new ExecutionHistoryUtils(directory);
 		e.generate(ExecutionHistoryUtils.BIG_DOT_GRAPH, directory.resolve("large.dot"), "1");
 		e.generate(ExecutionHistoryUtils.SMALL_DOT_GRAPH, directory.resolve("small.dot"), "2");
