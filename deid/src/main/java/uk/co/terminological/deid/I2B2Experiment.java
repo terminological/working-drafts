@@ -250,7 +250,7 @@ public class I2B2Experiment {
 					
 					StringBuilder toTsv = new StringBuilder();
 					counter.entrySet().stream().forEach( (kv) -> {
-						toTsv.append(kv.getKey()+"\t"+kv.getKey()+"\n");
+						toTsv.append(kv.getKey()+"\t"+kv.getValue()+"\n");
 					});
 					EventSerializer.TO_STRING_FILE_WRITER.write(
 							toTsv.toString(), file);
