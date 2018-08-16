@@ -199,6 +199,15 @@ public class FluentEvents {
 			};
 		}
 		
+		public static Predicate<Event<?>> shutdown() {
+			return new Predicate<Event<?>>() {
+				@Override
+				public boolean test(Event<?> t) {
+					return t instanceof Event.Shutdown;
+				}
+			};
+		}
+		
 		
 	}
 

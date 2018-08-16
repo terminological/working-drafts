@@ -35,7 +35,7 @@ public interface Event<Y> {
 		}
 	}
 
-	public static class ShutdownEvent implements Event<Void> {
+	public static class Shutdown implements Event<Void> {
 
 		@Override
 		public EventMetadata<Void> getMetadata() {

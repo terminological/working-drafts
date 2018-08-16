@@ -175,7 +175,7 @@ public class EventBus {
 	
 	public EventBus sendShutdownMessage() {
 		log.info("Starting eventBus generators");
-		
+		this.receive(new Event.Shutdown(), FluentEvents.Metadata.forGenerator("SYSTEM"));
 		return this;
 	}
 	
