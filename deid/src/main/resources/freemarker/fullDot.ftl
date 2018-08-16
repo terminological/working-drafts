@@ -2,7 +2,7 @@
 digraph ${name} {
 
 <#list model.uniqueEntryById as node>
-${node.id} [shape="Mrecord" label=<<table><tr>${node.type}</tr><tr>${(node.name)!"none"}</tr></table>>]
+${node.id} [shape="Mrecord" label="{${node.type}|${(node.name)!"NA"}}"]
 </#list>
 
 <#list model.produced as produced>
