@@ -18,6 +18,10 @@ import uk.co.terminological.datatypes.TupleList;
 import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 
+//TODO: better error handling, e.g. retry on error.
+//TODO: file watcher that reports changes since last processing time.
+//TODO: some form of execution success status reported to the bus from the handlers
+//TODO: execution failure (exception) report. auto serialise and replay messages that trigger failures.
 public class EventBus {       
 
 	//Thanks to: https://stackoverflow.com/questions/16106260/thread-safe-singleton-class/16106598#16106598
@@ -135,12 +139,8 @@ public class EventBus {
 		
 	};
 	
-	//TODO: generate a processing graph from handlers
-	// do as a pipeline?
-	// do as d3 graph?
-	
 	public void handleException(Exception e) {
-		// Some sort of error handling policy
+		//TODO: Some sort of error handling policy
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
 		e.printStackTrace(ps);
@@ -167,7 +167,8 @@ public class EventBus {
 		this.openResources.add(closeable);
 	};
 	
-	
+	//TODO: so this fires the whole graph execution but we would like to be able to run this as a daemon
+	//maybe use quartz for this.
 	public EventBus execute() {
 		log.info("Starting eventBus generators");
 		generators.parallelStream().forEach(g -> {while(g.execute()) {};});
@@ -182,7 +183,9 @@ public class EventBus {
 	
 	public EventBus writeExecutionGraphs(Path directory) throws IOException {
 		ExecutionHistoryUtils e = new ExecutionHistoryUtils(directory);
-		e.generate(ExecutionHistoryUtils.BIG_DOT_GRAPH, directory.resolve("large.dot"), "1");
+		//TODO: refine small dot graph in terms of different format for events versus handlers & SVG output
+		//TODO: freemind file for flat tsv export of data or json data for vis.js.
+		// e.generate(ExecutionHistoryUtils.BIG_DOT_GRAPH, directory.resolve("large.dot"), "1");
 		e.generate(ExecutionHistoryUtils.SMALL_DOT_GRAPH, directory.resolve("small.dot"), "2");
 		e.executeGraphviz(directory.resolve("small.dot"));
 		return this;
