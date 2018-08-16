@@ -35,7 +35,8 @@ public class ExecutionHistoryUtils implements EventBusAware {
 	Configuration cfg;
 	Logger log = LoggerFactory.getLogger(ExecutionHistoryUtils.class);
 
-	public static final String DOT_GRAPH = "dot.ftl";
+	public static final String BIG_DOT_GRAPH = "fullDot.ftl";
+	public static final String SMALL_DOT_GRAPH = "smallDot.ftl";
 	public static final String TSV = "tsv.ftl";
 
 	public ExecutionHistoryUtils(Path dir) {
