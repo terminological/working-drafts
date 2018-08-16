@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 
 import uk.co.terminological.datatypes.FluentMap;
 
-public class Handlers {
+public class HandlerTypes {
 
 	
 	public abstract static class Adaptor<X,Y> extends EventHandler.Default<Event<X>> {

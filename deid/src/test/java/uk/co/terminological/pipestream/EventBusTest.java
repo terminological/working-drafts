@@ -117,7 +117,7 @@ public class EventBusTest {
 
 	}
 
-	public static class TestStringToUpperEventHandler extends Handlers.Adaptor<String, String> {
+	public static class TestStringToUpperEventHandler extends HandlerTypes.Adaptor<String, String> {
 		@Override
 		public boolean canHandle(Event<?> event) {
 			return (event instanceof TestStringEvent);
@@ -130,7 +130,7 @@ public class EventBusTest {
 		}
 	}
 
-	public static class TestStringReplaceEventHandler extends Handlers.Adaptor<String, String> {
+	public static class TestStringReplaceEventHandler extends HandlerTypes.Adaptor<String, String> {
 		@Override
 		public boolean canHandle(Event<?> event) {
 			return (event instanceof TestStringNamedEvent
@@ -197,11 +197,11 @@ public class EventBusTest {
 		
 	}
 	
-	public static class TestStringCollector extends Handlers.Collector {
+	public static class TestStringCollector extends HandlerTypes.Collector {
 		
 		public TestStringCollector() {
 			super(FluentEvents.Metadata.forHandler("collector", "RANDOM_COLLECTOR"),
-				new Handlers.PredicateMap()
+				new HandlerTypes.PredicateMap()
 				.and("ONE", e -> e instanceof TestStringEvent && e.get().equals("one"))
 				.and("TWO", e -> e.get().equals("ONE")));
 		}

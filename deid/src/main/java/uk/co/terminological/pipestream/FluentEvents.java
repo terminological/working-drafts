@@ -12,10 +12,10 @@ import uk.co.terminological.pipestream.Event.EventMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.FileUtils.FileWriter;
-import uk.co.terminological.pipestream.Handlers.Adaptor;
-import uk.co.terminological.pipestream.Handlers.EventProcessor;
-import uk.co.terminological.pipestream.Handlers.Processor;
-import uk.co.terminological.pipestream.Handlers.Terminal;
+import uk.co.terminological.pipestream.HandlerTypes.Adaptor;
+import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
+import uk.co.terminological.pipestream.HandlerTypes.Processor;
+import uk.co.terminological.pipestream.HandlerTypes.Terminal;
 
 public class FluentEvents {
 

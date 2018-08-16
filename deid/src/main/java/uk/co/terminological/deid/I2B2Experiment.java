@@ -28,10 +28,10 @@ import uk.co.terminological.pipestream.FluentEvents.Events;
 import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
-import uk.co.terminological.pipestream.Handlers.Adaptor;
-import uk.co.terminological.pipestream.Handlers.EventProcessor;
-import uk.co.terminological.pipestream.Handlers.Processor;
-import uk.co.terminological.pipestream.Handlers.Terminal;
+import uk.co.terminological.pipestream.HandlerTypes.Adaptor;
+import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
+import uk.co.terminological.pipestream.HandlerTypes.Processor;
+import uk.co.terminological.pipestream.HandlerTypes.Terminal;
 
 
 public class I2B2Experiment {
