@@ -31,7 +31,6 @@ import uk.co.terminological.pipestream.FluentEvents.Events;
 import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
-import uk.co.terminological.pipestream.HandlerTypes;
 import uk.co.terminological.pipestream.HandlerTypes.Adaptor;
 import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
 import uk.co.terminological.pipestream.HandlerTypes.Processor;
