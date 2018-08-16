@@ -64,10 +64,8 @@ public class I2B2Experiment {
 	private static final String COMMON_FORMAT_TYPE_AGGREGATOR = "TYPE_COUNTER";
 	
 	
-	
-	
-	
-	
+	//TODO: Configuration file as API
+	//TODO: Normalise PHI types between 2 training sets
 	
 	public static void main(String args[]) throws IOException {
 

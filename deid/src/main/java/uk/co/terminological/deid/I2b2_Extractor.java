@@ -37,6 +37,8 @@ import uk.co.terminological.fluentxml.XmlException;
 /**
  * Extract sentences / tokenise and match up existing resources from  
  */
+//TODO: reimplement this as a EventBus experiment with some level of redesign to include the 2006 format content
+@Deprecated
 public class I2b2_Extractor {
 	
 	static Logger log = LoggerFactory.getLogger(I2b2_Extractor.class);

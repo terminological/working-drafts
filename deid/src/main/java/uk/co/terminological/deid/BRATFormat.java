@@ -10,6 +10,11 @@ import uk.co.terminological.datatypes.FluentMap;
 /*
  * http://brat.nlplab.org/standoff.html
  */
+//TODO: Brat format reader. Need to be able to input new annotations at a minimum and get those
+// to interoperate with StanfordNLP training formats
+//TODO: Brat configuration file writers. http://brat.nlplab.org/configuration.html. Can go in root
+
+
 public class BRATFormat {
 
 	String documentText;

@@ -42,7 +42,7 @@ import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlNode;
 import uk.co.terminological.fluentxml.XmlText;
 
-
+@Deprecated
 public class TestXmlLoad {
 
 	public static void main(String[] args) throws XmlException, IOException, ClassCastException, ClassNotFoundException {
