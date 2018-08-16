@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -179,6 +180,11 @@ public class EventBus {
 		return this;
 	}
 	
+	public EventBus writeExecutionGraphs(Path directory) {
+		
+		return this;
+	}
+	
 	public void shutdown() {
 		for (Closeable toClose: openResources) {
 			try {
@@ -189,4 +195,7 @@ public class EventBus {
 			}
 		}
 	}
+	
+	protected TupleList<Metadata, EventMetadata<?>> getEventHistory() {return eventHistory;}
+	protected TupleList<EventMetadata<?>,HandlerMetadata> getProcessingHistory() {return processingHistory;}
 }
