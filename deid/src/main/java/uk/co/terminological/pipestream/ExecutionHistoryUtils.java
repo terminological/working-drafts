@@ -207,7 +207,7 @@ public class ExecutionHistoryUtils implements EventBusAware {
 			public String getId() {return Integer.toHexString(m.hashCode());}
 			public String getTypeId() {return Integer.toHexString(this.hashCode());}
 			public String getName() {return m.name;}
-			public String getTypeDescription() {return m.typeDescription;}
+			public String getType() {return m.typeDescription;}
 
 			@Override
 			public int hashCode() {
