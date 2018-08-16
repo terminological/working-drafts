@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -16,10 +17,12 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.deid.CommonFormat.Record;
 import uk.co.terminological.deid.CommonFormat.Records;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.pipestream.Event;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventSerializer;
 import uk.co.terminological.pipestream.FileUtils.DeferredInputStream;
@@ -28,6 +31,7 @@ import uk.co.terminological.pipestream.FluentEvents.Events;
 import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
+import uk.co.terminological.pipestream.HandlerTypes;
 import uk.co.terminological.pipestream.HandlerTypes.Adaptor;
 import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
 import uk.co.terminological.pipestream.HandlerTypes.Processor;
@@ -57,8 +61,9 @@ public class I2B2Experiment {
 	
 	//Event metadata key names
 	private static final String XML_FILENAME = "XML_FILENAME";
-	private static final String BRAT_FORMAT_WRITER = null;
-	private static final String COMMON_FORMAT_TYPE_AGGREGATOR = null;
+	private static final String BRAT_FORMAT_WRITER = "BRAT_WRITER";
+	private static final String COMMON_FORMAT_TYPE_AGGREGATOR = "TYPE_COUNTER";
+	
 	
 	
 	
@@ -72,7 +77,8 @@ public class I2B2Experiment {
 		
 		Path inputDir1 = Paths.get("/media/data/Data/i2b2/2014Track1");
 		Path inputDir2 = Paths.get("/media/data/Data/i2b2/2006Set1B");
-		Path outputDir = Paths.get("/media/data/Data/i2b2/brat");;
+		Path outputDir = Paths.get("/media/data/Data/i2b2/brat");
+		String countFilename = "counts.txt";
 		EventBus.get()
 			.withApi(new CommonFormatConverter())
 			.withEventGenerator(tarGzFinder(inputDir1,I2B2_2014_FORMAT))
@@ -83,6 +89,7 @@ public class I2B2Experiment {
 			.withHandler(xmlFromArchive(I2B2_2006_FORMAT,I2B2_2006_FORMAT))
 			.withHandler(commonFormatFrom2006Xml())
 			.withHandler(commonFormatFrom2014Xml())
+			.withHandler(commonFormatAggregator(outputDir.resolve(countFilename)))
 			.withHandler(bratFormatFromCommon())
 			.withHandler(bratFormatWriter(outputDir))
 			.debugMode()
@@ -227,13 +234,47 @@ public class I2B2Experiment {
 				});
 	}
 
-	static EventProcessor<Xml> commonFormatAggregator() {
-		return Handlers.eventProcessor(COMMON_FORMAT_TYPE_AGGREGATOR, 
-				Predicates.matchType(COMMON_FORMAT_RECORD_READY).or(
-						Predicates.shutdown()), 
-				(event, context) -> {
+	static EventProcessor<CommonFormat.Record> commonFormatAggregator(Path file) {
+		return new EventProcessor<CommonFormat.Record>(COMMON_FORMAT_TYPE_AGGREGATOR) {
+
+			private Map<String,Integer> counter = FluentMap.create();
+			
+			@Override
+			public boolean canHandle(Event<?> event) {
+				return Predicates.matchType(COMMON_FORMAT_RECORD_READY).or(
+						Predicates.shutdown()).test(event);
+			}
+
+			@Override
+			public void process(Event<Record> event, EventProcessor<Record> context) {
+				if (Predicates.shutdown().test(event)) {
 					
-				});
+					StringBuilder toTsv = new StringBuilder();
+					counter.entrySet().stream().forEach( (kv) -> {
+						toTsv.append(kv.getKey()+"\t"+kv.getKey()+"\n");
+					});
+					EventSerializer.TO_STRING_FILE_WRITER.write(
+							toTsv.toString(), file);
+					
+				} else if (Predicates.matchType(COMMON_FORMAT_RECORD_READY).test(event)) {
+					
+					for (CommonFormat.Span span: event.get().spans) {
+						if (span.type != null) {
+							Integer count = counter.get(span.type);
+							if (count == null) count = 0;
+							count += 1;
+							counter.put(span.type, count);
+						}
+						if (span.subtype != null) {
+							Integer count = counter.get(span.subtype);
+							if (count == null) count = 0;
+							count += 1;
+							counter.put(span.subtype, count);
+						}
+					}
+				}
+			}
+		};
 	}
 	
 }
