@@ -22,6 +22,7 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
+import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.datatypes.TupleList;
 import uk.co.terminological.pipestream.Event.EventMetadata;
@@ -104,13 +105,13 @@ public class ExecutionHistoryUtils implements EventBusAware {
 			return consumed;
 		}
 		
+		public List<Pair> getAll() {
+			return FluentList.create(produced,consumed);
+		}
+ 		
 		public Collection<Entry> getUniqueEntryById() {
 			HashMap<String,Entry> tmp = new HashMap<>();
-			produced.forEach(p -> {
-				tmp.put(p.getSource().getId(),p.getSource());
-				tmp.put(p.getTarget().getId(),p.getTarget());
-			});
-			consumed.forEach(p -> {
+			getAll().forEach(p -> {
 				tmp.put(p.getSource().getId(),p.getSource());
 				tmp.put(p.getTarget().getId(),p.getTarget());
 			});
@@ -119,11 +120,7 @@ public class ExecutionHistoryUtils implements EventBusAware {
 		
 		public Collection<Entry> getUniqueEntryByType() {
 			HashMap<String,Entry> tmp = new HashMap<>();
-			produced.forEach(p -> {
-				tmp.put(p.getSource().getTypeId(),p.getSource());
-				tmp.put(p.getTarget().getTypeId(),p.getTarget());
-			});
-			consumed.forEach(p -> {
+			getAll().forEach(p -> {
 				tmp.put(p.getSource().getTypeId(),p.getSource());
 				tmp.put(p.getTarget().getTypeId(),p.getTarget());
 			});
@@ -137,17 +134,17 @@ public class ExecutionHistoryUtils implements EventBusAware {
 		public Map<Pair,Integer> getUniquePairAndCount() {
 			Map<String,Integer> counts = new HashMap<>();
 			Map<String,Pair> out = new HashMap<>();
-			produced.forEach(p -> {
+			getAll().forEach(p -> {
 				Integer tmp = counts.get(p.getTypeRelationship());
 				if (tmp == null) tmp=0;
-				out.put(p, tmp+1);
+				counts.put(p.getTypeRelationship(), tmp+1);
+				out.put(p.getTypeRelationship(), p);
 			});
-			consumed.forEach(p -> {
-				Integer tmp = out.get(p);
-				if (tmp == null) tmp=0;
-				out.put(p, tmp+1);
+			Map<Pair,Integer> out2 = new HashMap<>();
+			out.entrySet().forEach(kv -> {
+				out2.put(kv.getValue(), counts.get(kv.getKey()));
 			});
-			return out;
+			return out2;
 		}
 
 		
