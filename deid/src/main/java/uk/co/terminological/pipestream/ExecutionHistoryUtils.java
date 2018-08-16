@@ -135,9 +135,10 @@ public class ExecutionHistoryUtils implements EventBusAware {
 		 * @return
 		 */
 		public Map<Pair,Integer> getUniquePairAndCount() {
-			Map<Pair,Integer> out = new HashMap<>();
+			Map<String,Integer> counts = new HashMap<>();
+			Map<String,Pair> out = new HashMap<>();
 			produced.forEach(p -> {
-				Integer tmp = out.get(p);
+				Integer tmp = counts.get(p.getTypeRelationship());
 				if (tmp == null) tmp=0;
 				out.put(p, tmp+1);
 			});
@@ -153,36 +154,14 @@ public class ExecutionHistoryUtils implements EventBusAware {
 
 		public static class Pair {
 
-			@Override
-			public int hashCode() {
-				final int prime = 31;
-				int result = 1;
-				result = prime * result + ((source == null) ? 0 : source.hashCode());
-				result = prime * result + ((target == null) ? 0 : target.hashCode());
-				return result;
+			public String getTypeRelationship() {
+				return getSource().getTypeId()+" -> "+getTarget().getTypeId();
 			}
 
-			@Override
-			public boolean equals(Object obj) {
-				if (this == obj)
-					return true;
-				if (obj == null)
-					return false;
-				if (getClass() != obj.getClass())
-					return false;
-				Pair other = (Pair) obj;
-				if (source == null) {
-					if (other.source != null)
-						return false;
-				} else if (!source.equals(other.source))
-					return false;
-				if (target == null) {
-					if (other.target != null)
-						return false;
-				} else if (!target.equals(other.target))
-					return false;
-				return true;
+			public String getRelationship() {
+				return getSource().getId()+" -> "+getTarget().getId();
 			}
+			
 			Entry source; Entry target;
 
 			Pair(Tuple<? extends Metadata, ? extends Metadata> t) {
@@ -205,11 +184,11 @@ public class ExecutionHistoryUtils implements EventBusAware {
 			}
 
 			public String getId() {return Integer.toHexString(m.hashCode());}
-			public String getTypeId() {return Integer.toHexString(this.hashCode());}
+			public String getTypeId() {return Integer.toHexString(m.typeDescription.hashCode());}
 			public String getName() {return m.name;}
 			public String getType() {return m.typeDescription;}
 
-			@Override
+			/*@Override
 			public int hashCode() {
 				return new HashCodeBuilder().append(m.name).append(m.typeDescription).build();
 			}
@@ -226,7 +205,7 @@ public class ExecutionHistoryUtils implements EventBusAware {
 						.append(m.name, rhs.m.name)
 						.append(m.typeDescription, rhs.m.typeDescription)
 						.isEquals();
-			}
+			}*/
 		}
 
 	}

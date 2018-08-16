@@ -2,7 +2,7 @@
 digraph ${name} {
 
 <#list model.getUniqueEntryByType() as node>
-${node.getTypeId()} [shape="box" label="${node.getType()}"</tr></table>>]
+${node.getTypeId()} [shape="box" label="${node.getType()}"]
 </#list>
 
 <#list model.getUniquePairAndCount() as k, v>
