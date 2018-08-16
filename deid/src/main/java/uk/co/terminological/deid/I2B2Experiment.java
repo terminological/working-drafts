@@ -85,7 +85,8 @@ public class I2B2Experiment {
 			.withHandler(bratFormatFromCommon())
 			.withHandler(bratFormatWriter(outputDir))
 			.debugMode()
-			.execute();
+			.execute()
+			.sendShutdownMessage();
 
 
 	}

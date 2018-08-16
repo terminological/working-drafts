@@ -167,9 +167,16 @@ public class EventBus {
 	};
 	
 	
-	public void execute() {
+	public EventBus execute() {
 		log.info("Starting eventBus generators");
 		generators.parallelStream().forEach(g -> {while(g.execute()) {};});
+		return this;
+	}
+	
+	public EventBus sendShutdownMessage() {
+		log.info("Starting eventBus generators");
+		
+		return this;
 	}
 	
 	public void shutdown() {

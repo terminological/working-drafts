@@ -35,6 +35,30 @@ public interface Event<Y> {
 		}
 	}
 
+	public static class ShutdownEvent implements Event<Void> {
+
+		@Override
+		public EventMetadata<Void> getMetadata() {
+			return FluentEvents.Metadata.forEvent(Void.class, "SHUTDOWN_WARNING", "SHUTDOWN_WARNING");
+		}
+
+		@Override
+		public Void get() {
+			return null;
+		}
+
+		@Override
+		public Event<Void> put(String key, Object o) {
+			return this;
+		}
+
+		@Override
+		public Object get(String key) {
+			return null;
+		}
+		
+	}
+	
 	//TODO: Some extension of event or eventMetadata which includes a version date
 
 	public static class Default<Y> implements Event<Y> {
