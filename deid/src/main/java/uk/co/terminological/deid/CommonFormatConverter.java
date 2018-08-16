@@ -120,14 +120,9 @@ public class CommonFormatConverter {
 				span -> out
 					.withAnnotation(
 						BRATFormat.Annotation.textBound(
-								span.type, span.start, span.end, 
+								span.subtype != null ? span.subtype : span.type, span.start, span.end, 
 								record.documentText.substring(span.start, span.end)
 								))
-					.withAnnotation(
-							BRATFormat.Annotation.textBound(
-									span.subtype, span.start, span.end, 
-									record.documentText.substring(span.start, span.end)
-									))
 				);
 		return out;
 		
