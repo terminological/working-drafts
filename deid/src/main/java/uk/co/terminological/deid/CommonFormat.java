@@ -1,8 +1,8 @@
 package uk.co.terminological.deid;
 
 import uk.co.terminological.datatypes.FluentList;
-import uk.co.terminological.deid.CommonFormat.Spans;
 
+//TODO: proper java pojo.
 public class CommonFormat {
 
 	public static class Records extends FluentList<Record> {}
