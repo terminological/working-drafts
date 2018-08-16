@@ -6,9 +6,12 @@ import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -46,12 +49,13 @@ public class ExecutionHistoryUtils implements EventBusAware {
 	}
 
 
-	public void generate(String resourceName, Path outfile) {
+	public void generate(String resourceName, Path outfile, String name) {
 		try {
 
 			Template template = cfg.getTemplate(resourceName);
 			Map<String,Object> root = new HashMap<String,Object>();
-			root.put("model", new Model(this.getEventBus().getEventHistory(), this.getEventBus().getProcessingHistory());
+			root.put("model", new Model(this.getEventBus().getEventHistory(), this.getEventBus().getProcessingHistory()));
+			root.put("name",name);
 			PrintWriter out = new PrintWriter(Files.newOutputStream(outfile));
 			template.process(root, out);
 
@@ -99,11 +103,37 @@ public class ExecutionHistoryUtils implements EventBusAware {
 			return consumed;
 		}
 		
+		public Collection<Entry> getUniqueEntryById() {
+			HashMap<String,Entry> tmp = new HashMap<>();
+			produced.forEach(p -> {
+				tmp.put(p.getSource().getId(),p.getSource());
+				tmp.put(p.getTarget().getId(),p.getTarget());
+			});
+			consumed.forEach(p -> {
+				tmp.put(p.getSource().getId(),p.getSource());
+				tmp.put(p.getTarget().getId(),p.getTarget());
+			});
+			return tmp.values();
+		}
+		
+		public Collection<Entry> getUniqueEntryByType() {
+			HashMap<String,Entry> tmp = new HashMap<>();
+			produced.forEach(p -> {
+				tmp.put(p.getSource().getTypeId(),p.getSource());
+				tmp.put(p.getTarget().getTypeId(),p.getTarget());
+			});
+			consumed.forEach(p -> {
+				tmp.put(p.getSource().getTypeId(),p.getSource());
+				tmp.put(p.getTarget().getTypeId(),p.getTarget());
+			});
+			return tmp.values();
+		}
+		
 		/**
 		 * uses custom hashmap to aggregate pairs that match.
 		 * @return
 		 */
-		public Map<Pair,Integer> getUnique() {
+		public Map<Pair,Integer> getUniquePairAndCount() {
 			Map<Pair,Integer> out = new HashMap<>();
 			produced.forEach(p -> {
 				Integer tmp = out.get(p);
