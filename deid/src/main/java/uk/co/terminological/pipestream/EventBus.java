@@ -184,7 +184,7 @@ public class EventBus {
 		ExecutionHistoryUtils e = new ExecutionHistoryUtils(directory);
 		e.generate(ExecutionHistoryUtils.BIG_DOT_GRAPH, directory.resolve("large.dot"), "1");
 		e.generate(ExecutionHistoryUtils.SMALL_DOT_GRAPH, directory.resolve("small.dot"), "2");
-		e.executeGraphviz(resolve("small.dot"));
+		e.executeGraphviz(directory.resolve("small.dot"));
 		return this;
 	}
 	
