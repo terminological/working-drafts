@@ -68,7 +68,7 @@ public class ExecutionHistoryUtils implements EventBusAware {
 
 	public void executeGraphviz(Path dotFile) throws IOException {
 		log.info("Starting Graphviz...");
-		Process process2 = new ProcessBuilder("/usr/bin/dot","-O -Tpng",dotFile.toString())
+		Process process2 = new ProcessBuilder("/usr/bin/dot","-O","-Tpng",dotFile.toString())
 				.redirectOutput(Redirect.INHERIT)
 				.start();
 
