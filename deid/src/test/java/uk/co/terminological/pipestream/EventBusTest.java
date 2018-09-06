@@ -118,6 +118,11 @@ public class EventBusTest {
 	}
 
 	public static class TestStringToUpperEventHandler extends HandlerTypes.Adaptor<String, String> {
+		
+		public TestStringToUpperEventHandler() {
+			super("TO_UPPER");
+		}
+
 		@Override
 		public boolean canHandle(Event<?> event) {
 			return (event instanceof TestStringEvent);
@@ -131,6 +136,10 @@ public class EventBusTest {
 	}
 
 	public static class TestStringReplaceEventHandler extends HandlerTypes.Adaptor<String, String> {
+		public TestStringReplaceEventHandler() {
+			super("REPLACE");
+		}
+
 		@Override
 		public boolean canHandle(Event<?> event) {
 			return (event instanceof TestStringNamedEvent
