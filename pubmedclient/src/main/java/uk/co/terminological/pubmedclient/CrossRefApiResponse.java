@@ -133,7 +133,7 @@ public class CrossRefApiResponse {
 	}
 
 	public static class PartialDate {
-		@JsonProperty("date-parts") public List<Integer> dateParts; // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
+		@JsonProperty("date-parts") public List<List<Integer>> dateParts; // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 	}
 
 	public static class Update {
