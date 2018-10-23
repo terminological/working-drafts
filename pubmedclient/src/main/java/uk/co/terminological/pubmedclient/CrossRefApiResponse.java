@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
@@ -113,6 +114,10 @@ public class CrossRefApiResponse {
 		@JsonProperty("journal-issue") public JournalIssue journalIssue; //NOT IN SPEC
 		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType; //NOT IN SPEC
 		@JsonProperty("publisher-location") public String publisherLocation; //NOT IN SPEC
+		@JsonAnySetter
+	    public void handleUnknownProperty(String key, String value) {
+	        System.out.printf("JSON property: %s: %s", key, value);
+	    }
 	}
 
 	public static class JournalIssue {
