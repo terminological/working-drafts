@@ -116,7 +116,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("publisher-location") public String publisherLocation; //NOT IN SPEC
 		@JsonAnySetter //public Map<String,String> unknownProperties;
 	    public void handleUnknownProperty(String key, Object value) {
-	        System.out.printf("JSON property: %s: %s", key, value.toString());
+	        System.out.printf("JSON property: %s: %s\n", key, value.toString());
 	    }
 	}
 
