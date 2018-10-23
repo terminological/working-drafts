@@ -117,6 +117,7 @@ public class CrossRefApiResponse {
 	public static class Contributor {
 		@JsonProperty("family") public String family; // Yes-
 		@JsonProperty("given") public String given; // No-
+		@JsonProperty("sequence") public Integer sequence; // No-
 		@JsonProperty("ORCID") public URL ORCID; // No-URL-form of an ORCID identifier
 		@JsonProperty("authenticated-orcid") public Boolean authenticatedOrcid; // No-If true, record owner asserts that the ORCID user completed ORCID OAuth authentication
 		@JsonProperty("affiliation") public List<Affiliation> affiliation; // No-
