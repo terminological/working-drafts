@@ -96,7 +96,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("update-policy") public URL updatePolicy; // No-Link to an update policy covering Crossmark updates for this work
 		@JsonProperty("link") public List<ResourceLink> link; // No-URLs to full-text locations
 		@JsonProperty("clinical-trial-Integer") public List<ClinicalTrialNumber> clinicalTrialNumber; // No-
-		@JsonProperty("alternative-id") public String alternativeId; // No-Other identifiers for the work provided by the depositing member
+		@JsonProperty("alternative-id") public List<String> alternativeId; // No-Other identifiers for the work provided by the depositing member
 		@JsonProperty("reference") public List<Reference> reference; // No-List of references made by the work
 		@JsonProperty("content-domain") public ContentDomain contentDomain; // No-Information on domains that support Crossmark for this work
 		@JsonProperty("relation") public Map<String,List<Relation>> relation; // No-Relations to other works
