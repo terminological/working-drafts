@@ -127,7 +127,7 @@ public class CrossRefApiResponse {
 	}
 
 	public static class Date {
-		@JsonProperty("date-parts") public List<Integer> dateParts; // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
+		@JsonProperty("date-parts") public List<List<Integer>> dateParts; // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 		@JsonProperty("timestamp") public Integer timestamp; // Yes-Seconds since UNIX epoch
 		@JsonProperty("date-time") public String dateTime; // Yes-ISO 8601 date time
 	}
