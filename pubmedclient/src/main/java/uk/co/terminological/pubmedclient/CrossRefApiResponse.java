@@ -44,8 +44,15 @@ public class CrossRefApiResponse {
 	//When message-type is work-list
 	public static class Message {
 		@JsonProperty("facets") public RawJson facets;
-		@JsonProperty("total-results") int totalResults;
-		@JsonProperty("items") List<Work> items; 
+		@JsonProperty("total-results") Integer totalResults;
+		@JsonProperty("items") List<Work> items;
+		@JsonProperty("items-per-page") Integer itemsPerPage;
+		@JsonProperty("query") Query query;
+	}
+	
+	public static class Query {
+		@JsonProperty("start-index") Integer startIndex;
+		@JsonProperty("search-terms") String searchTerm;
 	}
 	
 	@JsonIgnoreProperties(ignoreUnknown = true)
