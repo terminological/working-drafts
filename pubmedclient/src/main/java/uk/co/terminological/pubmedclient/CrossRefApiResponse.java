@@ -55,7 +55,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("search-terms") String searchTerm;
 	}
 	
-	@JsonIgnoreProperties(ignoreUnknown = true)
+	//@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Work {
 		@JsonProperty("publisher") public String publisher; // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title; // Yes-Work titles, including translated titles
