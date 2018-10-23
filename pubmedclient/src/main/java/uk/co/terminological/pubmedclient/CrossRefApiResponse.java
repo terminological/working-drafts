@@ -99,6 +99,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("content-domain") public ContentDomain contentDomain; // No-Information on domains that support Crossmark for this work
 		@JsonProperty("relation") public Map<String,Relation> relation; // No-Relations to other works
 		@JsonProperty("review") public Review review; // No-Peer review metadata
+		@JsonProperty("language") public String language;
 	}
 
 	public static class Funder {
