@@ -111,6 +111,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("language") public String language; //NOT IN SPEC
 		@JsonProperty("score") public Float score; //NOT IN SPEC
 		@JsonProperty("journal-issue") public JournalIssue journalIssue; //NOT IN SPEC
+		@JsonProperty("isbn-type") public String isbnType; //NOT IN SPEC
 	}
 
 	public static class JournalIssue {
