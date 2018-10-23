@@ -53,9 +53,9 @@ public class CrossRefApiResponse {
 		@JsonProperty("original-title") public List<String> originalTitle; // No-Work titles in the work's original publication language
 		@JsonProperty("short-title") public List<String> shortTitle; // No-Short or abbreviated work titles
 		@JsonProperty("abstract") public String journalAbstract; // No-Abstract as a JSON string or a JATS XML snippet encoded into a JSON string
-		@JsonProperty("reference-count") public Number referenceCount; // Yes-Deprecated Same as references-count
-		@JsonProperty("references-count") public Number referencesCount; // Yes-Count of outbound references deposited with Crossref
-		@JsonProperty("is-referenced-by-count") public Number isReferencedByCount; // Yes-Count of inbound references deposited with Crossref
+		@JsonProperty("reference-count") public Integer referenceCount; // Yes-Deprecated Same as references-count
+		@JsonProperty("references-count") public Integer referencesCount; // Yes-Count of outbound references deposited with Crossref
+		@JsonProperty("is-referenced-by-count") public Integer isReferencedByCount; // Yes-Count of inbound references deposited with Crossref
 		@JsonProperty("source") public String source; // Yes-Currently always Crossref
 		@JsonProperty("prefix") public String prefix; // Yes-DOI prefix identifier of the form http://id.crossref.org/prefix/DOIPREFIX
 		@JsonProperty("DOI") public String DOI; // Yes-DOI of the work
@@ -72,10 +72,10 @@ public class CrossRefApiResponse {
 		@JsonProperty("container-title") public List<String> containerTitle; // No-Full titles of the containing work (usually a book or journal)
 		@JsonProperty("short-container-title") public List<String> shortContainerTitle; // No-Abbreviated titles of the containing work
 		@JsonProperty("group-title") public String groupTitle; // No-Group title for posted content
-		@JsonProperty("issue") public String issue; // No-Issue number of an article's journal
-		@JsonProperty("volume") public String volume; // No-Volume number of an article's journal
+		@JsonProperty("issue") public String issue; // No-Issue Integer of an article's journal
+		@JsonProperty("volume") public String volume; // No-Volume Integer of an article's journal
 		@JsonProperty("page") public String page; // No-Pages numbers of an article within its journal
-		@JsonProperty("article-number") public String articleNumber; // No-
+		@JsonProperty("article-Integer") public String articleNumber; // No-
 		@JsonProperty("published-print") public PartialDate publishedPrint; // No-Date on which the work was published in print
 		@JsonProperty("published-online") public PartialDate publishedOnline; // No-Date on which the work was published online
 		@JsonProperty("subject") public List<String> subject; // No-Subject category names, a controlled vocabulary from Sci-Val. Available for most journal articles
@@ -93,7 +93,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("update-to") public List<Update> updateTo; // No-
 		@JsonProperty("update-policy") public URL updatePolicy; // No-Link to an update policy covering Crossmark updates for this work
 		@JsonProperty("link") public List<ResourceLink> link; // No-URLs to full-text locations
-		@JsonProperty("clinical-trial-number") public List<ClinicalTrialNumber> clinicalTrialNumber; // No-
+		@JsonProperty("clinical-trial-Integer") public List<ClinicalTrialNumber> clinicalTrialNumber; // No-
 		@JsonProperty("alternative-id") public String alternativeId; // No-Other identifiers for the work provided by the depositing member
 		@JsonProperty("reference") public List<Reference> reference; // No-List of references made by the work
 		@JsonProperty("content-domain") public ContentDomain contentDomain; // No-Information on domains that support Crossmark for this work
@@ -104,13 +104,13 @@ public class CrossRefApiResponse {
 	public static class Funder {
 		@JsonProperty("name") public String name; // Yes-Funding body primary name
 		@JsonProperty("DOI") public String DOI; // No-Optional Open Funder Registry DOI uniquely identifing the funding body
-		@JsonProperty("award") public List<String> award; // No-Award number(s) for awards given by the funding body
+		@JsonProperty("award") public List<String> award; // No-Award Integer(s) for awards given by the funding body
 		@JsonProperty("doi-asserted-by") public String doiAssertedBy; // No-Either crossref or publisher
 	}
 
 	public static class ClinicalTrialNumber {
-		@JsonProperty("clinical-trial-number") public String clinicalTrialNumber; // Yes-Identifier of the clinical trial
-		@JsonProperty("registry") public String registry; // Yes-DOI of the clinical trial regsitry that assigned the trial number
+		@JsonProperty("clinical-trial-Integer") public String clinicalTrialNumber; // Yes-Identifier of the clinical trial
+		@JsonProperty("registry") public String registry; // Yes-DOI of the clinical trial regsitry that assigned the trial Integer
 		@JsonProperty("type") public String type; // No-One of preResults, results or postResults
 	}
 
@@ -127,13 +127,13 @@ public class CrossRefApiResponse {
 	}
 
 	public static class Date {
-		@JsonProperty("date-parts") public List<Number> dateParts; // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
-		@JsonProperty("timestamp") public Number timestamp; // Yes-Seconds since UNIX epoch
+		@JsonProperty("date-parts") public List<Integer> dateParts; // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
+		@JsonProperty("timestamp") public Integer timestamp; // Yes-Seconds since UNIX epoch
 		@JsonProperty("date-time") public String dateTime; // Yes-ISO 8601 date time
 	}
 
 	public static class PartialDate {
-		@JsonProperty("date-parts") public List<Number> dateParts; // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
+		@JsonProperty("date-parts") public List<Integer> dateParts; // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 	}
 
 	public static class Update {
@@ -149,7 +149,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("URL") public URL URL; // No-
 		@JsonProperty("explanation") public URL explanation; // No-
 		@JsonProperty("label") public String label; // No-
-		@JsonProperty("order") public Number order; // No-
+		@JsonProperty("order") public Integer order; // No-
 		@JsonProperty("group") public AssertionGroup group; // No-
 	}
 
@@ -160,7 +160,7 @@ public class CrossRefApiResponse {
 
 	public static class License {
 		@JsonProperty("content-version") public String contentVersion; // Yes-Either vor (version of record,) am (accepted manuscript,) tdm (text and data mining) or unspecified
-		@JsonProperty("delay-in-days") public Number delayInDays; // Yes-Number of days between the publication date of the work and the start date of this license
+		@JsonProperty("delay-in-days") public Integer delayInDays; // Yes-Integer of days between the publication date of the work and the start date of this license
 		@JsonProperty("start") public PartialDate start; // Yes-Date on which this license begins to take effect
 		@JsonProperty("URL") public URL URL; // Yes-Link to a web page describing this license
 	}
