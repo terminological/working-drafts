@@ -99,7 +99,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("alternative-id") public String alternativeId; // No-Other identifiers for the work provided by the depositing member
 		@JsonProperty("reference") public List<Reference> reference; // No-List of references made by the work
 		@JsonProperty("content-domain") public ContentDomain contentDomain; // No-Information on domains that support Crossmark for this work
-		@JsonProperty("relation") public Map<String,Relation> relation; // No-Relations to other works
+		@JsonProperty("relation") public Map<String,List<Relation>> relation; // No-Relations to other works
 		@JsonProperty("review") public Review review; // No-Peer review metadata
 		@JsonProperty("language") public String language; //NOT IN SPEC
 		@JsonProperty("score") public Float score; //NOT IN SPEC
