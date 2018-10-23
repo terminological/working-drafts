@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /* 
 Crossref Metadata API JSON Format
@@ -18,6 +19,20 @@ v3	15th May 2018	Add peer review fields
 
 public class CrossRefApiResponse {
 
+	public class RawJson {
+		  Object json;
+
+		  @JsonRawValue
+		  public String getJson() {
+		    // default raw value: null or "[]"
+		    return json == null ? null : json.toString();
+		  }
+
+		  public void setJson(JsonNode node) {
+		    this.json = node;
+		  }
+		}
+	
 	public static class Response {
 		@JsonProperty("status") public String status;
 		@JsonProperty("message-type") public String messageType;
@@ -27,7 +42,7 @@ public class CrossRefApiResponse {
 	
 	//When message-type is work-list
 	public static class Message {
-		@JsonProperty("facets") @JsonRawValue public String facets;
+		@JsonProperty("facets") public RawJson facets;
 		@JsonProperty("total-results") int totalResults;
 		@JsonProperty("items") List<Work> items; 
 	}
