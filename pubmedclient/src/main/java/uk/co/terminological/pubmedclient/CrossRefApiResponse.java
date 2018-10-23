@@ -1,6 +1,7 @@
 package uk.co.terminological.pubmedclient;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,9 +59,9 @@ public class CrossRefApiResponse {
 	//@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Work {
 		@JsonProperty("publisher") public String publisher; // Yes-Name of work's publisher
-		@JsonProperty("title") public List<String> title; // Yes-Work titles, including translated titles
-		@JsonProperty("original-title") public List<String> originalTitle; // No-Work titles in the work's original publication language
-		@JsonProperty("short-title") public List<String> shortTitle; // No-Short or abbreviated work titles
+		@JsonProperty("title") public List<String> title = new ArrayList<>(); // Yes-Work titles, including translated titles
+		@JsonProperty("original-title") public List<String> originalTitle = new ArrayList<>(); // No-Work titles in the work's original publication language
+		@JsonProperty("short-title") public List<String> shortTitle = new ArrayList<>(); // No-Short or abbreviated work titles
 		@JsonProperty("abstract") public String journalAbstract; // No-Abstract as a JSON string or a JATS XML snippet encoded into a JSON string
 		@JsonProperty("reference-count") public Integer referenceCount; // Yes-Deprecated Same as references-count
 		@JsonProperty("references-count") public Integer referencesCount; // Yes-Count of outbound references deposited with Crossref
@@ -77,9 +78,9 @@ public class CrossRefApiResponse {
 		@JsonProperty("issued") public PartialDate issued; // Yes-Earliest of published-print and published-online
 		@JsonProperty("posted") public PartialDate posted; // No-Date on which posted content was made available online
 		@JsonProperty("accepted") public PartialDate accepted; // No-Date on which a work was accepted, after being submitted, during a submission process
-		@JsonProperty("subtitle") public List<String> subtitle; // No-Work subtitles, including original language and translated
-		@JsonProperty("container-title") public List<String> containerTitle; // No-Full titles of the containing work (usually a book or journal)
-		@JsonProperty("short-container-title") public List<String> shortContainerTitle; // No-Abbreviated titles of the containing work
+		@JsonProperty("subtitle") public List<String> subtitle = new ArrayList<>(); // No-Work subtitles, including original language and translated
+		@JsonProperty("container-title") public List<String> containerTitle = new ArrayList<>(); // No-Full titles of the containing work (usually a book or journal)
+		@JsonProperty("short-container-title") public List<String> shortContainerTitle = new ArrayList<>(); // No-Abbreviated titles of the containing work
 		@JsonProperty("group-title") public String groupTitle; // No-Group title for posted content
 		@JsonProperty("issue") public String issue; // No-Issue Integer of an article's journal
 		@JsonProperty("volume") public String volume; // No-Volume Integer of an article's journal
@@ -87,24 +88,24 @@ public class CrossRefApiResponse {
 		@JsonProperty("article-Integer") public String articleNumber; // No-
 		@JsonProperty("published-print") public PartialDate publishedPrint; // No-Date on which the work was published in print
 		@JsonProperty("published-online") public PartialDate publishedOnline; // No-Date on which the work was published online
-		@JsonProperty("subject") public List<String> subject; // No-Subject category names, a controlled vocabulary from Sci-Val. Available for most journal articles
-		@JsonProperty("ISSN") public List<String> ISSN; // No-
-		@JsonProperty("issn-type") public List<ISSNWithType> issnType; // No-List of ISSNs with ISSN type information
-		@JsonProperty("ISBN") public List<String> ISBN; // No-
-		@JsonProperty("archive") public List<String> archive; // No-
-		@JsonProperty("license") public List<License> license; // No-
-		@JsonProperty("funder") public List<Funder> funder; // No-
-		@JsonProperty("assertion") public List<Assertion> assertion; // No-
-		@JsonProperty("author") public List<Contributor> author; // No-
-		@JsonProperty("editor") public List<Contributor> editor; // No-
-		@JsonProperty("chair") public List<Contributor> chair; // No-
-		@JsonProperty("translator") public List<Contributor> translator; // No-
-		@JsonProperty("update-to") public List<Update> updateTo; // No-
+		@JsonProperty("subject") public List<String> subject = new ArrayList<>(); // No-Subject category names, a controlled vocabulary from Sci-Val. Available for most journal articles
+		@JsonProperty("ISSN") public List<String> ISSN = new ArrayList<>(); // No-
+		@JsonProperty("issn-type") public List<ISSNWithType> issnType = new ArrayList<>(); // No-List of ISSNs with ISSN type information
+		@JsonProperty("ISBN") public List<String> ISBN = new ArrayList<>(); // No-
+		@JsonProperty("archive") public List<String> archive = new ArrayList<>(); // No-
+		@JsonProperty("license") public List<License> license = new ArrayList<>(); // No-
+		@JsonProperty("funder") public List<Funder> funder = new ArrayList<>(); // No-
+		@JsonProperty("assertion") public List<Assertion> assertion = new ArrayList<>(); // No-
+		@JsonProperty("author") public List<Contributor> author = new ArrayList<>(); // No-
+		@JsonProperty("editor") public List<Contributor> editor = new ArrayList<>(); // No-
+		@JsonProperty("chair") public List<Contributor> chair = new ArrayList<>(); // No-
+		@JsonProperty("translator") public List<Contributor> translator = new ArrayList<>(); // No-
+		@JsonProperty("update-to") public List<Update> updateTo = new ArrayList<>(); // No-
 		@JsonProperty("update-policy") public URL updatePolicy; // No-Link to an update policy covering Crossmark updates for this work
-		@JsonProperty("link") public List<ResourceLink> link; // No-URLs to full-text locations
-		@JsonProperty("clinical-trial-Integer") public List<ClinicalTrialNumber> clinicalTrialNumber; // No-
-		@JsonProperty("alternative-id") public List<String> alternativeId; // No-Other identifiers for the work provided by the depositing member
-		@JsonProperty("reference") public List<Reference> reference; // No-List of references made by the work
+		@JsonProperty("link") public List<ResourceLink> link = new ArrayList<>(); // No-URLs to full-text locations
+		@JsonProperty("clinical-trial-Integer") public List<ClinicalTrialNumber> clinicalTrialNumber = new ArrayList<>(); // No-
+		@JsonProperty("alternative-id") public List<String> alternativeId = new ArrayList<>(); // No-Other identifiers for the work provided by the depositing member
+		@JsonProperty("reference") public List<Reference> reference = new ArrayList<>(); // No-List of references made by the work
 		@JsonProperty("content-domain") public ContentDomain contentDomain; // No-Information on domains that support Crossmark for this work
 		@JsonProperty("relation") public Map<String,List<Relation>> relation; // No-Relations to other works
 		@JsonProperty("review") public Review review; // No-Peer review metadata
@@ -113,7 +114,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("edition-number") public Integer editionNumber; //NOT IN SPEC
 		@JsonProperty("event") public Event event; //NOT IN SPEC
 		@JsonProperty("journal-issue") public JournalIssue journalIssue; //NOT IN SPEC
-		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType; //NOT IN SPEC
+		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType = new ArrayList<>(); //NOT IN SPEC
 		@JsonProperty("publisher-location") public String publisherLocation; //NOT IN SPEC
 		@JsonAnySetter //public Map<String,String> unknownProperties;
 	    public void handleUnknownProperty(String key, Object value) {
@@ -138,7 +139,7 @@ public class CrossRefApiResponse {
 	public static class Funder {
 		@JsonProperty("name") public String name; // Yes-Funding body primary name
 		@JsonProperty("DOI") public String DOI; // No-Optional Open Funder Registry DOI uniquely identifing the funding body
-		@JsonProperty("award") public List<String> award; // No-Award Integer(s) for awards given by the funding body
+		@JsonProperty("award") public List<String> award = new ArrayList<>(); // No-Award Integer(s) for awards given by the funding body
 		@JsonProperty("doi-asserted-by") public String doiAssertedBy; // No-Either crossref or publisher
 	}
 
@@ -154,7 +155,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("sequence") public String sequence; // No-
 		@JsonProperty("ORCID") public URL ORCID; // No-URL-form of an ORCID identifier
 		@JsonProperty("authenticated-orcid") public Boolean authenticatedOrcid; // No-If true, record owner asserts that the ORCID user completed ORCID OAuth authentication
-		@JsonProperty("affiliation") public List<Affiliation> affiliation; // No-
+		@JsonProperty("affiliation") public List<Affiliation> affiliation = new ArrayList<>(); // No-
 	}
 
 	public static class Affiliation {
@@ -162,13 +163,13 @@ public class CrossRefApiResponse {
 	}
 
 	public static class Date {
-		@JsonProperty("date-parts") public List<List<Integer>> dateParts; // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
+		@JsonProperty("date-parts") public List<List<Integer>> dateParts = new ArrayList<>(); // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 		@JsonProperty("timestamp") public Long timestamp; // Yes-Seconds since UNIX epoch
 		@JsonProperty("date-time") public String dateTime; // Yes-ISO 8601 date time
 	}
 
 	public static class PartialDate {
-		@JsonProperty("date-parts") public List<List<Integer>> dateParts; // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
+		@JsonProperty("date-parts") public List<List<Integer>> dateParts = new ArrayList<>(); // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 	}
 
 	public static class Update {
@@ -237,7 +238,7 @@ public class CrossRefApiResponse {
 	}
 
 	public static class ContentDomain {
-		@JsonProperty("domain") public List<String> domain; // Yes-
+		@JsonProperty("domain") public List<String> domain = new ArrayList<>(); // Yes-
 		@JsonProperty("crossmark-restriction") public Boolean crossmarkRestriction; // Yes-
 	}
 
