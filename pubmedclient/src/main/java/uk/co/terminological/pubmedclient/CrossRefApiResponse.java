@@ -1,20 +1,23 @@
 package uk.co.terminological.pubmedclient;
 
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.HashMap;
+/* 
+Crossref Metadata API JSON Format
+Versioning
+Version	Release Date	Comments
+v1	11th July 2016	First documented version
+v2	26th July 2017	Add abstract, authenticated-orcid, fix contributor fields
+v3	15th May 2018	Add peer review fields
+ */
 
 public class CrossRefApiResponse {
 
-
-
-
 	public static class Work {
-
 		@JsonProperty("publisher") public String publisher; // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title; // Yes-Work titles, including translated titles
 		@JsonProperty("original-title") public List<String> originalTitle; // No-Work titles in the work's original publication language
@@ -66,75 +69,51 @@ public class CrossRefApiResponse {
 		@JsonProperty("content-domain") public ContentDomain contentDomain; // No-Information on domains that support Crossmark for this work
 		@JsonProperty("relation") public Map<String,Relation> relation; // No-Relations to other works
 		@JsonProperty("review") public Review review; // No-Peer review metadata
-
-
-
 	}
 
 	public static class Funder {
-
 		@JsonProperty("name") public String name; // Yes-Funding body primary name
 		@JsonProperty("DOI") public String DOI; // No-Optional Open Funder Registry DOI uniquely identifing the funding body
 		@JsonProperty("award") public List<String> award; // No-Award number(s) for awards given by the funding body
 		@JsonProperty("doi-asserted-by") public String doiAssertedBy; // No-Either crossref or publisher
-
-
 	}
 
 	public static class ClinicalTrialNumber {
-
 		@JsonProperty("clinical-trial-number") public String clinicalTrialNumber; // Yes-Identifier of the clinical trial
 		@JsonProperty("registry") public String registry; // Yes-DOI of the clinical trial regsitry that assigned the trial number
 		@JsonProperty("type") public String type; // No-One of preResults, results or postResults
-
-
 	}
 
 	public static class Contributor {
-
 		@JsonProperty("family") public String family; // Yes-
 		@JsonProperty("given") public String given; // No-
 		@JsonProperty("ORCID") public URL ORCID; // No-URL-form of an ORCID identifier
 		@JsonProperty("authenticated-orcid") public Boolean authenticatedOrcid; // No-If true, record owner asserts that the ORCID user completed ORCID OAuth authentication
 		@JsonProperty("affiliation") public List<Affiliation> affiliation; // No-
-
-
 	}
 
 	public static class Affiliation {
-
 		@JsonProperty("name") public String name; // Yes-
-
-
 	}
 
 	public static class Date {
-
 		@JsonProperty("date-parts") public List<Number> dateParts; // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 		@JsonProperty("timestamp") public Number timestamp; // Yes-Seconds since UNIX epoch
 		@JsonProperty("date-time") public String dateTime; // Yes-ISO 8601 date time
-
-
 	}
 
 	public static class PartialDate {
-
 		@JsonProperty("date-parts") public List<Number> dateParts; // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
-
 	}
 
 	public static class Update {
-
 		@JsonProperty("updated") public PartialDate updated; // Yes-Date on which the update was published
 		@JsonProperty("DOI") public String DOI; // Yes-DOI of the updated work
 		@JsonProperty("type") public String type; // Yes-The type of update, for example retraction or correction
 		@JsonProperty("label") public String label; // No-A display-friendly label for the update type
-
-
 	}
 
 	public static class Assertion {
-
 		@JsonProperty("name") public String name; // Yes-
 		@JsonProperty("value") public String value; // Yes-
 		@JsonProperty("URL") public URL URL; // No-
@@ -142,40 +121,28 @@ public class CrossRefApiResponse {
 		@JsonProperty("label") public String label; // No-
 		@JsonProperty("order") public Number order; // No-
 		@JsonProperty("group") public AssertionGroup group; // No-
-
-
 	}
 
 	public static class AssertionGroup {
-
 		@JsonProperty("name") public String name; // Yes-
 		@JsonProperty("label") public String label; // No-
-
-
 	}
 
 	public static class License {
-
 		@JsonProperty("content-version") public String contentVersion; // Yes-Either vor (version of record,) am (accepted manuscript,) tdm (text and data mining) or unspecified
 		@JsonProperty("delay-in-days") public Number delayInDays; // Yes-Number of days between the publication date of the work and the start date of this license
 		@JsonProperty("start") public PartialDate start; // Yes-Date on which this license begins to take effect
 		@JsonProperty("URL") public URL URL; // Yes-Link to a web page describing this license
-
-
 	}
 
 	public static class ResourceLink {
-
 		@JsonProperty("intended-application") public String intendedApplication; // Yes-Either text-mining, similarity-checking or unspecified
 		@JsonProperty("content-version") public String contentVersion; // Yes-Either vor (version of record,) am (accepted manuscript) or unspecified
 		@JsonProperty("URL") public URL URL; // Yes-Direct link to a full-text download location
 		@JsonProperty("content-type") public String contentType; // No-Content type (or MIME type) of the full-text object
-
-
 	}
 
 	public static class Reference {
-
 		@JsonProperty("key") public String key; // Yes-
 		@JsonProperty("DOI") public String DOI; // No-
 		@JsonProperty("doi-asserted-by") public String doiAssertedBy; // No-One of crossref or publisher
@@ -200,32 +167,22 @@ public class CrossRefApiResponse {
 	}
 
 	public static class ISSNWithType {
-
 		@JsonProperty("value") public String value; // Yes-
 		@JsonProperty("type") public String type; // Yes-One of eissn, pissn or lissn
 	}
 
 	public static class ContentDomain {
-
 		@JsonProperty("domain") public List<String> domain; // Yes-
 		@JsonProperty("crossmark-restriction") public Boolean crossmarkRestriction; // Yes-
-
-
 	}
 
-	
-
 	public static class Relation {
-
 		@JsonProperty("id-type") public String idType; // Yes-
 		@JsonProperty("id") public String id; // Yes-
 		@JsonProperty("asserted-by") public String assertedBy; // Yes-One of subject or object
-
-
 	}
 
 	public static class Review {
-
 		@JsonProperty("running-number") public String runningNumber; // No-
 		@JsonProperty("revision-round") public String revisionRound; // No-
 		@JsonProperty("stage") public String stage; // No-One of pre-publication or post-publication
@@ -234,15 +191,6 @@ public class CrossRefApiResponse {
 		@JsonProperty("competing-interest-statement") public String competingInterestStatement; // No-
 		@JsonProperty("language") public String language;	// String	No
 	}
-	/*
-	 * 
-Crossref Metadata API JSON Format
-Versioning
-Version	Release Date	Comments
-v1	11th July 2016	First documented version
-v2	26th July 2017	Add abstract, authenticated-orcid, fix contributor fields
-v3	15th May 2018	Add peer review fields
-	 */
 
 
 }
