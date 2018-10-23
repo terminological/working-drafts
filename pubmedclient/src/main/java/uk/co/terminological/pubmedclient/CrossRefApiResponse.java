@@ -114,8 +114,10 @@ public class CrossRefApiResponse {
 		@JsonProperty("journal-issue") public JournalIssue journalIssue; //NOT IN SPEC
 		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType; //NOT IN SPEC
 		@JsonProperty("publisher-location") public String publisherLocation; //NOT IN SPEC
-		@JsonAnySetter public Map<String,RawJson> unknownProperties;
-	    
+		@JsonAnySetter public Map<String,String> unknownProperties;
+	    public void handleUnknownProperty(String key, Object value) {
+	        System.out.printf("JSON property: %s: %s", key, value.toString());
+	    }
 	}
 
 	public static class JournalIssue {
