@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,6 +48,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("items") List<Work> items; 
 	}
 	
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Work {
 		@JsonProperty("publisher") public String publisher; // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title; // Yes-Work titles, including translated titles
