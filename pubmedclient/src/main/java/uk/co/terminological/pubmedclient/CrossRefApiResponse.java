@@ -19,7 +19,7 @@ v3	15th May 2018	Add peer review fields
 
 public class CrossRefApiResponse {
 
-	public class RawJson {
+	public static class RawJson {
 		  Object json;
 
 		  @JsonRawValue
