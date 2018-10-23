@@ -17,6 +17,20 @@ v3	15th May 2018	Add peer review fields
 
 public class CrossRefApiResponse {
 
+	public static class Response {
+		@JsonProperty("status") public String status;
+		@JsonProperty("message-type") public String messageType;
+		@JsonProperty("message-version") public String messageVersion;
+		@JsonProperty("message") public Message message;
+	}
+	
+	//When message-type is work-list
+	public static class Message {
+		@JsonProperty("facets") public String facets;
+		@JsonProperty("total-results") int totalResults;
+		@JsonProperty("items") List<Work> items; 
+	}
+	
 	public static class Work {
 		@JsonProperty("publisher") public String publisher; // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title; // Yes-Work titles, including translated titles
