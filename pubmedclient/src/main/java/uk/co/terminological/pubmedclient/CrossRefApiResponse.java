@@ -110,7 +110,7 @@ public class CrossRefApiResponse {
 		@JsonProperty("review") public Review review; // No-Peer review metadata
 		@JsonProperty("language") public String language; //NOT IN SPEC
 		@JsonProperty("score") public Float score; //NOT IN SPEC
-		@JsonProperty("journal-issue") public List<String> journalIssue; //NOT IN SPEC
+		@JsonProperty("journal-issue") public JournalIssue journalIssue; //NOT IN SPEC
 	}
 
 	public static class JournalIssue {
