@@ -110,15 +110,24 @@ public class CrossRefApiResponse {
 		@JsonProperty("review") public Review review; // No-Peer review metadata
 		@JsonProperty("language") public String language; //NOT IN SPEC
 		@JsonProperty("score") public Float score; //NOT IN SPEC
+		@JsonProperty("edition-number") public Integer editionNumber; //NOT IN SPEC
 		@JsonProperty("journal-issue") public JournalIssue journalIssue; //NOT IN SPEC
 		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType; //NOT IN SPEC
 		@JsonProperty("publisher-location") public String publisherLocation; //NOT IN SPEC
 		@JsonAnySetter //public Map<String,String> unknownProperties;
 	    public void handleUnknownProperty(String key, Object value) {
-	        System.out.printf("JSON property: %s: %s\n", key, value.toString());
+	        System.out.printf("Work unknown property: %s: %s\n", key, value.toString());
 	    }
 	}
 
+	public static class Event {
+		@JsonProperty("name") public String name; //NOT IN SPEC
+		@JsonProperty("location") public String location; //NOT IN SPEC
+		@JsonProperty("theme") public String theme; //NOT IN SPEC
+		@JsonProperty("end") public PartialDate end; //NOT IN SPEC
+		@JsonProperty("start") public PartialDate start; //NOT IN SPEC
+	}
+	
 	public static class JournalIssue {
 		@JsonProperty("published-online") public PartialDate publishedOnline;
 		@JsonProperty("published-print") public PartialDate publishedPrint;
