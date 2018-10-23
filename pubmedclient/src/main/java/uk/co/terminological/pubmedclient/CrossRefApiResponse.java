@@ -113,6 +113,12 @@ public class CrossRefApiResponse {
 		@JsonProperty("journal-issue") public List<String> journalIssue; //NOT IN SPEC
 	}
 
+	public static class JournalIssue {
+		@JsonProperty("published-online") public PartialDate publishedOnline;
+		@JsonProperty("published-print") public PartialDate publishedPrint;
+		@JsonProperty("issue") public String issue;
+	}
+	
 	public static class Funder {
 		@JsonProperty("name") public String name; // Yes-Funding body primary name
 		@JsonProperty("DOI") public String DOI; // No-Optional Open Funder Registry DOI uniquely identifing the funding body
