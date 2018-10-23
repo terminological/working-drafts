@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
 /* 
 Crossref Metadata API JSON Format
@@ -26,7 +27,7 @@ public class CrossRefApiResponse {
 	
 	//When message-type is work-list
 	public static class Message {
-		@JsonProperty("facets") public String facets;
+		@JsonProperty("facets") @JsonRawValue public String facets;
 		@JsonProperty("total-results") int totalResults;
 		@JsonProperty("items") List<Work> items; 
 	}
