@@ -166,7 +166,7 @@ public class CrossRefApiResponse {
 	public static class License {
 		@JsonProperty("content-version") public String contentVersion; // Yes-Either vor (version of record,) am (accepted manuscript,) tdm (text and data mining) or unspecified
 		@JsonProperty("delay-in-days") public Integer delayInDays; // Yes-Integer of days between the publication date of the work and the start date of this license
-		@JsonProperty("start") public PartialDate start; // Yes-Date on which this license begins to take effect
+		@JsonProperty("start") public Date start; // Yes-Date on which this license begins to take effect
 		@JsonProperty("URL") public URL URL; // Yes-Link to a web page describing this license
 	}
 
