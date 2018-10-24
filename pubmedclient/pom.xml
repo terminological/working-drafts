@@ -150,7 +150,7 @@
 						</goals>
 						<configuration>
 							<schemas>
-								<schema> <!- need to download these and run locally, some modification required ->
+								<schema> <!- need to download these and run locally, and some modification required to fix imports ->
 									<url>https://www.crossref.org/schemas/crossref_query_output3.0.xsd</url>
 								</schema><schema>
 									<url>https://www.crossref.org/schemas/unixref1.1.xsd</url>

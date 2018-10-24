@@ -1,6 +1,15 @@
 package uk.co.terminological.pubmedclient;
 
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import javax.ws.rs.core.MultivaluedMap;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class CrossRefClient {
 	// https://www.crossref.org/schemas/
@@ -10,9 +19,36 @@ public class CrossRefClient {
 	// http://clickthroughsupport.crossref.org/
 	
 	private String clickThroughToken;
+	private Client client;
 	
+	public static class CrossRefException extends Exception {
+		public CrossRefException(String string) {
+			super(string);
+		}
+	}
 	
-	public InputStream getTDM(CrossRefApiResponse.Work work) {
+	private MultivaluedMap<String, String> defaultApiParams() {
+		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
+		//out.add("api_key", apiKey);
+		//out.add("tool", appId);
+		//out.add("email", developerEmail);
+		return out;
+	}
+	
+	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter) throws CrossRefException {
+		
+		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
+			
+			Optional<URL> url = work.link.stream().filter(rl -> rl.intendedApplication.equals("text-mining")).map(rl -> rl.URL).findFirst();
+			if (!url.isPresent()) throw new CrossRefException("no content for intended application of text-mining");
+			MultivaluedMap<String, String> searchParams = defaultApiParams();
+			searchParams.add("CR-Clickthrough-Client-Token", clickThroughToken);
+			WebResource tdmCopy = client.resource(url.get().toString());
+			return tdmCopy.queryParams(searchParams).get(InputStream.class);
+			
+		} else {
+			throw new CrossRefException("no licensed content found");
+		}
 		
 	}
 	
