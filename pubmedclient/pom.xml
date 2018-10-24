@@ -157,8 +157,8 @@
 									<url>https://www.crossref.org/schemas/AccessIndicators.xsd</url>
 								</schema>
 							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
+							<generateDirectory>${project.build.directory}/generated-sources/xjc/3</generateDirectory>
+							<generatePackage>org.crossref.qrschema</generatePackage>
 						</configuration>
 						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
 							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
