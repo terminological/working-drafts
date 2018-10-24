@@ -2,10 +2,13 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Properties;
 
 public class TestJsonParsing {
 
@@ -23,6 +26,11 @@ public class TestJsonParsing {
 							);
 				}
 				);
+		
+		Properties prop = new Properties();
+		prop.load(Files.newInputStream(Paths.get("~/Dropbox/secrets.prop")));
+		
+		System.out.println(prop.getProperty("crossref.clickthroughtoken"));
 		
 	}
 
