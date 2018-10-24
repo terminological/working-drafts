@@ -27,8 +27,8 @@ public class TestJsonParsing {
 				}
 				);
 		
-		Properties prop = new Properties();
-		prop.load(Files.newInputStream(Paths.get("~/Dropbox/secrets.prop")));
+		Properties prop = System.getProperties();
+		prop.load(Files.newInputStream(Paths.get(prop.getProperty("user.home"),"Dropbox/secrets.prop")));
 		
 		System.out.println(prop.getProperty("crossref.clickthroughtoken"));
 		
