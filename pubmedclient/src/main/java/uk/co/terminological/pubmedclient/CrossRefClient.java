@@ -35,12 +35,25 @@ public class CrossRefClient {
 		return out;
 	}
 	
+	public static Predicate<String> ACCEPT_ANY_LICENCE = new Predicate<String>() {
+		@Override
+		public boolean test(String t) {
+			return true;
+	}};
+	
+	public static Predicate<String> ACCEPT_CREATIVE_COMMONS = new Predicate<String>() {
+		@Override
+		public boolean test(String t) {
+			return t.startsWith("http://creativecommons.org");
+	}};
+	
 	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter) throws CrossRefException {
 		
 		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
 			
 			Optional<URL> url = work.link.stream().filter(rl -> rl.intendedApplication.equals("text-mining")).map(rl -> rl.URL).findFirst();
 			if (!url.isPresent()) throw new CrossRefException("no content for intended application of text-mining");
+			
 			MultivaluedMap<String, String> searchParams = defaultApiParams();
 			searchParams.add("CR-Clickthrough-Client-Token", clickThroughToken);
 			WebResource tdmCopy = client.resource(url.get().toString());

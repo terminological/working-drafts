@@ -180,25 +180,7 @@ public class PubMedRestClient {
 		return searchResult;
 	}
 
-	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
-		/*
-		 * Pubmed central:
-		 * https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=protein&id=6678417,9507199,28558982,28558984,28558988,28558990
-		 */
-//	protected ESummaryResult summary(MultivaluedMap<String, String> queryParams) throws JAXBException {
-//		logger.debug("making efetch query with params {}", queryParams.toString());
-//		rateLimit();
-//		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
-//		Object obj = fetchUnmarshaller.unmarshal(is);
-//		ESummaryResult out = (ESummaryResult) obj;
-//		try {
-//			is.close();
-//		} catch (IOException e) {
-//			logger.error("could not close ioStream", e);
-//		}
-//		logger.debug("results count {}", out.getDocSumOrERROR().stream().filter(a -> a instanceof DocSum).map(a -> (DocSum) a).count());
-//		return out;
-//	}
+
 	
 	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
 	/*
@@ -301,6 +283,24 @@ public class PubMedRestClient {
 		return pmcArticleset;
 	}*/
 
-	
+	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
+	/*
+	 * Pubmed central:
+	 * https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=protein&id=6678417,9507199,28558982,28558984,28558988,28558990
+	 */
+//protected ESummaryResult summary(MultivaluedMap<String, String> queryParams) throws JAXBException {
+//	logger.debug("making efetch query with params {}", queryParams.toString());
+//	rateLimit();
+//	InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
+//	Object obj = fetchUnmarshaller.unmarshal(is);
+//	ESummaryResult out = (ESummaryResult) obj;
+//	try {
+//		is.close();
+//	} catch (IOException e) {
+//		logger.error("could not close ioStream", e);
+//	}
+//	logger.debug("results count {}", out.getDocSumOrERROR().stream().filter(a -> a instanceof DocSum).map(a -> (DocSum) a).count());
+//	return out;
+//}
 
 }
