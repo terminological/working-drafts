@@ -21,8 +21,10 @@ public class CrossRefClient {
 	private String clickThroughToken;
 	private String developerEmail;
 	private Client client;
-	private Integer rateLimitRequests;
-	private Integer rateLimitInterval;
+	private Integer rateLimitRequests = 50;
+	private Long rateLimitInterval = 1000L;
+	private Long lastIntervalStart = System.currentTimeMillis();
+	private Integer intervalRequests = 0;
 	
 	public static class CrossRefException extends Exception {
 		public CrossRefException(String string) {
@@ -65,6 +67,15 @@ public class CrossRefClient {
 		} else {
 			throw new CrossRefException("no licensed content found");
 		}
+		
+	}
+	
+	public static class QueryBuilder {
+		
+		static QueryBuilder create() {
+			return new QueryBuilder();
+		}
+		
 		
 	}
 	

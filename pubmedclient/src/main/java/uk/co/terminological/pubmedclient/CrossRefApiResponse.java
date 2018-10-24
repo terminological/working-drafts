@@ -49,11 +49,18 @@ public class CrossRefApiResponse {
 		  }
 		}*/
 	
-	public static class Response extends ExtensibleJson {
+	public static class ListResponse extends ExtensibleJson {
 		@JsonProperty("status") public String status;
 		@JsonProperty("message-type") public String messageType;
 		@JsonProperty("message-version") public String messageVersion;
 		@JsonProperty("message") public Message message;
+	}
+	
+	public static class Response extends ExtensibleJson {
+		@JsonProperty("status") public String status;
+		@JsonProperty("message-type") public String messageType;
+		@JsonProperty("message-version") public String messageVersion;
+		@JsonProperty("message") public Work work;
 	}
 	
 	//When message-type is work-list
