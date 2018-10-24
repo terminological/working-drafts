@@ -152,8 +152,11 @@
 							<schemas>
 								<schema>
 									<url>https://www.crossref.org/schemas/crossref_query_output3.0.xsd</url>
+								</schema><schema>
 									<url>https://www.crossref.org/schemas/unixref1.1.xsd</url>
+									</schema><schema>
 									<url>https://www.crossref.org/schemas/fundref.xsd</url>
+									</schema><schema>
 									<url>https://www.crossref.org/schemas/AccessIndicators.xsd</url>
 								</schema>
 							</schemas>

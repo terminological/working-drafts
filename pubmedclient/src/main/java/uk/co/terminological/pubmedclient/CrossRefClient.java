@@ -13,7 +13,7 @@ public class CrossRefClient {
 	
 	
 	public InputStream getTDM(CrossRefApiResponse.Work work) {
-		work.li
+		
 	}
 	
 }
