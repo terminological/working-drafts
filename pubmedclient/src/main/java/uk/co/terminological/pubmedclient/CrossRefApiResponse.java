@@ -66,17 +66,18 @@ public class CrossRefApiResponse {
 	//When message-type is work-list
 	public static class Message extends ExtensibleJson {
 		@JsonProperty("facets") public Facets facets;
-		@JsonProperty("total-results") Integer totalResults;
-		@JsonProperty("items") List<Work> items;
-		@JsonProperty("items-per-page") Integer itemsPerPage;
-		@JsonProperty("query") Query query;
+		@JsonProperty("total-results") public Integer totalResults;
+		@JsonProperty("items") public List<Work> items;
+		@JsonProperty("items-per-page") public Integer itemsPerPage;
+		@JsonProperty("query") public Query query;
+		@JsonProperty("next-cursor") public String nextCursor;
 	}
 	
 	public static class Facets extends ExtensibleJson {}
 	
 	public static class Query extends ExtensibleJson {
-		@JsonProperty("start-index") Integer startIndex;
-		@JsonProperty("search-terms") String searchTerm;
+		@JsonProperty("start-index") public Integer startIndex;
+		@JsonProperty("search-terms") public String searchTerm;
 	}
 	
 	//@JsonIgnoreProperties(ignoreUnknown = true)
