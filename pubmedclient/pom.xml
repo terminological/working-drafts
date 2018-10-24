@@ -138,7 +138,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
 				<artifactId>maven-jaxb2-plugin</artifactId>
 				<version>0.14.0</version>
@@ -150,7 +150,7 @@
 						</goals>
 						<configuration>
 							<schemas>
-								<schema>
+								<schema> <!-- need to download these and run locally, some modification required --
 									<url>https://www.crossref.org/schemas/crossref_query_output3.0.xsd</url>
 								</schema><schema>
 									<url>https://www.crossref.org/schemas/unixref1.1.xsd</url>
@@ -164,10 +164,10 @@
 							<generatePackage>org.crossref.qrschema</generatePackage>
 						</configuration>
 						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
-							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
+							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> --
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
