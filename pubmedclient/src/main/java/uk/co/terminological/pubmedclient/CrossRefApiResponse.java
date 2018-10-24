@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +21,23 @@ v3	15th May 2018	Add peer review fields
  */
 
 public class CrossRefApiResponse {
+	
+	public static class ExtensibleJson {
+		
+		Map<String,Object> unknownProperties = new HashMap<>();
+		
+		@JsonAnySetter
+	    public void handleUnknownProperty(String key, Object value) {
+	        System.out.printf("Work unknown property: %s: %s\n", key, value.toString());
+	        unknownProperties.put(key, value);
+	    }
+		
+		public Object getUnknownProperty(String key) {
+			return unknownProperties.get(key);
+		}
+	}
 
-	public static class RawJson {
+	/*public static class RawJson {
 		  Object json;
 
 		  @JsonRawValue
@@ -33,9 +49,9 @@ public class CrossRefApiResponse {
 		  public void setJson(JsonNode node) {
 		    this.json = node;
 		  }
-		}
+		}*/
 	
-	public static class Response {
+	public static class Response extends ExtensibleJson {
 		@JsonProperty("status") public String status;
 		@JsonProperty("message-type") public String messageType;
 		@JsonProperty("message-version") public String messageVersion;
@@ -43,15 +59,17 @@ public class CrossRefApiResponse {
 	}
 	
 	//When message-type is work-list
-	public static class Message {
-		@JsonProperty("facets") public RawJson facets;
+	public static class Message extends ExtensibleJson {
+		@JsonProperty("facets") public Facets facets;
 		@JsonProperty("total-results") Integer totalResults;
 		@JsonProperty("items") List<Work> items;
 		@JsonProperty("items-per-page") Integer itemsPerPage;
 		@JsonProperty("query") Query query;
 	}
 	
-	public static class Query {
+	public static class Facets extends ExtensibleJson {}
+	
+	public static class Query extends ExtensibleJson {
 		@JsonProperty("start-index") Integer startIndex;
 		@JsonProperty("search-terms") String searchTerm;
 	}
@@ -116,13 +134,10 @@ public class CrossRefApiResponse {
 		@JsonProperty("journal-issue") public JournalIssue journalIssue; //NOT IN SPEC
 		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType = new ArrayList<>(); //NOT IN SPEC
 		@JsonProperty("publisher-location") public String publisherLocation; //NOT IN SPEC
-		@JsonAnySetter //public Map<String,String> unknownProperties;
-	    public void handleUnknownProperty(String key, Object value) {
-	        System.out.printf("Work unknown property: %s: %s\n", key, value.toString());
-	    }
+		
 	}
 
-	public static class Event {
+	public static class Event extends ExtensibleJson {
 		@JsonProperty("name") public String name; //NOT IN SPEC
 		@JsonProperty("location") public String location; //NOT IN SPEC
 		@JsonProperty("theme") public String theme; //NOT IN SPEC
@@ -130,26 +145,26 @@ public class CrossRefApiResponse {
 		@JsonProperty("start") public PartialDate start; //NOT IN SPEC
 	}
 	
-	public static class JournalIssue {
+	public static class JournalIssue extends ExtensibleJson {
 		@JsonProperty("published-online") public PartialDate publishedOnline;
 		@JsonProperty("published-print") public PartialDate publishedPrint;
 		@JsonProperty("issue") public String issue;
 	}
 	
-	public static class Funder {
+	public static class Funder extends ExtensibleJson {
 		@JsonProperty("name") public String name; // Yes-Funding body primary name
 		@JsonProperty("DOI") public String DOI; // No-Optional Open Funder Registry DOI uniquely identifing the funding body
 		@JsonProperty("award") public List<String> award = new ArrayList<>(); // No-Award Integer(s) for awards given by the funding body
 		@JsonProperty("doi-asserted-by") public String doiAssertedBy; // No-Either crossref or publisher
 	}
 
-	public static class ClinicalTrialNumber {
+	public static class ClinicalTrialNumber extends ExtensibleJson {
 		@JsonProperty("clinical-trial-Integer") public String clinicalTrialNumber; // Yes-Identifier of the clinical trial
 		@JsonProperty("registry") public String registry; // Yes-DOI of the clinical trial regsitry that assigned the trial Integer
 		@JsonProperty("type") public String type; // No-One of preResults, results or postResults
 	}
 
-	public static class Contributor {
+	public static class Contributor extends ExtensibleJson {
 		@JsonProperty("family") public String family; // Yes-
 		@JsonProperty("given") public String given; // No-
 		@JsonProperty("sequence") public String sequence; // No-
@@ -158,28 +173,28 @@ public class CrossRefApiResponse {
 		@JsonProperty("affiliation") public List<Affiliation> affiliation = new ArrayList<>(); // No-
 	}
 
-	public static class Affiliation {
+	public static class Affiliation extends ExtensibleJson {
 		@JsonProperty("name") public String name; // Yes-
 	}
 
-	public static class Date {
+	public static class Date extends ExtensibleJson {
 		@JsonProperty("date-parts") public List<List<Integer>> dateParts = new ArrayList<>(); // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 		@JsonProperty("timestamp") public Long timestamp; // Yes-Seconds since UNIX epoch
 		@JsonProperty("date-time") public String dateTime; // Yes-ISO 8601 date time
 	}
 
-	public static class PartialDate {
+	public static class PartialDate extends ExtensibleJson {
 		@JsonProperty("date-parts") public List<List<Integer>> dateParts = new ArrayList<>(); // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 	}
 
-	public static class Update {
+	public static class Update extends ExtensibleJson {
 		@JsonProperty("updated") public PartialDate updated; // Yes-Date on which the update was published
 		@JsonProperty("DOI") public String DOI; // Yes-DOI of the updated work
 		@JsonProperty("type") public String type; // Yes-The type of update, for example retraction or correction
 		@JsonProperty("label") public String label; // No-A display-friendly label for the update type
 	}
 
-	public static class Assertion {
+	public static class Assertion extends ExtensibleJson {
 		@JsonProperty("name") public String name; // Yes-
 		@JsonProperty("value") public String value; // Yes-
 		@JsonProperty("URL") public URL URL; // No-
@@ -189,26 +204,26 @@ public class CrossRefApiResponse {
 		@JsonProperty("group") public AssertionGroup group; // No-
 	}
 
-	public static class AssertionGroup {
+	public static class AssertionGroup extends ExtensibleJson {
 		@JsonProperty("name") public String name; // Yes-
 		@JsonProperty("label") public String label; // No-
 	}
 
-	public static class License {
+	public static class License extends ExtensibleJson {
 		@JsonProperty("content-version") public String contentVersion; // Yes-Either vor (version of record,) am (accepted manuscript,) tdm (text and data mining) or unspecified
 		@JsonProperty("delay-in-days") public Integer delayInDays; // Yes-Integer of days between the publication date of the work and the start date of this license
 		@JsonProperty("start") public Date start; // Yes-Date on which this license begins to take effect
 		@JsonProperty("URL") public URL URL; // Yes-Link to a web page describing this license
 	}
 
-	public static class ResourceLink {
+	public static class ResourceLink extends ExtensibleJson {
 		@JsonProperty("intended-application") public String intendedApplication; // Yes-Either text-mining, similarity-checking or unspecified
 		@JsonProperty("content-version") public String contentVersion; // Yes-Either vor (version of record,) am (accepted manuscript) or unspecified
 		@JsonProperty("URL") public URL URL; // Yes-Direct link to a full-text download location
 		@JsonProperty("content-type") public String contentType; // No-Content type (or MIME type) of the full-text object
 	}
 
-	public static class Reference {
+	public static class Reference extends ExtensibleJson {
 		@JsonProperty("key") public String key; // Yes-
 		@JsonProperty("DOI") public String DOI; // No-
 		@JsonProperty("doi-asserted-by") public String doiAssertedBy; // No-One of crossref or publisher
@@ -232,23 +247,23 @@ public class CrossRefApiResponse {
 		@JsonProperty("isbn-type") public String isbnType; // No-
 	}
 
-	public static class ISSNWithType {
+	public static class ISSNWithType extends ExtensibleJson {
 		@JsonProperty("value") public String value; // Yes-
 		@JsonProperty("type") public String type; // Yes-One of eissn, pissn or lissn
 	}
 
-	public static class ContentDomain {
+	public static class ContentDomain extends ExtensibleJson {
 		@JsonProperty("domain") public List<String> domain = new ArrayList<>(); // Yes-
 		@JsonProperty("crossmark-restriction") public Boolean crossmarkRestriction; // Yes-
 	}
 
-	public static class Relation {
+	public static class Relation extends ExtensibleJson {
 		@JsonProperty("id-type") public String idType; // Yes-
 		@JsonProperty("id") public String id; // Yes-
 		@JsonProperty("asserted-by") public String assertedBy; // Yes-One of subject or object
 	}
 
-	public static class Review {
+	public static class Review extends ExtensibleJson {
 		@JsonProperty("running-number") public String runningNumber; // No-
 		@JsonProperty("revision-round") public String revisionRound; // No-
 		@JsonProperty("stage") public String stage; // No-One of pre-publication or post-publication

@@ -19,7 +19,10 @@ public class CrossRefClient {
 	// http://clickthroughsupport.crossref.org/
 	
 	private String clickThroughToken;
+	private String developerEmail;
 	private Client client;
+	private Integer rateLimitRequests;
+	private Integer rateLimitInterval;
 	
 	public static class CrossRefException extends Exception {
 		public CrossRefException(String string) {
@@ -31,7 +34,7 @@ public class CrossRefClient {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		//out.add("api_key", apiKey);
 		//out.add("tool", appId);
-		//out.add("email", developerEmail);
+		out.add("mailto", developerEmail);
 		return out;
 	}
 	
