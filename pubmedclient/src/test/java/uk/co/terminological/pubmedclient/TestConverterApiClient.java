@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.util.Arrays;
 
+import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,8 @@ public class TestConverterApiClient {
 	public static String DEVELOPER_EMAIL = "rob@terminological.co.uk";
 	
 	public static void main(String[] args) throws CrossRefException {
-			
+		
+		BasicConfigurator.configure();
 		ConverterApiClient client = new ConverterApiClient(APP_ID,DEVELOPER_EMAIL);
 		client.getDoisFor(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
 		
