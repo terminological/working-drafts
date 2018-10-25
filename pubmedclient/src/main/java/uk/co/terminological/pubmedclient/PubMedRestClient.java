@@ -1,13 +1,5 @@
 package uk.co.terminological.pubmedclient;
 
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeading;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -23,9 +15,13 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+
+import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
+import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
+import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
+import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
+import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -41,7 +37,6 @@ public class PubMedRestClient {
 	private WebResource eFetchResource;
 	private JAXBContext jcSearch;
 	private JAXBContext jcFetch;
-	private JAXBContext pmcJaxbContext;
 	private Unmarshaller searchUnmarshaller;
 	private Unmarshaller fetchUnmarshaller;
 	//private Unmarshaller pmcUnmarshaller;
@@ -84,6 +79,7 @@ public class PubMedRestClient {
 		return out;
 	}
 	
+	//Could use google guava - RateLimiter - https://google.github.io/guava/releases/19.0/api/docs/index.html?com/google/common/util/concurrent/RateLimiter.html
 	private void rateLimit() {
 		while (System.currentTimeMillis() < timestamp+100)
 			try {
@@ -260,15 +256,17 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	/*protected PmcArticleset fetchFullTextArticle(String pmcId) throws JAXBException {
+	protected InputStream fetchFullTextArticle(String pmcId) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pmc");
 		params.add("retmode", "xml");
 		params.add("id", String.valueOf(pmcId));
-		return pmcFetch(params);
+		logger.debug("making efetch query with params {}", params.toString());
+		rateLimit();
+		return eFetchResource.queryParams(params).post(InputStream.class);
 	}
 
-	protected PmcArticleset pmcFetch(MultivaluedMap<String, String> params) throws JAXBException {
+	/*protected PmcArticleset pmcFetch(MultivaluedMap<String, String> params) throws JAXBException {
 		logger.debug("making efetch query with params {}", params.toString());
 		rateLimit();
 		InputStream is = eFetchResource.queryParams(params).post(InputStream.class);

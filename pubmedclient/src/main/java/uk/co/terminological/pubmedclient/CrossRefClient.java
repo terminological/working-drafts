@@ -52,7 +52,7 @@ public class CrossRefClient {
 	private Long rateLimitInterval = 1000L;
 	private Long lastIntervalStart = System.currentTimeMillis();
 	private Integer intervalRequests = 0;
-	ObjectMapper objectMapper = new ObjectMapper();
+	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	
 	public static CrossRefClient create(String developerEmail) {
@@ -118,7 +118,9 @@ public class CrossRefClient {
 		if (intervalRequests > rateLimitRequests) {
 			logger.debug("hit rate limit on crossref api - sleeping");
 			try {
-				Thread.sleep(50);
+				synchronized(lastIntervalStart) {
+					lastIntervalStart.wait(50);
+				}
 			} catch (InterruptedException e) {
 				//Probably OK to continue
 			}
