@@ -174,7 +174,7 @@ public class CrossRefClient {
 			
 			WebResource tdmCopy = client.resource(url.get().toString());
 			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
-			ClientResponse r = tdmCopy.head();
+			ClientResponse r = tdmCopy.get(ClientResponse.class);
 			
 			
 			return r.getEntityInputStream();
