@@ -137,7 +137,7 @@ public class CrossRefClient {
 		String url = baseUrl+"works/"+encode(doi);
 		WebResource wr = client.resource(url).queryParams(defaultApiParams());
 		try {
-			ClientResponse r = wr.head();
+			ClientResponse r = wr.get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
 			CrossRefApiResponse.Response  response = objectMapper.readValue(is, CrossRefApiResponse.Response.class);
@@ -152,7 +152,7 @@ public class CrossRefClient {
 	public ListResponse getByQuery(QueryBuilder qb) throws CrossRefException {
 		rateLimit();
 		try {
-			ClientResponse r = qb.get(client).head();
+			ClientResponse r = qb.get(client).get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
 			CrossRefApiResponse.ListResponse  response = objectMapper.readValue(is, CrossRefApiResponse.ListResponse.class);

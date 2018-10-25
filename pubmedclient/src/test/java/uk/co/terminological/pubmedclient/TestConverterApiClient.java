@@ -18,8 +18,8 @@ public class TestConverterApiClient {
 	public static void main(String[] args) throws CrossRefException {
 			
 		ConverterApiClient client = new ConverterApiClient(APP_ID,DEVELOPER_EMAIL);
-		
 		client.getDoisFor(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
+		
 	}
 
 }

@@ -58,6 +58,22 @@ public class ConverterApiClient {
 	}
 	
 	public Response getMapping(List<String> id, Optional<IdType> idType) throws CrossRefException {
+		Response out = null;
+		int start = 0;
+		while (start<id.size()) {
+			int end = id.size()<start+200 ? id.size() : start+200;
+			List<String> tmp2 = id.subList(start, end);
+			Response outTmp = doCall(tmp2,idType);
+			if (out == null) out = outTmp; 
+			else {
+				out.records.addAll(outTmp.records);
+			}
+			start += 200;
+		}
+		return out;
+	}
+	
+	private Response doCall(List<String> id, Optional<IdType> idType) throws CrossRefException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
