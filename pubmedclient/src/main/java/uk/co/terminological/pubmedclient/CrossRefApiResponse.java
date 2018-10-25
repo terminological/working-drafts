@@ -2,14 +2,12 @@ package uk.co.terminological.pubmedclient;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /* 
@@ -23,22 +21,9 @@ v3	15th May 2018	Add peer review fields
 
 public class CrossRefApiResponse {
 	
-	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
+	static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 	
-	public static class ExtensibleJson {
-		
-		Map<String,Object> unknownProperties = new HashMap<>();
-		
-		@JsonAnySetter
-	    public void handleUnknownProperty(String key, Object value) {
-	        logger.debug("Unknown property: {}: {}", key, value.toString());
-	        unknownProperties.put(key, value);
-	    }
-		
-		public Object getUnknownProperty(String key) {
-			return unknownProperties.get(key);
-		}
-	}
+	
 
 	/*public static class RawJson {
 		  Object json;
