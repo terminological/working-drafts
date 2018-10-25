@@ -3,6 +3,7 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -22,6 +23,7 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
+import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -145,6 +147,22 @@ public class PubMedRestClient {
 					.collect(Collectors.toList());
 		}
 		throw new IllegalStateException();
+	}
+	
+	public static List<String> getListIdsFromSearchResult(ESearchResult result) {
+		return result.getCountOrRetMaxOrRetStartOrQueryKeyOrWebEnvOrIdListOrTranslationSetOrTranslationStackOrQueryTranslationOrERROR()
+			.stream()
+			.filter(o -> (o instanceof IdList))
+			.map(o -> (IdList) o)
+			.flatMap(idl -> idl.getId().stream())
+			.map(id -> id.getvalue())
+			.collect(Collectors.toList());
+	}
+	
+	public static  Optional<String> getDoiFromPubmedArticle(PubmedArticle pma) {
+		return pma.getPubmedData()
+				.getArticleIdList().getArticleId().stream()
+				.filter(aid -> aid.getIdType().equals("doi")).findFirst().map(aid -> aid.getvalue());
 	}
 	
 	/*
