@@ -30,6 +30,9 @@ import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
  */
 public class PubMedRestClient {
 
+	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
+	
+	
 	private static final String DEFAULT_BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
 	private Client client;
 	private String apiKey;
@@ -49,12 +52,12 @@ public class PubMedRestClient {
 	static Long timestamp = 0L;
 	
 
-	protected PubMedRestClient(String apiKey, String appId, String developerEmail) { 
+	public PubMedRestClient(String apiKey, String appId, String developerEmail) { 
 		this(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
 	}
 
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-	protected PubMedRestClient(String baseUrl, String apiKey, String appId, String developerEmail) {
+	public PubMedRestClient(String baseUrl, String apiKey, String appId, String developerEmail) {
 		this.baseUrl = baseUrl;
 		client = Client.create();
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
@@ -102,7 +105,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected ESearchResult searchPubmed(String searchTerm, int start, int returnMax) throws JAXBException {
+	public ESearchResult searchPubmed(String searchTerm, int start, int returnMax) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("term", searchTerm);
@@ -119,7 +122,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected ESearchResult searchPubmedByTitle(String title) throws JAXBException {
+	public ESearchResult searchPubmedByTitle(String title) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("field", "title");
@@ -134,7 +137,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected List<PubmedArticle> fetchPubmedArticle(List<String> pmids) throws JAXBException {
+	public List<PubmedArticle> fetchPubmedArticle(List<String> pmids) throws JAXBException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -165,6 +168,12 @@ public class PubMedRestClient {
 				.filter(aid -> aid.getIdType().equals("doi")).findFirst().map(aid -> aid.getvalue());
 	}
 	
+	public static  Optional<String> getPMCIDFromPubmedArticle(PubmedArticle pma) {
+		return pma.getPubmedData()
+				.getArticleIdList().getArticleId().stream()
+				.filter(aid -> aid.getIdType().equals("pmc")).findFirst().map(aid -> aid.getvalue());
+	}
+	
 	/*
 	 * Pubmed central:
 	 * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?
@@ -172,7 +181,7 @@ public class PubMedRestClient {
 	 * &term=Accuracy%20of%20single%20progesterone%20test%20to%20predict%
 	 * 20early%20pregnancy%20outcome%20in%20women%20with%20pain%20or%20bleeding:%20meta-analysis%20of%20cohort%20studies.
 	 */
-	protected ESearchResult search(MultivaluedMap<String, String> queryParams) throws JAXBException {
+	public ESearchResult search(MultivaluedMap<String, String> queryParams) throws JAXBException {
 		logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = eSearchResource.queryParams(queryParams).get(InputStream.class);
@@ -202,7 +211,7 @@ public class PubMedRestClient {
 	 * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db
 	 * =pmc&id=3460254
 	 */
-	protected PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws JAXBException {
+	private PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws JAXBException {
 		logger.debug("making efetch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
@@ -224,7 +233,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws JAXBException {
+	public MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws JAXBException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pubmed");
 		params.add("retmode", "xml");
@@ -246,7 +255,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected ESearchResult seachPubmedCentral(String searchTerm) throws JAXBException {
+	public ESearchResult seachPubmedCentral(String searchTerm) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = new MultivaluedMapImpl();
 		searchParams.add("db", "pmc");
 		searchParams.add("term", searchTerm);
@@ -260,7 +269,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected ESearchResult seachPubmedCentralByTitle(String title) throws JAXBException {
+	public ESearchResult seachPubmedCentralByTitle(String title) throws JAXBException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pmc");
 		searchParams.add("field", "title");
@@ -274,7 +283,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected InputStream fetchFullTextArticle(String pmcId) {
+	public InputStream fetchFullTextArticle(String pmcId) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pmc");
 		params.add("retmode", "xml");

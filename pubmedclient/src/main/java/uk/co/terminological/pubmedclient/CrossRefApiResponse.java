@@ -21,8 +21,6 @@ v3	15th May 2018	Add peer review fields
 
 public class CrossRefApiResponse {
 	
-	static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
-	
 	
 
 	/*public static class RawJson {
