@@ -76,15 +76,21 @@ public class ConverterApiClient {
 	
 	
 	public List<String> getDoisFor(List<String> ids, IdType type) throws CrossRefException {
-		return getMapping(ids, type).records.stream().map(r -> r.doi).collect(Collectors.toList());
+		return getMapping(ids, type).records.stream()
+				.map(r -> r.doi).filter(o -> o != null)
+				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPubmedCentralIdsFor(List<String> ids, IdType type) throws CrossRefException {
-		return getMapping(ids, type).records.stream().map(r -> r.pmcid).collect(Collectors.toList());
+		return getMapping(ids, type).records.stream()
+				.map(r -> r.pmcid).filter(o -> o != null)
+				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPubmedIdsFor(List<String> ids, IdType type) throws CrossRefException {
-		return getMapping(ids, type).records.stream().map(r -> r.pmid).collect(Collectors.toList());
+		return getMapping(ids, type).records.stream()
+				.map(r -> r.pmid).filter(o -> o != null)
+				.collect(Collectors.toList());
 	}
 	
 	public static enum IdType {
