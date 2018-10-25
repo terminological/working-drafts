@@ -1,10 +1,10 @@
 package uk.co.terminological.pubmedclient;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -12,7 +12,15 @@ import java.util.function.Predicate;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -26,13 +34,15 @@ public class CrossRefClient {
 	// http://tdmsupport.crossref.org/researchers/
 	// http://clickthroughsupport.crossref.org/
 	
-	private String clickThroughToken;
+	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
+	
 	private String developerEmail;
 	private Client client;
 	private Integer rateLimitRequests = 50;
 	private Long rateLimitInterval = 1000L;
 	private Long lastIntervalStart = System.currentTimeMillis();
 	private Integer intervalRequests = 0;
+	ObjectMapper objectMapper = new ObjectMapper();
 	
 	public static class CrossRefException extends Exception {
 		public CrossRefException(String string) {
@@ -42,8 +52,6 @@ public class CrossRefClient {
 	
 	private MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
-		//out.add("api_key", apiKey);
-		//out.add("tool", appId);
 		out.add("mailto", developerEmail);
 		return out;
 	}
@@ -60,18 +68,19 @@ public class CrossRefClient {
 			return t.startsWith("http://creativecommons.org");
 	}};
 	
-	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter) throws CrossRefException {
+	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws CrossRefException {
 		
 		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
 			
 			Optional<URL> url = work.link.stream().filter(rl -> rl.intendedApplication.equals("text-mining")).map(rl -> rl.URL).findFirst();
 			if (!url.isPresent()) throw new CrossRefException("no content for intended application of text-mining");
 			
-			MultivaluedMap<String, String> searchParams = defaultApiParams();
-			searchParams.add("CR-Clickthrough-Client-Token", clickThroughToken);
 			WebResource tdmCopy = client.resource(url.get().toString());
-			return tdmCopy.queryParams(searchParams).get(InputStream.class);
+			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
+			ClientResponse r = tdmCopy.head();
 			
+			
+			return r.getEntityInputStream();
 		} else {
 			throw new CrossRefException("no licensed content found");
 		}
@@ -89,31 +98,87 @@ public class CrossRefClient {
 	
 	static String baseUrl ="http://api.crossref.org/";
 	
-	public Response getByDoi(String doi) {
-		String url = baseUrl+"works/"+encode(doi);
-		//TODO: execute query 
-		return null;
+	
+	
+	private void updateRateLimits(MultivaluedMap<String, String> headers) {
+		try {
+			rateLimitRequests = Integer.parseInt(headers.get("X-Rate-Limit-Limit").get(0));
+			rateLimitInterval = Long.parseLong(headers.get("X-Rate-Limit-Interval").get(0).replace("s", ""))*1000;
+		} catch (Exception e) {
+			//Probably header wasn't set - just ignore
+		}
+	}
+
+	private void rateLimit() {
+		if (lastIntervalStart+rateLimitInterval < System.currentTimeMillis()) {
+			lastIntervalStart = System.currentTimeMillis();
+			intervalRequests = 0;
+		}
+		if (intervalRequests > rateLimitRequests) {
+			logger.debug("hit rate limit on crossref api - sleeping");
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				//Probably OK to continue
+			}
+			rateLimit();
+		} else {
+			intervalRequests += 1;
+		}
 	}
 	
+	public Response getByDoi(String doi) throws CrossRefException {
+		rateLimit();
+		String url = baseUrl+"works/"+encode(doi);
+		WebResource wr = client.resource(url).queryParams(defaultApiParams());
+		try {
+			ClientResponse r = wr.head();
+			updateRateLimits(r.getHeaders());
+			InputStream is = r.getEntityInputStream(); 
+			CrossRefApiResponse.Response  response = objectMapper.readValue(is, CrossRefApiResponse.Response.class);
+			return response;
+		} catch (JsonParseException | JsonMappingException e) {
+			throw new CrossRefException("Malformed response to: "+url);
+		} catch (IOException | UniformInterfaceException e) {
+			throw new CrossRefException("Cannot connect to: "+url);
+		}
+	}
 	
-	
-	public ListResponse getByQuery(QueryBuilder qb) {
-		//TODO: execute query 
-		return null;
+	public ListResponse getByQuery(QueryBuilder qb) throws CrossRefException {
+		rateLimit();
+		try {
+			ClientResponse r = qb.get(client).head();
+			updateRateLimits(r.getHeaders());
+			InputStream is = r.getEntityInputStream(); 
+			CrossRefApiResponse.ListResponse  response = objectMapper.readValue(is, CrossRefApiResponse.ListResponse.class);
+			return response;
+		} catch (JsonParseException | JsonMappingException e) {
+			throw new CrossRefException("Malformed response to: "+qb.get(client).getURI());
+		} catch (IOException | UniformInterfaceException e) {
+			throw new CrossRefException("Cannot connect to: "+qb.get(client).getURI());
+		}
 	}
 		
+	public QueryBuilder create() {
+		QueryBuilder out = new QueryBuilder(baseUrl+"works", defaultApiParams());
+		return out;
+	}
+	
 	public static class QueryBuilder {
 		protected String url;
 		
-		MultivaluedMap<String, String> params = defaultApiParams();
+		MultivaluedMap<String, String> params;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		
-		public static QueryBuilder create() {
-			QueryBuilder out = new QueryBuilder(baseUrl+"works");
-			return out;
+		public WebResource get(Client client) {
+			WebResource tdmCopy = client.resource(url);
+			return tdmCopy.queryParams(params);
 		}
 		
-		private QueryBuilder(String url) {this.url=url;}
+		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams ) {
+			this.url=url;
+			this.params=defaultParams;
+		}
 		
 		public QueryBuilder withSearchTerm(String search) {
 			params.add("query", search);
@@ -121,28 +186,51 @@ public class CrossRefClient {
 		}
 		
 		public QueryBuilder withSearchTerm(Field field, String search) {
-			params.add("query."+field.name().toLowerCase().replace("_", "-"), search);
+			params.add("query."+field.name().toLowerCase().replace("__", ".").replace("_", "-"), search);
 			return this;
 		}
 		
 		public QueryBuilder sortedBy(Sort sort, SortOrder order) {
-			params.add("sort",sort.name().toLowerCase().replace("_", "-"));
-			params.add("order",order.name().toLowerCase().replace("_", "-"));
+			params.add("sort",sort.name().toLowerCase().replace("__", ".").replace("_", "-"));
+			params.add("order",order.name().toLowerCase().replace("__", ".").replace("_", "-"));
+			return this;
+		}
+		
+		public QueryBuilder limit(Integer offset, Integer rows) {
+			params.add("rows",rows.toString());
+			params.add("offset",offset.toString());
+			return this;
+		}
+		
+		public QueryBuilder since(Date date) {
+			params.add("filter","from-index-date:"+format.format(date));
+			return this;
+		}
+		
+		public QueryBuilder firstPage(Integer rows) {
+			params.add("rows",rows.toString());
+			params.add("cursor", "*");
+			return this;
+		}
+		
+		public QueryBuilder nextPage(ListResponse resp) {
+			params.remove("cursor");
+			params.add("cursor", resp.message.nextCursor);
 			return this;
 		}
 		
 		public QueryBuilder filteredBy(BooleanFilter filter, Boolean value) {
-			params.add("filter",filter.name().toLowerCase().replace("_", "-")+":"+value.toString());
+			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+value.toString());
 			return this;
 		}
 		
 		public QueryBuilder filteredBy(StringFilter filter, String value) {
-			params.add("filter",filter.name().toLowerCase().replace("_", "-")+":"+value.toString());
+			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+value.toString());
 			return this;
 		}
 		
 		public QueryBuilder filteredBy(DateFilter filter, Date value) {
-			params.add("filter",filter.name().toLowerCase().replace("_", "-")+":"+format.format(value));
+			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+format.format(value));
 			return this;
 		}
 	}
@@ -217,6 +305,37 @@ public class CrossRefClient {
 	}
 	
 	public static enum StringFilter {
+		FUNDER,
+		LOCATION,
+		PREFIX,
+		MEMBER,
+		LICENSE__URL,
+		LICENSE__VERSION,
+		LICENSE__DELAY,
+		FULL_TEXT__VERSION,
+		FULL_TEXT__TYPE,
+		FULL_TEXT__APPLICATION,
+		REFERENCE_VISIBILITY,
+		ORCHID,
+		ISSN,
+		ISBN,
+		TYPE,
+		DIRECTORY,
+		DOI,
+		UPDATES,
+		CONTAINER_TITLE,
+		CATEGORY_NAME,
+		TYPE_NAME,
+		AWARD__NUMBER,
+		AWARD__FUNDER,
+		ASSERTION_GROUP,
+		ASSERTION,
+		ALTERNATIVE_ID,
+		ARTICLE_NUMBER,
+		CONTENT_DOMAIN,
+		RELATION__TYPE,
+		RELATION__OBJECT,
+		RELATION__OBJECT_TYPE
 		
 	}
 	
