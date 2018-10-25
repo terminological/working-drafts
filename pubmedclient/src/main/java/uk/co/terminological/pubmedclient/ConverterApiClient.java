@@ -68,6 +68,7 @@ public class ConverterApiClient {
 			Response  response = objectMapper.readValue(is, Response.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
+			e.printStackTrace();
 			throw new CrossRefException("Malformed response");
 		} catch (IOException | UniformInterfaceException e) {
 			throw new CrossRefException("Cannot connect");
