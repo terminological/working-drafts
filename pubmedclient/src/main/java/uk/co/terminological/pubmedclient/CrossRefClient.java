@@ -7,6 +7,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -34,6 +37,13 @@ public class CrossRefClient {
 	// http://tdmsupport.crossref.org/researchers/
 	// http://clickthroughsupport.crossref.org/
 	
+	private static Map<String,CrossRefClient> singleton = new HashMap<>();
+	
+	private CrossRefClient(String developerEmail) {
+		this.developerEmail = developerEmail;
+		this.client = Client.create();
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 	
 	private String developerEmail;
@@ -43,6 +53,14 @@ public class CrossRefClient {
 	private Long lastIntervalStart = System.currentTimeMillis();
 	private Integer intervalRequests = 0;
 	ObjectMapper objectMapper = new ObjectMapper();
+	
+	
+	public static CrossRefClient create(String developerEmail) {
+		if (singleton.containsKey(developerEmail)) return singleton.get(developerEmail);
+		CrossRefClient tmp = new CrossRefClient(developerEmail);
+		singleton.put(developerEmail, tmp);
+		return tmp;
+	};
 	
 	public static class CrossRefException extends Exception {
 		public CrossRefException(String string) {
@@ -68,24 +86,7 @@ public class CrossRefClient {
 			return t.startsWith("http://creativecommons.org");
 	}};
 	
-	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws CrossRefException {
-		
-		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
-			
-			Optional<URL> url = work.link.stream().filter(rl -> rl.intendedApplication.equals("text-mining")).map(rl -> rl.URL).findFirst();
-			if (!url.isPresent()) throw new CrossRefException("no content for intended application of text-mining");
-			
-			WebResource tdmCopy = client.resource(url.get().toString());
-			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
-			ClientResponse r = tdmCopy.head();
-			
-			
-			return r.getEntityInputStream();
-		} else {
-			throw new CrossRefException("no licensed content found");
-		}
-		
-	}
+	
 	
 	
 	private static String encode(String string)  {
@@ -151,6 +152,7 @@ public class CrossRefClient {
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
 			CrossRefApiResponse.ListResponse  response = objectMapper.readValue(is, CrossRefApiResponse.ListResponse.class);
+			if (response.message.items.size() == 0 && response.message.totalResults > 0) throw new NoSuchElementException();
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
 			throw new CrossRefException("Malformed response to: "+qb.get(client).getURI());
@@ -158,8 +160,27 @@ public class CrossRefClient {
 			throw new CrossRefException("Cannot connect to: "+qb.get(client).getURI());
 		}
 	}
+	
+	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws CrossRefException {
 		
-	public QueryBuilder create() {
+		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
+			
+			Optional<URL> url = work.link.stream().filter(rl -> rl.intendedApplication.equals("text-mining")).map(rl -> rl.URL).findFirst();
+			if (!url.isPresent()) throw new CrossRefException("no content for intended application of text-mining");
+			
+			WebResource tdmCopy = client.resource(url.get().toString());
+			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
+			ClientResponse r = tdmCopy.head();
+			
+			
+			return r.getEntityInputStream();
+		} else {
+			throw new CrossRefException("no licensed content found");
+		}
+		
+	}
+		
+	public QueryBuilder buildQuery() {
 		QueryBuilder out = new QueryBuilder(baseUrl+"works", defaultApiParams());
 		return out;
 	}
