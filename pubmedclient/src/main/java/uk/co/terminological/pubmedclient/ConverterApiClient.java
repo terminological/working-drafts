@@ -63,8 +63,7 @@ public class ConverterApiClient {
 		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
 		WebResource wr = lookupService.queryParams(params);
 		try {
-			ClientResponse r = wr.head();
-			InputStream is = r.getEntityInputStream(); 
+			InputStream is = wr.get(InputStream.class); 
 			Response  response = objectMapper.readValue(is, Response.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
