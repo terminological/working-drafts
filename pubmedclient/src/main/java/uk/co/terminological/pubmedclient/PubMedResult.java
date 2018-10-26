@@ -181,6 +181,7 @@ public class PubMedResult {
 			this.typeOrCategory = Optional.of(linkSetDb.getLinkName());
 			this.toDbOrUrl = linkSetDb.getDbTo();
 			this.toId = Optional.of(link.getId().getvalue());
+			this.score = Optional.ofNullable(link.getScore()).map(sc -> Long.parseLong(sc));
 		}
 		
 		public String toString() {
