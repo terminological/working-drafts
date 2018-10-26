@@ -55,6 +55,12 @@ public class TestPubMedRestClient {
 		
 		links.stream().forEach(System.out::println);
 		
+		Links links2 = restClient.createELinksQuery(result.getIds())
+				.command(Command.NEIGHBOUR_SCORE)
+				.execute();
+		
+		links2.stream().forEach(System.out::println);
+		
 		/*restClient
 				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");
 		Optional<PubmedArticle> pubmedArticle = restClient.fetchPubmedEntry("2764997");
