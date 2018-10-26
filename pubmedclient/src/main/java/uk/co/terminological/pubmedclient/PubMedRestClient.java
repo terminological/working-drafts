@@ -24,6 +24,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
+import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 
 /*
@@ -41,7 +42,10 @@ public class PubMedRestClient {
 	private String developerEmail;
 	private WebResource eSearchResource;
 	private WebResource eFetchResource;
+	private WebResource eLinkResource;
 	private JAXBContext jcSearch;
+	private JAXBContext jcLink;
+	private Unmarshaller linkUnmarshaller;
 	private JAXBContext jcFetch;
 	private Unmarshaller searchUnmarshaller;
 	private Unmarshaller fetchUnmarshaller;
@@ -70,11 +74,14 @@ public class PubMedRestClient {
 		client = Client.create();
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
 		eFetchResource = client.resource(this.baseUrl + EFETCH);
+		eLinkResource = client.resource(this.baseUrl + ELINK);
 		try {
 			jcSearch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.esearch");
 			searchUnmarshaller = jcSearch.createUnmarshaller();
 			jcFetch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.efetch");
 			fetchUnmarshaller = jcFetch.createUnmarshaller();
+			jcLink = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.elink");
+			linkUnmarshaller = jcLink.createUnmarshaller();
 		} catch (JAXBException e) {
 			throw new RuntimeException("Problem initialising JAXB",e);
 		}
@@ -150,7 +157,7 @@ public class PubMedRestClient {
 			return this;
 		}
 		
-		public ESearchQueryBuilder between(Date start, Date end) {
+		public ESearchQueryBuilder betweenDates(Date start, Date end) {
 			searchParams.remove("mindate");
 			searchParams.remove("maxdate");
 			searchParams.remove("datetype");
@@ -227,7 +234,6 @@ public class PubMedRestClient {
 		return fetchPubmedEntries(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
-	
 	/**
 	 * retrieves a full text for an article from PubMed Central
 	 * @param pmcId
@@ -252,5 +258,110 @@ public class PubMedRestClient {
 		rateLimit();
 		return eFetchResource.queryParams(params).post(InputStream.class);
 	}
+	
+	
+	/**
+	 * Elinks
+	 * @return
+	 */
+	public ELinksQueryBuilder createELinksQuery() {
+		return new ELinksQueryBuilder(defaultApiParams());
+	}
+	
+	public static class ELinksQueryBuilder {
+		MultivaluedMap<String, String> searchParams;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		
+		protected WebResource get(WebResource searchService) {
+			WebResource tdmCopy = searchService;
+			return tdmCopy.queryParams(searchParams);
+		}
+		
+		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams) {
+			this.searchParams = searchParams;
+			searchParams.add("db", "pubmed");
+			searchParams.add("dbfrom", "pubmed");
+			searchParams.add("cmd", "neighbour_score");
+			searchParams.add("retmode", "xml");
+		}
+		
+		public ELinksQueryBuilder command(Command command) {
+			searchParams.remove("cmd");
+			this.searchParams.add("cmd", command.name().toLowerCase());
+			return this;
+		}
+		
+		/**
+		 * NEIGHBOUR
+		 * @param from
+		 * @param to
+		 * @return
+		 */
+		public ELinksQueryBuilder between(Database from, Database to) {
+			searchParams.remove("db");
+			searchParams.remove("dbfrom");
+			this.searchParams.add("db", to.name().toLowerCase());
+			this.searchParams.add("db", from.name().toLowerCase());
+			return this;
+		}
 
+		/**
+		 * NEIGHBOUR_SCORE, PRLINKS and LLINKS
+		 * @param from
+		 * @return
+		 */
+		public ELinksQueryBuilder from(Database from) {
+			searchParams.remove("db");
+			searchParams.remove("dbfrom");
+			this.searchParams.add("db", from.name().toLowerCase());
+			return this;
+		}
+		
+		public ELinksQueryBuilder searchLinked(String term) {
+			searchParams.remove("term");
+			this.searchParams.add("term", term);
+			return this;
+		}
+		
+		public ELinksQueryBuilder withinLastDays(int count) {
+			searchParams.remove("reldate");
+			searchParams.remove("datetype");
+			this.searchParams.add("datetype", "edat");
+			this.searchParams.add("reldate", Integer.toString(count));
+			return this;
+		}
+		
+		public ELinksQueryBuilder betweenDates(Date start, Date end) {
+			searchParams.remove("mindate");
+			searchParams.remove("maxdate");
+			searchParams.remove("datetype");
+			this.searchParams.add("datetype", "edat");
+			this.searchParams.add("mindate", format.format(start));
+			this.searchParams.add("maxdate", format.format(end));
+			return this;
+		}
+	}
+	
+	public static enum Command {
+		NEIGHBOUR, NEIGHBOUR_SCORE, PRLINKS, LLINKS
+	}
+	
+	
+	public PubMedResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
+		//logger.debug("making esearch query with params {}", queryParams.toString());
+		rateLimit();
+		InputStream is = builder.get(eLinkResource).get(InputStream.class);
+		ELinkResult linkResult;
+		try {
+			linkResult = (ELinkResult) linkUnmarshaller.unmarshal(is);
+			is.close();
+			
+		} catch (JAXBException | IOException e1) {
+			throw new BibliographicApiException("could not parse result",e1);
+		}
+		return new PubMedResult.Links(linkResult);
+	}
+	
+	
+	
 }

@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
+import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
@@ -92,5 +93,13 @@ public class PubMedResult {
 		public MeshHeadingList getMeshHeadings() {
 			return raw.getMedlineCitation().getMeshHeadingList();
 		}
+	}
+	
+	public static class Links {
+		
+		private ELinkResult raw;
+		public Links(ELinkResult raw) {this.raw	=raw;}
+		public ELinkResult raw() {return raw;}
+		
 	}
 }
