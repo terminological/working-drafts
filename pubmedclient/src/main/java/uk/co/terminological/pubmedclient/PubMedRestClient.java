@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +148,7 @@ public class PubMedRestClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public List<PubmedArticle> fetchPubmedArticle(List<String> pmids) throws BibliographicApiException {
+	public List<PubmedArticle> fetchPubmedEntries(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -160,6 +161,10 @@ public class PubMedRestClient {
 					.collect(Collectors.toList());
 		}
 		throw new IllegalStateException();
+	}
+	
+	public Optional<PubmedArticle> fetchPubmedEntry(String pmid) throws BibliographicApiException {
+		return fetchPubmedEntries(Collections.singletonList(pmid)).stream().findFirst();
 	}
 	
 	public static List<String> getListIdsFromSearchResult(ESearchResult result) {
