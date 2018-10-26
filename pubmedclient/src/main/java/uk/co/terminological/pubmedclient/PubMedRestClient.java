@@ -357,7 +357,7 @@ public class PubMedRestClient {
 	}
 	
 	public static enum Command {
-		NEIGHBOUR, NEIGHBOUR_SCORE, PRLINKS, LLINKS
+		NEIGHBOR, NEIGHBOR_SCORE, PRLINKS, LLINKS
 	}
 	
 	
