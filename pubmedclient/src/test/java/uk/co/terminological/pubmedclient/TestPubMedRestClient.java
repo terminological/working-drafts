@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 
@@ -20,7 +21,7 @@ public class TestPubMedRestClient {
 	public static String APP_ID = "test_client";
 	public static String DEVELOPER_EMAIL = "rob@terminological.co.uk";
 	
-	public static void main(String[] args)  throws JAXBException {
+	public static void main(String[] args) throws BibliographicApiException  {
 		BasicConfigurator.configure();
 		
 		// Taunton[Affiliation] AND UK[Affiliation] AND NHS[Affilitation] 
@@ -30,8 +31,8 @@ public class TestPubMedRestClient {
 		restClient.searchPubmed("Doxapram", 0, 10);
 		restClient
 				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");
-		List<PubmedArticle> pubmedArticle = restClient.fetchPubmedArticle(Collections.singletonList("2764997"));
-		pubmedArticle.stream().forEach(a -> logger.info(a.getMedlineCitation().getPMID().getvalue()));
+		Optional<PubmedArticle> pubmedArticle = restClient.fetchPubmedEntry("2764997");
+		pubmedArticle.ifPresent(a -> logger.info(a.getMedlineCitation().getPMID().getvalue()));
 		
 		MeshHeadingList mesHeadingList = restClient.fetchMeshHeadingsForPubmedArticle(2764997L);
 			for (MeshHeading meshHeading : mesHeadingList.getMeshHeading()) {
