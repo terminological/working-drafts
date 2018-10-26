@@ -2,7 +2,9 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,7 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
+import uk.co.terminological.pubmedclient.PubMedResult;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -52,6 +55,7 @@ public class PubMedRestClient {
 	private static final Logger logger = LoggerFactory.getLogger(PubMedRestClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
 	private static final String EFETCH = "efetch.fcgi";
+	private static final String ELINK = "elink.fcgi";
 	static Long timestamp = 0L;
 	
 	public static Map<String, PubMedRestClient> singleton = new HashMap<>();
@@ -105,6 +109,65 @@ public class PubMedRestClient {
 		timestamp = System.currentTimeMillis();
 	}
 
+	public ESearchQueryBuilder createESearchQuery() {
+		return new ESearchQueryBuilder(defaultApiParams());
+	}
+	
+	public static class ESearchQueryBuilder {
+		MultivaluedMap<String, String> searchParams;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		
+		protected WebResource get(WebResource searchService) {
+			WebResource tdmCopy = searchService;
+			return tdmCopy.queryParams(searchParams);
+		}
+		
+		
+		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams) {
+			this.searchParams = searchParams;
+			searchParams.add("db", "pubmed");
+		}
+		
+		public ESearchQueryBuilder searchTerm(String term) {
+			this.searchParams.add("term", term);
+			return this;
+		}
+		
+		public ESearchQueryBuilder searchDatabase(Database db) {
+			searchParams.remove("db");
+			this.searchParams.add("db", db.name().toLowerCase());
+			return this;
+		}
+		
+		public ESearchQueryBuilder limit(int from, int count) {
+			this.searchParams.add("retstart", Integer.toString(from));
+			this.searchParams.add("retmax", Integer.toString(count));
+			return this;
+		}
+		
+		public ESearchQueryBuilder withinLastDays(int count) {
+			this.searchParams.add("datetype", "edat");
+			this.searchParams.add("reldate", Integer.toString(count));
+			return this;
+		}
+		
+		public ESearchQueryBuilder between(Date start, Date end) {
+			this.searchParams.add("datetype", "edat");
+			this.searchParams.add("mindate", format.format(start));
+			this.searchParams.add("maxdate", format.format(end));
+			return this;
+		}
+		
+		public ESearchQueryBuilder restrictSearchToField(String field) {
+			this.searchParams.add("field", field);
+			return this;
+		}
+	}
+	
+	//public static class ELinkQueryBuilder
+	
+	public static enum Database { PUBMED, PMC, MESH, GENE }
+	
 	/**
 	 * Retrieve PMIDs from PubMed for a search string
 	 * 
@@ -114,31 +177,22 @@ public class PubMedRestClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public ESearchResult searchPubmed(String searchTerm, int start, int returnMax) throws BibliographicApiException {
-		MultivaluedMap<String, String> searchParams = defaultApiParams();
-		searchParams.add("db", "pubmed");
-		searchParams.add("term", searchTerm);
-		searchParams.add("retstart", ""+start);
-		searchParams.add("retmax", ""+returnMax);
-		return search(searchParams);
+	public PubMedResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
+		//logger.debug("making esearch query with params {}", queryParams.toString());
+		rateLimit();
+		InputStream is = builder.get(eSearchResource).get(InputStream.class);
+		ESearchResult searchResult;
+		try {
+			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
+			is.close();
+			
+		} catch (JAXBException | IOException e1) {
+			throw new BibliographicApiException("could not parse result",e1);
+		}
+		return new PubMedResult.Search(searchResult);
 	}
 	
-	/**
-	 * Retrieve PMIDs from PubMed for a article title
-	 * 
-	 * @param the
-	 *            title of the article
-	 * @return
-	 * @throws BibliographicApiException 
-	 * @throws JAXBException
-	 */
-	public ESearchResult searchPubmedByTitle(String title) throws BibliographicApiException {
-		MultivaluedMap<String, String> searchParams = defaultApiParams();
-		searchParams.add("db", "pubmed");
-		searchParams.add("field", "title");
-		searchParams.add("term", title);
-		return search(searchParams);
-	}
+	
 
 	/**
 	 * Fetch PubMed article metadata and abstract
@@ -148,170 +202,36 @@ public class PubMedRestClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public List<PubmedArticle> fetchPubmedEntries(List<String> pmids) throws BibliographicApiException {
+	public PubMedResult.EntrySet fetchPubmedEntries(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
 		fetchParams.add("format", "xml");
-		PubmedArticleSet pubmedArticleSet = fetch(fetchParams);
-		if (pubmedArticleSet != null) {
-			return pubmedArticleSet.getPubmedArticleOrPubmedBookArticle().stream()
-					.filter(a -> a instanceof PubmedArticle)
-					.map(a -> (PubmedArticle) a)
-					.collect(Collectors.toList());
-		}
-		throw new IllegalStateException();
-	}
-	
-	public Optional<PubmedArticle> fetchPubmedEntry(String pmid) throws BibliographicApiException {
-		return fetchPubmedEntries(Collections.singletonList(pmid)).stream().findFirst();
-	}
-	
-	public static List<String> getListIdsFromSearchResult(ESearchResult result) {
-		return result.getCountOrRetMaxOrRetStartOrQueryKeyOrWebEnvOrIdListOrTranslationSetOrTranslationStackOrQueryTranslationOrERROR()
-			.stream()
-			.filter(o -> (o instanceof IdList))
-			.map(o -> (IdList) o)
-			.flatMap(idl -> idl.getId().stream())
-			.map(id -> id.getvalue())
-			.collect(Collectors.toList());
-	}
-	
-	public static  Optional<String> getDoiFromPubmedArticle(PubmedArticle pma) {
-		return pma.getPubmedData()
-				.getArticleIdList().getArticleId().stream()
-				.filter(aid -> aid.getIdType().equals("doi")).findFirst().map(aid -> aid.getvalue());
-	}
-	
-	public static  Optional<String> getPMCIDFromPubmedArticle(PubmedArticle pma) {
-		return pma.getPubmedData()
-				.getArticleIdList().getArticleId().stream()
-				.filter(aid -> aid.getIdType().equals("pmc")).findFirst().map(aid -> aid.getvalue());
-	}
-	
-	/*
-	 * Pubmed central:
-	 * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?
-	 * db=pmc&field=title
-	 * &term=Accuracy%20of%20single%20progesterone%20test%20to%20predict%
-	 * 20early%20pregnancy%20outcome%20in%20women%20with%20pain%20or%20bleeding:%20meta-analysis%20of%20cohort%20studies.
-	 */
-	public ESearchResult search(MultivaluedMap<String, String> queryParams) throws BibliographicApiException {
-		logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
-		InputStream is = eSearchResource.queryParams(queryParams).get(InputStream.class);
-		ESearchResult searchResult;
-		try {
-			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
-		} catch (JAXBException e1) {
-			throw new BibliographicApiException("could not parse result",e1);
-		}
-		try {
-			is.close();
-		} catch (IOException e) {
-			logger.error("could not close ioStream", e);
-		}
-		List<Object> objects = searchResult
-				.getCountOrRetMaxOrRetStartOrQueryKeyOrWebEnvOrIdListOrTranslationSetOrTranslationStackOrQueryTranslationOrERROR();
-		for (Object object : objects) {
-			if (object instanceof Count) {
-				Count count = (Count) object;
-				logger.debug("results count {}", count.getvalue());
-				break;
-			}
-		}
-		return searchResult;
-	}
-
-
-	
-	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
-	/*
-	 * Pubmed central:
-	 * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db
-	 * =pmc&id=3460254
-	 */
-	private PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws BibliographicApiException {
-		logger.debug("making efetch query with params {}", queryParams.toString());
-		rateLimit();
-		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
+		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
 		Object obj;
 		try {
 			obj = fetchUnmarshaller.unmarshal(is);
-		} catch (JAXBException e1) {
+			is.close();
+		} catch (JAXBException | IOException e1) {
 			throw new BibliographicApiException("Could not parse response:",e1);
 		}
 		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
-		try {
-			is.close();
-		} catch (IOException e) {
-			logger.error("could not close ioStream", e);
-		}
-		logger.debug("results count {}", pubmedArticleSet.getPubmedArticleOrPubmedBookArticle().size());
-		return pubmedArticleSet;
+		return new PubMedResult.EntrySet(pubmedArticleSet);
+	}
+	
+	public Optional<PubMedResult.Entry> fetchPubmedEntry(String pmid) throws BibliographicApiException {
+		return fetchPubmedEntries(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
-	/**
-	 * Utility method to retrieve the Mesh Headings for an PubMed article
-	 * 
-	 * @param pmid
-	 * @return
-	 * @throws BibliographicApiException 
-	 * @throws JAXBException
-	 */
-	public MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws BibliographicApiException {
-		MultivaluedMap<String, String> params = defaultApiParams();
-		params.add("db", "pubmed");
-		params.add("retmode", "xml");
-		params.add("id", String.valueOf(pmid));
-		PubmedArticleSet pubmedArticleSet = fetch(params);
-		List<Object> objects = pubmedArticleSet.getPubmedArticleOrPubmedBookArticle();
-		if (objects.size() == 1) {
-			PubmedArticle pubmedArticle = (PubmedArticle) objects.get(0);
-			return pubmedArticle.getMedlineCitation().getMeshHeadingList();
-		}
-		throw new IllegalStateException();
-	}
-
-	/**
-	 * Search PubMed Central for full text articles using a query string.
-	 * 
-	 * @param searchTerm
-	 *            the searchterm same as the pubmed central web interface
-	 * @return
-	 * @throws BibliographicApiException 
-	 * @throws JAXBException
-	 */
-	public ESearchResult seachPubmedCentral(String searchTerm) throws BibliographicApiException {
-		MultivaluedMap<String, String> searchParams = new MultivaluedMapImpl();
-		searchParams.add("db", "pmc");
-		searchParams.add("term", searchTerm);
-		return search(searchParams);
-	}
-
-	/**
-	 * Search PubMed Central for full text articles using a query string.
-	 * 
-	 * @param title
-	 * @return
-	 * @throws BibliographicApiException 
-	 * @throws JAXBException
-	 */
-	public ESearchResult seachPubmedCentralByTitle(String title) throws BibliographicApiException {
-		MultivaluedMap<String, String> searchParams = defaultApiParams();
-		searchParams.add("db", "pmc");
-		searchParams.add("field", "title");
-		searchParams.add("term", title);
-		return search(searchParams);
-	}
-
+	
 	/**
 	 * retrieves a full text for an article from PubMed Central
 	 * @param pmcId
 	 * @return
 	 * @throws JAXBException
 	 */
-	public InputStream fetchFullTextArticle(String pmcId) {
+	public InputStream fetchPMCFullText(String pmcId) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pmc");
 		params.add("retmode", "xml");
@@ -321,39 +241,6 @@ public class PubMedRestClient {
 		return eFetchResource.queryParams(params).post(InputStream.class);
 	}
 
-	/*protected PmcArticleset pmcFetch(MultivaluedMap<String, String> params) throws JAXBException {
-		logger.debug("making efetch query with params {}", params.toString());
-		rateLimit();
-		InputStream is = eFetchResource.queryParams(params).post(InputStream.class);
-		Object obj = pmcUnmarshaller.unmarshal(is);
-		PmcArticleset pmcArticleset = (PmcArticleset) obj;
-		try {
-			is.close();
-		} catch (IOException e) {
-			logger.error("could not close ioStream", e);
-		}
-		logger.debug("results count {}", pmcArticleset.getArticle().size());
-		return pmcArticleset;
-	}*/
 
-	// http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=11850928,11482001&format=xml
-	/*
-	 * Pubmed central:
-	 * https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=protein&id=6678417,9507199,28558982,28558984,28558988,28558990
-	 */
-//protected ESummaryResult summary(MultivaluedMap<String, String> queryParams) throws JAXBException {
-//	logger.debug("making efetch query with params {}", queryParams.toString());
-//	rateLimit();
-//	InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
-//	Object obj = fetchUnmarshaller.unmarshal(is);
-//	ESummaryResult out = (ESummaryResult) obj;
-//	try {
-//		is.close();
-//	} catch (IOException e) {
-//		logger.error("could not close ioStream", e);
-//	}
-//	logger.debug("results count {}", out.getDocSumOrERROR().stream().filter(a -> a instanceof DocSum).map(a -> (DocSum) a).count());
-//	return out;
-//}
 
 }
