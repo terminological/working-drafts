@@ -12,7 +12,7 @@ public class PubMedBatchQuery {
 	
 	public static PubMedBatchQuery newSession(String apiKey, String appId, String developerEmail) {
 		PubMedBatchQuery out = new PubMedBatchQuery();
-		out.client = new PubMedRestClient(apiKey, appId, developerEmail);
+		out.client = PubMedRestClient.create(apiKey, appId, developerEmail);
 		return out;
 	}
 	
