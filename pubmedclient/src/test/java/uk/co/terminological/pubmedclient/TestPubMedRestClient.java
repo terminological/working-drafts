@@ -18,6 +18,8 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeading;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
+import uk.co.terminological.pubmedclient.PubMedRestClient.Command;
+import uk.co.terminological.pubmedclient.PubMedResult.Links;
 import uk.co.terminological.pubmedclient.PubMedResult.Search;
 
 public class TestPubMedRestClient {
@@ -46,6 +48,12 @@ public class TestPubMedRestClient {
 			.execute();
 		
 		result.getIds().forEach(System.out::println);
+		
+		Links links = restClient.createELinksQuery(result.getIds())
+				.command(Command.PRLINKS)
+				.execute();
+		
+		links.
 		
 		/*restClient
 				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");

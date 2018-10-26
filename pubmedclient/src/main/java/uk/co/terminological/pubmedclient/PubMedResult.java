@@ -110,6 +110,8 @@ public class PubMedResult {
 		
 		private List<Link> links;
 		
+		public Stream<Link> stream() {return links.stream();}
+		
 		private void convert() {
 			links = new ArrayList<Link>();
 			for (LinkSet ls: raw.getLinkSet()) {
