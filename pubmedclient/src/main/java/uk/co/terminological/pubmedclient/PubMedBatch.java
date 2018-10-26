@@ -29,7 +29,7 @@ public class PubMedBatch {
 			this.resultSize = search.getCountOrRetMaxOrRetStartOrQueryKeyOrWebEnvOrIdListOrTranslationSetOrTranslationStackOrQueryTranslationOrERROR().stream()
 					.filter(a -> a instanceof Count).map(a -> Integer.parseInt(((Count) a).getvalue()))
 					.findFirst().orElse(0);
-		} catch (JAXBException e) {
+		} catch (BibliographicApiException e) {
 			throw new RuntimeException("Some sort of API parsing error has occurred getting search results",e);
 		}
 	}
@@ -46,7 +46,7 @@ public class PubMedBatch {
 		if (articles == null) {
 			try {
 				articles = query.getClient().fetchPubmedArticle(idsFromSearch());
-			} catch (JAXBException e) {
+			} catch (BibliographicApiException e) {
 				throw new RuntimeException("Some sort of API parsing error has occurred getting articles",e);				
 			}
 		}
