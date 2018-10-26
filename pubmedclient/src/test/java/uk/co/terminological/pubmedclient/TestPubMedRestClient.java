@@ -56,5 +56,6 @@ public class TestPubMedRestClient {
 					.seachPubmedCentralByTitle("Accuracy of single progesterone test to predict early pregnancy outcome in women with pain or bleeding: meta-analysis of cohort studies");
 			//restClient.fetchFullTextArticle("3460254");
 		}*/
+	}
 
 }
