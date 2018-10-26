@@ -1,8 +1,12 @@
 package uk.co.terminological.pubmedclient;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import javax.xml.bind.JAXBException;
 
@@ -19,15 +23,22 @@ import uk.co.terminological.pubmedclient.PubMedResult.Search;
 public class TestPubMedRestClient {
 
 	public static Logger logger = LoggerFactory.getLogger(TestPubMedRestClient.class);
-	public static String APP_ID = "test_client";
-	public static String DEVELOPER_EMAIL = "rob@terminological.co.uk";
 	
-	public static void main(String[] args) throws BibliographicApiException  {
+	public static void main(String[] args) throws BibliographicApiException, IOException  {
 		BasicConfigurator.configure();
 		
 		// Taunton[Affiliation] AND UK[Affiliation] AND NHS[Affilitation] 
 		
-		PubMedRestClient restClient = PubMedRestClient.create(args[0], APP_ID, DEVELOPER_EMAIL);
+		Properties prop = System.getProperties();
+		prop.load(Files.newInputStream(Paths.get(prop.getProperty("user.home"),"Dropbox/secrets.prop")));
+		
+		String xrefToken = prop.getProperty("crossref.clickthroughtoken");
+		String developerEmail = prop.getProperty("developeremail");
+		
+		String pubmedApiToken = prop.getProperty("pubmed.apikey");
+		String appId = prop.getProperty("appid");
+		
+		PubMedRestClient restClient = PubMedRestClient.create(pubmedApiToken, appId, developerEmail);
 			
 		Search result = restClient.createESearchQuery()
 			.searchTerm("Doxapram")
