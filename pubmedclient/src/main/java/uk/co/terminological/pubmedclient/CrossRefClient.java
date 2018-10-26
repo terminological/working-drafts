@@ -28,7 +28,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResponse;
-import uk.co.terminological.pubmedclient.CrossRefResult.Response;
+import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 
 public class CrossRefClient {
 	// https://www.crossref.org/schemas/
@@ -126,7 +126,7 @@ public class CrossRefClient {
 		}
 	}
 	
-	public Response getByDoi(String doi) throws BibliographicApiException {
+	public SingleResult getByDoi(String doi) throws BibliographicApiException {
 		rateLimit();
 		String url = baseUrl+"works/"+encode(doi);
 		WebResource wr = client.resource(url).queryParams(defaultApiParams());
@@ -134,7 +134,7 @@ public class CrossRefClient {
 			ClientResponse r = wr.get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
-			CrossRefResult.Response  response = objectMapper.readValue(is, CrossRefResult.Response.class);
+			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
 			throw new BibliographicApiException("Malformed response to: "+url);

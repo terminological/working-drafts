@@ -25,7 +25,7 @@ public class CrossRefResult {
 		@JsonProperty("message") public Message message;
 	}
 	
-	public static class Response extends ExtensibleJson {
+	public static class SingleResult extends ExtensibleJson {
 		@JsonProperty("status") public String status;
 		@JsonProperty("message-type") public String messageType;
 		@JsonProperty("message-version") public String messageVersion;
