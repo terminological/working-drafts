@@ -15,7 +15,7 @@ public class TestConverterApiClient {
 	public static String APP_ID = "test_client";
 	public static String DEVELOPER_EMAIL = "rob@terminological.co.uk";
 	
-	public static void main(String[] args) throws CrossRefException {
+	public static void main(String[] args) throws BibliographicApiException {
 		
 		BasicConfigurator.configure();
 		ConverterApiClient client = new ConverterApiClient(APP_ID,DEVELOPER_EMAIL);

@@ -126,7 +126,7 @@ public class CrossRefClient {
 		}
 	}
 	
-	public Response getByDoi(String doi) throws CrossRefException {
+	public Response getByDoi(String doi) throws BibliographicApiException {
 		rateLimit();
 		String url = baseUrl+"works/"+encode(doi);
 		WebResource wr = client.resource(url).queryParams(defaultApiParams());
@@ -137,13 +137,13 @@ public class CrossRefClient {
 			CrossRefApiResponse.Response  response = objectMapper.readValue(is, CrossRefApiResponse.Response.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
-			throw new CrossRefException("Malformed response to: "+url);
+			throw new BibliographicApiException("Malformed response to: "+url);
 		} catch (IOException | UniformInterfaceException e) {
-			throw new CrossRefException("Cannot connect to: "+url);
+			throw new BibliographicApiException("Cannot connect to: "+url);
 		}
 	}
 	
-	public ListResponse getByQuery(QueryBuilder qb) throws CrossRefException {
+	public ListResponse getByQuery(QueryBuilder qb) throws BibliographicApiException {
 		rateLimit();
 		try {
 			ClientResponse r = qb.get(client).get(ClientResponse.class);
@@ -153,18 +153,18 @@ public class CrossRefClient {
 			if (response.message.items.size() == 0 && response.message.totalResults > 0) throw new NoSuchElementException();
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
-			throw new CrossRefException("Malformed response to: "+qb.get(client).getURI());
+			throw new BibliographicApiException("Malformed response to: "+qb.get(client).getURI());
 		} catch (IOException | UniformInterfaceException e) {
-			throw new CrossRefException("Cannot connect to: "+qb.get(client).getURI());
+			throw new BibliographicApiException("Cannot connect to: "+qb.get(client).getURI());
 		}
 	}
 	
-	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws CrossRefException {
+	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
 		
 		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
 			
 			Optional<URL> url = work.link.stream().filter(rl -> rl.intendedApplication.equals("text-mining")).map(rl -> rl.URL).findFirst();
-			if (!url.isPresent()) throw new CrossRefException("no content for intended application of text-mining");
+			if (!url.isPresent()) throw new BibliographicApiException("no content for intended application of text-mining");
 			
 			WebResource tdmCopy = client.resource(url.get().toString());
 			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
@@ -173,7 +173,7 @@ public class CrossRefClient {
 			
 			return r.getEntityInputStream();
 		} else {
-			throw new CrossRefException("no licensed content found");
+			throw new BibliographicApiException("no licensed content found");
 		}
 		
 	}

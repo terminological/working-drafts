@@ -42,19 +42,19 @@ public class ConverterApiClient {
 		return out;
 	}
 	
-	public Response getMapping(String id) throws CrossRefException {
+	public Response getMapping(String id) throws BibliographicApiException {
 		return getMapping(Collections.singletonList(id), Optional.empty());
 	}
 	
-	public Response getMapping(List<String> id) throws CrossRefException {
+	public Response getMapping(List<String> id) throws BibliographicApiException {
 		return getMapping(id, Optional.empty());
 	}
 	
-	public Response getMapping(List<String> id, IdType type) throws CrossRefException {
+	public Response getMapping(List<String> id, IdType type) throws BibliographicApiException {
 		return getMapping(id, Optional.of(type));
 	}
 	
-	public Response getMapping(List<String> id, Optional<IdType> idType) throws CrossRefException {
+	public Response getMapping(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		Response out = null;
 		int start = 0;
 		while (start<id.size()) {
@@ -70,7 +70,7 @@ public class ConverterApiClient {
 		return out;
 	}
 	
-	private Response doCall(List<String> id, Optional<IdType> idType) throws CrossRefException {
+	private Response doCall(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
@@ -81,26 +81,26 @@ public class ConverterApiClient {
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
 			e.printStackTrace();
-			throw new CrossRefException("Malformed response");
+			throw new BibliographicApiException("Malformed response");
 		} catch (IOException | UniformInterfaceException e) {
-			throw new CrossRefException("Cannot connect");
+			throw new BibliographicApiException("Cannot connect");
 		}
 	}
 	
 	
-	public List<String> getDoisFor(List<String> ids, IdType type) throws CrossRefException {
+	public List<String> getDoisFor(List<String> ids, IdType type) throws BibliographicApiException {
 		return getMapping(ids, type).records.stream()
 				.map(r -> r.doi).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
 	
-	public List<String> getPubmedCentralIdsFor(List<String> ids, IdType type) throws CrossRefException {
+	public List<String> getPubmedCentralIdsFor(List<String> ids, IdType type) throws BibliographicApiException {
 		return getMapping(ids, type).records.stream()
 				.map(r -> r.pmcid).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
 	
-	public List<String> getPubmedIdsFor(List<String> ids, IdType type) throws CrossRefException {
+	public List<String> getPubmedIdsFor(List<String> ids, IdType type) throws BibliographicApiException {
 		return getMapping(ids, type).records.stream()
 				.map(r -> r.pmid).filter(o -> o != null)
 				.collect(Collectors.toList());
