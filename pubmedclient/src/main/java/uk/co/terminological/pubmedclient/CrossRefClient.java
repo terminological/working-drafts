@@ -27,7 +27,7 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import uk.co.terminological.pubmedclient.CrossRefResult.ListResponse;
+import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 
 public class CrossRefClient {
@@ -143,13 +143,13 @@ public class CrossRefClient {
 		}
 	}
 	
-	public ListResponse getByQuery(QueryBuilder qb) throws BibliographicApiException {
+	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
 		rateLimit();
 		try {
 			ClientResponse r = qb.get(client).get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
-			CrossRefResult.ListResponse  response = objectMapper.readValue(is, CrossRefResult.ListResponse.class);
+			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
 			if (response.message.items.size() == 0 && response.message.totalResults > 0) throw new NoSuchElementException();
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
@@ -232,7 +232,7 @@ public class CrossRefClient {
 			return this;
 		}
 		
-		public QueryBuilder nextPage(ListResponse resp) {
+		public QueryBuilder nextPage(ListResult resp) {
 			params.remove("cursor");
 			params.add("cursor", resp.message.nextCursor);
 			return this;

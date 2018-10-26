@@ -18,7 +18,7 @@ v3	15th May 2018	Add peer review fields
 
 public class CrossRefResult {
 	
-	public static class ListResponse extends ExtensibleJson {
+	public static class ListResult extends ExtensibleJson {
 		@JsonProperty("status") public String status;
 		@JsonProperty("message-type") public String messageType;
 		@JsonProperty("message-version") public String messageVersion;
