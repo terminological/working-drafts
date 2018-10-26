@@ -1,10 +1,7 @@
 package uk.co.terminological.pubmedclient;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
 
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
