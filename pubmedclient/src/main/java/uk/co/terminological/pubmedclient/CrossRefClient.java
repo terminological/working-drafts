@@ -146,7 +146,7 @@ public class CrossRefClient {
 	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
 		rateLimit();
 		try {
-			ClientResponse r = qb.get(client).get(ClientResponse.class);
+			ClientResponse r = qb.get(client).post(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
 			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);

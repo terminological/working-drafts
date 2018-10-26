@@ -13,6 +13,10 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
+import gov.nih.nlm.ncbi.eutils.generated.elink.IdUrlSet;
+import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSet;
+import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
+import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
@@ -100,6 +104,37 @@ public class PubMedResult {
 		private ELinkResult raw;
 		public Links(ELinkResult raw) {this.raw	=raw;}
 		public ELinkResult raw() {return raw;}
+		
+		//public List<String> getSimilar
+		
+	}
+	
+	public static class Link {
+		String fromDb;
+		String fromId;
+		Optional<String> typeOrCategory = Optional.empty();
+		Optional<Long> score = Optional.empty();
+		String toDbOrUrl;
+		Optional<String> toId = Optional.empty();
+		
+		public Link(LinkSet linkSet, IdUrlSet idUrlSet, ObjUrl objUrl) {
+			this.fromDb = linkSet.getDbFrom();
+			this.fromId = idUrlSet.getId().getvalue();
+			this.typeOrCategory = objUrl.getCategory().stream().findFirst().map(c -> c.getvalue());
+			this.toDbOrUrl = objUrl.getUrl();
+		}
+		
+		public Link(LinkSet linkSet, LinkSetDb linkSetDb, gov.nih.nlm.ncbi.eutils.generated.elink.Link link) {
+			this.fromDb = linkSet.getDbFrom();
+			this.fromId = linkSet.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
+					.filter(o -> o instanceof IdList).map(o -> (IdList) o)
+					.findFirst().get().getId().stream()
+					.findFirst().map(id -> id.getvalue()).orElse("unknown");
+					;
+			this.typeOrCategory = Optional.of(linkSetDb.getLinkName());
+			this.toDbOrUrl = linkSetDb.getDbTo();
+			this.toId = Optional.of(link.getId().getvalue());
+		}
 		
 	}
 }

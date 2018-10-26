@@ -190,7 +190,7 @@ public class PubMedRestClient {
 	public PubMedResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
 		//logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
-		InputStream is = builder.get(eSearchResource).get(InputStream.class);
+		InputStream is = builder.get(eSearchResource).post(InputStream.class);
 		ESearchResult searchResult;
 		try {
 			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
@@ -264,8 +264,8 @@ public class PubMedRestClient {
 	 * Elinks
 	 * @return
 	 */
-	public ELinksQueryBuilder createELinksQuery() {
-		return new ELinksQueryBuilder(defaultApiParams());
+	public ELinksQueryBuilder createELinksQuery(List<String> ids) {
+		return new ELinksQueryBuilder(defaultApiParams(),ids);
 	}
 	
 	public static class ELinksQueryBuilder {
@@ -277,12 +277,13 @@ public class PubMedRestClient {
 			return tdmCopy.queryParams(searchParams);
 		}
 		
-		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams) {
+		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids) {
 			this.searchParams = searchParams;
-			searchParams.add("db", "pubmed");
-			searchParams.add("dbfrom", "pubmed");
-			searchParams.add("cmd", "neighbour_score");
-			searchParams.add("retmode", "xml");
+			this.searchParams.add("db", "pubmed");
+			this.searchParams.add("dbfrom", "pubmed");
+			this.searchParams.add("cmd", "neighbour_score");
+			this.searchParams.add("retmode", "xml");
+			ids.forEach(id -> this.searchParams.add("id", id));
 		}
 		
 		public ELinksQueryBuilder command(Command command) {
@@ -350,7 +351,7 @@ public class PubMedRestClient {
 	public PubMedResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
 		//logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
-		InputStream is = builder.get(eLinkResource).get(InputStream.class);
+		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		ELinkResult linkResult;
 		try {
 			linkResult = (ELinkResult) linkUnmarshaller.unmarshal(is);
