@@ -42,25 +42,25 @@ public class ConverterApiClient {
 		return out;
 	}
 	
-	public Response getMapping(String id) throws BibliographicApiException {
+	public Result getMapping(String id) throws BibliographicApiException {
 		return getMapping(Collections.singletonList(id), Optional.empty());
 	}
 	
-	public Response getMapping(List<String> id) throws BibliographicApiException {
+	public Result getMapping(List<String> id) throws BibliographicApiException {
 		return getMapping(id, Optional.empty());
 	}
 	
-	public Response getMapping(List<String> id, IdType type) throws BibliographicApiException {
+	public Result getMapping(List<String> id, IdType type) throws BibliographicApiException {
 		return getMapping(id, Optional.of(type));
 	}
 	
-	public Response getMapping(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
-		Response out = null;
+	public Result getMapping(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
+		Result out = null;
 		int start = 0;
 		while (start<id.size()) {
 			int end = id.size()<start+200 ? id.size() : start+200;
 			List<String> tmp2 = id.subList(start, end);
-			Response outTmp = doCall(tmp2,idType);
+			Result outTmp = doCall(tmp2,idType);
 			if (out == null) out = outTmp; 
 			else {
 				out.records.addAll(outTmp.records);
@@ -70,14 +70,14 @@ public class ConverterApiClient {
 		return out;
 	}
 	
-	private Response doCall(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
+	private Result doCall(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
 		WebResource wr = lookupService.queryParams(params);
 		try {
 			InputStream is = wr.get(InputStream.class); 
-			Response  response = objectMapper.readValue(is, Response.class);
+			Result  response = objectMapper.readValue(is, Result.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
 			e.printStackTrace();
@@ -113,7 +113,7 @@ public class ConverterApiClient {
 		MID
 	}
 	
-	public static class Response extends ExtensibleJson {
+	public static class Result extends ExtensibleJson {
 		@JsonProperty("status") public String status;
 		@JsonProperty("responseDate") public String responseDate;
 		@JsonProperty("request") public String request;
