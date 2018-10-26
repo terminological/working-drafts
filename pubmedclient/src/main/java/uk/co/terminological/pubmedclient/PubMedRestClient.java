@@ -188,11 +188,16 @@ public class PubMedRestClient {
 	 * &term=Accuracy%20of%20single%20progesterone%20test%20to%20predict%
 	 * 20early%20pregnancy%20outcome%20in%20women%20with%20pain%20or%20bleeding:%20meta-analysis%20of%20cohort%20studies.
 	 */
-	public ESearchResult search(MultivaluedMap<String, String> queryParams) throws JAXBException {
+	public ESearchResult search(MultivaluedMap<String, String> queryParams) {
 		logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = eSearchResource.queryParams(queryParams).get(InputStream.class);
-		ESearchResult searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
+		ESearchResult searchResult;
+		try {
+			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
+		} catch (JAXBException e1) {
+			throw new BibliographicApiException("could not parse result",e1)
+		}
 		try {
 			is.close();
 		} catch (IOException e) {

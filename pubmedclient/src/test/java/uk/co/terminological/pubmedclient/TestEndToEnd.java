@@ -22,8 +22,11 @@ public class TestEndToEnd {
 		String pubmedApiToken = prop.getProperty("pubmed.apikey");
 		String appId = prop.getProperty("appid");
 		
-		PubMedRestClient pubmedClient = PubMedRestClient.create(pubmedApiToken, appId, developerEmail);
-		ConverterApiClient client = new ConverterApiClient(appId,developerEmail);
+		PubMedRestClient pubmed = PubMedRestClient.create(pubmedApiToken, appId, developerEmail);
+		ConverterApiClient mapper = ConverterApiClient.create(appId,developerEmail);
+		CrossRefClient xref = CrossRefClient.create(developerEmail);
+		
+		pubmed.searchPubmed("machine learning", 0, 50);
 		
 
 	}
