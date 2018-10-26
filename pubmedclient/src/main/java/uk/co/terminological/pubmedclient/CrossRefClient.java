@@ -64,12 +64,6 @@ public class CrossRefClient {
 		return tmp;
 	};
 	
-	public static class CrossRefException extends Exception {
-		public CrossRefException(String string) {
-			super(string);
-		}
-	}
-	
 	private MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("mailto", developerEmail);

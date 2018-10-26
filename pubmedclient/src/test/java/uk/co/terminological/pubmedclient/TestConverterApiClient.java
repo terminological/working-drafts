@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.pubmedclient.ConverterApiClient.IdType;
-import uk.co.terminological.pubmedclient.CrossRefClient.CrossRefException;
 
 public class TestConverterApiClient {
 
