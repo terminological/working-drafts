@@ -61,6 +61,11 @@ public class PubMedResult {
 			
 		}
 		
+		public List<String> getTitles() {
+		this.stream().map(e -> e.getRaw())
+		.map(a -> a.getMedlineCitation().getArticle().getArticleTitle().getvalue())
+		.collect(Collectors.toList());
+		
 	}
 	
 	public static class Entry {
@@ -68,6 +73,8 @@ public class PubMedResult {
 		private PubmedArticle raw;
 		
 		public Entry(PubmedArticle raw) {this.raw = raw;}
+		
+		public PubmedArticle getRaw() {return raw;}
 		
 		public Optional<String> getDoiFromPubmedArticle() {
 			return raw.getPubmedData()
