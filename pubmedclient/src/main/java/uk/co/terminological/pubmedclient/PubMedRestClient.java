@@ -23,13 +23,8 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
-import uk.co.terminological.pubmedclient.PubMedResult;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -50,7 +45,6 @@ public class PubMedRestClient {
 	private JAXBContext jcFetch;
 	private Unmarshaller searchUnmarshaller;
 	private Unmarshaller fetchUnmarshaller;
-	//private Unmarshaller pmcUnmarshaller;
 	private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(PubMedRestClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
@@ -121,7 +115,6 @@ public class PubMedRestClient {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
-		
 		
 		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams) {
 			this.searchParams = searchParams;
@@ -232,15 +225,22 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public InputStream fetchPMCFullText(String pmcId) {
+		return fetch(Database.PMC, Collections.singletonList(pmcId));
+	}
+
+	/**
+	 * retrieves a full entries for a list of articles from the given database 
+	 * @param list of ids
+	 * @return
+	 */
+	public InputStream fetch(Database db, List<String> ids) {
 		MultivaluedMap<String, String> params = defaultApiParams();
-		params.add("db", "pmc");
+		params.add("db", db.name().toLowerCase());
 		params.add("retmode", "xml");
-		params.add("id", String.valueOf(pmcId));
+		params.add("id", ids.stream().collect(Collectors.joining(",")));
 		logger.debug("making efetch query with params {}", params.toString());
 		rateLimit();
 		return eFetchResource.queryParams(params).post(InputStream.class);
 	}
-
-
 
 }
