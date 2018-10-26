@@ -26,6 +26,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
+import uk.co.terminological.pubmedclient.PubMedResult.Links;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -111,22 +112,24 @@ public class PubMedRestClient {
 	}
 
 	public ESearchQueryBuilder createESearchQuery() {
-		return new ESearchQueryBuilder(defaultApiParams());
+		return new ESearchQueryBuilder(defaultApiParams(), this);
 	}
 	
 	public static class ESearchQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		PubMedRestClient client;
 		
 		protected WebResource get(WebResource searchService) {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
 		
-		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams) {
+		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, PubMedRestClient client) {
 			this.searchParams = searchParams;
-			searchParams.remove("db");
-			searchParams.add("db", "pubmed");
+			this.searchParams.remove("db");
+			this.searchParams.add("db", "pubmed");
+			this.client = client;
 		}
 		
 		public ESearchQueryBuilder searchTerm(String term) {
@@ -171,6 +174,10 @@ public class PubMedRestClient {
 			searchParams.remove("field");
 			this.searchParams.add("field", field);
 			return this;
+		}
+		
+		public PubMedResult.Search execute() throws BibliographicApiException {
+			return client.search(this);
 		}
 	}
 	
@@ -265,25 +272,27 @@ public class PubMedRestClient {
 	 * @return
 	 */
 	public ELinksQueryBuilder createELinksQuery(List<String> ids) {
-		return new ELinksQueryBuilder(defaultApiParams(),ids);
+		return new ELinksQueryBuilder(defaultApiParams(),ids, this);
 	}
 	
 	public static class ELinksQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		PubMedRestClient client;
 		
 		protected WebResource get(WebResource searchService) {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
 		
-		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids) {
+		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids, PubMedRestClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.add("db", "pubmed");
 			this.searchParams.add("dbfrom", "pubmed");
 			this.searchParams.add("cmd", "neighbour_score");
 			this.searchParams.add("retmode", "xml");
 			ids.forEach(id -> this.searchParams.add("id", id));
+			this.client = client;
 		}
 		
 		public ELinksQueryBuilder command(Command command) {
@@ -340,6 +349,10 @@ public class PubMedRestClient {
 			this.searchParams.add("mindate", format.format(start));
 			this.searchParams.add("maxdate", format.format(end));
 			return this;
+		}
+		
+		public Links execute() throws BibliographicApiException {
+			return client.link(this);
 		}
 	}
 	

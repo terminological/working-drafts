@@ -28,7 +28,7 @@ public class TestPubMedRestClient {
 		
 		PubMedRestClient restClient = PubMedRestClient.create(args[0], APP_ID, DEVELOPER_EMAIL);
 			
-		restClient.searchPubmed("Doxapram", 0, 10);
+		restClient.search(builder).searchPubmed("Doxapram", 0, 10);
 		restClient
 				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");
 		Optional<PubmedArticle> pubmedArticle = restClient.fetchPubmedEntry("2764997");
