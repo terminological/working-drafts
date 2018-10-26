@@ -155,6 +155,7 @@
 							<vmArgs>
         						<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
     						</vmArgs>
+    						<sourceType>dtd</sourceType>
 							<schemas>
 								<schema>
 									<fileset>
