@@ -27,8 +27,8 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import uk.co.terminological.pubmedclient.CrossRefApiResponse.ListResponse;
-import uk.co.terminological.pubmedclient.CrossRefApiResponse.Response;
+import uk.co.terminological.pubmedclient.CrossRefResult.ListResponse;
+import uk.co.terminological.pubmedclient.CrossRefResult.Response;
 
 public class CrossRefClient {
 	// https://www.crossref.org/schemas/
@@ -134,7 +134,7 @@ public class CrossRefClient {
 			ClientResponse r = wr.get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
-			CrossRefApiResponse.Response  response = objectMapper.readValue(is, CrossRefApiResponse.Response.class);
+			CrossRefResult.Response  response = objectMapper.readValue(is, CrossRefResult.Response.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
 			throw new BibliographicApiException("Malformed response to: "+url);
@@ -149,7 +149,7 @@ public class CrossRefClient {
 			ClientResponse r = qb.get(client).get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
-			CrossRefApiResponse.ListResponse  response = objectMapper.readValue(is, CrossRefApiResponse.ListResponse.class);
+			CrossRefResult.ListResponse  response = objectMapper.readValue(is, CrossRefResult.ListResponse.class);
 			if (response.message.items.size() == 0 && response.message.totalResults > 0) throw new NoSuchElementException();
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
@@ -159,7 +159,7 @@ public class CrossRefClient {
 		}
 	}
 	
-	public InputStream getTDM(CrossRefApiResponse.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
+	public InputStream getTDM(CrossRefResult.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
 		
 		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
 			

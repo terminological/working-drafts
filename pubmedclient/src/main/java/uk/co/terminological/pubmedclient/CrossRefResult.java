@@ -16,23 +16,7 @@ v2	26th July 2017	Add abstract, authenticated-orcid, fix contributor fields
 v3	15th May 2018	Add peer review fields
  */
 
-public class CrossRefApiResponse {
-	
-	
-
-	/*public static class RawJson {
-		  Object json;
-
-		  @JsonRawValue
-		  public String getJson() {
-		    // default raw value: null or "[]"
-		    return json == null ? null : json.toString();
-		  }
-
-		  public void setJson(JsonNode node) {
-		    this.json = node;
-		  }
-		}*/
+public class CrossRefResult {
 	
 	public static class ListResponse extends ExtensibleJson {
 		@JsonProperty("status") public String status;
@@ -65,7 +49,6 @@ public class CrossRefApiResponse {
 		@JsonProperty("search-terms") public String searchTerm;
 	}
 	
-	//@JsonIgnoreProperties(ignoreUnknown = true)
 	public static class Work {
 		@JsonProperty("publisher") public String publisher; // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = new ArrayList<>(); // Yes-Work titles, including translated titles

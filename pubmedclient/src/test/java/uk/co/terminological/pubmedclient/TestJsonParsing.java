@@ -17,7 +17,7 @@ public class TestJsonParsing {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		InputStream is = ClassLoader.getSystemResourceAsStream("ontologiesExample.json");
-		CrossRefApiResponse.ListResponse  response = objectMapper.readValue(is, CrossRefApiResponse.ListResponse.class);
+		CrossRefResult.ListResponse  response = objectMapper.readValue(is, CrossRefResult.ListResponse.class);
 		response.message.items.forEach(
 				item -> {
 					item.title.forEach(System.out::println);
