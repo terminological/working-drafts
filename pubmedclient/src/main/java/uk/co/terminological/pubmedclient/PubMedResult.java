@@ -1,5 +1,6 @@
 package uk.co.terminological.pubmedclient;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,8 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
+import gov.nih.nlm.ncbi.eutils.generated.elink.Id;
+import gov.nih.nlm.ncbi.eutils.generated.elink.IdUrlList;
 import gov.nih.nlm.ncbi.eutils.generated.elink.IdUrlSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
@@ -104,6 +107,31 @@ public class PubMedResult {
 		private ELinkResult raw;
 		public Links(ELinkResult raw) {this.raw	=raw;}
 		public ELinkResult raw() {return raw;}
+		
+		private List<Link> links;
+		
+		private void convert() {
+			links = new ArrayList<Link>();
+			for (LinkSet ls: raw.getLinkSet()) {
+				
+				Optional<Id> list = ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
+						.filter(o -> o instanceof IdList).map(o -> (IdList) o)
+						.flatMap(idl -> idl.getId()).findFirst();
+				
+				
+				for (Object o: ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR()) {
+					
+					if (o instanceof LinkSetDb) {
+						
+					} else if  (o instanceof IdUrlList) {
+						
+					}
+					
+				}
+			}
+		}
+		
+		
 		
 		//public List<String> getSimilar
 		
