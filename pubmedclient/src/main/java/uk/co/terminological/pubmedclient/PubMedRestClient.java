@@ -2,7 +2,9 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,11 +53,18 @@ public class PubMedRestClient {
 	private static final String EFETCH = "efetch.fcgi";
 	static Long timestamp = 0L;
 	
+	public static Map<String, PubMedRestClient> singleton = new HashMap<>();
 
-	public PubMedRestClient(String apiKey, String appId, String developerEmail) { 
-		this(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
+	public static PubMedRestClient create(String apiKey, String appId, String developerEmail) {
+		
+		if (!singleton.containsKey(apiKey)) {
+			PubMedRestClient tmp = new PubMedRestClient(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
+			singleton.put(apiKey, tmp);
+		}
+		return singleton.get(apiKey);
+		
 	}
-
+	
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 	public PubMedRestClient(String baseUrl, String apiKey, String appId, String developerEmail) {
 		this.baseUrl = baseUrl;
@@ -67,8 +76,6 @@ public class PubMedRestClient {
 			searchUnmarshaller = jcSearch.createUnmarshaller();
 			jcFetch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.efetch");
 			fetchUnmarshaller = jcFetch.createUnmarshaller();
-			//pmcJaxbContext = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.articleset");
-			//pmcUnmarshaller = pmcJaxbContext.createUnmarshaller();
 		} catch (JAXBException e) {
 			throw new RuntimeException("Problem initialising JAXB",e);
 		}
