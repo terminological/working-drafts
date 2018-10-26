@@ -118,10 +118,12 @@ public class PubMedRestClient {
 		
 		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams) {
 			this.searchParams = searchParams;
+			searchParams.remove("db");
 			searchParams.add("db", "pubmed");
 		}
 		
 		public ESearchQueryBuilder searchTerm(String term) {
+			searchParams.remove("term");
 			this.searchParams.add("term", term);
 			return this;
 		}
@@ -133,18 +135,25 @@ public class PubMedRestClient {
 		}
 		
 		public ESearchQueryBuilder limit(int from, int count) {
+			searchParams.remove("retstart");
+			searchParams.remove("retmax");
 			this.searchParams.add("retstart", Integer.toString(from));
 			this.searchParams.add("retmax", Integer.toString(count));
 			return this;
 		}
 		
 		public ESearchQueryBuilder withinLastDays(int count) {
+			searchParams.remove("reldate");
+			searchParams.remove("datetype");
 			this.searchParams.add("datetype", "edat");
 			this.searchParams.add("reldate", Integer.toString(count));
 			return this;
 		}
 		
 		public ESearchQueryBuilder between(Date start, Date end) {
+			searchParams.remove("mindate");
+			searchParams.remove("maxdate");
+			searchParams.remove("datetype");
 			this.searchParams.add("datetype", "edat");
 			this.searchParams.add("mindate", format.format(start));
 			this.searchParams.add("maxdate", format.format(end));
@@ -152,6 +161,7 @@ public class PubMedRestClient {
 		}
 		
 		public ESearchQueryBuilder restrictSearchToField(String field) {
+			searchParams.remove("field");
 			this.searchParams.add("field", field);
 			return this;
 		}
