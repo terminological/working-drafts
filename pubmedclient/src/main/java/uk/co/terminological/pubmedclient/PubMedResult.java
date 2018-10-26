@@ -62,9 +62,10 @@ public class PubMedResult {
 		}
 		
 		public List<String> getTitles() {
-		this.stream().map(e -> e.getRaw())
-		.map(a -> a.getMedlineCitation().getArticle().getArticleTitle().getvalue())
-		.collect(Collectors.toList());
+			return this.stream().map(e -> e.getRaw())
+						.map(a -> a.getMedlineCitation().getArticle().getArticleTitle().getvalue())
+						.collect(Collectors.toList());
+		}
 		
 	}
 	
