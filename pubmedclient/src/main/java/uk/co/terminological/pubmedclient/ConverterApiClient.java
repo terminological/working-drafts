@@ -136,4 +136,8 @@ public class ConverterApiClient {
 		@JsonProperty("live") public Boolean live;
 		@JsonProperty("releaseDate") public String releaseDate;
 	}
+
+	public static ConverterApiClient create(String appId, String developerEmail) {
+		return new ConverterApiClient(appId,developerEmail);
+	}
 }
