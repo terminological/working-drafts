@@ -110,9 +110,10 @@ public class PubMedRestClient {
 	 * @param searchTerm
 	 *            search string (same as Pubmed web interface)
 	 * @return
+	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public ESearchResult searchPubmed(String searchTerm, int start, int returnMax) throws JAXBException {
+	public ESearchResult searchPubmed(String searchTerm, int start, int returnMax) throws BibliographicApiException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("term", searchTerm);
@@ -127,9 +128,10 @@ public class PubMedRestClient {
 	 * @param the
 	 *            title of the article
 	 * @return
+	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public ESearchResult searchPubmedByTitle(String title) throws JAXBException {
+	public ESearchResult searchPubmedByTitle(String title) throws BibliographicApiException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pubmed");
 		searchParams.add("field", "title");
@@ -142,9 +144,10 @@ public class PubMedRestClient {
 	 * 
 	 * @param pmid
 	 * @return
+	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public List<PubmedArticle> fetchPubmedArticle(List<String> pmids) throws JAXBException {
+	public List<PubmedArticle> fetchPubmedArticle(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -188,7 +191,7 @@ public class PubMedRestClient {
 	 * &term=Accuracy%20of%20single%20progesterone%20test%20to%20predict%
 	 * 20early%20pregnancy%20outcome%20in%20women%20with%20pain%20or%20bleeding:%20meta-analysis%20of%20cohort%20studies.
 	 */
-	public ESearchResult search(MultivaluedMap<String, String> queryParams) {
+	public ESearchResult search(MultivaluedMap<String, String> queryParams) throws BibliographicApiException {
 		logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = eSearchResource.queryParams(queryParams).get(InputStream.class);
@@ -196,7 +199,7 @@ public class PubMedRestClient {
 		try {
 			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
 		} catch (JAXBException e1) {
-			throw new BibliographicApiException("could not parse result",e1)
+			throw new BibliographicApiException("could not parse result",e1);
 		}
 		try {
 			is.close();
@@ -223,11 +226,16 @@ public class PubMedRestClient {
 	 * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db
 	 * =pmc&id=3460254
 	 */
-	private PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws JAXBException {
+	private PubmedArticleSet fetch(MultivaluedMap<String, String> queryParams) throws BibliographicApiException {
 		logger.debug("making efetch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = eFetchResource.queryParams(queryParams).post(InputStream.class);
-		Object obj = fetchUnmarshaller.unmarshal(is);
+		Object obj;
+		try {
+			obj = fetchUnmarshaller.unmarshal(is);
+		} catch (JAXBException e1) {
+			throw new BibliographicApiException("Could not parse response:",e1);
+		}
 		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
 		try {
 			is.close();
@@ -243,9 +251,10 @@ public class PubMedRestClient {
 	 * 
 	 * @param pmid
 	 * @return
+	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws JAXBException {
+	public MeshHeadingList fetchMeshHeadingsForPubmedArticle(long pmid) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", "pubmed");
 		params.add("retmode", "xml");
@@ -265,9 +274,10 @@ public class PubMedRestClient {
 	 * @param searchTerm
 	 *            the searchterm same as the pubmed central web interface
 	 * @return
+	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public ESearchResult seachPubmedCentral(String searchTerm) throws JAXBException {
+	public ESearchResult seachPubmedCentral(String searchTerm) throws BibliographicApiException {
 		MultivaluedMap<String, String> searchParams = new MultivaluedMapImpl();
 		searchParams.add("db", "pmc");
 		searchParams.add("term", searchTerm);
@@ -279,9 +289,10 @@ public class PubMedRestClient {
 	 * 
 	 * @param title
 	 * @return
+	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public ESearchResult seachPubmedCentralByTitle(String title) throws JAXBException {
+	public ESearchResult seachPubmedCentralByTitle(String title) throws BibliographicApiException {
 		MultivaluedMap<String, String> searchParams = defaultApiParams();
 		searchParams.add("db", "pmc");
 		searchParams.add("field", "title");
