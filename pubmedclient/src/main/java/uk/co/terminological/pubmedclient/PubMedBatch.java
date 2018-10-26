@@ -42,7 +42,7 @@ public class PubMedBatch {
 	public List<String> getTitles() {
 		if (articles == null) {
 			try {
-				articles = query.getClient().fetchPubmedArticle(idsFromSearch());
+				articles = query.getClient().fetchPubmedEntries(idsFromSearch());
 			} catch (BibliographicApiException e) {
 				throw new RuntimeException("Some sort of API parsing error has occurred getting articles",e);				
 			}
