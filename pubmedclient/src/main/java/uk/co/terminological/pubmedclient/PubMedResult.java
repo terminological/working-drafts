@@ -22,7 +22,7 @@ import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.IdList;
+
 import uk.co.terminological.datatypes.IterableMapper;
 
 public class PubMedResult {
@@ -48,8 +48,8 @@ public class PubMedResult {
 		public List<String> getIds() {
 			return raw.getCountOrRetMaxOrRetStartOrQueryKeyOrWebEnvOrIdListOrTranslationSetOrTranslationStackOrQueryTranslationOrERROR()
 				.stream()
-				.filter(o -> (o instanceof IdList))
-				.map(o -> (IdList) o)
+				.filter(o -> (o instanceof gov.nih.nlm.ncbi.eutils.generated.esearch.IdList))
+				.map(o -> (gov.nih.nlm.ncbi.eutils.generated.esearch.IdList) o)
 				.flatMap(idl -> idl.getId().stream())
 				.map(id -> id.getvalue())
 				.collect(Collectors.toList());
@@ -105,7 +105,7 @@ public class PubMedResult {
 	public static class Links {
 		
 		private ELinkResult raw;
-		public Links(ELinkResult raw) {this.raw	=raw;}
+		public Links(ELinkResult raw) {this.raw	=raw; convert()}
 		public ELinkResult raw() {return raw;}
 		
 		private List<Link> links;
@@ -114,16 +114,37 @@ public class PubMedResult {
 			links = new ArrayList<Link>();
 			for (LinkSet ls: raw.getLinkSet()) {
 				
-				Optional<Id> list = ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
-						.filter(o -> o instanceof IdList).map(o -> (IdList) o)
-						.flatMap(idl -> idl.getId()).findFirst();
+				Optional<Id> idListId = ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
+						.filter(o -> o instanceof gov.nih.nlm.ncbi.eutils.generated.elink.IdList)
+						.map(o -> (gov.nih.nlm.ncbi.eutils.generated.elink.IdList) o)
+						.flatMap(idl -> idl.getId().stream()).findFirst();
 				
 				
 				for (Object o: ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR()) {
 					
 					if (o instanceof LinkSetDb) {
+						LinkSetDb lsd = ((LinkSetDb) o); 
+						
+						lsd.getLinkOrInfo().stream()
+						.filter(o2 -> o2 instanceof gov.nih.nlm.ncbi.eutils.generated.elink.Link)
+						.map(o2 -> (gov.nih.nlm.ncbi.eutils.generated.elink.Link) o2)
+						.forEach(l -> links.add(
+								new Link(ls,idListId.get(),lsd,l)
+								));
+						;
 						
 					} else if  (o instanceof IdUrlList) {
+						
+						for (IdUrlSet ius: ((IdUrlList) o).getIdUrlSet()) {
+							
+							ius.getObjUrlOrInfo().stream()
+							.filter(o3 -> o3 instanceof ObjUrl)
+							.map(o3 -> (ObjUrl) o3).forEach(
+									ou -> links.add(new Link(ls,ius,ou))
+									);
+							
+						}
+						
 						
 					}
 					
@@ -152,13 +173,9 @@ public class PubMedResult {
 			this.toDbOrUrl = objUrl.getUrl();
 		}
 		
-		public Link(LinkSet linkSet, LinkSetDb linkSetDb, gov.nih.nlm.ncbi.eutils.generated.elink.Link link) {
+		public Link(LinkSet linkSet, Id fromId, LinkSetDb linkSetDb, gov.nih.nlm.ncbi.eutils.generated.elink.Link link) {
 			this.fromDb = linkSet.getDbFrom();
-			this.fromId = linkSet.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
-					.filter(o -> o instanceof IdList).map(o -> (IdList) o)
-					.findFirst().get().getId().stream()
-					.findFirst().map(id -> id.getvalue()).orElse("unknown");
-					;
+			this.fromId = fromId.getvalue();
 			this.typeOrCategory = Optional.of(linkSetDb.getLinkName());
 			this.toDbOrUrl = linkSetDb.getDbTo();
 			this.toId = Optional.of(link.getId().getvalue());
