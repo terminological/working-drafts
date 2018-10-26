@@ -349,7 +349,6 @@ public class PubMedRestClient {
 	
 	
 	public PubMedResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
-		//logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimit();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		ELinkResult linkResult;
