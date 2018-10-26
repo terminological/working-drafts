@@ -105,7 +105,7 @@ public class PubMedResult {
 	public static class Links {
 		
 		private ELinkResult raw;
-		public Links(ELinkResult raw) {this.raw	=raw; convert()}
+		public Links(ELinkResult raw) {this.raw	=raw; convert();}
 		public ELinkResult raw() {return raw;}
 		
 		private List<Link> links;
