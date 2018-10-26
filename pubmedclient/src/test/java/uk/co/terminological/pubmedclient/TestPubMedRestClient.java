@@ -25,7 +25,7 @@ public class TestPubMedRestClient {
 		
 		// Taunton[Affiliation] AND UK[Affiliation] AND NHS[Affilitation] 
 		
-		PubMedRestClient restClient = new PubMedRestClient(args[0], APP_ID, DEVELOPER_EMAIL);
+		PubMedRestClient restClient = PubMedRestClient.create(args[0], APP_ID, DEVELOPER_EMAIL);
 			
 		restClient.searchPubmed("Doxapram", 0, 10);
 		restClient
