@@ -14,6 +14,7 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeading;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
+import uk.co.terminological.pubmedclient.PubMedResult.Search;
 
 public class TestPubMedRestClient {
 
@@ -28,8 +29,14 @@ public class TestPubMedRestClient {
 		
 		PubMedRestClient restClient = PubMedRestClient.create(args[0], APP_ID, DEVELOPER_EMAIL);
 			
-		restClient.search(builder).searchPubmed("Doxapram", 0, 10);
-		restClient
+		Search result = restClient.createESearchQuery()
+			.searchTerm("Doxapram")
+			.limit(0, 10)
+			.execute();
+		
+		result.getIds().forEach(System.out::println);
+		
+		/*restClient
 				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");
 		Optional<PubmedArticle> pubmedArticle = restClient.fetchPubmedEntry("2764997");
 		pubmedArticle.ifPresent(a -> logger.info(a.getMedlineCitation().getPMID().getvalue()));
@@ -48,6 +55,6 @@ public class TestPubMedRestClient {
 			restClient
 					.seachPubmedCentralByTitle("Accuracy of single progesterone test to predict early pregnancy outcome in women with pain or bleeding: meta-analysis of cohort studies");
 			//restClient.fetchFullTextArticle("3460254");
-		}
+		}*/
 
 }
