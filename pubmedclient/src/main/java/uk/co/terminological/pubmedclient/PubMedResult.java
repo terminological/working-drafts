@@ -183,5 +183,9 @@ public class PubMedResult {
 			this.toId = Optional.of(link.getId().getvalue());
 		}
 		
+		public String toString() {
+			return fromDb+"\t"+fromId+"\t"+typeOrCategory.orElse("")+"\t"+toDbOrUrl+"\t"+toId.orElse("")+"\t"+score.orElse(0L);
+		}
+		
 	}
 }
