@@ -53,7 +53,7 @@ public class TestPubMedRestClient {
 				.command(Command.PRLINKS)
 				.execute();
 		
-		links.
+		links.stream().forEach(System.out::println);
 		
 		/*restClient
 				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");
