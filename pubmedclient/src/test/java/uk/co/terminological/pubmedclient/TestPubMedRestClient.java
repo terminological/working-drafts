@@ -56,7 +56,7 @@ public class TestPubMedRestClient {
 		links.stream().forEach(System.out::println);
 		
 		Links links2 = restClient.createELinksQuery(result.getIds())
-				.command(Command.NEIGHBOUR_SCORE)
+				.command(Command.NEIGHBOR_SCORE)
 				.execute();
 		
 		links2.stream().forEach(System.out::println);
