@@ -9,7 +9,7 @@ import org.apache.log4j.BasicConfigurator;
 
 public class TestEndToEnd {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, BibliographicApiException {
 		
 		BasicConfigurator.configure();
 		
@@ -26,7 +26,8 @@ public class TestEndToEnd {
 		ConverterApiClient mapper = ConverterApiClient.create(appId,developerEmail);
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		
-		pubmed.searchPubmed("machine learning", 0, 50);
+		pubmed
+			.searchPubmed("machine learning", 0, 50);
 		
 
 	}
