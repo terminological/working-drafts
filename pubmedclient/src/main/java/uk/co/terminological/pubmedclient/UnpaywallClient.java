@@ -47,7 +47,7 @@ public class UnpaywallClient {
 		return out;
 	}
 	
-	public InputStream getContentByDoi(String doi) throws BibliographicApiException {
+	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
 			WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi));
 			return wr.get(InputStream.class);		
