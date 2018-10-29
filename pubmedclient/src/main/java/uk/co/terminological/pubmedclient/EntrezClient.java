@@ -357,6 +357,10 @@ public class EntrezClient {
 		return new PubMedResult.Links(linkResult);
 	}
 	
+	public List<String> getSimilarPMIdsByPMId(List<String> pmids) {
+		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED).command(Command.NEIGHBOR_SCORE).execute().stream().filter(l -> l.typeOrCategory.equals("pubmed_pubmed"))
+	}
+	
 	
 	
 }

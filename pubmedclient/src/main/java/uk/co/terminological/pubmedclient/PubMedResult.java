@@ -153,6 +153,22 @@ public class PubMedResult {
 		
 	}
 	
+	/**
+	 * 
+	 * type: https://eutils.ncbi.nlm.nih.gov/entrez/query/static/entrezlinks.html
+	 * 
+	 * pmc_pmc_cites	Articles that Cites other	Articles that Cites other	PMC articles that given PMC article cites	3000000
+	 * pmc_pmc_citedby	Cited Articles	Cited Articles	PMC article citing given PMC article	3000000
+	 * pmc_pubmed	PubMed	PubMed Links	PubMed citations for these articles	10000
+	 * pubmed_pmc	-	PMC Links	Free full-text versions of the current articles in the PubMed Central database.	10000
+	 * pubmed_pmc_local	Free in PMC	-	Free full text articles in PMC	10000
+	 * pubmed_pmc_refs	Cited in PMC	Cited in PMC	Full-text articles in the PubMed Central Database that cite the current articles.	10000
+	 * pubmed_pubmed	Similar articles	Similar articles 	Calculated set of PubMed citations similar to the selected article(s) retrieved using a word weight algorithm. Similar articles are displayed in ranked order from most to least similar, with the linked from citation displayed first. 500
+	 * pubmed_pubmed_refs	References for this PMC Article	References for PMC Articles	Citation referenced in PubMed article. Only valid for PubMed citations that are also in PMC.
+	 * 
+	 * @author terminological
+	 *
+	 */
 	public static class Link {
 		String fromDb;
 		String fromId;
