@@ -35,8 +35,8 @@ import uk.co.terminological.pubmedclient.PubMedResult.Links;
 public class EntrezClient {
 
 	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
-	
-	
+
+
 	private static final String DEFAULT_BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
 	private Client client;
 	private String apiKey;
@@ -57,19 +57,19 @@ public class EntrezClient {
 	private static final String EFETCH = "efetch.fcgi";
 	private static final String ELINK = "elink.fcgi";
 	private RateLimiter rateLimiter = RateLimiter.create(10);
-	
+
 	public static Map<String, EntrezClient> singleton = new HashMap<>();
 
 	public static EntrezClient create(String apiKey, String appId, String developerEmail) {
-		
+
 		if (!singleton.containsKey(apiKey)) {
 			EntrezClient tmp = new EntrezClient(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
 			singleton.put(apiKey, tmp);
 		}
 		return singleton.get(apiKey);
-		
+
 	}
-	
+
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 	public EntrezClient(String baseUrl, String apiKey, String appId, String developerEmail) {
 		this.baseUrl = baseUrl;
@@ -90,7 +90,7 @@ public class EntrezClient {
 		this.apiKey = apiKey;
 		this.developerEmail = developerEmail;
 	}
-	
+
 	private MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("api_key", apiKey);
@@ -98,40 +98,40 @@ public class EntrezClient {
 		out.add("email", developerEmail);
 		return out;
 	}
-	
+
 	public ESearchQueryBuilder buildSearchQuery() {
 		return new ESearchQueryBuilder(defaultApiParams(), this);
 	}
-	
+
 	public static class ESearchQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
 		EntrezClient client;
-		
+
 		protected WebResource get(WebResource searchService) {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
-		
+
 		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, EntrezClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.remove("db");
 			this.searchParams.add("db", "pubmed");
 			this.client = client;
 		}
-		
+
 		public ESearchQueryBuilder searchTerm(String term) {
 			searchParams.remove("term");
 			this.searchParams.add("term", term);
 			return this;
 		}
-		
+
 		public ESearchQueryBuilder searchDatabase(Database db) {
 			searchParams.remove("db");
 			this.searchParams.add("db", db.name().toLowerCase());
 			return this;
 		}
-		
+
 		public ESearchQueryBuilder limit(int from, int count) {
 			searchParams.remove("retstart");
 			searchParams.remove("retmax");
@@ -139,7 +139,7 @@ public class EntrezClient {
 			this.searchParams.add("retmax", Integer.toString(count));
 			return this;
 		}
-		
+
 		public ESearchQueryBuilder withinLastDays(int count) {
 			searchParams.remove("reldate");
 			searchParams.remove("datetype");
@@ -147,7 +147,7 @@ public class EntrezClient {
 			this.searchParams.add("reldate", Integer.toString(count));
 			return this;
 		}
-		
+
 		public ESearchQueryBuilder betweenDates(Date start, Date end) {
 			searchParams.remove("mindate");
 			searchParams.remove("maxdate");
@@ -157,22 +157,22 @@ public class EntrezClient {
 			this.searchParams.add("maxdate", format.format(end));
 			return this;
 		}
-		
+
 		public ESearchQueryBuilder restrictSearchToField(String field) {
 			searchParams.remove("field");
 			this.searchParams.add("field", field);
 			return this;
 		}
-		
+
 		public PubMedResult.Search execute() throws BibliographicApiException {
 			return client.search(this);
 		}
 	}
-	
+
 	//public static class ELinkQueryBuilder
-	
+
 	public static enum Database { PUBMED, PMC, MESH, GENE }
-	
+
 	/**
 	 * Retrieve PMIDs from PubMed for a search string
 	 * 
@@ -190,18 +190,18 @@ public class EntrezClient {
 		try {
 			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
 			is.close();
-			
+
 		} catch (JAXBException | IOException e1) {
 			throw new BibliographicApiException("could not parse result",e1);
 		}
 		return new PubMedResult.Search(searchResult);
 	}
-	
-	
+
+
 	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
 		return this.buildSearchQuery().searchTerm(searchTerm).execute().getIds();
 	}
-	
+
 
 	/**
 	 * Fetch PubMed article metadata and abstract
@@ -228,7 +228,7 @@ public class EntrezClient {
 		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
 		return new PubMedResult.Entries(pubmedArticleSet);
 	}
-	
+
 	public Optional<PubMedResult.Entry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
@@ -243,7 +243,7 @@ public class EntrezClient {
 		return getFullTextByIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC);
 	}
 
-	
+
 	public InputStream getPubMedCentralFullTextByPMEntries(PubMedResult.Entries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
 		return getFullTextByIdsAndDatabase(pmcIds, Database.PMC);
@@ -253,7 +253,7 @@ public class EntrezClient {
 		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
 		return getPubMedCentralFullTextByPubMedCentralId(pmcId);
 	}
-	
+
 	/**
 	 * retrieves a full entries for a list of articles from the given database 
 	 * @param list of ids
@@ -268,8 +268,8 @@ public class EntrezClient {
 		rateLimiter.acquire();
 		return eFetchResource.queryParams(params).post(InputStream.class);
 	}
-	
-	
+
+
 	/**
 	 * Elinks
 	 * @return
@@ -277,17 +277,17 @@ public class EntrezClient {
 	public ELinksQueryBuilder buildLinksQueryForIdsAndDatabase(List<String> ids, Database fromDb) {
 		return new ELinksQueryBuilder(defaultApiParams(),ids, fromDb, this);
 	}
-	
+
 	public static class ELinksQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
 		EntrezClient client;
-		
+
 		protected WebResource get(WebResource searchService) {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
-		
+
 		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids, Database fromDb, EntrezClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.add("dbfrom", fromDb.name().toLowerCase());
@@ -296,30 +296,30 @@ public class EntrezClient {
 			ids.forEach(id -> this.searchParams.add("id", id));
 			this.client = client;
 		}
-		
+
 		public ELinksQueryBuilder command(Command command) {
 			searchParams.remove("cmd");
 			this.searchParams.add("cmd", command.name().toLowerCase());
 			return this;
 		}
-		
+
 		public ELinksQueryBuilder toDatabase(Database to) {
 			searchParams.remove("db");
 			this.searchParams.add("db", to.name().toLowerCase());
 			return this;
 		}
-		
+
 		public ELinksQueryBuilder withLinkname(String linkName) {
 			this.searchParams.add("linkname", linkName);
 			return this;
 		}
-		
+
 		public ELinksQueryBuilder searchLinked(String term) {
 			searchParams.remove("term");
 			this.searchParams.add("term", term);
 			return this;
 		}
-		
+
 		public ELinksQueryBuilder withinLastDays(int count) {
 			searchParams.remove("reldate");
 			searchParams.remove("datetype");
@@ -327,7 +327,7 @@ public class EntrezClient {
 			this.searchParams.add("reldate", Integer.toString(count));
 			return this;
 		}
-		
+
 		public ELinksQueryBuilder betweenDates(Date start, Date end) {
 			searchParams.remove("mindate");
 			searchParams.remove("maxdate");
@@ -337,17 +337,17 @@ public class EntrezClient {
 			this.searchParams.add("maxdate", format.format(end));
 			return this;
 		}
-		
+
 		public Links execute() throws BibliographicApiException {
 			return client.link(this);
 		}
 	}
-	
+
 	public static enum Command {
 		NEIGHBOR, NEIGHBOR_SCORE, PRLINKS, LLINKS
 	}
-	
-	
+
+
 	public PubMedResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
 		rateLimiter.acquire();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
@@ -355,40 +355,60 @@ public class EntrezClient {
 		try {
 			linkResult = (ELinkResult) linkUnmarshaller.unmarshal(is);
 			is.close();
-			
+
 		} catch (JAXBException | IOException e1) {
 			throw new BibliographicApiException("could not parse result",e1);
 		}
 		return new PubMedResult.Links(linkResult);
 	}
-	
+
 	public List<String> getSimilarPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
 		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
-			.command(Command.NEIGHBOR_SCORE)
-			.withLinkname("pubmed_pubmed")
-			.execute().stream()
-			.flatMap(l -> l.toId.stream())
-			.collect(Collectors.toList());
+				.command(Command.NEIGHBOR_SCORE)
+				.withLinkname("pubmed_pubmed")
+				.execute().stream()
+				.flatMap(l -> l.toId.stream())
+				.collect(Collectors.toList());
 	}
-	
+
 	public List<String> getPubMedCentralIdsByPMId(List<String> pmids) throws BibliographicApiException {
 		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
-			.toDatabase(Database.PMC)
-			.command(Command.NEIGHBOR)
-			.withLinkname("pubmed_pmc")
-			.execute().stream()
-			.flatMap(l -> l.toId.stream())
-			.collect(Collectors.toList());
+				.toDatabase(Database.PMC)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pubmed_pmc")
+				.execute().stream()
+				.flatMap(l -> l.toId.stream())
+				.collect(Collectors.toList());
 	}
-	
-	public List<String> getReferencesPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
+
+	public List<String> getReferencedPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
 		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
-			.toDatabase(Database.PUBMED)
-			.command(Command.NEIGHBOR)
-			.withLinkname("pubmed_pubmed_refs")
-			.execute().stream()
-			.flatMap(l -> l.toId.stream())
-			.collect(Collectors.toList());
+				.toDatabase(Database.PUBMED)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pubmed_pubmed_refs")
+				.execute().stream()
+				.flatMap(l -> l.toId.stream())
+				.collect(Collectors.toList());
+	}
+
+	public List<String> getReferencingPubMedCentralIdsByPubMedCentralId(String pmcId) throws BibliographicApiException {
+		return this.buildLinksQueryForIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC)
+				.toDatabase(Database.PMC)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pmc_pmc_citedby")
+				.execute().stream()
+				.flatMap(l -> l.toId.stream())
+				.collect(Collectors.toList());
+	}
+
+	public List<String> getReferencedPubMedCentralIdsByPubMedCentralId(String pmcId) throws BibliographicApiException {
+		return this.buildLinksQueryForIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC)
+				.toDatabase(Database.PMC)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pmc_pmc_cites")
+				.execute().stream()
+				.flatMap(l -> l.toId.stream())
+				.collect(Collectors.toList());
 	}
 	
 }
