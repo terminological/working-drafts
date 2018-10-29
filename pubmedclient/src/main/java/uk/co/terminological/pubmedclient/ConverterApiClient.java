@@ -88,7 +88,7 @@ public class ConverterApiClient {
 	}
 	
 	
-	public List<String> getDoisFor(List<String> ids, IdType type) throws BibliographicApiException {
+	public List<String> getDoisByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getMapping(ids, type).records.stream()
 				.map(r -> r.doi).filter(o -> o != null)
 				.collect(Collectors.toList());

@@ -19,7 +19,7 @@ public class TestConverterApiClient {
 		
 		BasicConfigurator.configure();
 		ConverterApiClient client = new ConverterApiClient(APP_ID,DEVELOPER_EMAIL);
-		client.getDoisFor(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
 		
 	}
 
