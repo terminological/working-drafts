@@ -167,6 +167,8 @@ public class EntrezClient {
 		public EntrezResult.Search execute() throws BibliographicApiException {
 			return client.search(this);
 		}
+		
+		public String toString() {return searchParams.toString();}
 	}
 
 	//public static class ELinkQueryBuilder
@@ -183,7 +185,7 @@ public class EntrezClient {
 	 * @throws JAXBException
 	 */
 	public EntrezResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
-		//logger.debug("making esearch query with params {}", queryParams.toString());
+		logger.debug("making esearch query with params {}", builder.toString());
 		rateLimiter.acquire();
 		InputStream is = builder.get(eSearchResource).post(InputStream.class);
 		ESearchResult searchResult;
@@ -341,6 +343,8 @@ public class EntrezClient {
 		public Links execute() throws BibliographicApiException {
 			return client.link(this);
 		}
+		
+		public String toString() {return searchParams.toString();}
 	}
 
 	public static enum Command {
@@ -349,6 +353,7 @@ public class EntrezClient {
 
 
 	public EntrezResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
+		logger.debug("making elink query with params {}", builder.toString());
 		rateLimiter.acquire();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		ELinkResult linkResult;
