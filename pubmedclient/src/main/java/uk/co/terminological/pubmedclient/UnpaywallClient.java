@@ -33,6 +33,7 @@ public class UnpaywallClient {
 	private String developerEmail;
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper();
+	static RateLimiter rateLimiter = RateLimiter.create(2);
 	
 	public UnpaywallClient(String developerEmail) {
 		this.developerEmail = developerEmail;
