@@ -26,7 +26,7 @@ public class TestEndToEnd {
 		ConverterApiClient mapper = ConverterApiClient.create(appId,developerEmail);
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		
-		pubmed.search(pubmed.createESearchQuery()
+		pubmed.search(pubmed.buildSearchQuery()
 				.searchTerm("machine learning").limit(0, 50))
 			;
 		

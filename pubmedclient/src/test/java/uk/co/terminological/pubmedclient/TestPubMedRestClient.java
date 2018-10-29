@@ -42,7 +42,7 @@ public class TestPubMedRestClient {
 		
 		PubMedRestClient restClient = PubMedRestClient.create(pubmedApiToken, appId, developerEmail);
 			
-		Search result = restClient.createESearchQuery()
+		Search result = restClient.buildSearchQuery()
 			.searchTerm("Doxapram")
 			.limit(0, 10)
 			.execute();

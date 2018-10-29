@@ -111,7 +111,7 @@ public class PubMedRestClient {
 		timestamp = System.currentTimeMillis();
 	}
 
-	public ESearchQueryBuilder createESearchQuery() {
+	public ESearchQueryBuilder buildSearchQuery() {
 		return new ESearchQueryBuilder(defaultApiParams(), this);
 	}
 	
