@@ -70,9 +70,7 @@ public class PubMedResult {
 		}
 		
 		public List<String> getTitles() {
-			return this.stream().map(e -> e.getRaw())
-						.map(a -> a.getMedlineCitation().getArticle().getArticleTitle().getvalue())
-						.collect(Collectors.toList());
+			return this.stream().map(e -> e.getTitle()).collect(Collectors.toList());
 		}
 		
 	}
@@ -85,20 +83,26 @@ public class PubMedResult {
 		
 		public PubmedArticle getRaw() {return raw;}
 		
-		public Optional<String> getDoiFromPubmedArticle() {
+		public String getTitle() {
+			return raw.getMedlineCitation().getArticle().getArticleTitle().getvalue();
+		}
+		
+		public Optional<String> getDoi() {
 			return raw.getPubmedData()
 					.getArticleIdList().getArticleId().stream()
 					.filter(aid -> aid.getIdType().equals("doi")).findFirst().map(aid -> aid.getvalue());
 		}
 		
-		public Optional<String> getPMCIDFromPubmedArticle() {
+		public Optional<String> getPMCID() {
 			return raw.getPubmedData()
 					.getArticleIdList().getArticleId().stream()
 					.filter(aid -> aid.getIdType().equals("pmc")).findFirst().map(aid -> aid.getvalue());
 		}
 		
-		public MeshHeadingList getMeshHeadings() {
-			return raw.getMedlineCitation().getMeshHeadingList();
+		public List<String> getMeshHeadings() {
+			return raw.getMedlineCitation().getMeshHeadingList().getMeshHeading().stream()
+					.map(mh -> mh.getDescriptorName().getvalue())
+					.collect(Collectors.toList());
 		}
 	}
 	
@@ -144,12 +148,8 @@ public class PubMedResult {
 							.map(o3 -> (ObjUrl) o3).forEach(
 									ou -> links.add(new Link(ls,ius,ou))
 									);
-							
 						}
-						
-						
 					}
-					
 				}
 			}
 		}
@@ -168,14 +168,14 @@ public class PubMedResult {
 		String toDbOrUrl;
 		Optional<String> toId = Optional.empty();
 		
-		public Link(LinkSet linkSet, IdUrlSet idUrlSet, ObjUrl objUrl) {
+		protected Link(LinkSet linkSet, IdUrlSet idUrlSet, ObjUrl objUrl) {
 			this.fromDb = linkSet.getDbFrom();
 			this.fromId = idUrlSet.getId().getvalue();
 			this.typeOrCategory = objUrl.getCategory().stream().findFirst().map(c -> c.getvalue());
 			this.toDbOrUrl = objUrl.getUrl();
 		}
 		
-		public Link(LinkSet linkSet, Id fromId, LinkSetDb linkSetDb, gov.nih.nlm.ncbi.eutils.generated.elink.Link link) {
+		protected Link(LinkSet linkSet, Id fromId, LinkSetDb linkSetDb, gov.nih.nlm.ncbi.eutils.generated.elink.Link link) {
 			this.fromDb = linkSet.getDbFrom();
 			this.fromId = fromId.getvalue();
 			this.typeOrCategory = Optional.of(linkSetDb.getLinkName());
