@@ -101,7 +101,7 @@ public class UnpaywallClient {
 		}
 	}
 	
-	public static class Result {
+	public static class Result extends ExtensibleJson {
 		@JsonProperty("best_oa_location") public Location bestOaLocation; //The best OA Location Object we could find for this DOI.
 		@JsonProperty("data_standard") public Integer dataStandard; //Indicates the data collection approaches used for this resource.
 		@JsonProperty("doi") public String doi; //The DOI of this resource.
@@ -121,7 +121,7 @@ public class UnpaywallClient {
 		@JsonProperty("z_authors") public List<Author> zAuthors; //The authors of this resource.
 	}
 	
-	public static class Location {
+	public static class Location extends ExtensibleJson {
 		@JsonProperty("evidence") public String evidence; //How we found this OA location.
 		@JsonProperty("host_type") public String hostType; //The type of host that serves this OA location.
 		@JsonProperty("is_best") public Boolean isBest; //Is this location the bestOaLocation for its resource.See the DOI object's bestOaLocation description for more on how we select which location is "best."
@@ -134,7 +134,7 @@ public class UnpaywallClient {
 		@JsonProperty("version") public String version; //The content version accessible at this location.
 	}
 
-	public static class Author {
+	public static class Author extends ExtensibleJson {
 		@JsonProperty("family") public String family;
 		@JsonProperty("given") public String given;
 	}
