@@ -210,6 +210,10 @@ public class PubMedRestClient {
 	}
 	
 	
+	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
+		return this.buildSearchQuery().searchTerm(searchTerm).execute().getIds();
+	}
+	
 
 	/**
 	 * Fetch PubMed article metadata and abstract
