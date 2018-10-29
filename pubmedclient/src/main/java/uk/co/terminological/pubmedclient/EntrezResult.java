@@ -93,7 +93,10 @@ public class EntrezResult {
 		}
 		
 		public List<String> getMeshHeadings() {
-			return raw.getMedlineCitation().getMeshHeadingList().getMeshHeading().stream()
+			return 
+					Optional.ofNullable(raw.getMedlineCitation()).stream()
+					.flatMap(o -> Optional.ofNullable(o.getMeshHeadingList()).stream())
+					.flatMap(o -> o.getMeshHeading().stream())
 					.map(mh -> mh.getDescriptorName().getvalue())
 					.collect(Collectors.toList());
 		}
