@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.RateLimiter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -50,11 +51,8 @@ public class CrossRefClient {
 	
 	private String developerEmail;
 	private Client client;
-	private Integer rateLimitRequests = 50;
-	private Long rateLimitInterval = 1000L;
-	private Long lastIntervalStart = System.currentTimeMillis();
-	private Integer intervalRequests = 0;
 	private ObjectMapper objectMapper = new ObjectMapper();
+	private RateLimiter rateLimiter = RateLimiter.create(50);
 	
 	
 	public static CrossRefClient create(String developerEmail) {
@@ -99,35 +97,19 @@ public class CrossRefClient {
 	
 	private void updateRateLimits(MultivaluedMap<String, String> headers) {
 		try {
-			rateLimitRequests = Integer.parseInt(headers.get("X-Rate-Limit-Limit").get(0));
-			rateLimitInterval = Long.parseLong(headers.get("X-Rate-Limit-Interval").get(0).replace("s", ""))*1000;
+			
+			Float rateLimitRequests = Float.parseFloat(headers.get("X-Rate-Limit-Limit").get(0));
+			Float rateLimitInterval = Float.parseFloat(headers.get("X-Rate-Limit-Interval").get(0).replace("s", ""));
+			rateLimiter.setRate(Math.floor(rateLimitRequests/rateLimitInterval));
 		} catch (Exception e) {
 			//Probably header wasn't set - just ignore
 		}
 	}
 
-	private void rateLimit() {
-		if (lastIntervalStart+rateLimitInterval < System.currentTimeMillis()) {
-			lastIntervalStart = System.currentTimeMillis();
-			intervalRequests = 0;
-		}
-		if (intervalRequests > rateLimitRequests) {
-			logger.debug("hit rate limit on crossref api - sleeping");
-			try {
-				synchronized(lastIntervalStart) {
-					lastIntervalStart.wait(50);
-				}
-			} catch (InterruptedException e) {
-				//Probably OK to continue
-			}
-			rateLimit();
-		} else {
-			intervalRequests += 1;
-		}
-	}
 	
 	public SingleResult getByDoi(String doi) throws BibliographicApiException {
-		rateLimit();
+		rateLimiter.acquire(1);
+		logger.debug("Retrieving crossref record for:" + doi);
 		String url = baseUrl+"works/"+encode(doi);
 		WebResource wr = client.resource(url).queryParams(defaultApiParams());
 		try {
@@ -144,7 +126,8 @@ public class CrossRefClient {
 	}
 	
 	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
-		rateLimit();
+		rateLimiter.acquire(1);
+		logger.debug("Querying crossref: "+qb.toString());
 		try {
 			ClientResponse r = qb.get(client).post(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
@@ -160,6 +143,8 @@ public class CrossRefClient {
 	}
 	
 	public InputStream getTDM(CrossRefResult.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
+		
+		logger.debug("Retrieving crossref content for:" + work.DOI+": "+work.title.get(0));
 		
 		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
 			
@@ -192,7 +177,8 @@ public class CrossRefClient {
 		
 		private WebResource get(Client client) {
 			WebResource tdmCopy = client.resource(url);
-			return tdmCopy.queryParams(params);
+			tdmCopy.queryParams(params);
+			return tdmCopy;
 		}
 		
 		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams, CrossRefClient client ) {
@@ -257,6 +243,10 @@ public class CrossRefClient {
 		
 		public ListResult execute() throws BibliographicApiException {
 			return client.getByQuery(this);
+		}
+		
+		public String toString() {
+			return url+": "+params.toString(); 
 		}
 	}
 	
