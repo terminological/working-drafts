@@ -56,7 +56,7 @@ public class EntrezClient {
 	private static final String ESEARCH = "esearch.fcgi";
 	private static final String EFETCH = "efetch.fcgi";
 	private static final String ELINK = "elink.fcgi";
-	private RateLimiter rateLimiter = RateLimiter.create(100);
+	private RateLimiter rateLimiter = RateLimiter.create(10);
 	
 	public static Map<String, EntrezClient> singleton = new HashMap<>();
 
@@ -309,6 +309,11 @@ public class EntrezClient {
 			return this;
 		}
 		
+		public ELinksQueryBuilder withLinkname(String linkName) {
+			this.searchParams.add("linkname", linkName);
+			return this;
+		}
+		
 		public ELinksQueryBuilder searchLinked(String term) {
 			searchParams.remove("term");
 			this.searchParams.add("term", term);
@@ -359,12 +364,31 @@ public class EntrezClient {
 	
 	public List<String> getSimilarPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
 		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
-			.command(Command.NEIGHBOR_SCORE).execute()
-			.stream().filter(l -> l.typeOrCategory.equals("pubmed_pubmed"))
+			.command(Command.NEIGHBOR_SCORE)
+			.withLinkname("pubmed_pubmed")
+			.execute().stream()
 			.flatMap(l -> l.toId.stream())
 			.collect(Collectors.toList());
 	}
 	
+	public List<String> getPubMedCentralIdsByPMId(List<String> pmids) throws BibliographicApiException {
+		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+			.toDatabase(Database.PMC)
+			.command(Command.NEIGHBOR)
+			.withLinkname("pubmed_pmc")
+			.execute().stream()
+			.flatMap(l -> l.toId.stream())
+			.collect(Collectors.toList());
+	}
 	
+	public List<String> getReferencesPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
+		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+			.toDatabase(Database.PUBMED)
+			.command(Command.NEIGHBOR)
+			.withLinkname("pubmed_pubmed_refs")
+			.execute().stream()
+			.flatMap(l -> l.toId.stream())
+			.collect(Collectors.toList());
+	}
 	
 }
