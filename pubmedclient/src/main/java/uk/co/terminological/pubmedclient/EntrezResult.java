@@ -102,11 +102,11 @@ public class EntrezResult {
 					.collect(Collectors.toList());
 		}
 
-		public String getAbstract() {
+		public String getAbstract(boolean labelled) {
 			return raw.getMedlineCitation().getArticle().getAbstract()
 					.getAbstractText().stream()
 					.map(at -> 
-						(at.getLabel() != null?at.getLabel()+"\t":"")+at.getvalue())
+						(labelled && at.getLabel() != null?at.getLabel()+"\t":"")+at.getvalue())
 					.collect(Collectors.joining("\n"));
 		}
 	}
