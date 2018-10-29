@@ -26,8 +26,7 @@ public class TestEndToEnd {
 		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail);
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		
-		pubmed.search(pubmed.buildSearchQuery()
-				.searchTerm("machine learning").limit(0, 50))
+		pubmed.search(pubmed.buildSearchQuery("machine learning").limit(0, 50))
 			;
 		
 

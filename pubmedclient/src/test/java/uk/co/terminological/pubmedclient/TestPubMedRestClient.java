@@ -45,8 +45,7 @@ public class TestPubMedRestClient {
 		
 		EntrezClient restClient = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 			
-		Search result = restClient.buildSearchQuery()
-			.searchTerm("Doxapram")
+		Search result = restClient.buildSearchQuery("Doxapram")
 			.limit(0, 10)
 			.execute();
 		
