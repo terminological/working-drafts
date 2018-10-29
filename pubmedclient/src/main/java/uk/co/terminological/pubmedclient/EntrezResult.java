@@ -102,7 +102,10 @@ public class EntrezResult {
 					.collect(Collectors.toList());
 		}
 
-		public String getAbstract(boolean labelled) {
+		public String getAbstract() {return getAbstract(true);}
+		public String getUnlabelledAbstract() {return getAbstract(false);}
+		
+		private String getAbstract(boolean labelled) {
 			return raw.getMedlineCitation().getArticle().getAbstract()
 					.getAbstractText().stream()
 					.map(at -> 
