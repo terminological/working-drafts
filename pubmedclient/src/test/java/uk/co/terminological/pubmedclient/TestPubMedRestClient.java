@@ -20,8 +20,8 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
-import uk.co.terminological.pubmedclient.PubMedResult.Links;
-import uk.co.terminological.pubmedclient.PubMedResult.Search;
+import uk.co.terminological.pubmedclient.EntrezResult.Links;
+import uk.co.terminological.pubmedclient.EntrezResult.Search;
 
 public class TestPubMedRestClient {
 

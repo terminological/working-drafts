@@ -18,7 +18,7 @@ import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 
-public class PubMedResult {
+public class EntrezResult {
 
 	public static class Search {
 

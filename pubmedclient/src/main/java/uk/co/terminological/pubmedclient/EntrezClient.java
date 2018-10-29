@@ -27,7 +27,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
-import uk.co.terminological.pubmedclient.PubMedResult.Links;
+import uk.co.terminological.pubmedclient.EntrezResult.Links;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -164,7 +164,7 @@ public class EntrezClient {
 			return this;
 		}
 
-		public PubMedResult.Search execute() throws BibliographicApiException {
+		public EntrezResult.Search execute() throws BibliographicApiException {
 			return client.search(this);
 		}
 	}
@@ -182,7 +182,7 @@ public class EntrezClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public PubMedResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
+	public EntrezResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
 		//logger.debug("making esearch query with params {}", queryParams.toString());
 		rateLimiter.acquire();
 		InputStream is = builder.get(eSearchResource).post(InputStream.class);
@@ -194,7 +194,7 @@ public class EntrezClient {
 		} catch (JAXBException | IOException e1) {
 			throw new BibliographicApiException("could not parse result",e1);
 		}
-		return new PubMedResult.Search(searchResult);
+		return new EntrezResult.Search(searchResult);
 	}
 
 
@@ -211,7 +211,7 @@ public class EntrezClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public PubMedResult.Entries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
+	public EntrezResult.Entries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -226,10 +226,10 @@ public class EntrezClient {
 			throw new BibliographicApiException("Could not parse response:",e1);
 		}
 		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
-		return new PubMedResult.Entries(pubmedArticleSet);
+		return new EntrezResult.Entries(pubmedArticleSet);
 	}
 
-	public Optional<PubMedResult.Entry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
+	public Optional<EntrezResult.Entry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
@@ -244,12 +244,12 @@ public class EntrezClient {
 	}
 
 
-	public InputStream getPubMedCentralFullTextByPMEntries(PubMedResult.Entries pmEntries) {
+	public InputStream getPubMedCentralFullTextByPMEntries(EntrezResult.Entries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
 		return getFullTextByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
-	public InputStream getPubMedCentralFullTextByPMEntry(PubMedResult.Entry pmEntry) throws BibliographicApiException {
+	public InputStream getPubMedCentralFullTextByPMEntry(EntrezResult.Entry pmEntry) throws BibliographicApiException {
 		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
 		return getPubMedCentralFullTextByPubMedCentralId(pmcId);
 	}
@@ -348,7 +348,7 @@ public class EntrezClient {
 	}
 
 
-	public PubMedResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
+	public EntrezResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
 		rateLimiter.acquire();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		ELinkResult linkResult;
@@ -359,7 +359,7 @@ public class EntrezClient {
 		} catch (JAXBException | IOException e1) {
 			throw new BibliographicApiException("could not parse result",e1);
 		}
-		return new PubMedResult.Links(linkResult);
+		return new EntrezResult.Links(linkResult);
 	}
 
 	public List<String> getSimilarPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
