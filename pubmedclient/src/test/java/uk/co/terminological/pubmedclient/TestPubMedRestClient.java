@@ -49,13 +49,13 @@ public class TestPubMedRestClient {
 		
 		result.getIds().forEach(System.out::println);
 		
-		Links links = restClient.createELinksQuery(result.getIds())
+		Links links = restClient.buildLinksQueryForPMIds(result.getIds())
 				.command(Command.PRLINKS)
 				.execute();
 		
 		links.stream().forEach(System.out::println);
 		
-		Links links2 = restClient.createELinksQuery(result.getIds())
+		Links links2 = restClient.buildLinksQueryForPMIds(result.getIds())
 				.command(Command.NEIGHBOR_SCORE)
 				.execute();
 		

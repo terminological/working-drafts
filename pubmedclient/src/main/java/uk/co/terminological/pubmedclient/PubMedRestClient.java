@@ -271,7 +271,7 @@ public class PubMedRestClient {
 	 * Elinks
 	 * @return
 	 */
-	public ELinksQueryBuilder createELinksQuery(List<String> ids) {
+	public ELinksQueryBuilder buildLinksQueryForPMIds(List<String> ids) {
 		return new ELinksQueryBuilder(defaultApiParams(),ids, this);
 	}
 	
