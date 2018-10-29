@@ -58,7 +58,8 @@ public class UnpaywallClient {
 	}
 	
 	public Result getUnpaywall(String doi) throws BibliographicApiException {
-		return getUnpaywall(Collections.singletonList(doi)).stream().findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
+		return getUnpaywall(Collections.singletonList(doi)).stream()
+				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
 	
 	public List<Result> getUnpaywall(List<String> dois) throws BibliographicApiException {

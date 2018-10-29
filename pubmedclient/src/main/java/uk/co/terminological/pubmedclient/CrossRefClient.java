@@ -143,7 +143,7 @@ public class CrossRefClient {
 		}
 	}
 	
-	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
+	protected ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
 		rateLimit();
 		try {
 			ClientResponse r = qb.get(client).post(ClientResponse.class);
@@ -179,7 +179,7 @@ public class CrossRefClient {
 	}
 		
 	public QueryBuilder buildQuery() {
-		QueryBuilder out = new QueryBuilder(baseUrl+"works", defaultApiParams());
+		QueryBuilder out = new QueryBuilder(baseUrl+"works", defaultApiParams() , this);
 		return out;
 	}
 	
@@ -188,15 +188,17 @@ public class CrossRefClient {
 		
 		MultivaluedMap<String, String> params;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		CrossRefClient client;
 		
-		public WebResource get(Client client) {
+		private WebResource get(Client client) {
 			WebResource tdmCopy = client.resource(url);
 			return tdmCopy.queryParams(params);
 		}
 		
-		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams ) {
+		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams, CrossRefClient client ) {
 			this.url=url;
 			this.params=defaultParams;
+			this.client = client;
 		}
 		
 		public QueryBuilder withSearchTerm(String search) {
@@ -251,6 +253,10 @@ public class CrossRefClient {
 		public QueryBuilder filteredBy(DateFilter filter, Date value) {
 			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+format.format(value));
 			return this;
+		}
+		
+		public ListResult execute() throws BibliographicApiException {
+			return client.getByQuery(this);
 		}
 	}
 	
