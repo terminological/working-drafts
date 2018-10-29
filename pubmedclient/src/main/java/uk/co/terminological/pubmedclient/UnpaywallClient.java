@@ -57,11 +57,11 @@ public class UnpaywallClient {
 	}
 	
 	public Result getUnpaywallEntryByDoi(String doi) throws BibliographicApiException {
-		return getByDois(Collections.singletonList(doi)).stream()
+		return getUnpaywallEntryByDois(Collections.singletonList(doi)).stream()
 				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
 	
-	public List<Result> getByDois(List<String> dois) throws BibliographicApiException {
+	public List<Result> getUnpaywallEntryByDois(List<String> dois) throws BibliographicApiException {
 		List<Result> out = new ArrayList<>();
 		dois.forEach(i -> {
 			rateLimiter.acquire();
