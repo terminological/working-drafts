@@ -362,13 +362,16 @@ public class EntrezClient {
 		return new EntrezResult.Links(linkResult);
 	}
 
-	public List<String> getSimilarPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
-		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
-				.command(Command.NEIGHBOR_SCORE)
-				.withLinkname("pubmed_pubmed")
-				.execute().stream()
-				.flatMap(l -> l.toId.stream())
-				.collect(Collectors.toList());
+	public Map<String,Long> getSimilarScoredPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
+		Map<String,Long> out = new HashMap<>();
+		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+			.command(Command.NEIGHBOR_SCORE)
+			.withLinkname("pubmed_pubmed")
+			.execute().stream()
+			.forEach(l -> {
+				out.put(l.fromId, l.score.orElse(0L));
+			});
+		return out;
 	}
 
 	public List<String> getPubMedCentralIdsByPMId(List<String> pmids) throws BibliographicApiException {
