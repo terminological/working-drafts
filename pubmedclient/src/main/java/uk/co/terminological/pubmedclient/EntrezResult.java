@@ -97,6 +97,13 @@ public class EntrezResult {
 					.map(mh -> mh.getDescriptorName().getvalue())
 					.collect(Collectors.toList());
 		}
+
+		public String getAbstract() {
+			return raw.getMedlineCitation().getArticle().getAbstract()
+					.getAbstractText().stream()
+					.map(at -> at.getvalue())
+					.collect(Collectors.joining("\n"));
+		}
 	}
 	
 	public static class Links {

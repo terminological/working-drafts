@@ -21,6 +21,8 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import uk.co.terminological.pubmedclient.EntrezResult.Search;
 
 public class TestPubMedRestClient {
@@ -62,26 +64,15 @@ public class TestPubMedRestClient {
 		
 		links2.stream().forEach(System.out::println);
 		
-		/*restClient
-				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");
-		Optional<PubmedArticle> pubmedArticle = restClient.fetchPubmedEntry("2764997");
-		pubmedArticle.ifPresent(a -> logger.info(a.getMedlineCitation().getPMID().getvalue()));
+		PubMedEntries entries = restClient.getPMEntriesByPMIds(result.getIds());
+		entries.getTitles().forEach(System.out::println);
 		
-		MeshHeadingList mesHeadingList = restClient.fetchMeshHeadingsForPubmedArticle(2764997L);
-			for (MeshHeading meshHeading : mesHeadingList.getMeshHeading()) {
-				for (QualifierName qualifierName : meshHeading.getQualifierName()) {
-					logger.info("{} ({})/{} ({})",
-							new Object[] { meshHeading.getDescriptorName().getvalue(),
-									meshHeading.getDescriptorName().getMajorTopicYN(), qualifierName.getvalue(),
-									qualifierName.getMajorTopicYN() });
-				}
-			}
-			restClient
-					.seachPubmedCentral("Accuracy of single progesterone test to predict early pregnancy outcome in women with pain or bleeding: meta-analysis of cohort studies");
-			restClient
-					.seachPubmedCentralByTitle("Accuracy of single progesterone test to predict early pregnancy outcome in women with pain or bleeding: meta-analysis of cohort studies");
-			//restClient.fetchFullTextArticle("3460254");
-		}*/
+		
+		Optional<PubMedEntry> entry = restClient.getPMEntryByPMId(result.getIds().get(0));
+		entry.get().getMeshHeadings().forEach(System.out::println);
+		
+		entry.get().getAbstract()
+		
 	}
 
 }
