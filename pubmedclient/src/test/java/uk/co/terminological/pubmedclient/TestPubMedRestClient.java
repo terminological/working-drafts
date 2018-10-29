@@ -19,6 +19,7 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
+import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import uk.co.terminological.pubmedclient.PubMedResult.Links;
 import uk.co.terminological.pubmedclient.PubMedResult.Search;
 
@@ -49,13 +50,14 @@ public class TestPubMedRestClient {
 		
 		result.getIds().forEach(System.out::println);
 		
-		Links links = restClient.buildLinksQueryForIds(result.getIds())
+		Links links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds(), Database.PUBMED)
 				.command(Command.PRLINKS)
 				.execute();
 		
 		links.stream().forEach(System.out::println);
 		
-		Links links2 = restClient.buildLinksQueryForIds(result.getIds())
+		Links links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds(), Database.PUBMED)
+				//.toDatabase(Database.PUBMED)
 				.command(Command.NEIGHBOR_SCORE)
 				.execute();
 		
