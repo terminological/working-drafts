@@ -88,6 +88,7 @@ public class EntrezClient {
 			throw new RuntimeException("Problem initialising JAXB",e);
 		}
 		this.apiKey = apiKey;
+		this.appId = appId;
 		this.developerEmail = developerEmail;
 	}
 
@@ -216,9 +217,10 @@ public class EntrezClient {
 	public EntrezResult.PubMedEntries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
-		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
+		pmids.forEach(id -> fetchParams.add("id",id));
 		fetchParams.add("format", "xml");
 		rateLimiter.acquire();
+		logger.debug("making efetch query with params {}", fetchParams.toString());
 		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
 		Object obj;
 		try {
