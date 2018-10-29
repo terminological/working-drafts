@@ -56,9 +56,9 @@ public class EntrezResult {
 		
 		public PubmedEntries(PubmedArticleSet raw) {this.raw = raw;}
 		
-		public Stream<Entry> stream() {
+		public Stream<PubMedEntry> stream() {
 			return raw.getPubmedArticleOrPubmedBookArticle().stream()
-					.filter(o->o instanceof PubmedArticle).map(o-> new Entry((PubmedArticle) o));
+					.filter(o->o instanceof PubmedArticle).map(o-> new PubMedEntry((PubmedArticle) o));
 			
 		}
 		
@@ -68,11 +68,11 @@ public class EntrezResult {
 		
 	}
 	
-	public static class Entry {
+	public static class PubMedEntry {
 		
 		private PubmedArticle raw;
 		
-		public Entry(PubmedArticle raw) {this.raw = raw;}
+		public PubMedEntry(PubmedArticle raw) {this.raw = raw;}
 		
 		public PubmedArticle getRaw() {return raw;}
 		

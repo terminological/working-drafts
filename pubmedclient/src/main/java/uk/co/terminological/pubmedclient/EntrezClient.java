@@ -229,7 +229,7 @@ public class EntrezClient {
 		return new EntrezResult.PubmedEntries(pubmedArticleSet);
 	}
 
-	public Optional<EntrezResult.Entry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
+	public Optional<EntrezResult.PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
@@ -249,7 +249,7 @@ public class EntrezClient {
 		return getFullTextByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
-	public InputStream getPubMedCentralFullTextByPMEntry(EntrezResult.Entry pmEntry) throws BibliographicApiException {
+	public InputStream getPubMedCentralFullTextByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
 		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
 		return getPubMedCentralFullTextByPubMedCentralId(pmcId);
 	}
