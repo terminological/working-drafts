@@ -241,7 +241,7 @@ public class EntrezClient {
 		return new PubMedResult.Entries(pubmedArticleSet);
 	}
 	
-	public Optional<PubMedResult.Entry> getEntryByPMId(String pmid) throws BibliographicApiException {
+	public Optional<PubMedResult.Entry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
