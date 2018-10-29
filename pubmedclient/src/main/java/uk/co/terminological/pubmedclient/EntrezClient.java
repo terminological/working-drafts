@@ -286,8 +286,8 @@ public class EntrezClient {
 	 * Elinks
 	 * @return
 	 */
-	public ELinksQueryBuilder buildLinksQueryForIds(List<String> ids) {
-		return new ELinksQueryBuilder(defaultApiParams(),ids, this);
+	public ELinksQueryBuilder buildLinksQueryForIdsAndDatabase(List<String> ids, Database fromDb) {
+		return new ELinksQueryBuilder(defaultApiParams(),ids, fromDb, this);
 	}
 	
 	public static class ELinksQueryBuilder {
@@ -300,10 +300,9 @@ public class EntrezClient {
 			return tdmCopy.queryParams(searchParams);
 		}
 		
-		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids, EntrezClient client) {
+		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids, Database fromDb, EntrezClient client) {
 			this.searchParams = searchParams;
-			this.searchParams.add("db", "pubmed");
-			this.searchParams.add("dbfrom", "pubmed");
+			this.searchParams.add("dbfrom", fromDb.name().toLowerCase());
 			this.searchParams.add("cmd", "neighbour_score");
 			this.searchParams.add("retmode", "xml");
 			ids.forEach(id -> this.searchParams.add("id", id));
@@ -316,29 +315,9 @@ public class EntrezClient {
 			return this;
 		}
 		
-		/**
-		 * NEIGHBOUR
-		 * @param from
-		 * @param to
-		 * @return
-		 */
-		public ELinksQueryBuilder between(Database from, Database to) {
+		public ELinksQueryBuilder toDatabase(Database to) {
 			searchParams.remove("db");
-			searchParams.remove("dbfrom");
 			this.searchParams.add("db", to.name().toLowerCase());
-			this.searchParams.add("db", from.name().toLowerCase());
-			return this;
-		}
-
-		/**
-		 * NEIGHBOUR_SCORE, PRLINKS and LLINKS
-		 * @param from
-		 * @return
-		 */
-		public ELinksQueryBuilder from(Database from) {
-			searchParams.remove("db");
-			searchParams.remove("dbfrom");
-			this.searchParams.add("db", from.name().toLowerCase());
 			return this;
 		}
 		
