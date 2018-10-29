@@ -143,7 +143,7 @@ public class CrossRefClient {
 		}
 	}
 	
-	private ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
+	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
 		rateLimit();
 		try {
 			ClientResponse r = qb.get(client).post(ClientResponse.class);
