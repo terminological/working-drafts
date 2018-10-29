@@ -1,16 +1,11 @@
 package uk.co.terminological.pubmedclient;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.bind.JAXBException;
-
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
@@ -22,8 +17,6 @@ import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
-
-import uk.co.terminological.datatypes.IterableMapper;
 
 public class PubMedResult {
 
