@@ -71,7 +71,7 @@ public class TestPubMedRestClient {
 		Optional<PubMedEntry> entry = restClient.getPMEntryByPMId(result.getIds().get(0));
 		entry.get().getMeshHeadings().forEach(System.out::println);
 		
-		entry.get().getAbstract()
+		System.out.println(entry.get().getAbstract());
 		
 	}
 
