@@ -252,13 +252,13 @@ public class EntrezClient {
 	 * @throws JAXBException
 	 */
 	public InputStream getPubMedCentralFullTextByPubMedCentralId(String pmcId) {
-		return getFullTextByIdsAndDatabase(Database.PMC, Collections.singletonList(pmcId));
+		return getFullTextByIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC);
 	}
 
 	
 	public InputStream getPubMedCentralFullTextByPMEntries(PubMedResult.Entries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
-		return getFullTextByIdsAndDatabase(Database.PMC, pmcIds);
+		return getFullTextByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
 	public InputStream getPubMedCentralFullTextByPMEntry(PubMedResult.Entry pmEntry) throws BibliographicApiException {
@@ -271,7 +271,7 @@ public class EntrezClient {
 	 * @param list of ids
 	 * @return
 	 */
-	public InputStream getFullTextByIdsAndDatabase(Database db, List<String> ids) {
+	public InputStream getFullTextByIdsAndDatabase(List<String> ids,Database db) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", db.name().toLowerCase());
 		params.add("retmode", "xml");
