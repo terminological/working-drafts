@@ -247,7 +247,7 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public InputStream fetchPMCFullText(String pmcId) {
+	public InputStream getFullTextByPubMedCentralId(String pmcId) {
 		return fetch(Database.PMC, Collections.singletonList(pmcId));
 	}
 
