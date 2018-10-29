@@ -197,7 +197,7 @@ public class EntrezClient {
 
 
 	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
-		return this.buildSearchQuery().searchTerm(searchTerm).execute().getIds();
+		return this.buildSearchQuery(searchTerm).execute().getIds();
 	}
 
 
