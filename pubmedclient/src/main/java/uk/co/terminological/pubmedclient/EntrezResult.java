@@ -81,14 +81,15 @@ public class EntrezResult {
 		}
 		
 		public Optional<String> getDoi() {
-			return raw.getPubmedData()
-					.getArticleIdList().getArticleId().stream()
+			return Optional.ofNullable(raw.getPubmedData().getArticleIdList()).stream()
+					.flatMap(o -> o.getArticleId().stream())
 					.filter(aid -> aid.getIdType().equals("doi")).findFirst().map(aid -> aid.getvalue());
 		}
 		
 		public Optional<String> getPMCID() {
-			return raw.getPubmedData()
-					.getArticleIdList().getArticleId().stream()
+			return 
+					Optional.ofNullable(raw.getPubmedData().getArticleIdList()).stream()
+					.flatMap(o -> o.getArticleId().stream())
 					.filter(aid -> aid.getIdType().equals("pmc")).findFirst().map(aid -> aid.getvalue());
 		}
 		
@@ -104,7 +105,8 @@ public class EntrezResult {
 		public String getAbstract() {
 			return raw.getMedlineCitation().getArticle().getAbstract()
 					.getAbstractText().stream()
-					.map(at -> at.getvalue())
+					.map(at -> 
+						(at.getLabel() != null?at.getLabel()+"\t":"")+at.getvalue())
 					.collect(Collectors.joining("\n"));
 		}
 	}
