@@ -18,7 +18,7 @@ import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeading;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
-import uk.co.terminological.pubmedclient.PubMedRestClient.Command;
+import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.PubMedResult.Links;
 import uk.co.terminological.pubmedclient.PubMedResult.Search;
 
@@ -40,7 +40,7 @@ public class TestPubMedRestClient {
 		String pubmedApiToken = prop.getProperty("pubmed.apikey");
 		String appId = prop.getProperty("appid");
 		
-		PubMedRestClient restClient = PubMedRestClient.create(pubmedApiToken, appId, developerEmail);
+		EntrezClient restClient = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 			
 		Search result = restClient.buildSearchQuery()
 			.searchTerm("Doxapram")

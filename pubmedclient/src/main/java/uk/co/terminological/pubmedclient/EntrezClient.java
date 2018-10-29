@@ -31,7 +31,7 @@ import uk.co.terminological.pubmedclient.PubMedResult.Links;
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
  */
-public class PubMedRestClient {
+public class EntrezClient {
 
 	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
 	
@@ -51,18 +51,18 @@ public class PubMedRestClient {
 	private Unmarshaller searchUnmarshaller;
 	private Unmarshaller fetchUnmarshaller;
 	private String baseUrl;
-	private static final Logger logger = LoggerFactory.getLogger(PubMedRestClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(EntrezClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
 	private static final String EFETCH = "efetch.fcgi";
 	private static final String ELINK = "elink.fcgi";
 	static Long timestamp = 0L;
 	
-	public static Map<String, PubMedRestClient> singleton = new HashMap<>();
+	public static Map<String, EntrezClient> singleton = new HashMap<>();
 
-	public static PubMedRestClient create(String apiKey, String appId, String developerEmail) {
+	public static EntrezClient create(String apiKey, String appId, String developerEmail) {
 		
 		if (!singleton.containsKey(apiKey)) {
-			PubMedRestClient tmp = new PubMedRestClient(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
+			EntrezClient tmp = new EntrezClient(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
 			singleton.put(apiKey, tmp);
 		}
 		return singleton.get(apiKey);
@@ -70,7 +70,7 @@ public class PubMedRestClient {
 	}
 	
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-	public PubMedRestClient(String baseUrl, String apiKey, String appId, String developerEmail) {
+	public EntrezClient(String baseUrl, String apiKey, String appId, String developerEmail) {
 		this.baseUrl = baseUrl;
 		client = Client.create();
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
@@ -118,14 +118,14 @@ public class PubMedRestClient {
 	public static class ESearchQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-		PubMedRestClient client;
+		EntrezClient client;
 		
 		protected WebResource get(WebResource searchService) {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
 		
-		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, PubMedRestClient client) {
+		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, EntrezClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.remove("db");
 			this.searchParams.add("db", "pubmed");
@@ -293,14 +293,14 @@ public class PubMedRestClient {
 	public static class ELinksQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-		PubMedRestClient client;
+		EntrezClient client;
 		
 		protected WebResource get(WebResource searchService) {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
 		
-		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids, PubMedRestClient client) {
+		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids, EntrezClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.add("db", "pubmed");
 			this.searchParams.add("dbfrom", "pubmed");
