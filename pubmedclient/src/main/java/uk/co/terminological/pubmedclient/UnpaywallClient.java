@@ -7,6 +7,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -34,9 +35,19 @@ public class UnpaywallClient {
 	private String developerEmail;
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper();
-	static RateLimiter rateLimiter = RateLimiter.create(100000);
+	private RateLimiter rateLimiter = RateLimiter.create(100000);
+	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
 	
-	public UnpaywallClient(String developerEmail) {
+	public static UnpaywallClient create(String developerEmail) {
+		if (!singleton.containsKey(developerEmail)) {
+			UnpaywallClient tmp = new UnpaywallClient(developerEmail);
+			singleton.put(developerEmail, tmp);
+		}
+		return singleton.get(developerEmail);
+		
+	}
+	
+	private UnpaywallClient(String developerEmail) {
 		this.developerEmail = developerEmail;
 		this.client = Client.create();
 	}
