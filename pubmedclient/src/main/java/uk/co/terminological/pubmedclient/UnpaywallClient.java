@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -30,6 +33,8 @@ public class UnpaywallClient {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
 	//https://unpaywall.org/YOUR_DOI
+	
+	private static final Logger logger = LoggerFactory.getLogger(UnpaywallClient.class);
 	
 	private String developerEmail;
 	private Client client;
