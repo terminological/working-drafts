@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.RateLimiter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
@@ -33,7 +34,7 @@ public class UnpaywallClient {
 	private String developerEmail;
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper();
-	static RateLimiter rateLimiter = RateLimiter.create(2);
+	static RateLimiter rateLimiter = RateLimiter.create(100000);
 	
 	public UnpaywallClient(String developerEmail) {
 		this.developerEmail = developerEmail;
@@ -46,13 +47,20 @@ public class UnpaywallClient {
 		return out;
 	}
 	
-	public List<Result> getUnpaywall(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
+	public List<Result> getUnpaywall(List<String> id) throws BibliographicApiException {
 		List<Result> out = new ArrayList<>();
-		
+		id.forEach(i -> {
+			rateLimiter.acquire();
+			try {
+				out.add(doCall(i));
+			} catch (BibliographicApiException e) {
+				logger.debug("could not get unpaywall record for "+i);
+			}
+		});
 		return out;
 	}
 	
-	private Result doCall(String doi, Optional<IdType> idType) throws BibliographicApiException {
+	private Result doCall(String doi) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi)).queryParams(params);
 		try {
