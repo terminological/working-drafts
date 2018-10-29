@@ -18,7 +18,7 @@ import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-public class ConverterApiClient {
+public class IdConverterClient {
 
 	
 	private String developerEmail;
@@ -27,7 +27,7 @@ public class ConverterApiClient {
 	private WebResource lookupService;
 	private ObjectMapper objectMapper = new ObjectMapper();
 	
-	public ConverterApiClient(String developerEmail, String toolName) {
+	public IdConverterClient(String developerEmail, String toolName) {
 		this.developerEmail = developerEmail;
 		this.toolName = toolName;
 		this.client = Client.create();
@@ -135,7 +135,7 @@ public class ConverterApiClient {
 		@JsonProperty("releaseDate") public String releaseDate;
 	}
 
-	public static ConverterApiClient create(String appId, String developerEmail) {
-		return new ConverterApiClient(appId,developerEmail);
+	public static IdConverterClient create(String appId, String developerEmail) {
+		return new IdConverterClient(appId,developerEmail);
 	}
 }

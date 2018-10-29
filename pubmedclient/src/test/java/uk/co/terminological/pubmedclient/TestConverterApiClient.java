@@ -6,7 +6,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.terminological.pubmedclient.ConverterApiClient.IdType;
+import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
 public class TestConverterApiClient {
 
@@ -18,7 +18,7 @@ public class TestConverterApiClient {
 	public static void main(String[] args) throws BibliographicApiException {
 		
 		BasicConfigurator.configure();
-		ConverterApiClient client = new ConverterApiClient(APP_ID,DEVELOPER_EMAIL);
+		IdConverterClient client = new IdConverterClient(APP_ID,DEVELOPER_EMAIL);
 		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
 		
 	}

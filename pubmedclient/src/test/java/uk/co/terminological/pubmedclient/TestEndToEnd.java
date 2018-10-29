@@ -23,7 +23,7 @@ public class TestEndToEnd {
 		String appId = prop.getProperty("appid");
 		
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
-		ConverterApiClient mapper = ConverterApiClient.create(appId,developerEmail);
+		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail);
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		
 		pubmed.search(pubmed.buildSearchQuery()
