@@ -219,7 +219,7 @@ public class PubMedRestClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public PubMedResult.Entries fetchPubmedEntries(List<String> pmids) throws BibliographicApiException {
+	public PubMedResult.Entries getEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -238,7 +238,7 @@ public class PubMedRestClient {
 	}
 	
 	public Optional<PubMedResult.Entry> fetchPubmedEntry(String pmid) throws BibliographicApiException {
-		return fetchPubmedEntries(Collections.singletonList(pmid)).stream().findFirst();
+		return getEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
 	/**
