@@ -47,14 +47,14 @@ public class ConverterApiClient {
 	}
 	
 	public Result getConverterForPMIds(List<String> id) throws BibliographicApiException {
-		return getMapping(id, Optional.empty());
+		return getMapping(id, Optional.of(IdType.PMID));
 	}
 	
-	public Result getMapping(List<String> id, IdType type) throws BibliographicApiException {
+	public Result getConverterForIdsAndType(List<String> id, IdType type) throws BibliographicApiException {
 		return getMapping(id, Optional.of(type));
 	}
 	
-	public Result getMapping(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
+	private Result getMapping(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		Result out = null;
 		int start = 0;
 		while (start<id.size()) {
@@ -89,19 +89,19 @@ public class ConverterApiClient {
 	
 	
 	public List<String> getDoisByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
-		return getMapping(ids, type).records.stream()
+		return getConverterForIdsAndType(ids, type).records.stream()
 				.map(r -> r.doi).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPubmedCentralIdsFor(List<String> ids, IdType type) throws BibliographicApiException {
-		return getMapping(ids, type).records.stream()
+		return getConverterForIdsAndType(ids, type).records.stream()
 				.map(r -> r.pmcid).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPubmedIdsFor(List<String> ids, IdType type) throws BibliographicApiException {
-		return getMapping(ids, type).records.stream()
+		return getConverterForIdsAndType(ids, type).records.stream()
 				.map(r -> r.pmid).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
