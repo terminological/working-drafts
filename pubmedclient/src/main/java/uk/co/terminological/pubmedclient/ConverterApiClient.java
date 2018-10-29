@@ -46,7 +46,7 @@ public class ConverterApiClient {
 		return getMapping(Collections.singletonList(id), Optional.empty());
 	}
 	
-	public Result getMapping(List<String> id) throws BibliographicApiException {
+	public Result getConverterForPMIds(List<String> id) throws BibliographicApiException {
 		return getMapping(id, Optional.empty());
 	}
 	
