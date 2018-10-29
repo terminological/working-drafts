@@ -255,6 +255,17 @@ public class PubMedRestClient {
 		return getFullTextByIdsAndDatabase(Database.PMC, Collections.singletonList(pmcId));
 	}
 
+	
+	public InputStream getFullTextByPubMedEntries(PubMedResult.Entries pmEntries) {
+		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
+		return getFullTextByIdsAndDatabase(Database.PMC, pmcIds);
+	}
+
+	public InputStream getFullTextByPubMedEntry(PubMedResult.Entry pmEntry) throws BibliographicApiException {
+		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
+		return getFullTextByPubMedCentralId(pmcId);
+	}
+	
 	/**
 	 * retrieves a full entries for a list of articles from the given database 
 	 * @param list of ids
