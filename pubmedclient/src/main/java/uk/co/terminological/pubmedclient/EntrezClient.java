@@ -286,7 +286,7 @@ public class EntrezClient {
 	 * Elinks
 	 * @return
 	 */
-	public ELinksQueryBuilder buildLinksQueryForPMIds(List<String> ids) {
+	public ELinksQueryBuilder buildLinksQueryForIds(List<String> ids) {
 		return new ELinksQueryBuilder(defaultApiParams(),ids, this);
 	}
 	
