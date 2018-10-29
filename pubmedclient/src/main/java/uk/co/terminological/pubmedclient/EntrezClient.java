@@ -19,6 +19,7 @@ import javax.xml.bind.Unmarshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -55,7 +56,7 @@ public class EntrezClient {
 	private static final String ESEARCH = "esearch.fcgi";
 	private static final String EFETCH = "efetch.fcgi";
 	private static final String ELINK = "elink.fcgi";
-	static Long timestamp = 0L;
+	private RateLimiter rateLimiter = RateLimiter.create(100);
 	
 	public static Map<String, EntrezClient> singleton = new HashMap<>();
 
@@ -98,19 +99,6 @@ public class EntrezClient {
 		return out;
 	}
 	
-	//Could use google guava - RateLimiter - https://google.github.io/guava/releases/19.0/api/docs/index.html?com/google/common/util/concurrent/RateLimiter.html
-	private void rateLimit() {
-		while (System.currentTimeMillis() < timestamp+100)
-			try {
-				synchronized(timestamp) {
-					timestamp.wait(5);
-				}
-			} catch (InterruptedException e1) {
-				//probably be OK to continue 
-			}
-		timestamp = System.currentTimeMillis();
-	}
-
 	public ESearchQueryBuilder buildSearchQuery() {
 		return new ESearchQueryBuilder(defaultApiParams(), this);
 	}
@@ -196,7 +184,7 @@ public class EntrezClient {
 	 */
 	public PubMedResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
 		//logger.debug("making esearch query with params {}", queryParams.toString());
-		rateLimit();
+		rateLimiter.acquire();
 		InputStream is = builder.get(eSearchResource).post(InputStream.class);
 		ESearchResult searchResult;
 		try {
@@ -228,7 +216,7 @@ public class EntrezClient {
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
 		fetchParams.add("format", "xml");
-		rateLimit();
+		rateLimiter.acquire();
 		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
 		Object obj;
 		try {
@@ -277,7 +265,7 @@ public class EntrezClient {
 		params.add("retmode", "xml");
 		params.add("id", ids.stream().collect(Collectors.joining(",")));
 		logger.debug("making efetch query with params {}", params.toString());
-		rateLimit();
+		rateLimiter.acquire();
 		return eFetchResource.queryParams(params).post(InputStream.class);
 	}
 	
@@ -356,7 +344,7 @@ public class EntrezClient {
 	
 	
 	public PubMedResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
-		rateLimit();
+		rateLimiter.acquire();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		ELinkResult linkResult;
 		try {

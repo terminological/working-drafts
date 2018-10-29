@@ -57,7 +57,6 @@ public class TestPubMedRestClient {
 		links.stream().forEach(System.out::println);
 		
 		Links links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds(), Database.PUBMED)
-				//.toDatabase(Database.PUBMED)
 				.command(Command.NEIGHBOR_SCORE)
 				.execute();
 		
