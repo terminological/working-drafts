@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -56,8 +57,8 @@ public class UnpaywallClient {
 		}
 	}
 	
-	public List<Result> getUnpaywall(String doi) throws BibliographicApiException {
-		return getUnpaywall(Collections.singletonList(doi));
+	public Result getUnpaywall(String doi) throws BibliographicApiException {
+		return getUnpaywall(Collections.singletonList(doi)).stream().findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
 	
 	public List<Result> getUnpaywall(List<String> dois) throws BibliographicApiException {
