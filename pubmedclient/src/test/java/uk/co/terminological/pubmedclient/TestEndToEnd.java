@@ -25,8 +25,9 @@ public class TestEndToEnd {
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail);
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
+		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
-		pubmed.search(pubmed.buildSearchQuery("machine learning").limit(0, 50))
+		pubmed.buildSearchQuery("machine learning").limit(0, 50).execute()
 			;
 		
 

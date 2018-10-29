@@ -113,6 +113,9 @@ public class IdConverterClient {
 		MID
 	}
 	
+	
+	//https://github.com/FasterXML/jackson-modules-java8
+	
 	public static class Result extends ExtensibleJson {
 		@JsonProperty("status") public String status;
 		@JsonProperty("responseDate") public String responseDate;
