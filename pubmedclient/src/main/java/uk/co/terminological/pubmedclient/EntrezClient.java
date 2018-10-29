@@ -100,8 +100,8 @@ public class EntrezClient {
 		return out;
 	}
 
-	public ESearchQueryBuilder buildSearchQuery() {
-		return new ESearchQueryBuilder(defaultApiParams(), this);
+	public ESearchQueryBuilder buildSearchQuery(String searchTerm) {
+		return new ESearchQueryBuilder(defaultApiParams(), searchTerm, this);
 	}
 
 	public static class ESearchQueryBuilder {
@@ -114,17 +114,12 @@ public class EntrezClient {
 			return tdmCopy.queryParams(searchParams);
 		}
 
-		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, EntrezClient client) {
+		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, String searchTerm, EntrezClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.remove("db");
+			this.searchParams.add("term", searchTerm);
 			this.searchParams.add("db", "pubmed");
 			this.client = client;
-		}
-
-		public ESearchQueryBuilder searchTerm(String term) {
-			searchParams.remove("term");
-			this.searchParams.add("term", term);
-			return this;
 		}
 
 		public ESearchQueryBuilder searchDatabase(Database db) {
