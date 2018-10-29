@@ -211,7 +211,7 @@ public class EntrezClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public EntrezResult.PubmedEntries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
+	public EntrezResult.PubMedEntries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -226,7 +226,7 @@ public class EntrezClient {
 			throw new BibliographicApiException("Could not parse response:",e1);
 		}
 		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
-		return new EntrezResult.PubmedEntries(pubmedArticleSet);
+		return new EntrezResult.PubMedEntries(pubmedArticleSet);
 	}
 
 	public Optional<EntrezResult.PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
@@ -244,7 +244,7 @@ public class EntrezClient {
 	}
 
 
-	public InputStream getPubMedCentralFullTextByPMEntries(EntrezResult.PubmedEntries pmEntries) {
+	public InputStream getPubMedCentralFullTextByPMEntries(EntrezResult.PubMedEntries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
 		return getFullTextByIdsAndDatabase(pmcIds, Database.PMC);
 	}

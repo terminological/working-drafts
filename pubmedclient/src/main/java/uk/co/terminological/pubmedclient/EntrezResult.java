@@ -50,11 +50,11 @@ public class EntrezResult {
 
 	}
 	
-	public static class PubmedEntries {
+	public static class PubMedEntries {
 
 		private PubmedArticleSet raw;
 		
-		public PubmedEntries(PubmedArticleSet raw) {this.raw = raw;}
+		public PubMedEntries(PubmedArticleSet raw) {this.raw = raw;}
 		
 		public Stream<PubMedEntry> stream() {
 			return raw.getPubmedArticleOrPubmedBookArticle().stream()
