@@ -223,7 +223,7 @@ public class EntrezClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public PubMedResult.Entries getEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
+	public PubMedResult.Entries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -242,7 +242,7 @@ public class EntrezClient {
 	}
 	
 	public Optional<PubMedResult.Entry> getEntryByPMId(String pmid) throws BibliographicApiException {
-		return getEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
+		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
 	/**
