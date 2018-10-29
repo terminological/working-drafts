@@ -251,19 +251,19 @@ public class PubMedRestClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public InputStream getFullTextByPubMedCentralId(String pmcId) {
+	public InputStream getPubMedCentralFullTextByPubMedCentralId(String pmcId) {
 		return getFullTextByIdsAndDatabase(Database.PMC, Collections.singletonList(pmcId));
 	}
 
 	
-	public InputStream getFullTextByPMEntries(PubMedResult.Entries pmEntries) {
+	public InputStream getPubMedCentralFullTextByPMEntries(PubMedResult.Entries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
 		return getFullTextByIdsAndDatabase(Database.PMC, pmcIds);
 	}
 
-	public InputStream getFullTextByPMEntry(PubMedResult.Entry pmEntry) throws BibliographicApiException {
+	public InputStream getPubMedCentralFullTextByPMEntry(PubMedResult.Entry pmEntry) throws BibliographicApiException {
 		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
-		return getFullTextByPubMedCentralId(pmcId);
+		return getPubMedCentralFullTextByPubMedCentralId(pmcId);
 	}
 	
 	/**
