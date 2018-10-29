@@ -248,7 +248,7 @@ public class PubMedRestClient {
 	 * @throws JAXBException
 	 */
 	public InputStream getFullTextByPubMedCentralId(String pmcId) {
-		return fetch(Database.PMC, Collections.singletonList(pmcId));
+		return getFullTextByIdsAndDatabase(Database.PMC, Collections.singletonList(pmcId));
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class PubMedRestClient {
 	 * @param list of ids
 	 * @return
 	 */
-	public InputStream fetch(Database db, List<String> ids) {
+	public InputStream getFullTextByIdsAndDatabase(Database db, List<String> ids) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", db.name().toLowerCase());
 		params.add("retmode", "xml");

@@ -47,7 +47,7 @@ public class UnpaywallClient {
 		return out;
 	}
 	
-	public InputStream getContent(String doi) throws BibliographicApiException {
+	public InputStream getContentByDoi(String doi) throws BibliographicApiException {
 		try {
 			WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi));
 			return wr.get(InputStream.class);		
@@ -56,12 +56,12 @@ public class UnpaywallClient {
 		}
 	}
 	
-	public Result getUnpaywall(String doi) throws BibliographicApiException {
-		return getUnpaywall(Collections.singletonList(doi)).stream()
+	public Result getByDoi(String doi) throws BibliographicApiException {
+		return getByDois(Collections.singletonList(doi)).stream()
 				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
 	
-	public List<Result> getUnpaywall(List<String> dois) throws BibliographicApiException {
+	public List<Result> getByDois(List<String> dois) throws BibliographicApiException {
 		List<Result> out = new ArrayList<>();
 		dois.forEach(i -> {
 			rateLimiter.acquire();
