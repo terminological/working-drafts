@@ -237,7 +237,7 @@ public class PubMedRestClient {
 		return new PubMedResult.Entries(pubmedArticleSet);
 	}
 	
-	public Optional<PubMedResult.Entry> fetchPubmedEntry(String pmid) throws BibliographicApiException {
+	public Optional<PubMedResult.Entry> getEntryByPMId(String pmid) throws BibliographicApiException {
 		return getEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
