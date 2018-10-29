@@ -57,11 +57,11 @@ public class PubMedResult {
 
 	}
 	
-	public static class EntrySet {
+	public static class Entries {
 
 		private PubmedArticleSet raw;
 		
-		public EntrySet(PubmedArticleSet raw) {this.raw = raw;}
+		public Entries(PubmedArticleSet raw) {this.raw = raw;}
 		
 		public Stream<Entry> stream() {
 			return raw.getPubmedArticleOrPubmedBookArticle().stream()

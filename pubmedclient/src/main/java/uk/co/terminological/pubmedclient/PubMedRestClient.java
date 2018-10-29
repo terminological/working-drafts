@@ -219,7 +219,7 @@ public class PubMedRestClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public PubMedResult.EntrySet fetchPubmedEntries(List<String> pmids) throws BibliographicApiException {
+	public PubMedResult.Entries fetchPubmedEntries(List<String> pmids) throws BibliographicApiException {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("id", pmids.stream().collect(Collectors.joining(",")));
@@ -234,7 +234,7 @@ public class PubMedRestClient {
 			throw new BibliographicApiException("Could not parse response:",e1);
 		}
 		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
-		return new PubMedResult.EntrySet(pubmedArticleSet);
+		return new PubMedResult.Entries(pubmedArticleSet);
 	}
 	
 	public Optional<PubMedResult.Entry> fetchPubmedEntry(String pmid) throws BibliographicApiException {
