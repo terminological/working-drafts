@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -16,6 +17,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.isomorphism.util.TokenBucket;
+import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +59,7 @@ public class EntrezClient {
 	private static final String ESEARCH = "esearch.fcgi";
 	private static final String EFETCH = "efetch.fcgi";
 	private static final String ELINK = "elink.fcgi";
-	private RateLimiter rateLimiter = RateLimiter.create(10);
+	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build();
 
 	public static Map<String, EntrezClient> singleton = new HashMap<>();
 
@@ -183,7 +186,7 @@ public class EntrezClient {
 	 */
 	public EntrezResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
 		logger.debug("making esearch query with params {}", builder.toString());
-		rateLimiter.acquire();
+		rateLimiter.consume();
 		InputStream is = builder.get(eSearchResource).post(InputStream.class);
 		ESearchResult searchResult;
 		try {
@@ -215,7 +218,7 @@ public class EntrezClient {
 		fetchParams.add("db", "pubmed");
 		pmids.forEach(id -> fetchParams.add("id",id));
 		fetchParams.add("format", "xml");
-		rateLimiter.acquire();
+		rateLimiter.consume();
 		logger.debug("making efetch query with params {}", fetchParams.toString());
 		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
 		Object obj;
@@ -265,7 +268,7 @@ public class EntrezClient {
 		params.add("retmode", "xml");
 		params.add("id", ids.stream().collect(Collectors.joining(",")));
 		logger.debug("making efetch query with params {}", params.toString());
-		rateLimiter.acquire();
+		rateLimiter.consume();
 		return eFetchResource.queryParams(params).post(InputStream.class);
 	}
 
@@ -353,7 +356,7 @@ public class EntrezClient {
 
 	public EntrezResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
 		logger.debug("making elink query with params {}", builder.toString());
-		rateLimiter.acquire();
+		rateLimiter.consume();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		ELinkResult linkResult;
 		try {
