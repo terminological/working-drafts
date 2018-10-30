@@ -82,7 +82,7 @@ public class IdConverterClient {
 		logger.debug("calling id converter with params: "+params);
 		WebResource wr = lookupService.queryParams(params);
 		try {
-			InputStream is = wr.post(InputStream.class); 
+			InputStream is = wr.get(InputStream.class); 
 			Result  response = objectMapper.readValue(is, Result.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
