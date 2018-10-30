@@ -117,9 +117,9 @@ public class CrossRefClient {
 		String url = baseUrl+"works/"+encode(doi);
 		WebResource wr = client.resource(url).queryParams(defaultApiParams());
 		try {
-			ClientResponse r = wr.get(ClientResponse.class);
+			//ClientResponse r = wr.get(ClientResponse.class);
 			//updateRateLimits(r.getHeaders());
-			InputStream is = r.getEntityInputStream(); 
+			InputStream is = wr.get(InputStream.class); //r.getEntityInputStream(); 
 			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
