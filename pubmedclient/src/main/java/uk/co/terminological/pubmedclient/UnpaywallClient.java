@@ -66,6 +66,7 @@ public class UnpaywallClient {
 	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
 			WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi));
+			rateLimiter.consume();
 			return wr.get(InputStream.class);		
 		} catch (Exception e) {
 			throw new BibliographicApiException("Cannot fetch content for "+doi,e);
@@ -80,7 +81,6 @@ public class UnpaywallClient {
 	public List<Result> getUnpaywallByDois(List<String> dois) throws BibliographicApiException {
 		List<Result> out = new ArrayList<>();
 		dois.forEach(i -> {
-			rateLimiter.acquire();
 			try {
 				out.add(doCall(i));
 			} catch (BibliographicApiException e) {
@@ -102,6 +102,7 @@ public class UnpaywallClient {
 	private Result doCall(String doi) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		logger.debug("https://api.unpaywall.org/v2/"+encode(doi));
+		rateLimiter.consume();
 		WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi)).queryParams(params);
 		try {
 			InputStream is = wr.get(InputStream.class); 
