@@ -16,7 +16,7 @@ public class ExtensibleJson {
 	
 	@JsonAnySetter
     public void handleUnknownProperty(String key, Object value) {
-        logger.debug(this.getClass().getCanonicalName()+" - unknown property: {}: {}", key, value.toString());
+        logger.debug(getClass().getCanonicalName()+" - unknown property: {}: {}", key, value.toString());
         unknownProperties.put(key, value);
     }
 	
