@@ -123,9 +123,9 @@ public class CrossRefClient {
 			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
-			throw new BibliographicApiException("Malformed response to: "+url);
+			throw new BibliographicApiException("Malformed response to: "+url,e);
 		} catch (IOException | UniformInterfaceException e) {
-			throw new BibliographicApiException("Cannot connect to: "+url);
+			throw new BibliographicApiException("Cannot connect to: "+url,e);
 		}
 	}
 	
