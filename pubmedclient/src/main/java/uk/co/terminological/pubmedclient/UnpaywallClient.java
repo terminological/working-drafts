@@ -10,9 +10,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.isomorphism.util.TokenBucket;
+import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +40,7 @@ public class UnpaywallClient {
 	private String developerEmail;
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
-	private RateLimiter rateLimiter = RateLimiter.create(100000/24/60/60);
+	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(100000).withCapacity(100000).withFixedIntervalRefillStrategy(100000, 1, TimeUnit.DAYS).build();
 	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
 
 	public static UnpaywallClient create(String developerEmail) {
