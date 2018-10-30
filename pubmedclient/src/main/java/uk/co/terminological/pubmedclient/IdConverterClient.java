@@ -95,7 +95,8 @@ public class IdConverterClient {
 	
 	
 	public List<String> getDoisByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
-		return getConverterForIdsAndType(ids, type).records.stream()
+		Result tmp = getConverterForIdsAndType(ids, type);
+		return tmp.records.stream()
 				.flatMap(r -> r.doi.stream()).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
