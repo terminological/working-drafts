@@ -161,12 +161,13 @@ public class CrossRefClient {
 					.findFirst();
 			if (!url.isPresent()) throw new BibliographicApiException("no content for intended application of text-mining");
 			
+			//TODO: try and find correct type for output, or specify xml. 
+			
 			WebResource tdmCopy = client.resource(url.get().toString());
 			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
 			ClientResponse r = tdmCopy.get(ClientResponse.class);
-			
-			
 			return r.getEntityInputStream();
+			
 		} else {
 			throw new BibliographicApiException("no licensed content found");
 		}
