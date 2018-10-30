@@ -39,7 +39,7 @@ public class UnpaywallClient {
 	private String developerEmail;
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
-	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(100000).withCapacity(100000).withFixedIntervalRefillStrategy(100000, 1, TimeUnit.DAYS).build();
+	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build();
 	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
 
 	public static UnpaywallClient create(String developerEmail) {
