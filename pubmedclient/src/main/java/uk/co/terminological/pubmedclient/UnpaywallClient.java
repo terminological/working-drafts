@@ -140,8 +140,8 @@ public class UnpaywallClient {
 		@JsonProperty("year") public Optional<String> year = Optional.empty(); //The year this resource was published.
 		@JsonProperty("z_authors") public List<Author> zAuthors = Collections.emptyList(); //The authors of this resource.
 		public Optional<String> pdfUrl() {
-			if (bestOaLocation.get().urlForPdf.isPresent())
-				return bestOaLocation.get().urlForPdf = Optional.empty();
+			if (bestOaLocation.isPresent() && bestOaLocation.get().urlForPdf.isPresent())
+				return bestOaLocation.get().urlForPdf;
 			return oaLocations.stream().flatMap(loc -> loc.urlForPdf.stream()).findFirst();
 		}
 	}
