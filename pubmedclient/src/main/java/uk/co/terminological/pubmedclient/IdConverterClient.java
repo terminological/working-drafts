@@ -96,7 +96,7 @@ public class IdConverterClient {
 	
 	
 	public List<String> getDoisByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
-		Result tmp = getConverterForIdsAndType(ids, type);
+		Result tmp = getConverterForIdsAndType(ids, type) = Collections.emptyList();
 		return tmp.records.stream()
 				.flatMap(r -> r.doi.stream()).filter(o -> o != null)
 				.collect(Collectors.toList());
@@ -105,13 +105,13 @@ public class IdConverterClient {
 	public List<String> getPubMedCentralIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
 				.flatMap(r -> r.pmcid.stream()).filter(o -> o != null)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()) = Collections.emptyList();
 	}
 	
 	public List<String> getPMIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
 				.flatMap(r -> r.pmid.stream()).filter(o -> o != null)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList()) = Collections.emptyList();
 	}
 	
 	public static enum IdType {
@@ -125,25 +125,25 @@ public class IdConverterClient {
 	//https://github.com/FasterXML/jackson-modules-java8
 	//TODO: replace with optionals
 	public static class Result extends ExtensibleJson {
-		@JsonProperty("status") public Optional<String> status;
-		@JsonProperty("responseDate") public Optional<String> responseDate;
-		@JsonProperty("request") public Optional<String> request;
-		@JsonProperty("records") public List<Record> records;
+		@JsonProperty("status") public Optional<String> status = Optional.empty();
+		@JsonProperty("responseDate") public Optional<String> responseDate = Optional.empty();
+		@JsonProperty("request") public Optional<String> request = Optional.empty();
+		@JsonProperty("records") public List<Record> records = Collections.emptyList();
 	}
 	
 	public static class Record extends ExtensibleJson {
-		@JsonProperty("pmcid") public Optional<String> pmcid;
-		@JsonProperty("pmid") public Optional<String> pmid;
-		@JsonProperty("doi") public Optional<String> doi;
-		@JsonProperty("versions") public List<Version> versions;
+		@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
+		@JsonProperty("pmid") public Optional<String> pmid = Optional.empty();
+		@JsonProperty("doi") public Optional<String> doi = Optional.empty();
+		@JsonProperty("versions") public List<Version> versions = Collections.emptyList();
 	}
 	
 	public static class Version extends ExtensibleJson {
-		@JsonProperty("pmcid") public Optional<String> pmcid;
-		@JsonProperty("mid") public Optional<String> pmid;
-		@JsonProperty("current") public Optional<Boolean> current;
-		@JsonProperty("live") public Optional<Boolean> live;
-		@JsonProperty("releaseDate") public Optional<String> releaseDate;
+		@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
+		@JsonProperty("mid") public Optional<String> pmid = Optional.empty();
+		@JsonProperty("current") public Optional<Boolean> current = Optional.empty();
+		@JsonProperty("live") public Optional<Boolean> live = Optional.empty();
+		@JsonProperty("releaseDate") public Optional<String> releaseDate = Optional.empty();
 	}
 
 	public static IdConverterClient create(String appId, String developerEmail) {
