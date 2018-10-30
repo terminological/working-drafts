@@ -77,6 +77,7 @@ public class IdConverterClient {
 	
 	private Result doCall(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
+		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		id.forEach(i -> params.add("ids", i));
 		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
 		logger.debug("calling id converter with params: "+params);
