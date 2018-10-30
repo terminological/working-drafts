@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -34,8 +35,8 @@ public class UnpaywallClient {
 	
 	private String developerEmail;
 	private Client client;
-	private ObjectMapper objectMapper = new ObjectMapper();
-	private RateLimiter rateLimiter = RateLimiter.create(100000);
+	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
+	private RateLimiter rateLimiter = RateLimiter.create(100000/24/60/60);
 	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
 	
 	public static UnpaywallClient create(String developerEmail) {
@@ -112,41 +113,41 @@ public class UnpaywallClient {
 	}
 	
 	public static class Result extends ExtensibleJson {
-		@JsonProperty("best_oa_location") public Location bestOaLocation; //The best OA Location Object we could find for this DOI.
-		@JsonProperty("data_standard") public Integer dataStandard; //Indicates the data collection approaches used for this resource.
-		@JsonProperty("doi") public String doi; //The DOI of this resource.
-		@JsonProperty("doi_url") public String doiUrl; //The DOI in hyperlink form.
-		@JsonProperty("genre") public String genre; //The type of resource.
-		@JsonProperty("is_oa") public Boolean isOa; //True if there is an OA copy of this resource.
-		@JsonProperty("journal_is_in_doaj") public Boolean journalIsInDoaj; //Is this resource published in a DOAJ-indexed journal.
-		@JsonProperty("journal_is_oa") public Boolean journalIsOa; //Is this resource published in a completely OA journal.
-		@JsonProperty("journal_issns") public String journalIssns; //Any ISSNs assigned to the journal publishing this resource.
-		@JsonProperty("journal_name") public String journalName; //The name of the journal publishing this resource.
+		@JsonProperty("best_oa_location") public Optional<Location> bestOaLocation; //The best OA Location Object we could find for this DOI.
+		@JsonProperty("data_standard") public Optional<Integer> dataStandard; //Indicates the data collection approaches used for this resource.
+		@JsonProperty("doi") public Optional<String> doi; //The DOI of this resource.
+		@JsonProperty("doi_url") public Optional<String> doiUrl; //The DOI in hyperlink form.
+		@JsonProperty("genre") public Optional<String> genre; //The type of resource.
+		@JsonProperty("is_oa") public Optional<Boolean> isOa; //True if there is an OA copy of this resource.
+		@JsonProperty("journal_is_in_doaj") public Optional<Boolean> journalIsInDoaj; //Is this resource published in a DOAJ-indexed journal.
+		@JsonProperty("journal_is_oa") public Optional<Boolean> journalIsOa; //Is this resource published in a completely OA journal.
+		@JsonProperty("journal_issns") public Optional<String> journalIssns; //Any ISSNs assigned to the journal publishing this resource.
+		@JsonProperty("journal_name") public Optional<String> journalName; //The name of the journal publishing this resource.
 		@JsonProperty("oa_locations") public List<Location> oaLocations; //List of all the OA Location objects associated with this resource.
-		@JsonProperty("published_date") public Date publishedDate; //The date this resource was published.
-		@JsonProperty("publisher") public String publisher; //The name of this resource's publisher.
-		@JsonProperty("title") public String title; //The title of this resource.
-		@JsonProperty("updated") public Date updated; //Time when the data for this resource was last updated.
-		@JsonProperty("year") public String year; //The year this resource was published.
+		@JsonProperty("published_date") public Optional<Date> publishedDate; //The date this resource was published.
+		@JsonProperty("publisher") public Optional<String> publisher; //The name of this resource's publisher.
+		@JsonProperty("title") public Optional<String> title; //The title of this resource.
+		@JsonProperty("updated") public Optional<Date> updated; //Time when the data for this resource was last updated.
+		@JsonProperty("year") public Optional<String> year; //The year this resource was published.
 		@JsonProperty("z_authors") public List<Author> zAuthors; //The authors of this resource.
 	}
 	
 	public static class Location extends ExtensibleJson {
-		@JsonProperty("evidence") public String evidence; //How we found this OA location.
-		@JsonProperty("host_type") public String hostType; //The type of host that serves this OA location.
-		@JsonProperty("is_best") public Boolean isBest; //Is this location the bestOaLocation for its resource.See the DOI object's bestOaLocation description for more on how we select which location is "best."
-		@JsonProperty("license") public String license; //The license under which this copy is published.
-		@JsonProperty("pmh_id") public String pmhId; //OAI-PMH endpoint where we found this location.This is primarily for internal debugging. It's Null for locations that weren't found using OAI-PMH.
-		@JsonProperty("updated") public String updated; //Time when the data for this location was last updated.Returned as an ISO8601-formatted timestamp. Example: 2017-08-17T23:43:27.753663
-		@JsonProperty("url") public String url; //The urlForPdf if there is one; otherwise landing page URL.
-		@JsonProperty("url_for_landing_page") public String urlForLandingPage; //The URL for a landing page describing this OA copy.
-		@JsonProperty("url_for_pdf") public String urlForPdf; //The URL with a PDF version of this OA copy.
-		@JsonProperty("version") public String version; //The content version accessible at this location.
+		@JsonProperty("evidence") public Optional<String> evidence; //How we found this OA location.
+		@JsonProperty("host_type") public Optional<String> hostType; //The type of host that serves this OA location.
+		@JsonProperty("is_best") public Optional<Boolean> isBest; //Is this location the bestOaLocation for its resource.See the DOI object's bestOaLocation description for more on how we select which location is "best."
+		@JsonProperty("license") public Optional<String> license; //The license under which this copy is published.
+		@JsonProperty("pmh_id") public Optional<String> pmhId; //OAI-PMH endpoint where we found this location.This is primarily for internal debugging. It's Null for locations that weren't found using OAI-PMH.
+		@JsonProperty("updated") public Optional<String> updated; //Time when the data for this location was last updated.Returned as an ISO8601-formatted timestamp. Example: 2017-08-17T23:43:27.753663
+		@JsonProperty("url") public Optional<String> url; //The urlForPdf if there is one; otherwise landing page URL.
+		@JsonProperty("url_for_landing_page") public Optional<String> urlForLandingPage; //The URL for a landing page describing this OA copy.
+		@JsonProperty("url_for_pdf") public Optional<String> urlForPdf; //The URL with a PDF version of this OA copy.
+		@JsonProperty("version") public Optional<String> version; //The content version accessible at this location.
 	}
 
 	public static class Author extends ExtensibleJson {
-		@JsonProperty("family") public String family;
-		@JsonProperty("given") public String given;
+		@JsonProperty("family") public Optional<String> family;
+		@JsonProperty("given") public Optional<String> given;
 	}
 	
 }
