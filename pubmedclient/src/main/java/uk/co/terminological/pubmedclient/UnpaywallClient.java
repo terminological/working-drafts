@@ -98,6 +98,7 @@ public class UnpaywallClient {
 
 	private Result doCall(String doi) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
+		logger.debug("https://api.unpaywall.org/v2/"+encode(doi));
 		WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi)).queryParams(params);
 		try {
 			InputStream is = wr.get(InputStream.class); 

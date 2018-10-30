@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -21,6 +24,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class IdConverterClient {
 
+	private static final Logger logger = LoggerFactory.getLogger(IdConverterClient.class);
 	
 	private String developerEmail;
 	private Client client;
@@ -73,11 +77,12 @@ public class IdConverterClient {
 	
 	private Result doCall(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
-		params.add("ids", id.stream().collect(Collectors.joining(",")));
+		id.forEach(i -> params.add("ids", i));
 		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
+		logger.debug("calling id converter with params: "+params);
 		WebResource wr = lookupService.queryParams(params);
 		try {
-			InputStream is = wr.get(InputStream.class); 
+			InputStream is = wr.post(InputStream.class); 
 			Result  response = objectMapper.readValue(is, Result.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
