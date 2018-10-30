@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -31,35 +33,35 @@ public class UnpaywallClient {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
 	//https://unpaywall.org/YOUR_DOI
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(UnpaywallClient.class);
-	
+
 	private String developerEmail;
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 	private RateLimiter rateLimiter = RateLimiter.create(100000/24/60/60);
 	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
-	
+
 	public static UnpaywallClient create(String developerEmail) {
 		if (!singleton.containsKey(developerEmail)) {
 			UnpaywallClient tmp = new UnpaywallClient(developerEmail);
 			singleton.put(developerEmail, tmp);
 		}
 		return singleton.get(developerEmail);
-		
+
 	}
-	
+
 	private UnpaywallClient(String developerEmail) {
 		this.developerEmail = developerEmail;
 		this.client = Client.create();
 	}
-	
+
 	private MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("email", developerEmail);
 		return out;
 	}
-	
+
 	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
 			WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi));
@@ -68,12 +70,12 @@ public class UnpaywallClient {
 			throw new BibliographicApiException("Cannot fetch content for "+doi,e);
 		}
 	}
-	
+
 	public Result getUnpaywallByDoi(String doi) throws BibliographicApiException {
 		return getUnpaywallByDois(Collections.singletonList(doi)).stream()
 				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
-	
+
 	public List<Result> getUnpaywallByDois(List<String> dois) throws BibliographicApiException {
 		List<Result> out = new ArrayList<>();
 		dois.forEach(i -> {
@@ -86,9 +88,20 @@ public class UnpaywallClient {
 		});
 		return out;
 	}
-	
-	
-	
+
+	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
+		List<Location> pdfs = result.oaLocations.stream().filter(loc->loc.urlForPdf.isPresent()).collect(Collectors.toList());
+		Location loc = pdfs.stream().filter(l -> l.isBest.orElse(Boolean.FALSE).equals(Boolean.TRUE)).findFirst()
+				.orElse(pdfs.stream().findFirst().orElse(null));
+		if (loc==null) throw new BibliographicApiException("No PDF for "+result.doi.get());
+		try {
+			WebResource wr = client.resource(loc.urlForPdf.get());
+			return wr.get(InputStream.class);
+		} catch (Exception e) {
+			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get(),e);
+		}
+	}
+
 	private Result doCall(String doi) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi)).queryParams(params);
@@ -103,8 +116,8 @@ public class UnpaywallClient {
 			throw new BibliographicApiException("Cannot connect");
 		}
 	}
-	
-	
+
+
 	private static String encode(String string)  {
 		try {
 			return URLEncoder.encode(string,java.nio.charset.StandardCharsets.UTF_8.toString());
@@ -112,7 +125,7 @@ public class UnpaywallClient {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public static class Result extends ExtensibleJson {
 		@JsonProperty("best_oa_location") public Optional<Location> bestOaLocation; //The best OA Location Object we could find for this DOI.
 		@JsonProperty("data_standard") public Optional<Integer> dataStandard; //Indicates the data collection approaches used for this resource.
@@ -132,7 +145,7 @@ public class UnpaywallClient {
 		@JsonProperty("year") public Optional<String> year; //The year this resource was published.
 		@JsonProperty("z_authors") public List<Author> zAuthors; //The authors of this resource.
 	}
-	
+
 	public static class Location extends ExtensibleJson {
 		@JsonProperty("evidence") public Optional<String> evidence; //How we found this OA location.
 		@JsonProperty("host_type") public Optional<String> hostType; //The type of host that serves this OA location.
@@ -150,5 +163,5 @@ public class UnpaywallClient {
 		@JsonProperty("family") public Optional<String> family;
 		@JsonProperty("given") public Optional<String> given;
 	}
-	
+
 }
