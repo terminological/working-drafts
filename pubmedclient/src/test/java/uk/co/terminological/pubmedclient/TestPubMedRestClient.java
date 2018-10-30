@@ -3,21 +3,13 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-
-import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeading;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
