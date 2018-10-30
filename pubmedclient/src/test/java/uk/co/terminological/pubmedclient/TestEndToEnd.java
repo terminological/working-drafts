@@ -58,7 +58,7 @@ public class TestEndToEnd {
 		
 		
 		System.out.println("Unpaywall entries");
-		unpaywall.getUnpaywallByDois(dois).stream()
+		unpaywall.getUnpaywallByDois(dois2).stream()
 			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
 		
 	}
