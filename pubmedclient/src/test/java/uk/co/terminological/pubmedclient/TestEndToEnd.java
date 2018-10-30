@@ -36,7 +36,7 @@ public class TestEndToEnd {
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
-		/*EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
+		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
 				LocalDate.of(2016, 01, 1), 
 				LocalDate.of(2017, 01, 1)).execute();
 		
@@ -57,12 +57,12 @@ public class TestEndToEnd {
 		System.out.println("Unpaywall entries");
 		unpaywall.getUnpaywallByDois(dois2).stream()
 			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
-		*/
+		
 		//CrossRefResult.Work work = xref.getByDoi(dois2.get(0)).work.get();
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
 		CrossRefResult.Work work = xref.getByDoi("10.1093/bioinformatics/btw768").work.get();
 		work.title.forEach(System.out::println);
-		System.out.println(work.journalAbstract.get());
+		//System.out.println(work.journalAbstract.get());
 		work.reference.forEach(r -> System.out.println(r.DOI+"\t"+r.articleTitle));
 		
 	}
