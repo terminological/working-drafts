@@ -238,19 +238,19 @@ public class EntrezClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public InputStream getPubMedCentralFullTextByPubMedCentralId(String pmcId) {
-		return getFullTextByIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC);
+	public InputStream getPubMedCentralXMLByPubMedCentralId(String pmcId) {
+		return getXMLByIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC);
 	}
 
 
-	public InputStream getPubMedCentralFullTextByPMEntries(EntrezResult.PubMedEntries pmEntries) {
+	public InputStream getPubMedCentralXMLByPMEntries(EntrezResult.PubMedEntries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
-		return getFullTextByIdsAndDatabase(pmcIds, Database.PMC);
+		return getXMLByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
-	public InputStream getPubMedCentralFullTextByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
+	public InputStream getPubMedCentralXMLByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
 		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
-		return getPubMedCentralFullTextByPubMedCentralId(pmcId);
+		return getPubMedCentralXMLByPubMedCentralId(pmcId);
 	}
 
 	/**
@@ -258,7 +258,7 @@ public class EntrezClient {
 	 * @param list of ids
 	 * @return
 	 */
-	public InputStream getFullXMLByIdsAndDatabase(List<String> ids,Database db) {
+	public InputStream getXMLByIdsAndDatabase(List<String> ids,Database db) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", db.name().toLowerCase());
 		params.add("retmode", "xml");
