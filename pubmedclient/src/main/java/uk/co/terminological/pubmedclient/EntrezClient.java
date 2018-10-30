@@ -3,8 +3,8 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +144,7 @@ public class EntrezClient {
 			return this;
 		}
 
-		public ESearchQueryBuilder betweenDates(Date start, Date end) {
+		public ESearchQueryBuilder betweenDates(LocalDate start, LocalDate end) {
 			searchParams.remove("mindate");
 			searchParams.remove("maxdate");
 			searchParams.remove("datetype");
@@ -327,7 +327,7 @@ public class EntrezClient {
 			return this;
 		}
 
-		public ELinksQueryBuilder betweenDates(Date start, Date end) {
+		public ELinksQueryBuilder betweenDates(LocalDate start, LocalDate end) {
 			searchParams.remove("mindate");
 			searchParams.remove("maxdate");
 			searchParams.remove("datetype");
