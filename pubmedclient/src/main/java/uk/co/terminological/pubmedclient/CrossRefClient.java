@@ -11,10 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.isomorphism.util.TokenBucket;
+import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +25,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.google.common.util.concurrent.RateLimiter;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
@@ -53,7 +56,7 @@ public class CrossRefClient {
 	private String developerEmail;
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
-	private RateLimiter rateLimiter = RateLimiter.create(50);
+	private TokenBucket rateLimiter = TokenBuckets.builder().withCapacity(50).withInitialTokens(50).withFixedIntervalRefillStrategy(50, 1, TimeUnit.SECONDS).build();
 	
 	
 	public static CrossRefClient create(String developerEmail) {
@@ -99,9 +102,9 @@ public class CrossRefClient {
 	private void updateRateLimits(MultivaluedMap<String, String> headers) {
 		try {
 			
-			Float rateLimitRequests = Float.parseFloat(headers.get("X-Rate-Limit-Limit").get(0));
-			Float rateLimitInterval = Float.parseFloat(headers.get("X-Rate-Limit-Interval").get(0).replace("s", ""));
-			rateLimiter.setRate(Math.floor(rateLimitRequests/rateLimitInterval));
+			Long rateLimitRequests = Long.parseLong(headers.get("X-Rate-Limit-Limit").get(0));
+			Long rateLimitInterval = Long.parseLong(headers.get("X-Rate-Limit-Interval").get(0).replace("s", ""));
+			rateLimiter = TokenBuckets.builder().withInitialTokens(rateLimitRequests).withCapacity(rateLimitRequests).withFixedIntervalRefillStrategy(rateLimitRequests,rateLimitInterval,TimeUnit.SECONDS).build();
 		} catch (Exception e) {
 			//Probably header wasn't set - just ignore
 		}
@@ -109,7 +112,7 @@ public class CrossRefClient {
 
 	
 	public SingleResult getByDoi(String doi) throws BibliographicApiException {
-		rateLimiter.acquire(1);
+		rateLimiter.consume();
 		logger.debug("Retrieving crossref record for:" + doi);
 		String url = baseUrl+"works/"+encode(doi);
 		WebResource wr = client.resource(url).queryParams(defaultApiParams());
@@ -127,7 +130,7 @@ public class CrossRefClient {
 	}
 	
 	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
-		rateLimiter.acquire(1);
+		rateLimiter.consume();
 		logger.debug("Querying crossref: "+qb.toString());
 		try {
 			ClientResponse r = qb.get(client).post(ClientResponse.class);
