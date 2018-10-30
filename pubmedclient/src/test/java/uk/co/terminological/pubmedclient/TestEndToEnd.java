@@ -3,6 +3,10 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,7 +16,7 @@ import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
 public class TestEndToEnd {
 
-	public static void main(String[] args) throws IOException, BibliographicApiException {
+	public static void main(String[] args) throws IOException, BibliographicApiException, ParseException {
 		
 		BasicConfigurator.configure();
 		
@@ -30,7 +34,9 @@ public class TestEndToEnd {
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
-		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).execute();
+		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
+				DateFormat.getInstance().parse("01/01/2016"), 
+				DateFormat.getInstance().parse("01/01/2017")).execute();
 		
 		List<String> dois = mapper.getDoisByIdAndType(result.getIds(), IdType.PMID);
 
