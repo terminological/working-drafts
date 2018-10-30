@@ -118,7 +118,7 @@ public class CrossRefClient {
 		WebResource wr = client.resource(url).queryParams(defaultApiParams());
 		try {
 			ClientResponse r = wr.get(ClientResponse.class);
-			updateRateLimits(r.getHeaders());
+			//updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
 			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return response;
