@@ -163,8 +163,8 @@ public class UnpaywallClient {
 		@JsonProperty("family") public Optional<String> family = Optional.empty();
 		@JsonProperty("given") public Optional<String> given = Optional.empty();
 		@JsonProperty("name") public Optional<String> name = Optional.empty();
-		@JsonProperty("ORCHID") public Optional<String> orchid = Optional.empty();
-		@JsonProperty("authenticated-orchid") public Optional<Boolean> authenticated = Optional.empty();
+		@JsonProperty("ORCID") public Optional<String> orchid = Optional.empty();
+		@JsonProperty("authenticated-orcid") public Optional<Boolean> authenticated = Optional.empty();
 		@JsonProperty("affiliation") public List<Organisation> affiliation = Collections.emptyList();
 	}
 	
