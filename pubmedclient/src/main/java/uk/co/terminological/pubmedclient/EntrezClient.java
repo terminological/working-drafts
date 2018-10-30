@@ -258,7 +258,7 @@ public class EntrezClient {
 	 * @param list of ids
 	 * @return
 	 */
-	public InputStream getFullTextByIdsAndDatabase(List<String> ids,Database db) {
+	public InputStream getFullXMLByIdsAndDatabase(List<String> ids,Database db) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", db.name().toLowerCase());
 		params.add("retmode", "xml");
