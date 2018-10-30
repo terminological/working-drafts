@@ -119,7 +119,7 @@ public class CrossRefClient {
 		try {
 			ClientResponse r = wr.get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
-			r.getEntityInputStream(); 
+			InputStream is = r.getEntityInputStream(); 
 			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
