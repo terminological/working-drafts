@@ -2,8 +2,8 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -106,7 +106,8 @@ public class EntrezClient {
 
 	public static class ESearchQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
-		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		
 		EntrezClient client;
 
 		protected WebResource get(WebResource searchService) {
@@ -149,8 +150,8 @@ public class EntrezClient {
 			searchParams.remove("maxdate");
 			searchParams.remove("datetype");
 			this.searchParams.add("datetype", "edat");
-			this.searchParams.add("mindate", format.format(start));
-			this.searchParams.add("maxdate", format.format(end));
+			this.searchParams.add("mindate", start.format(formatter));
+			this.searchParams.add("maxdate", end.format(formatter));
 			return this;
 		}
 
@@ -279,7 +280,8 @@ public class EntrezClient {
 
 	public static class ELinksQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
-		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		
 		EntrezClient client;
 
 		protected WebResource get(WebResource searchService) {
@@ -332,8 +334,8 @@ public class EntrezClient {
 			searchParams.remove("maxdate");
 			searchParams.remove("datetype");
 			this.searchParams.add("datetype", "edat");
-			this.searchParams.add("mindate", format.format(start));
-			this.searchParams.add("maxdate", format.format(end));
+			this.searchParams.add("mindate", start.format(formatter));
+			this.searchParams.add("maxdate", end.format(formatter));
 			return this;
 		}
 
