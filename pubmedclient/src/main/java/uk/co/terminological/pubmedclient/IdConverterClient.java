@@ -91,19 +91,19 @@ public class IdConverterClient {
 	
 	public List<String> getDoisByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
-				.map(r -> r.doi).filter(o -> o != null)
+				.flatMap(r -> r.doi.stream()).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPubMedCentralIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
-				.map(r -> r.pmcid).filter(o -> o != null)
+				.flatMap(r -> r.pmcid.stream()).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPMIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
-				.map(r -> r.pmid).filter(o -> o != null)
+				.flatMap(r -> r.pmid.stream()).filter(o -> o != null)
 				.collect(Collectors.toList());
 	}
 	
@@ -118,25 +118,25 @@ public class IdConverterClient {
 	//https://github.com/FasterXML/jackson-modules-java8
 	//TODO: replace with optionals
 	public static class Result extends ExtensibleJson {
-		@JsonProperty("status") public String status;
-		@JsonProperty("responseDate") public String responseDate;
-		@JsonProperty("request") public String request;
+		@JsonProperty("status") public Optional<String> status;
+		@JsonProperty("responseDate") public Optional<String> responseDate;
+		@JsonProperty("request") public Optional<String> request;
 		@JsonProperty("records") public List<Record> records;
 	}
 	
 	public static class Record extends ExtensibleJson {
-		@JsonProperty("pmcid") public String pmcid;
-		@JsonProperty("pmid") public String pmid;
-		@JsonProperty("doi") public String doi;
+		@JsonProperty("pmcid") public Optional<String> pmcid;
+		@JsonProperty("pmid") public Optional<String> pmid;
+		@JsonProperty("doi") public Optional<String> doi;
 		@JsonProperty("versions") public List<Version> versions;
 	}
 	
 	public static class Version extends ExtensibleJson {
-		@JsonProperty("pmcid") public String pmcid;
-		@JsonProperty("mid") public String pmid;
-		@JsonProperty("current") public Boolean current;
-		@JsonProperty("live") public Boolean live;
-		@JsonProperty("releaseDate") public String releaseDate;
+		@JsonProperty("pmcid") public Optional<String> pmcid;
+		@JsonProperty("mid") public Optional<String> pmid;
+		@JsonProperty("current") public Optional<Boolean> current;
+		@JsonProperty("live") public Optional<Boolean> live;
+		@JsonProperty("releaseDate") public Optional<String> releaseDate;
 	}
 
 	public static IdConverterClient create(String appId, String developerEmail) {
