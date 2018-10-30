@@ -162,6 +162,15 @@ public class UnpaywallClient {
 	public static class Author extends ExtensibleJson {
 		@JsonProperty("family") public Optional<String> family = Optional.empty();
 		@JsonProperty("given") public Optional<String> given = Optional.empty();
+		@JsonProperty("name") public Optional<String> name = Optional.empty();
+		@JsonProperty("ORCHID") public Optional<String> orchid = Optional.empty();
+		@JsonProperty("authenticated-orchid") public Optional<Boolean> authenticated = Optional.empty();
+		@JsonProperty("affiliation") public List<Organisation> affiliation = Collections.emptyList();
 	}
+	
+	public static class Organisation extends ExtensibleJson {
+		@JsonProperty("name") public Optional<String> name = Optional.empty();
+	}
+	
 
 }
