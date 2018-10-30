@@ -126,7 +126,7 @@ public class CrossRefClient {
 		}
 	}
 	
-	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException {
+	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
 		rateLimiter.acquire(1);
 		logger.debug("Querying crossref: "+qb.toString());
 		try {
@@ -134,7 +134,13 @@ public class CrossRefClient {
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
 			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
-			if (response.message.items.size() == 0 && response.message.totalResults > 0) throw new NoSuchElementException();
+			//Check to see if the result is past the end of the set.
+			if (
+					response.message.isPresent() && 
+					response.message.get().items.size() == 0 && 
+					response.message.get().totalResults.orElse(0) > 0) {
+				throw new NoSuchElementException();
+			}
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
 			throw new BibliographicApiException("Malformed response to: "+qb.get(client).getURI());
@@ -149,7 +155,10 @@ public class CrossRefClient {
 		
 		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
 			
-			Optional<URL> url = work.link.stream().filter(rl -> rl.intendedApplication.equals("text-mining")).map(rl -> rl.URL).findFirst();
+			Optional<URL> url = work.link.stream()
+					.filter(rl -> rl.intendedApplication.orElse("").equals("text-mining"))
+					.flatMap(rl -> rl.URL.stream())
+					.findFirst();
 			if (!url.isPresent()) throw new BibliographicApiException("no content for intended application of text-mining");
 			
 			WebResource tdmCopy = client.resource(url.get().toString());
@@ -221,10 +230,22 @@ public class CrossRefClient {
 			return this;
 		}
 		
-		public QueryBuilder nextPage(ListResult resp) {
-			params.remove("cursor");
-			params.add("cursor", resp.message.nextCursor);
-			return this;
+		public Optional<QueryBuilder> nextPage(ListResult resp) {
+			if (
+					resp.message.isPresent() && 
+					resp.message.get().nextCursor.isPresent() &&
+					!(
+							resp.message.get().items.size() == 0 && 
+							resp.message.get().totalResults.orElse(0) > 0
+					)
+				) {
+				params.remove("cursor");
+				params.add("cursor", resp.message.get().nextCursor.get());
+				return Optional.of(this);
+			} else {
+				return Optional.empty();
+			}
+			
 		}
 		
 		public QueryBuilder filteredBy(BooleanFilter filter, Boolean value) {
