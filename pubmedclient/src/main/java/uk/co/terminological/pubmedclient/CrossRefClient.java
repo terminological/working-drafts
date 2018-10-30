@@ -95,7 +95,7 @@ public class CrossRefClient {
 		}
 	}
 	
-	static String baseUrl ="http://api.crossref.org/";
+	static String baseUrl ="https://api.crossref.org/";
 	
 	
 	
