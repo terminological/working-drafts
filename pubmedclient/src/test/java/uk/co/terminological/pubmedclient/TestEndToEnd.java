@@ -3,9 +3,12 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
+
+import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
 public class TestEndToEnd {
 
@@ -27,10 +30,13 @@ public class TestEndToEnd {
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
-		pubmed.buildSearchQuery("machine learning").limit(0, 50).execute()
-			;
+		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).execute();
 		
+		List<String> dois = mapper.getDoisByIdAndType(result.getIds(), IdType.PMID);
 
+		unpaywall.getUnpaywallByDois(dois).stream()
+			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
+		
 	}
 
 }

@@ -89,15 +89,11 @@ public class UnpaywallClient {
 	}
 
 	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
-		List<Location> pdfs = result.oaLocations.stream().filter(loc->loc.urlForPdf.isPresent()).collect(Collectors.toList());
-		Location loc = pdfs.stream().filter(l -> l.isBest.orElse(Boolean.FALSE).equals(Boolean.TRUE)).findFirst()
-				.orElse(pdfs.stream().findFirst().orElse(null));
-		if (loc==null) throw new BibliographicApiException("No PDF for "+result.doi.get());
 		try {
-			WebResource wr = client.resource(loc.urlForPdf.get());
+			WebResource wr = client.resource(result.pdfUrl().orElseThrow(() -> new BibliographicApiException("No PDF found for "+result.doi.get())));
 			return wr.get(InputStream.class);
 		} catch (Exception e) {
-			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get(),e);
+			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get());
 		}
 	}
 
@@ -143,6 +139,11 @@ public class UnpaywallClient {
 		@JsonProperty("updated") public Optional<Date> updated; //Time when the data for this resource was last updated.
 		@JsonProperty("year") public Optional<String> year; //The year this resource was published.
 		@JsonProperty("z_authors") public List<Author> zAuthors; //The authors of this resource.
+		public Optional<String> pdfUrl() {
+			if (bestOaLocation.get().urlForPdf.isPresent())
+				return bestOaLocation.get().urlForPdf;
+			return oaLocations.stream().flatMap(loc -> loc.urlForPdf.stream()).findFirst();
+		}
 	}
 
 	public static class Location extends ExtensibleJson {
