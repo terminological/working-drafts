@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -35,8 +36,8 @@ public class TestEndToEnd {
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
 		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
-				DateFormat.getInstance().parse("01/01/2016"), 
-				DateFormat.getInstance().parse("01/01/2017")).execute();
+				LocalDate.of(2016, 01, 1), 
+				LocalDate.of(2017, 01, 1)).execute();
 		
 		List<String> dois = mapper.getDoisByIdAndType(result.getIds(), IdType.PMID);
 
