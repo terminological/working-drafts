@@ -6,10 +6,12 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 
@@ -32,6 +34,8 @@ public class TestEndToEnd {
 		
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail);
+		
+		
 		CrossRefClient xref = CrossRefClient.create(developerEmail);
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
@@ -39,8 +43,21 @@ public class TestEndToEnd {
 				LocalDate.of(2016, 01, 1), 
 				LocalDate.of(2017, 01, 1)).execute();
 		
+		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds()).stream().flatMap(pme -> pme.getDoi().stream()).collect(Collectors.toList());
 		List<String> dois = mapper.getDoisByIdAndType(result.getIds(), IdType.PMID);
 
+		List<String> tmp = new ArrayList<>(dois2);
+		tmp.removeAll(dois);
+		System.out.println("Extra dois found by pubmed");
+		tmp.forEach(System.out::println);
+		
+		List<String> tmp2 = new ArrayList<>(dois);
+		tmp2.removeAll(dois2);
+		System.out.println("Extra dois found by id mapper");
+		tmp2.forEach(System.out::println);
+		
+		
+		System.out.println("Unpaywall entries");
 		unpaywall.getUnpaywallByDois(dois).stream()
 			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
 		
