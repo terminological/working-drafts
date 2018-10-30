@@ -75,7 +75,7 @@ public class UnpaywallClient {
 	}
 
 	public List<Result> getUnpaywallByDois(List<String> dois) throws BibliographicApiException {
-		List<Result> out = new ArrayList<>() = Collections.emptyList();
+		List<Result> out = Collections.emptyList();
 		dois.forEach(i -> {
 			rateLimiter.acquire();
 			try {
