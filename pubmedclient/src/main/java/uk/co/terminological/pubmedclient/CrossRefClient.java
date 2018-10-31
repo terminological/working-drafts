@@ -42,7 +42,7 @@ public class CrossRefClient {
 	// http://tdmsupport.crossref.org/researchers/
 	// http://clickthroughsupport.crossref.org/
 	
-	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html
+	
 	
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	

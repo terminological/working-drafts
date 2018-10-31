@@ -203,6 +203,9 @@ public class EntrezClient {
 		return this.buildSearchQuery(searchTerm).execute().getIds();
 	}
 
+	public List<String> findPMIdsByDois(List<String> dois) throws BibliographicApiException {
+		return this.buildSearchQuery(dois.stream().collect(Collectors.joining(" OR "))).execute().getIds();
+	}
 
 	/**
 	 * Fetch PubMed article metadata and abstract
