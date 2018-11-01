@@ -21,7 +21,8 @@
         <module>graphs</module>
         <module>costbenefit</module>
         <module>pubmedclient</module>
-    </modules>
+        <module>pipestream</module>
+	</modules>
 
 	<dependencies>
 		<dependency>
