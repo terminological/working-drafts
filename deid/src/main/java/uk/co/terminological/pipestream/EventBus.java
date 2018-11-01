@@ -23,6 +23,8 @@ import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 //TODO: file watcher that reports changes since last processing time.
 //TODO: some form of execution success status reported to the bus from the handlers
 //TODO: execution failure (exception) report. auto serialise and replay messages that trigger failures.
+//TODO: Custom logging factory: http://poth-chola.blogspot.com/2015/08/custom-slf4j-logger-adapter.html
+
 public class EventBus {       
 
 	//Thanks to: https://stackoverflow.com/questions/16106260/thread-safe-singleton-class/16106598#16106598
