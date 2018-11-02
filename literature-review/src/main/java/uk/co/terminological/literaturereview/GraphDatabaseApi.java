@@ -1,6 +1,7 @@
 package uk.co.terminological.literaturereview;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -21,7 +22,7 @@ public class GraphDatabaseApi {
 		GraphDatabaseApi.create(f).waitAndShutdown();
 	}
 
-	public GraphDatabaseApi(File graphDbPath) {
+	public GraphDatabaseApi(Path graphDbPath) {
 
 		//http://neo4j-contrib.github.io/neo4j-jdbc/
 		Config config = Config.builder()
@@ -33,7 +34,7 @@ public class GraphDatabaseApi {
 		logger.info("Opening graphdb in: "+graphDbPath);
 		
 		graphDb = new GraphDatabaseFactory()
-				.newEmbeddedDatabaseBuilder( graphDbPath )
+				.newEmbeddedDatabaseBuilder( graphDbPath.toFile() )
 				.setConfig( bolt.type, "BOLT" )
 				.setConfig( bolt.enabled, "true" )
 				.setConfig( bolt.listen_address, "localhost:7687" )
@@ -73,7 +74,7 @@ public class GraphDatabaseApi {
 
 	public GraphDatabaseService get() {return graphDb;}
 
-	public static GraphDatabaseApi create(File graphDbPath) {
+	public static GraphDatabaseApi create(Path graphDbPath) {
 		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath);
 		return singleton;
 	}

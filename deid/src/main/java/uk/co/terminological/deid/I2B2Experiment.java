@@ -71,7 +71,10 @@ public class I2B2Experiment {
 
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		
+		execute();
+	}
+	
+	public static void execute() throws IOException {	
 		Path inputDir1 = Paths.get("/media/data/Data/i2b2/2014Track1");
 		Path inputDir2 = Paths.get("/media/data/Data/i2b2/2006Set1B");
 		Path outputDir = Paths.get("/media/data/Data/i2b2/brat");
