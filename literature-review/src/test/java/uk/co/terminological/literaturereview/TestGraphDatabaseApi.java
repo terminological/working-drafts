@@ -1,6 +1,9 @@
 package uk.co.terminological.literaturereview;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
@@ -8,7 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.Files;
+
 
 public class TestGraphDatabaseApi {
 
@@ -20,15 +23,15 @@ public class TestGraphDatabaseApi {
 	}
 
 	@Test
-	public final void testCreate() {
+	public final void testCreate() throws IOException {
 		
-		File tmp = Files.createTempDir();
+		Path tmp = Files.createTempDirectory("neo4j");
 		
 		GraphDatabaseApi api = GraphDatabaseApi.create(tmp);
 		logger.info("graph Db available in "+tmp);
 		api.shutdown();
 		
-		tmp.deleteOnExit();
+		Files.deleteIfExists(tmp);
 	}
 
 }
