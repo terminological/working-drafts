@@ -1,5 +1,8 @@
 package uk.co.terminological.literaturereview;
 
+import static uk.co.terminological.literaturereview.PubMed2Neo4jUtils.mapEntryToNode;
+import static uk.co.terminological.literaturereview.PubMed2Neo4jUtils.setupSchema;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,17 +17,13 @@ import org.apache.log4j.Logger;
 
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
-import uk.co.terminological.pipestream.FluentEvents;
 import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
 import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
-import uk.co.terminological.pipestream.StatusRecord;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
-
-import static uk.co.terminological.literaturereview.PubMed2Neo4jUtils.*;
 
 public class PubMed2Neo4jExperiment {
 	
