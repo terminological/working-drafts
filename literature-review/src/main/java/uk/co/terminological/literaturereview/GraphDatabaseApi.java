@@ -6,9 +6,13 @@ import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.configuration.BoltConnector;
 import org.neo4j.kernel.configuration.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GraphDatabaseApi {
 
+	private static final Logger logger = LoggerFactory.getLogger(GraphDatabaseApi.class);
+	
 	private static GraphDatabaseApi singleton;
 	private GraphDatabaseService graphDb;
 
@@ -26,6 +30,8 @@ public class GraphDatabaseApi {
 
 		BoltConnector bolt = config.boltConnectors().get(0);
 
+		logger.info("Opening graphdb in: "+graphDbPath);
+		
 		graphDb = new GraphDatabaseFactory()
 				.newEmbeddedDatabaseBuilder( graphDbPath )
 				.setConfig( bolt.type, "BOLT" )
@@ -48,11 +54,12 @@ public class GraphDatabaseApi {
 			graphDb.shutdown();
 			graphDb = null;
 		}
+		logger.info("graphDb is shutdown");
 	}
 
 	public void waitAndShutdown() {
 		if (graphDb != null && graphDb.isAvailable(1)) {
-			System.out.println("Press Enter key to shutdown database...");
+			System.out.println("Press Enter key to shutdown neo4j...");
 			try
 			{
 				System.in.read();
@@ -60,6 +67,7 @@ public class GraphDatabaseApi {
 			catch(Exception e)
 			{}  
 			graphDb.shutdown();
+			logger.info("graphDb is shutdown");
 		}
 	}
 

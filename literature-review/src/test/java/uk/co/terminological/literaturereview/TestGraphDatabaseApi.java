@@ -23,11 +23,11 @@ public class TestGraphDatabaseApi {
 	public final void testCreate() {
 		
 		File tmp = Files.createTempDir();
-		logger.info("Creating db in "+tmp);
+		
 		GraphDatabaseApi api = GraphDatabaseApi.create(tmp);
 		logger.info("graph Db available in "+tmp);
 		api.shutdown();
-		logger.info("graph Db shutdown");
+		
 		tmp.deleteOnExit();
 	}
 
