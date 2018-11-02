@@ -1,11 +1,13 @@
 package uk.co.terminological.pubmedclient;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nih.nlm.ncbi.eutils.generated.efetch.Author;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
 import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
@@ -117,6 +119,13 @@ public class EntrezResult {
 			return raw.getPubmedData().getArticleIdList().getArticleId().stream()
 					.filter(aid -> aid.getIdType().equals("pubmed")).findFirst()
 					.map(aid -> aid.getvalue()).get();
+		}
+		
+		public List<Author> getAuthors() {
+			return Optional.ofNullable(raw.getMedlineCitation().getArticle()).stream()
+					.flatMap(o -> Optional.ofNullable(o.getAuthorList()).stream())
+					.map(o -> o.getAuthor())
+					.findFirst().orElse(Collections.emptyList());
 		}
 	}
 	
