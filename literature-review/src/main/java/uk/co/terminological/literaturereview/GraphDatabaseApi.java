@@ -12,6 +12,11 @@ public class GraphDatabaseApi {
 	private static GraphDatabaseApi singleton;
 	private GraphDatabaseService graphDb;
 	
+	public static void main(String[] args) {
+		File f = new File(args[0]);
+		GraphDatabaseApi.create(f).waitAndShutdown();
+	}
+	
 	public GraphDatabaseApi(File graphDbPath) {
 		
 		//http://neo4j-contrib.github.io/neo4j-jdbc/
