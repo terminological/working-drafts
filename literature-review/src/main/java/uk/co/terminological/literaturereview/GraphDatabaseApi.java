@@ -1,7 +1,9 @@
 package uk.co.terminological.literaturereview;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -18,7 +20,7 @@ public class GraphDatabaseApi {
 	private GraphDatabaseService graphDb;
 
 	public static void main(String[] args) {
-		File f = new File(args[0]);
+		Path f = Paths.get(args[0]);
 		GraphDatabaseApi.create(f).waitAndShutdown();
 	}
 
@@ -29,6 +31,11 @@ public class GraphDatabaseApi {
 				.withServerDefaults()
 				.build();
 
+		if (Files.exists(graphDbPath) && !Files.isDirectory(graphDbPath)) {
+			//TODO: if a properties file is supplied instead
+			throw new UnsupportedOperationException();
+		}
+		
 		BoltConnector bolt = config.boltConnectors().get(0);
 
 		logger.info("Opening graphdb in: "+graphDbPath);
@@ -75,6 +82,9 @@ public class GraphDatabaseApi {
 	public GraphDatabaseService get() {return graphDb;}
 
 	public static GraphDatabaseApi create(Path graphDbPath) {
+		
+		
+		
 		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath);
 		return singleton;
 	}
