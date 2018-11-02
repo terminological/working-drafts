@@ -2,6 +2,7 @@ package uk.co.terminological.literaturereview;
 
 import java.io.File;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ public class TestGraphDatabaseApi {
 	
 	@Before
 	public void setUp() throws Exception {
+		BasicConfigurator.configure();
 	}
 
 	@Test
