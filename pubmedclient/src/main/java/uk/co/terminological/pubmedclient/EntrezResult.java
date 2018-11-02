@@ -112,6 +112,12 @@ public class EntrezResult {
 						(labelled && at.getLabel() != null?at.getLabel()+"\t":"")+at.getvalue())
 					.collect(Collectors.joining("\n"));
 		}
+
+		public String getPMID() {
+			return raw.getPubmedData().getArticleIdList().getArticleId().stream()
+					.filter(aid -> aid.getIdType().equals("pubmed")).findFirst()
+					.map(aid -> aid.getvalue()).get();
+		}
 	}
 	
 	public static class Links {

@@ -2,6 +2,8 @@ package uk.co.terminological.pipestream;
 
 import java.io.FileFilter;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -223,6 +225,25 @@ public class FluentEvents {
 				String name,
 				String type) {
 			return new DirectoryScanner(directory, filter, s -> name, s -> type);
+		}
+		
+		public static <Y> EventGenerator<Y> generator(
+					String name,
+					String typeDescription,
+					Function<EventGenerator<Y>,Y> generator,
+					Function<Y,String> nameMapper,
+					Function<Y,String> typeMapper
+				) {
+			return new EventGenerator.Default<Y>(Metadata.forGenerator(name,typeDescription)) {
+
+				@Override
+				public List<Event<Y>> generate() {
+					return Collections.singletonList(
+						Events.namedTypedEvent(
+							generator.apply(this), nameMapper, typeMapper)
+						);
+				}
+			};
 		}
 		
 	}
