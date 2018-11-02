@@ -9,7 +9,8 @@ import org.neo4j.kernel.configuration.Config;
 
 public class GraphDatabaseApi {
 	
-	GraphDatabaseService graphDb;
+	private static GraphDatabaseApi singleton;
+	private GraphDatabaseService graphDb;
 	
 	public GraphDatabaseApi(File graphDbPath) {
 		
@@ -32,13 +33,38 @@ public class GraphDatabaseApi {
 	        @Override
 	        public void run()
 	        {
-	            //TODO: hit a key to terminate the graph database
-	        	graphDb.shutdown();
+	        	waitAndShutdown();
 	        }
 	    } );
 	}
 
+	public void shutdown() {
+		graphDb.shutdown();
+	}
+	
+	public void waitAndShutdown() {
+		System.out.println("Press Enter key to shutdown database...");
+        try
+        {
+            System.in.read();
+        }  
+        catch(Exception e)
+        {}  
+    	graphDb.shutdown();
+	}
+	
+	public GraphDatabaseService get() {return graphDb;}
+	
+	public static GraphDatabaseApi create(File graphDbPath) {
+		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath);
+		return singleton;
+	}
+	
+	public static GraphDatabaseService db() {
+		if (singleton == null) throw new NotInitialisedException();
+		return singleton.get();
+ 	}
 	
 	
-	
+	public static class NotInitialisedException extends RuntimeException {}
 }
