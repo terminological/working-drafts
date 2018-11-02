@@ -20,8 +20,8 @@ public class TestGraphDatabaseApi {
 		
 		File tmp = Files.createTempDir();
 		GraphDatabaseApi api = GraphDatabaseApi.create(tmp);
-		
-		fail("Not yet implemented");
+		api.shutdown();
+		tmp.deleteOnExit();
 	}
 
 }
