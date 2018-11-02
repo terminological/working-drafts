@@ -122,10 +122,12 @@ public class EntrezResult {
 		}
 		
 		public List<Author> getAuthors() {
-			return Optional.ofNullable(raw.getMedlineCitation().getArticle()).stream()
+			return Optional.ofNullable(raw.getMedlineCitation()).stream()
+					.flatMap(o -> Optional.ofNullable(o.getArticle()).stream())
 					.flatMap(o -> Optional.ofNullable(o.getAuthorList()).stream())
 					.map(o -> o.getAuthor())
-					.findFirst().orElse(Collections.emptyList());
+					.findFirst()
+					.orElse(Collections.emptyList());
 		}
 	}
 	
