@@ -22,7 +22,7 @@
         <module>costbenefit</module>
         <module>pubmedclient</module>
         <module>pipestream</module>
-        <module>literature-review</module> 
+        <module>literature-review</module>
 	</modules>
 
 	<dependencies>
