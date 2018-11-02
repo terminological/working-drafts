@@ -30,8 +30,8 @@ public class PubMed2Neo4jUtils {
 		    Schema schema = graph.get().schema();
 		    schema.indexFor( ARTICLE ).on( "pmid" ).create();
 		    schema.indexFor( ARTICLE ).on( "doi" ).create();
-		    schema.constraintFor(ARTICLE).assertPropertyIsUnique("pmid");
-		    schema.constraintFor(ARTICLE).assertPropertyIsUnique("doi");
+		    schema.constraintFor( ARTICLE ).assertPropertyIsUnique("pmid");
+		    schema.constraintFor( ARTICLE ).assertPropertyIsUnique("doi");
 		    tx.success();
 		}
 	}
@@ -50,8 +50,9 @@ public class PubMed2Neo4jUtils {
 			
 			Node node = tmp;
 			entry.getDoi().ifPresent(doi -> node.setProperty("doi", doi));
+			entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 			node.setProperty("abstract", entry.getAbstract());
-			
+			node.setProperty("title", entry.getTitle());
 			
 			nodeId = node.getId();
 		    tx.success();
