@@ -121,6 +121,7 @@ public class EntrezResult {
 					.map(aid -> aid.getvalue()).get();
 		}
 		
+		//TODO: Sane authors wrapper.
 		public List<Author> getAuthors() {
 			return Optional.ofNullable(raw.getMedlineCitation()).stream()
 					.flatMap(o -> Optional.ofNullable(o.getArticle()).stream())
