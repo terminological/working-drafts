@@ -158,10 +158,14 @@ public class EntrezResult {
 		public Optional<String> initials() {
 			return raw.childElements("Initials").findFirst().flatMap(o -> o.getTextContent());
 		}
-		public Optional<String> affiliations() {
-			return raw.childElements("AffiliationInfo").findFirst().flatMap(o -> o.getTextContent());
+		public Stream<String> affiliations() {
+			return raw.childElements("AffiliationInfo").stream()
+					.flatMap(el -> el.childElements("Affiliation").stream())
+					.flatMap(o -> o.getTextContent().stream());
 		}
-		
+		public String getIdentifier() {
+			return lastName()+"_"+firstName();
+		}
 	}
 	
 	public static class MeshHeading {
