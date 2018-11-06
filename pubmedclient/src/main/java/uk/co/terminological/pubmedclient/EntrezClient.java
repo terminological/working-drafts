@@ -38,7 +38,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.Links;
 public class EntrezClient {
 
 	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
-
+	// TODO: caching with https://hc.apache.org/httpcomponents-client-ga/tutorial/html/caching.html#storage and EHCache
 
 	private static final String DEFAULT_BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
 	private Client client;
