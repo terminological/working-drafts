@@ -1,15 +1,11 @@
 package uk.co.terminological.pubmedclient;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nih.nlm.ncbi.eutils.generated.efetch.Author;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import gov.nih.nlm.ncbi.eutils.generated.elink.Id;
 import gov.nih.nlm.ncbi.eutils.generated.elink.IdUrlList;
@@ -19,6 +15,8 @@ import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
+import uk.co.terminological.fluentxml.XmlElement;
+import uk.co.terminological.fluentxml.XmlException;
 
 public class EntrezResult {
 
@@ -54,82 +52,138 @@ public class EntrezResult {
 	
 	public static class PubMedEntries {
 
-		private PubmedArticleSet raw;
+		private XmlElement raw; //PubmedArticleSet
 		
-		public PubMedEntries(PubmedArticleSet raw) {this.raw = raw;}
+		public PubMedEntries(XmlElement raw) {this.raw = raw;}
 		
 		public Stream<PubMedEntry> stream() {
-			return raw.getPubmedArticleOrPubmedBookArticle().stream()
-					.filter(o->o instanceof PubmedArticle).map(o-> new PubMedEntry((PubmedArticle) o));
+			return raw.childElements("PubmedArticle").stream().map(o-> new PubMedEntry(o));
 			
 		}
 		
-		public List<String> getTitles() {
-			return this.stream().map(e -> e.getTitle()).collect(Collectors.toList());
+		public Stream<String> getTitles() {
+			try {
+				return this.raw.doXpath(".//ArticleTitle")
+						.getManyAsStream(XmlElement.class).flatMap(o -> o.getTextContent().stream());
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		
 	}
 	
 	public static class PubMedEntry {
 		
-		private PubmedArticle raw;
+		private XmlElement raw; //PubmedArticle
 		
-		public PubMedEntry(PubmedArticle raw) {this.raw = raw;}
+		public PubMedEntry(XmlElement raw) {this.raw = raw;}
 		
-		public PubmedArticle getRaw() {return raw;}
+		public XmlElement getRaw() {return raw;}
 		
 		public String getTitle() {
-			return raw.getMedlineCitation().getArticle().getArticleTitle().getvalue();
+			try {
+				return raw.doXpath(".//ArticleTitle").getOne(XmlElement.class).getTextContent().get();
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		
 		public Optional<String> getDoi() {
-			return Optional.ofNullable(raw.getPubmedData().getArticleIdList()).stream()
-					.flatMap(o -> o.getArticleId().stream())
-					.filter(aid -> aid.getIdType().equals("doi")).findFirst().map(aid -> aid.getvalue());
+			try {
+				return raw.doXpath(".//ArticleId[@IdType='doi']").get(XmlElement.class).flatMap(o -> o.getTextContent());
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		
 		public Optional<String> getPMCID() {
-			return 
-					Optional.ofNullable(raw.getPubmedData().getArticleIdList()).stream()
-					.flatMap(o -> o.getArticleId().stream())
-					.filter(aid -> aid.getIdType().equals("pmc")).findFirst().map(aid -> aid.getvalue());
+			try {
+				return raw.doXpath(".//ArticleId[@IdType='pmc']").get(XmlElement.class).flatMap(o -> o.getTextContent());
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		
-		public List<String> getMeshHeadings() {
-			return 
-					Optional.ofNullable(raw.getMedlineCitation()).stream()
-					.flatMap(o -> Optional.ofNullable(o.getMeshHeadingList()).stream())
-					.flatMap(o -> o.getMeshHeading().stream())
-					.map(mh -> mh.getDescriptorName().getvalue())
-					.collect(Collectors.toList());
+		public String getPMID() {
+			try {
+				return raw.doXpath(".//ArticleId[@IdType='pubmed']").get(XmlElement.class).flatMap(o -> o.getTextContent()).get();
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		public Stream<MeshHeading> getMeshHeadings() {			
+			try {
+				return raw.doXpath(".//MeshHeading").getManyAsStream(XmlElement.class).map(o -> new MeshHeading(o));
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
 		public String getAbstract() {return getAbstract(true);}
 		public String getUnlabelledAbstract() {return getAbstract(false);}
 		
-		private String getAbstract(boolean labelled) {
-			return raw.getMedlineCitation().getArticle().getAbstract()
-					.getAbstractText().stream()
-					.map(at -> 
-						(labelled && at.getLabel() != null?at.getLabel()+"\t":"")+at.getvalue())
-					.collect(Collectors.joining("\n"));
+		private String getAbstract(final boolean labelled) {
+			try {
+				return raw.doXpath(".//AbstractText").getManyAsStream(XmlElement.class)
+						.map(el -> { if (labelled) { 
+							return el.getAttributeValue("label").map(o -> o+"\t").orElse("")+el.getTextContent().orElse("");
+						} else {
+							return el.getTextContent().orElse("");
+						}}).collect(Collectors.joining("\n"));
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
 		}
 
-		public String getPMID() {
-			return raw.getPubmedData().getArticleIdList().getArticleId().stream()
-					.filter(aid -> aid.getIdType().equals("pubmed")).findFirst()
-					.map(aid -> aid.getvalue()).get();
+		public Stream<Author> getAuthors() {
+			try {
+				return raw.doXpath(".//Author").getManyAsStream(XmlElement.class).map(o -> new Author(o));
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+	
+	public static class Author {
+		
+		private XmlElement raw;
+		public Author(XmlElement raw) {this.raw = raw;}
+		public Optional<String> lastName() {
+			return raw.childElements("LastName").findFirst().flatMap(o -> o.getTextContent());
+		}
+		public Optional<String> firstName() {
+			return raw.childElements("FirstName").findFirst().flatMap(o -> o.getTextContent());
+		}
+		public Optional<String> initials() {
+			return raw.childElements("Initials").findFirst().flatMap(o -> o.getTextContent());
+		}
+		public Optional<String> affiliations() {
+			return raw.childElements("AffiliationInfo").findFirst().flatMap(o -> o.getTextContent());
 		}
 		
-		//TODO: Sane authors wrapper.
-		public List<Author> getAuthors() {
-			return Optional.ofNullable(raw.getMedlineCitation()).stream()
-					.flatMap(o -> Optional.ofNullable(o.getArticle()).stream())
-					.flatMap(o -> Optional.ofNullable(o.getAuthorList()).stream())
-					.map(o -> o.getAuthor())
-					.findFirst()
-					.orElse(Collections.emptyList());
+	}
+	
+	public static class MeshHeading {
+		private XmlElement raw;
+		public MeshHeading(XmlElement raw) {this.raw = raw;}
+		public MeshCode getDescriptor() {
+			return raw.childElements("DescriptorName").stream().findFirst().map(o -> new MeshCode(o)).get();
 		}
+		public Stream<MeshCode> getQualifiers() {
+			return raw.childElements("QualifierName").stream().map(o -> new MeshCode(o));
+		}
+		public String toString() { 
+			return getDescriptor().toString()+ " ["+getQualifiers().map(q -> q.toString()).collect(Collectors.joining("; "))+"]";
+		}
+	}
+	
+	public static class MeshCode {
+		private XmlElement raw;
+		public MeshCode(XmlElement raw) {this.raw = raw;}
+		public String getCode() { return raw.getAttributeValue("UI").get(); }
+		public String getTerm() { return raw.getTextContent().get(); }
+		public String toString() {return getCode()+":"+getTerm();}
 	}
 	
 	public static class Links {

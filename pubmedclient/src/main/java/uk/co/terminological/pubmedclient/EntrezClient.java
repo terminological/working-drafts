@@ -26,9 +26,10 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticleSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
+import uk.co.terminological.fluentxml.Xml;
+import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
 
 /*
@@ -50,9 +51,7 @@ public class EntrezClient {
 	private JAXBContext jcSearch;
 	private JAXBContext jcLink;
 	private Unmarshaller linkUnmarshaller;
-	private JAXBContext jcFetch;
 	private Unmarshaller searchUnmarshaller;
-	private Unmarshaller fetchUnmarshaller;
 	private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(EntrezClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
@@ -82,8 +81,6 @@ public class EntrezClient {
 		try {
 			jcSearch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.esearch");
 			searchUnmarshaller = jcSearch.createUnmarshaller();
-			jcFetch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.efetch");
-			fetchUnmarshaller = jcFetch.createUnmarshaller();
 			jcLink = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.elink");
 			linkUnmarshaller = jcLink.createUnmarshaller();
 		} catch (JAXBException e) {
@@ -223,15 +220,13 @@ public class EntrezClient {
 		rateLimiter.consume();
 		logger.debug("making efetch query with params {}", fetchParams.toString());
 		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
-		Object obj;
+		Xml xml;
 		try {
-			obj = fetchUnmarshaller.unmarshal(is);
-			is.close();
-		} catch (JAXBException | IOException e1) {
-			throw new BibliographicApiException("Could not parse response:",e1);
+			xml = Xml.fromStream(is);
+		} catch (XmlException e) {
+			throw new BibliographicApiException("could not parse result",e);
 		}
-		PubmedArticleSet pubmedArticleSet = (PubmedArticleSet) obj;
-		return new EntrezResult.PubMedEntries(pubmedArticleSet);
+		return new EntrezResult.PubMedEntries(xml.content());
 	}
 
 	public Optional<EntrezResult.PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {

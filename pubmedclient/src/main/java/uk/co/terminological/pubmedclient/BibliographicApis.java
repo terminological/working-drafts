@@ -3,10 +3,7 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
-
-import org.apache.log4j.BasicConfigurator;
 
 public class BibliographicApis {
 
