@@ -17,7 +17,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
 
-public class PubmedGraphUtils {
+public class PubMedGraphUtils {
 
 	
 	
