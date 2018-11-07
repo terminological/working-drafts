@@ -13,6 +13,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
 	GraphDatabaseService graph;
 	BiConsumer<TransactionData, Watcher<Y>> afterCommit;
+	TransactionEventHandler<Void> txListener;
 	
 	public GraphDatabaseWatcher(Metadata metadata, GraphDatabaseService graph, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
 		super(metadata);
@@ -22,7 +23,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
 	@Override
 	public Object setupWatcher(Watcher<Y> watcher) {
-		TransactionEventHandler<Void> txListener = new TransactionEventHandler<Void>() {
+		txListener = new TransactionEventHandler<Void>() {
 
 			@Override
 			public Void beforeCommit(TransactionData data) throws Exception { return null; }
@@ -40,6 +41,8 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 		return null;
 	}
 
-	
+	public void tearDownWatcher() {
+		graph.unregisterTransactionEventHandler(txListener);
+	}
 
 }

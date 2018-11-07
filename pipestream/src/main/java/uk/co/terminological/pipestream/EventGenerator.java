@@ -60,7 +60,7 @@ public interface EventGenerator<Y> extends EventBusAware {
 		@Override
 		public boolean execute() {
 			if (watcher == null) {
-				watcher = setupWatcher(this);
+				watcher = setupWatcher();
 			} else {
 				try {
 					Thread.sleep(10);
@@ -71,9 +71,11 @@ public interface EventGenerator<Y> extends EventBusAware {
 			return interrupted;
 		}
 		
-		public abstract Object setupWatcher(Watcher<Y> watcher);
+		public abstract Object setupWatcher();
+		public abstract void tearDownWatcher();
 		
 		public void interrupt() {
+			tearDownWatcher();
 			this.interrupted = true;
 		}
 		

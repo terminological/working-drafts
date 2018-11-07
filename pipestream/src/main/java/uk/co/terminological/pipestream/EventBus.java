@@ -180,6 +180,9 @@ public class EventBus {
 	
 	public EventBus sendShutdownMessage() {
 		log.info("EventBus sending shutdown message...");
+		this.generators.stream().filter(eg -> eg instanceof EventGenerator.Watcher)
+			.map(eg -> (EventGenerator.Watcher<?>) eg)
+			.forEach(w -> w.interrupt());
 		this.receive(new Event.Shutdown(), FluentEvents.Metadata.forGenerator("SYSTEM"));
 		return this;
 	}
