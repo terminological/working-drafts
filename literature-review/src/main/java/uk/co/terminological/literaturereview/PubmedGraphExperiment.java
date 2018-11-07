@@ -15,7 +15,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.neo4j.graphdb.Label;
 
-import uk.co.terminological.literaturereview.PubmedSchema.Labels;
+import uk.co.terminological.literaturereview.PubmedGraphSchema.Labels;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents;
@@ -81,7 +81,7 @@ public class PubmedGraphExperiment {
 	
 	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search) throws IOException {
 		
-		PubmedSchema.setupSchema(graphApi);
+		PubmedGraphSchema.setupSchema(graphApi);
 		
 		EventBus.get()
 			.withApi(graphApi)
