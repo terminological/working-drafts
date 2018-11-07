@@ -27,14 +27,14 @@ public class PubmedSchema {
 		
 		try ( Transaction tx = graph.get().beginTx() )
 		{
-		    PubmedSchema schema = graph.get().schema();
-		    schema.indexFor( ARTICLE ).on( "pmid" ).create();
-		    schema.indexFor( ARTICLE ).on( "doi" ).create();
-		    schema.constraintFor( ARTICLE ).assertPropertyIsUnique("pmid");
-		    schema.constraintFor( ARTICLE ).assertPropertyIsUnique("doi");
-		    schema.indexFor( AUTHOR ).on( "identifier" ).create();
-		    schema.indexFor( MESH_CODE ).on( "code" ).create();
-		    schema.constraintFor( MESH_CODE ).assertPropertyIsUnique("code");
+		    Schema schema = graph.get().schema();
+		    schema.indexFor( Labels.ARTICLE ).on( "pmid" ).create();
+		    schema.indexFor( Labels.ARTICLE ).on( "doi" ).create();
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("pmid");
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("doi");
+		    schema.indexFor( Labels.AUTHOR ).on( "identifier" ).create();
+		    schema.indexFor( Labels.MESH_CODE ).on( "code" ).create();
+		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique("code");
 		    tx.success();
 		}
 	}
