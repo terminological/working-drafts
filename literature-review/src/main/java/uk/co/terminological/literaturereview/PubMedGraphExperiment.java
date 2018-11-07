@@ -16,7 +16,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.neo4j.graphdb.Label;
 
-import uk.co.terminological.literaturereview.PubmedGraphSchema.Labels;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents;
@@ -28,8 +27,8 @@ import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
-import static uk.co.terminological.literaturereview.PubmedGraphSchema.Labels.*;
-import static uk.co.terminological.literaturereview.PubmedGraphSchema.Rel.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
 
 public class PubMedGraphExperiment {
 	
@@ -85,7 +84,7 @@ public class PubMedGraphExperiment {
 	
 	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search) throws IOException {
 		
-		PubmedGraphSchema.setupSchema(graphApi);
+		PubMedGraphSchema.setupSchema(graphApi);
 		
 		EventBus.get()
 			.withApi(graphApi)
@@ -132,7 +131,7 @@ public class PubMedGraphExperiment {
 							.getPMEntriesByPMIds(event.get());
 						
 						entries.stream().forEach(
-								entry -> mapEntryToNode(entry, graph, Labels.SEARCH_RESULT) 
+								entry -> mapEntryToNode(entry, graph, SEARCH_RESULT) 
 						);
 												
 						List<String> dois = entries.stream().flatMap(entry -> entry.getDoi().stream()).collect(Collectors.toList());
@@ -158,5 +157,5 @@ public class PubMedGraphExperiment {
 				});
 	}
 	
-	static EventProcessor<>
+	
 }
