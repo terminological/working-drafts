@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -27,7 +28,10 @@ import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
-public class PubmedGraphExperiment {
+import static uk.co.terminological.literaturereview.PubmedGraphSchema.Labels.*;
+import static uk.co.terminological.literaturereview.PubmedGraphSchema.Rel.*;
+
+public class PubMedGraphExperiment {
 	
 	
 	
@@ -88,6 +92,8 @@ public class PubmedGraphExperiment {
 			.withApi(biblioApi)
 			//.withApi(new StatusRecord<Status>())
 			.withEventGenerator(pubMedResults(search,"machine learning"))
+			.withEventGenerator(newLabelledNodeTrigger(ARTICLE))
+			.withEventGenerator(newLabelledNodeTrigger(STUB))
 			
 			;
 		
@@ -114,7 +120,7 @@ public class PubmedGraphExperiment {
 				type -> PUBMED_SEARCH_RESULT);
 	}
 	
-	static EventProcessor<List<String>> getEntriesFromIds() {
+	static EventProcessor<List<String>> getDoiListFromSearchAndWritePubMedEntriesToGraph() {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
@@ -129,7 +135,8 @@ public class PubmedGraphExperiment {
 								entry -> mapEntryToNode(entry, graph, Labels.SEARCH_RESULT) 
 						);
 												
-						entries.stream().flatMap(entry -> entry.getDoi().stream());
+						List<String> dois = entries.stream().flatMap(entry -> entry.getDoi().stream()).collect(Collectors.toList());
+						context.send(event);
 						
 						
 					} catch (BibliographicApiException e) {
@@ -138,7 +145,7 @@ public class PubmedGraphExperiment {
 				});
 	}
 	
-	static EventGenerator<Long> newlabelledNodeTrigger(Label label) {
+	static EventGenerator<Long> newLabelledNodeTrigger(Label label) {
 		return GraphDatabaseWatcher.create(label.name(), NEO4J_NODE_WATCHER, 
 				(txData, context) -> {
 					txData.createdNodes().forEach( node -> {
@@ -151,5 +158,5 @@ public class PubmedGraphExperiment {
 				});
 	}
 	
-	
+	static EventProcessor<>
 }
