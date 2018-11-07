@@ -1,22 +1,45 @@
 package uk.co.terminological.literaturereview;
 
-import java.util.List;
+import java.util.function.BiConsumer;
 
-import uk.co.terminological.pipestream.Event;
+import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.event.TransactionData;
+import org.neo4j.graphdb.event.TransactionEventHandler;
+
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.Metadata;
 
-public class GraphDatabaseWatcher<Y> extends EventGenerator.Default<Y> {
+public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
-	public GraphDatabaseWatcher(Metadata metadata) {
+	GraphDatabaseService graph;
+	BiConsumer<TransactionData, Watcher<Y>> afterCommit;
+	
+	public GraphDatabaseWatcher(Metadata metadata, GraphDatabaseService graph, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
 		super(metadata);
-		// TODO Auto-generated constructor stub
+		this.graph = graph;
+		this.afterCommit = afterCommit;
 	}
 
 	@Override
-	public List<Event<Y>> generate() {
-		// TODO Auto-generated method stub
+	public Object setupWatcher(Watcher<Y> watcher) {
+		TransactionEventHandler<Void> txListener = new TransactionEventHandler<Void>() {
+
+			@Override
+			public Void beforeCommit(TransactionData data) throws Exception { return null; }
+
+			@Override
+			public void afterCommit(TransactionData data, Void state) {
+				afterCommit.accept(data, watcher);
+			}
+
+			@Override
+			public void afterRollback(TransactionData data, Void state) {}
+			
+		};
+		graph.registerTransactionEventHandler(txListener);
 		return null;
 	}
+
+	
 
 }
