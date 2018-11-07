@@ -1,5 +1,0 @@
-package uk.co.terminological.literaturereview;
-
-public class Schema {
-
-}
