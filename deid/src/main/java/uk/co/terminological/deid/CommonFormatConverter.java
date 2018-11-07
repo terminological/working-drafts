@@ -101,7 +101,7 @@ public class CommonFormatConverter {
 						Integer end = tmp.getAsElement().getTextContent().length()+start;
 					Span span = Span.from(
 							start, end, 
-							tmp.getAttributeValue("TYPE"),
+							tmp.getAttributeValue("TYPE").get(),
 							null);
 					record.spans.add(span);
 					}
