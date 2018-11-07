@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -16,16 +17,20 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.neo4j.graphdb.Label;
 
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents;
+import uk.co.terminological.pipestream.FluentEvents.Events;
 import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
 import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
+import uk.co.terminological.pipestream.HandlerTypes.Terminal;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
@@ -36,16 +41,21 @@ public class PubMedGraphExperiment {
 	
 	
 	// Event types
-	public static final String PUBMED_SEARCH_RESULT = "Pubmed search result";
+	public static final String PUBMED_SEARCH_RESULT = "PubMed search result";
+	public static final String PUBMED_FETCH_RESULT = "PubMed fetch result";
 	public static final String NEO4J_NEW_NODE = "Neo4j node created";
 	
 	// Event names
+	public static final String PMID_LIST = "PubMed ids";
+	public static final String DOI_LIST = "DOIs";
+	public static final String PUBMED_ENTRY_AVAILABLE = "PubMed Entry";
 	
 	// Handlers & Generators
-	public static final String PUBMED_SEARCHER = "Pubmed searcher";
-	public static final String PUBMED_FETCHER = "Pubmed record fetch";
-	public static final String NEO4J_ARTICLE_FINDER = "Neo4j new article finder";
+	public static final String PUBMED_SEARCHER = "PubMed searcher";
+	public static final String PUBMED_FETCHER = "PubMed record fetch";
+	//public static final String NEO4J_ARTICLE_FINDER = "Neo4j new article finder";
 	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
+	public static final String NEO4J_WRITER = "Neo4j node watcher";
 	
 	// Metadata keys
 	
@@ -80,7 +90,7 @@ public class PubMedGraphExperiment {
 		execute(graphApi, biblioApi, workingDir, outputDir, search);
 	}
 	
-	public static enum Status {}
+	public static class PMIDList extends ArrayList<String> {}
 	
 	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search) throws IOException {
 		
@@ -89,7 +99,7 @@ public class PubMedGraphExperiment {
 		EventBus.get()
 			.withApi(graphApi)
 			.withApi(biblioApi)
-			//.withApi(new StatusRecord<Status>())
+			.withApi(new PMIDList())
 			.withEventGenerator(pubMedResults(search,"machine learning"))
 			.withEventGenerator(newLabelledNodeTrigger(ARTICLE))
 			.withEventGenerator(newLabelledNodeTrigger(STUB))
@@ -115,33 +125,41 @@ public class PubMedGraphExperiment {
 						return Collections.emptyList();
 					}
 				},
-				name -> searchName, 
+				name -> PMID_LIST, 
 				type -> PUBMED_SEARCH_RESULT);
 	}
 	
-	static EventProcessor<List<String>> getDoiListFromSearchAndWritePubMedEntriesToGraph() {
+	static EventProcessor<List<String>> fetchPubMedEntries() {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
-				Predicates.matchType(PUBMED_SEARCH_RESULT), 
+				Predicates.matchNameAndType(PMID_LIST, PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
 					try {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
-						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+						
 						
 						PubMedEntries entries = bib.getEntrez()
 							.getPMEntriesByPMIds(event.get());
 						
-						entries.stream().forEach(
-								entry -> mapEntryToNode(entry, graph, SEARCH_RESULT) 
-						);
+						entries.stream().forEach(entry -> {
+								context.send(Events.namedTypedEvent(entry, PUBMED_ENTRY_AVAILABLE, PUBMED_FETCH_RESULT));
+						});
 												
 						List<String> dois = entries.stream().flatMap(entry -> entry.getDoi().stream()).collect(Collectors.toList());
-						context.send(event);
+						context.send(Events.namedTypedEvent(dois, DOI_LIST, PUBMED_FETCH_RESULT));
 						
 						
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
 					}
 				});
+	}
+	
+	static EventProcessor<PubMedEntry> writeToGraph(Label... labels) {
+		return Handlers.eventProcessor(NEO4J_WRITER, Predicates.matchName(PUBMED_ENTRY_AVAILABLE), 
+				(entry,context) -> {
+			GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+			mapEntryToNode(entry.get(), graph, labels);
+		});
 	}
 	
 	static EventGenerator<Long> newLabelledNodeTrigger(Label label) {
@@ -156,6 +174,7 @@ public class PubMedGraphExperiment {
 					});
 				});
 	}
+	
 	
 	
 }
