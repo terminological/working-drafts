@@ -17,7 +17,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import static uk.co.terminological.literaturereview.PubmedSchema.Labels.*;
 import static uk.co.terminological.literaturereview.PubmedSchema.Rel.*;
 
-public class PubMed2Neo4jUtils {
+public class PubmedUtils {
 
 	
 	
