@@ -32,12 +32,14 @@ public class PubMed2Neo4jExperiment {
 	
 	// Event types
 	public static final String PUBMED_SEARCH_RESULT = "Pubmed search result";
+	public static final String NEW_ARTICLE_NODE = "Neo4j pubmed search article";
 	
 	// Event names
 	
 	// Handlers & Generators
 	public static final String PUBMED_SEARCHER = "Pubmed searcher";
 	public static final String PUBMED_FETCHER = "Pubmed record fetch";
+	public static final String NEO4J_ARTICLE_WATCHER = "Neo4j new article watcher";
 	
 	// Metadata keys
 	
@@ -133,5 +135,5 @@ public class PubMed2Neo4jExperiment {
 				});
 	}
 	
-	static EventGenerator<Node> 
+	static EventGenerator<Node> get
 }

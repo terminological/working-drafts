@@ -95,9 +95,5 @@ public class GraphDatabaseApi {
 		return singleton.get();
 	}
 
-	public <Y> GraphDatabaseWatcher<Y> createWatcher(String name, String type, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
-		return new GraphDatabaseWatcher<Y>(FluentEvents.Metadata.forGenerator(name, type),this.get(),afterCommit);
-	}
-
 	public static class NotInitialisedException extends RuntimeException {}
 }
