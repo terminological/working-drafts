@@ -22,7 +22,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 	}
 
 	@Override
-	public Object setupWatcher(Watcher<Y> watcher) {
+	public Object setupWatcher() {
 		txListener = new TransactionEventHandler<Void>() {
 
 			@Override
@@ -30,7 +30,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
 			@Override
 			public void afterCommit(TransactionData data, Void state) {
-				afterCommit.accept(data, watcher);
+				afterCommit.accept(data, GraphDatabaseWatcher.this);
 			}
 
 			@Override
