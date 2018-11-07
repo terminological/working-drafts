@@ -14,9 +14,12 @@ import java.util.Properties;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
 
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
+import uk.co.terminological.pipestream.FluentEvents;
 import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
@@ -32,14 +35,15 @@ public class PubMed2Neo4jExperiment {
 	
 	// Event types
 	public static final String PUBMED_SEARCH_RESULT = "Pubmed search result";
-	public static final String NEW_ARTICLE_NODE = "Neo4j pubmed search article";
+	public static final String NEW_NEW_NODE = "Neo4j node created";
 	
 	// Event names
 	
 	// Handlers & Generators
 	public static final String PUBMED_SEARCHER = "Pubmed searcher";
 	public static final String PUBMED_FETCHER = "Pubmed record fetch";
-	public static final String NEO4J_ARTICLE_WATCHER = "Neo4j new article watcher";
+	public static final String NEO4J_ARTICLE_FINDER = "Neo4j new article finder";
+	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
 	
 	// Metadata keys
 	
@@ -135,5 +139,17 @@ public class PubMed2Neo4jExperiment {
 				});
 	}
 	
-	static EventGenerator<Node> get
+	static EventGenerator<Node> labelledNodeInNeo4jTrigger(Label label) {
+		return GraphDatabaseWatcher.create(label.name(), NEO4J_NODE_WATCHER, 
+				(txData, context) -> {
+					txData.createdNodes().forEach( node -> {
+						if (node.hasLabel(label)) {
+							context.send(
+								FluentEvents.Events.namedTypedEvent(node, label.name(), NEO4J_NEW_NODE)	
+							);
+						}
+					});
+					
+				});
+	}
 }
