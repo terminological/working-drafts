@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.schema.Schema;
@@ -134,6 +135,25 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}
 	
-	
+	public static Optional<Relationship> mapHasReference(String citingDoi, String citedDoi, GraphDatabaseApi graph) {
+		Relationship out = null;
+		
+		try (Transaction tx = graph.get().beginTx()) {
+			Node start = graph.get().findNode(ARTICLE, "doi", citingDoi);
+			if (start==null) {
+				start = graph.get().createNode(ARTICLE,STUB);
+				start.setProperty("doi", citingDoi);
+			}
+			Node end = graph.get().findNode(ARTICLE, "doi", citedDoi);
+			if (end==null) {
+				end = graph.get().createNode(ARTICLE,STUB);
+				end.setProperty("doi", citedDoi);
+			}
+			out = start.createRelationshipTo(end, HAS_REFERENCE);
+			tx.success();
+		}
+		
+		return Optional.ofNullable(out);
+	}
 	
 }

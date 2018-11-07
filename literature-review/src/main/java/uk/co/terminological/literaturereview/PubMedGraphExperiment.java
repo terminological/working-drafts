@@ -9,8 +9,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -31,6 +33,7 @@ import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
+import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
@@ -167,8 +170,24 @@ public class PubMedGraphExperiment {
 		return Handlers.<PubMedEntry>eventProcessor(CROSS_REF_LOOKUP, Predicates.matchName(PUBMED_ENTRY_AVAILABLE), 
 				(entry,context) -> {
 			BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
-			entry.get().
+			GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+			Optional<String> optDoi = entry.get().getDoi();
+			if (!optDoi.isPresent()) return;
+			try {
+				SingleResult tmp = api.getCrossref().getByDoi(optDoi.get());
+				List<String> referencedDois = tmp.work.stream()
+						.flatMap(w -> w.reference.stream())
+						.flatMap(r -> r.DOI.stream())
+						.collect(Collectors.toList());
+				referencedDois.forEach(endDoi -> mapHasReference(optDoi.get(),endDoi,graph));
+				context.send(Events.namedTypedEvent(referencedDois, DOI_LIST, CROSS_REF_LOOKUP));
+			} catch (BibliographicApiException e) {
+				context.getEventBus().handleException(e);
+			}
+			
+				
 		});
+		
 	}
 	
 	static EventGenerator<Long> newLabelledNodeTrigger(Label label) {
