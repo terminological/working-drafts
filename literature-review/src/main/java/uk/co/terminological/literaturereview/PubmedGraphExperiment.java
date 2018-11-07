@@ -27,7 +27,7 @@ import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
-public class PubMed2Neo4jExperiment {
+public class PubmedGraphExperiment {
 	
 	
 	
