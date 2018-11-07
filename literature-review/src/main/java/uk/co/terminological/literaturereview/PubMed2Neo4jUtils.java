@@ -15,6 +15,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 import static uk.co.terminological.literaturereview.PubmedSchema.Labels.*;
+import static uk.co.terminological.literaturereview.PubmedSchema.Rel.*;
 
 public class PubMed2Neo4jUtils {
 
@@ -72,11 +73,11 @@ public class PubMed2Neo4jUtils {
 			node.setProperty("title", entry.getTitle());
 			entry.getAuthors().forEach(au -> {
 				Optional<Node> targetNode = mapAuthorToNode(au,graph);
-				targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_AUTHOR));
+				targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
 			});
 			entry.getMeshHeadings().forEach(mh -> {
 				Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph);
-				targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_MESH));
+				targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_MESH));
 			});
 			out = node;
 		    tx.success();
