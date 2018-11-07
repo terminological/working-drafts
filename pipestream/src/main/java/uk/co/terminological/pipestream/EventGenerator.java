@@ -37,4 +37,46 @@ public interface EventGenerator<Y> extends EventBusAware {
 		
 	}
 	
+	public static abstract class Watcher<Y> implements EventGenerator<Y> {
+
+		Metadata metadata;
+		boolean interrupted = false;
+		Object watcher = null;
+		
+		public Watcher(Metadata metadata) {
+			this.metadata = metadata;
+		}
+		
+		@Override
+		public Metadata getMetadata() {
+			return metadata;
+		}
+
+		@Override
+		public void send(Event<Y> event) {
+			getEventBus().receive(event, getMetadata());
+		}
+
+		@Override
+		public boolean execute() {
+			if (watcher == null) {
+				watcher = setupWatcher(this);
+			} else {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					//continue
+				}
+			}
+			return interrupted;
+		}
+		
+		public abstract Object setupWatcher(Watcher<Y> watcher);
+		
+		public void interrupt() {
+			this.interrupted = true;
+		}
+		
+	}
+	
 }
