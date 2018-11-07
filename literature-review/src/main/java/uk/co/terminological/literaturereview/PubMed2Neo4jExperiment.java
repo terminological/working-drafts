@@ -1,7 +1,6 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubMed2Neo4jUtils.mapEntryToNode;
-import static uk.co.terminological.literaturereview.PubMed2Neo4jUtils.setupSchema;
+import static uk.co.terminological.literaturereview.PubMed2Neo4jUtils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
