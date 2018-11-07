@@ -52,10 +52,10 @@ public class PubMed2Neo4jUtils {
 			if (tmp == null) tmp = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
 			if (tmp == null) {
 				tmp = graph.get().createNode(ARTICLE);
-				tmp.setProperty("pmid", entry.getPMID());
 			}
 			
 			Node node = tmp;
+			entry.getPMID().ifPresent(pmid -> node.setProperty("pmid", pmid));
 			entry.getDoi().ifPresent(doi -> node.setProperty("doi", doi));
 			entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 			node.setProperty("abstract", entry.getAbstract());
