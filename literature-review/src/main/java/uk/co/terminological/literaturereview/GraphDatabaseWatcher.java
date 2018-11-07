@@ -1,5 +1,5 @@
 package uk.co.terminological.literaturereview;
 
-public class GraphDatabaseWatcher {
+public class GraphDatabaseWatcher<Y> extends EventGenerator.Default<Y> {
 
 }
