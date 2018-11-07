@@ -104,9 +104,9 @@ public class EntrezResult {
 			}
 		}
 		
-		public String getPMID() {
+		public Optional<String> getPMID() {
 			try {
-				return raw.doXpath(".//ArticleId[@IdType='pubmed']").get(XmlElement.class).flatMap(o -> o.getTextContent()).get();
+				return raw.doXpath(".//ArticleId[@IdType='pubmed']").get(XmlElement.class).flatMap(o -> o.getTextContent());
 			} catch (XmlException e) {
 				throw new RuntimeException(e);
 			}
