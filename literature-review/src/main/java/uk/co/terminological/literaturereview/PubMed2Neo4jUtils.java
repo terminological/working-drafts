@@ -14,6 +14,8 @@ import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
+import static uk.co.terminological.literaturereview.PubmedSchema.Labels.*;
+
 public class PubMed2Neo4jUtils {
 
 	
