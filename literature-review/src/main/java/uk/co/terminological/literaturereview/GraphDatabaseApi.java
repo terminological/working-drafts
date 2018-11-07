@@ -3,13 +3,18 @@ package uk.co.terminological.literaturereview;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.BiConsumer;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.event.TransactionData;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.configuration.BoltConnector;
 import org.neo4j.kernel.configuration.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import uk.co.terminological.pipestream.EventGenerator.Watcher;
+import uk.co.terminological.pipestream.FluentEvents;
 
 public class GraphDatabaseApi {
 
@@ -81,9 +86,6 @@ public class GraphDatabaseApi {
 	public GraphDatabaseService get() {return graphDb;}
 
 	public static GraphDatabaseApi create(Path graphDbPath) {
-		
-		
-		
 		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath);
 		return singleton;
 	}
@@ -93,6 +95,9 @@ public class GraphDatabaseApi {
 		return singleton.get();
 	}
 
+	public <Y> GraphDatabaseWatcher<Y> createWatcher(String name, String type, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
+		return new GraphDatabaseWatcher<Y>(FluentEvents.Metadata.forGenerator(name, type),this.get(),afterCommit);
+	}
 
 	public static class NotInitialisedException extends RuntimeException {}
 }
