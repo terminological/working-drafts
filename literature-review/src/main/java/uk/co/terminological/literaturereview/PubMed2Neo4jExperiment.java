@@ -120,10 +120,10 @@ public class PubMed2Neo4jExperiment {
 						PubMedEntries entries = bib.getEntrez()
 							.getPMEntriesByPMIds(event.get());
 						
-						entries.stream().forEach(entry -> {
-							mapEntryToNode(entry, graph);
-						});
-						
+						entries.stream().forEach(
+								entry -> mapEntryToNode(entry, graph, PubMed2Neo4jUtils.SEARCH_RESULT) 
+						);
+												
 						entries.stream().flatMap(entry -> entry.getDoi().stream());
 						
 						
