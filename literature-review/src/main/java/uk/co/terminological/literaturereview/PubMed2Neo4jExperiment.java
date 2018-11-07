@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 
+import uk.co.terminological.literaturereview.PubmedSchema.Labels;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents;
@@ -82,7 +83,7 @@ public class PubMed2Neo4jExperiment {
 	
 	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search) throws IOException {
 		
-		setupSchema(graphApi);
+		PubmedSchema.setupSchema(graphApi);
 		
 		EventBus.get()
 			.withApi(graphApi)
@@ -127,7 +128,7 @@ public class PubMed2Neo4jExperiment {
 							.getPMEntriesByPMIds(event.get());
 						
 						entries.stream().forEach(
-								entry -> mapEntryToNode(entry, graph, PubMed2Neo4jUtils.SEARCH_RESULT) 
+								entry -> mapEntryToNode(entry, graph, Labels.SEARCH_RESULT) 
 						);
 												
 						entries.stream().flatMap(entry -> entry.getDoi().stream());
