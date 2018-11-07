@@ -14,8 +14,8 @@ import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
-import static uk.co.terminological.literaturereview.PubmedGraphSchema.Labels.*;
-import static uk.co.terminological.literaturereview.PubmedGraphSchema.Rel.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
 
 public class PubmedGraphUtils {
 

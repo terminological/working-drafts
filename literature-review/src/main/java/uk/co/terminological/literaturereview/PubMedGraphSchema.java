@@ -5,7 +5,7 @@ import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.schema.Schema;
 
-public class PubmedGraphSchema {
+public class PubMedGraphSchema {
 	
 	public static class Labels {
 		public static Label ARTICLE = Label.label("Article");
