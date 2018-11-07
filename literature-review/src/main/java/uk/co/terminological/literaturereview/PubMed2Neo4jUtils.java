@@ -48,7 +48,7 @@ public class PubMed2Neo4jUtils {
 		Node out = null;
 		
 		try ( Transaction tx = graph.get().beginTx() ) {
-			Node tmp = entry.getPMID() != null ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID()) : null;
+			Node tmp = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
 			if (tmp == null) tmp = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
 			if (tmp == null) {
 				tmp = graph.get().createNode(ARTICLE);
@@ -122,5 +122,7 @@ public class PubMed2Neo4jUtils {
 		
 		return Optional.ofNullable(out);
 	}
+	
+	
 	
 }
