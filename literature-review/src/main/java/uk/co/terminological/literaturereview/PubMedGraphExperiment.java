@@ -53,6 +53,7 @@ public class PubMedGraphExperiment {
 	// Handlers & Generators
 	public static final String PUBMED_SEARCHER = "PubMed searcher";
 	public static final String PUBMED_FETCHER = "PubMed record fetch";
+	public static final String CROSS_REF_LOOKUP = "Crossref lookup";
 	//public static final String NEO4J_ARTICLE_FINDER = "Neo4j new article finder";
 	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
 	public static final String NEO4J_WRITER = "Neo4j node watcher";
@@ -159,6 +160,14 @@ public class PubMedGraphExperiment {
 				(entry,context) -> {
 			GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 			mapEntryToNode(entry.get(), graph, labels);
+		});
+	}
+	
+	static EventProcessor<PubMedEntry> processDoiInCrossRef() {
+		return Handlers.<PubMedEntry>eventProcessor(CROSS_REF_LOOKUP, Predicates.matchName(PUBMED_ENTRY_AVAILABLE), 
+				(entry,context) -> {
+			BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
+			entry.get().
 		});
 	}
 	

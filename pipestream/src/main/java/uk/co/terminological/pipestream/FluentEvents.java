@@ -321,7 +321,7 @@ public class FluentEvents {
 		}
 		
 		
-		public static <X,Y> EventProcessor<X> eventProcessor(
+		public static <X> EventProcessor<X> eventProcessor(
 				String name,
 				Predicate<Event<?>> acceptEvent,
 				BiConsumer<Event<X>,EventProcessor<X>> processor
