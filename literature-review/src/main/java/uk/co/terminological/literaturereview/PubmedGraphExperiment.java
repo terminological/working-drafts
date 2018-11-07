@@ -1,6 +1,6 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubmedUtils.*;
+import static uk.co.terminological.literaturereview.PubmedGraphUtils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
