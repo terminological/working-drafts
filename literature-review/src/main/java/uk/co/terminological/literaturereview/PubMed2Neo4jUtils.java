@@ -17,15 +17,17 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 public class PubMed2Neo4jUtils {
 
 	
-	public static Label ARTICLE = Label.label("Article"); 
+	public static Label ARTICLE = Label.label("Article");
+	public static Label STUB = Label.label("Stub");
 	public static Label AUTHOR = Label.label("Author");
 	public static Label AFFILIATION = Label.label("Affiliation");
 	public static Label MESH_CODE = Label.label("Mesh code");
 	public static Label TOKEN = Label.label("Token");
 	public static Label SEARCH_RESULT = Label.label("Search result");
+	public static Label PDF_AVAILABLE = Label.label("Pdf available");
 	
 	public enum Rel implements RelationshipType {
-	    HAS_AUTHOR, HAS_MESH
+	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE
 	}
 	
 	
@@ -44,6 +46,38 @@ public class PubMed2Neo4jUtils {
 		    tx.success();
 		}
 	}
+	
+	public static Optional<Node> mapDoiToNode(String doi, GraphDatabaseApi graph, Label... additionalLabels) {
+		Node out = null;
+		
+		try ( Transaction tx = graph.get().beginTx() ) {
+			Node tmp = graph.get().findNode(ARTICLE, "doi", doi);
+			if (tmp == null) {
+				tmp = graph.get().createNode(ARTICLE, STUB);
+			}
+			tmp.setProperty("doi", doi);
+			tx.success();
+			out = tmp;
+		}
+		return Optional.ofNullable(out);
+	}
+	
+	
+	public static Optional<Node> mapPMIDToNode(String pmid, GraphDatabaseApi graph, Label... additionalLabels) {
+		Node out = null;
+		
+		try ( Transaction tx = graph.get().beginTx() ) {
+			Node tmp = graph.get().findNode(ARTICLE, "pmid", pmid);
+			if (tmp == null) {
+				tmp = graph.get().createNode(ARTICLE, STUB);
+			}
+			tmp.setProperty("pmid", pmid);
+			tx.success();
+			out = tmp;
+		}
+		return Optional.ofNullable(out);
+	}
+	
 	
 	public static Optional<Node> mapEntryToNode(PubMedEntry entry, GraphDatabaseApi graph, Label... additionalLabels) {
 		

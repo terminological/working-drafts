@@ -35,7 +35,7 @@ public class PubMed2Neo4jExperiment {
 	
 	// Event types
 	public static final String PUBMED_SEARCH_RESULT = "Pubmed search result";
-	public static final String NEW_NEW_NODE = "Neo4j node created";
+	public static final String NEO4J_NEW_NODE = "Neo4j node created";
 	
 	// Event names
 	
@@ -139,17 +139,18 @@ public class PubMed2Neo4jExperiment {
 				});
 	}
 	
-	static EventGenerator<Node> labelledNodeInNeo4jTrigger(Label label) {
+	static EventGenerator<Long> newlabelledNodeTrigger(Label label) {
 		return GraphDatabaseWatcher.create(label.name(), NEO4J_NODE_WATCHER, 
 				(txData, context) -> {
 					txData.createdNodes().forEach( node -> {
 						if (node.hasLabel(label)) {
 							context.send(
-								FluentEvents.Events.namedTypedEvent(node, label.name(), NEO4J_NEW_NODE)	
+								FluentEvents.Events.namedTypedEvent(node.getId(), label.name(), NEO4J_NEW_NODE)	
 							);
 						}
 					});
-					
 				});
 	}
+	
+	
 }
