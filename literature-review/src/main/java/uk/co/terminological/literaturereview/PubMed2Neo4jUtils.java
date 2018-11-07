@@ -1,5 +1,6 @@
 package uk.co.terminological.literaturereview;
 
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ public class PubMed2Neo4jUtils {
 	public static Label AFFILIATION = Label.label("Affiliation");
 	public static Label MESH_CODE = Label.label("Mesh code");
 	public static Label TOKEN = Label.label("Token");
+	public static Label SEARCH_RESULT = Label.label("Search result");
 	
 	public enum Rel implements RelationshipType {
 	    HAS_AUTHOR, HAS_MESH
@@ -43,7 +45,7 @@ public class PubMed2Neo4jUtils {
 		}
 	}
 	
-	public static Optional<Node> mapEntryToNode(PubMedEntry entry, GraphDatabaseApi graph) {
+	public static Optional<Node> mapEntryToNode(PubMedEntry entry, GraphDatabaseApi graph, Label... additionalLabels) {
 		
 		Node out = null;
 		
@@ -55,6 +57,7 @@ public class PubMed2Neo4jUtils {
 			}
 			
 			Node node = tmp;
+			Arrays.stream(additionalLabels).forEach(label -> node.addLabel(label));
 			entry.getPMID().ifPresent(pmid -> node.setProperty("pmid", pmid));
 			entry.getDoi().ifPresent(doi -> node.setProperty("doi", doi));
 			entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
