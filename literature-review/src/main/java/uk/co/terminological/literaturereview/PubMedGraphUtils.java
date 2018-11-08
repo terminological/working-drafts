@@ -72,6 +72,7 @@ public class PubMedGraphUtils {
 			entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 			node.setProperty("abstract", entry.getAbstract());
 			node.setProperty("title", entry.getTitle());
+			node.removeLabel(STUB);
 			entry.getAuthors().forEach(au -> {
 				Optional<Node> targetNode = mapAuthorToNode(au,graph);
 				targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));

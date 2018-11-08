@@ -132,13 +132,29 @@ public class PubMedGraphExperiment {
 				type -> PUBMED_SEARCH_RESULT);
 	}
 
+	static EventProcessor<Long> expandStub() {
+		return null;
+		//TODO: maybe should be DOIs, currently node ids 
+		//collect into array and if gets to 100 or shutdown issued
+		//then submit as doi search.
+		//should a handler be interruptable? 
+		//return a search result with depth
+		//KISS suggests we worry about batching later.
+	}
+	
+	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs() {
+		//TODO: Return some sort of search result for fetching Pub Med entries
+		;
+		//TODO: 
+	}
+	
 	static EventProcessor<List<String>> fetchPubMedEntries() {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
 					try {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
-
+						Integer depth = Optional.ofNullable((Integer) event.get("depth")).orElse(0);
 
 						PubMedEntries entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
@@ -147,7 +163,7 @@ public class PubMedGraphExperiment {
 							context.send(
 									//Add a depth parameter to the event 
 									Events.namedTypedEvent(entry, entry.getPMID().get(), PUBMED_FETCH_RESULT)
-										.put("depth",0)
+										.put("depth",depth+1)
 							);
 						});
 
@@ -167,13 +183,14 @@ public class PubMedGraphExperiment {
 	}
 
 
+	
 
-	static EventProcessor<PubMedEntry> processDoiInCrossRef() {
+	static EventProcessor<PubMedEntry> processDoiInCrossRef(Integer maxDepth) {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates
 					.matchType(PUBMED_FETCH_RESULT)
-					.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < 3
+					.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth
 				), 
 				(entry,context) -> {
 					BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
