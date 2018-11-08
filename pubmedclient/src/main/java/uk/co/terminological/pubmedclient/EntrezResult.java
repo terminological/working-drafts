@@ -1,5 +1,6 @@
 package uk.co.terminological.pubmedclient;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -107,6 +108,20 @@ public class EntrezResult {
 		public Optional<String> getPMID() {
 			try {
 				return raw.doXpath(".//ArticleId[@IdType='pubmed']").get(XmlElement.class).flatMap(o -> o.getTextContent());
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		public Optional<LocalDate> getPubMedDate() {
+			try {
+				Optional<XmlElement> date = raw.doXpath(".//PubMedPubDate[@PubStatus='pubmed']").get(XmlElement.class);
+				return date.flatMap(el -> {
+					Optional<Integer> year = el.childElements("Year").findFirst().flatMap(el2 -> el2.getTextContent()).map(Integer::parseInt);
+					Optional<Integer> month = el.childElements("Month").findFirst().flatMap(el2 -> el2.getTextContent()).map(Integer::parseInt);
+					Optional<Integer> day = el.childElements("Day").findFirst().flatMap(el2 -> el2.getTextContent()).map(Integer::parseInt);
+					return year.map(y -> LocalDate.of(y, month.orElse(1), day.orElse(1)));
+				});
 			} catch (XmlException e) {
 				throw new RuntimeException(e);
 			}
