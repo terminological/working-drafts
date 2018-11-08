@@ -137,7 +137,7 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}
 	
-	public static Optional<Relationship> mapHasReference(String citingDoi, String citedDoi, GraphDatabaseApi graph) {
+	public static Optional<Relationship> mapHasReference(String citingDoi, String citedDoi, Integer depth, GraphDatabaseApi graph) {
 		Relationship out = null;
 		
 		try (Transaction tx = graph.get().beginTx()) {
@@ -152,13 +152,14 @@ public class PubMedGraphUtils {
 				end.setProperty("doi", citedDoi);
 			}
 			out = start.createRelationshipTo(end, HAS_REFERENCE);
+			out.setProperty("depth", depth);
 			tx.success();
 		}
 		
 		return Optional.ofNullable(out);
 	}
 	
-	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, GraphDatabaseApi graph) {
+	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, Integer depth, GraphDatabaseApi graph) {
 		Relationship out = null;
 		
 		try (Transaction tx = graph.get().beginTx()) {
@@ -174,6 +175,7 @@ public class PubMedGraphUtils {
 			}
 			out = start.createRelationshipTo(end, HAS_RELATED);
 			out.setProperty("relatedness", relatedness);
+			out.setProperty("depth", depth);
 			tx.success();
 		}
 		

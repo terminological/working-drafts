@@ -135,7 +135,11 @@ public class PubMedGraphExperiment {
 	}
 
 	static EventProcessor<List<Long>> expandDoiStubs() {
-		return null;
+		return Handlers.eventProcessor(PUBMED_FETCHER, 
+				Predicates.matchNameAndType(DOI_STUB.name(),NEO4J_NEW_NODE), 
+				(event,context) -> {
+					
+				});
 		//TODO: 
 		//collect into array and if gets to 100 or shutdown issued
 		//then submit as doi search to get pmids...
