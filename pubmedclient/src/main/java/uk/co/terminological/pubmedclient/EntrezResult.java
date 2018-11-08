@@ -261,12 +261,12 @@ public class EntrezResult {
 	 *
 	 */
 	public static class Link {
-		String fromDb;
-		String fromId;
-		Optional<String> typeOrCategory = Optional.empty();
-		Optional<Long> score = Optional.empty();
-		String toDbOrUrl;
-		Optional<String> toId = Optional.empty();
+		public String fromDb;
+		public String fromId;
+		public Optional<String> typeOrCategory = Optional.empty();
+		public Optional<Long> score = Optional.empty();
+		public String toDbOrUrl;
+		public Optional<String> toId = Optional.empty();
 		
 		protected Link(LinkSet linkSet, IdUrlSet idUrlSet, ObjUrl objUrl) {
 			this.fromDb = linkSet.getDbFrom();
