@@ -56,7 +56,7 @@ public class PubMedGraphUtils {
 	}
 	
 	
-	public static Optional<Node> mapEntryToNode(PubMedEntry entry, GraphDatabaseApi graph, Label... additionalLabels) {
+	public static Optional<Node> mapEntryToNode(PubMedEntry entry, Integer depth, GraphDatabaseApi graph, Label... additionalLabels) {
 		
 		Node out = null;
 		
@@ -74,6 +74,7 @@ public class PubMedGraphUtils {
 			entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 			node.setProperty("abstract", entry.getAbstract());
 			node.setProperty("title", entry.getTitle());
+			node.setProperty("depth", depth);
 			node.removeLabel(DOI_STUB);
 			node.removeLabel(PMID_STUB);
 			entry.getAuthors().forEach(au -> {
