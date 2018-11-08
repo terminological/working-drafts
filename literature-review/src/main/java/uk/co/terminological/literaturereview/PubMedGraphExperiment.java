@@ -1,5 +1,7 @@
 package uk.co.terminological.literaturereview;
 
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntryToNode;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasRelated;
@@ -21,10 +23,7 @@ import java.util.stream.Stream;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
-
-import com.sun.jdi.event.Event;
 
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
@@ -39,12 +38,9 @@ import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.Work;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
+import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-
-import  uk.co.terminological.pubmedclient.EntrezResult.Link;
-
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
 
 public class PubMedGraphExperiment {
 
@@ -177,13 +173,6 @@ public class PubMedGraphExperiment {
 						context.getEventBus().handleException(e);
 					}
 				});
-		//TODO: 
-		//so a problem here is lack of information about depth....
-		//collect into array and if gets to 100 or shutdown issued
-		//then submit as doi search to get pmids...
-		//should a handler be interruptable? 
-		//return a search result with depth
-		//KISS suggests we worry about batching later.
 	}
 	
 	static EventProcessor<List<Long>> expandPMIDStubs() {
