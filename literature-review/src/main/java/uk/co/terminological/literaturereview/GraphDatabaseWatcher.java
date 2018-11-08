@@ -1,7 +1,9 @@
 package uk.co.terminological.literaturereview;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,14 +27,25 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
 	static final String NEO4J_NEW_NODE = "Neo4j node created";
 	
-	static EventGenerator<List<Long>> newLabelledNodeTrigger(Label label) {
-		return newNodeTrigger(node -> node.hasLabel(label), label.name());
-	}
-	
-	static EventGenerator<List<Long>> newNodeTrigger(Predicate<Node> nodeTester, String name) {
+	static EventGenerator<Set<Long>> newLabelledNodeTrigger(Label label) {
 		return GraphDatabaseWatcher.create(NEO4J_NODE_WATCHER, 
 				(txData, context) -> {
-					List<Long> nodelist = new ArrayList<>();
+					Set<Long> nodelist = new HashSet<>();
+					txData.assignedLabels().forEach( labelledNode -> {
+						if (labelledNode.label().equals(label)) {
+							nodelist.add(labelledNode.node().getId());
+						}
+					});
+					context.send(
+						FluentEvents.Events.namedTypedEvent(nodelist, label.name(), NEO4J_NEW_NODE)	
+					);
+				});
+	}
+	
+	static EventGenerator<Set<Long>> newNodeTrigger(Predicate<Node> nodeTester, String name) {
+		return GraphDatabaseWatcher.create(NEO4J_NODE_WATCHER, 
+				(txData, context) -> {
+					Set<Long> nodelist = new HashSet<>();
 					txData.createdNodes().forEach( node -> {
 						if (nodeTester.test(node)) {
 							nodelist.add(node.getId());
