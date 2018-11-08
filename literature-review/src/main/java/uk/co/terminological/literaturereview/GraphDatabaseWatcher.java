@@ -1,9 +1,14 @@
 package uk.co.terminological.literaturereview;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.event.TransactionData;
 import org.neo4j.graphdb.event.TransactionEventHandler;
 
@@ -20,21 +25,27 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
 	static final String NEO4J_NEW_NODE = "Neo4j node created";
 	
-	static EventGenerator<Long> newLabelledNodeTrigger(Label label) {
-		return GraphDatabaseWatcher.create(label.name(), NEO4J_NODE_WATCHER, 
+	static EventGenerator<List<Long>> newLabelledNodeTrigger(Label label) {
+		return newNodeTrigger(node -> node.hasLabel(label), label.name());
+	}
+	
+	static EventGenerator<List<Long>> newNodeTrigger(Predicate<Node> nodeTester, String name) {
+		return GraphDatabaseWatcher.create(NEO4J_NODE_WATCHER, 
 				(txData, context) -> {
+					List<Long> nodelist = new ArrayList<>();
 					txData.createdNodes().forEach( node -> {
-						if (node.hasLabel(label)) {
-							context.send(
-								FluentEvents.Events.namedTypedEvent(node.getId(), label.name(), NEO4J_NEW_NODE)	
-							);
+						if (nodeTester.test(node)) {
+							nodelist.add(node.getId());
 						}
 					});
+					context.send(
+						FluentEvents.Events.namedTypedEvent(nodelist, name, NEO4J_NEW_NODE)	
+					);
 				});
 	}
 	
-	public static <Y> GraphDatabaseWatcher<Y> create(String name, String type, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
-		return new GraphDatabaseWatcher<Y>(FluentEvents.Metadata.forGenerator(name, type), afterCommit);
+	public static <Y> GraphDatabaseWatcher<Y> create(String type, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
+		return new GraphDatabaseWatcher<Y>(FluentEvents.Metadata.forGenerator(type), afterCommit);
 	}
 	
 	public GraphDatabaseWatcher(Metadata metadata, GraphDatabaseService graph, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {

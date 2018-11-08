@@ -132,11 +132,21 @@ public class PubMedGraphExperiment {
 				type -> PUBMED_SEARCH_RESULT);
 	}
 
-	static EventProcessor<Long> expandStub() {
+	static EventProcessor<List<Long>> expandDoiStubs() {
 		return null;
-		//TODO: maybe should be DOIs, currently node ids 
+		//TODO: 
 		//collect into array and if gets to 100 or shutdown issued
-		//then submit as doi search.
+		//then submit as doi search to get pmids...
+		//should a handler be interruptable? 
+		//return a search result with depth
+		//KISS suggests we worry about batching later.
+	}
+	
+	static EventProcessor<List<Long>> expandPMIDStubs() {
+		return null;
+		//TODO: find out whether stub has doi or PMID
+		//collect into array and if gets to 100 or shutdown issued
+		//then submit as doi search to get pmids...
 		//should a handler be interruptable? 
 		//return a search result with depth
 		//KISS suggests we worry about batching later.
@@ -144,8 +154,8 @@ public class PubMedGraphExperiment {
 	
 	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs() {
 		//TODO: Return some sort of search result for fetching Pub Med entries
-		;
-		//TODO: 
+		//TODO: write results into graph, create stub entries
+		return null;
 	}
 	
 	static EventProcessor<List<String>> fetchPubMedEntries() {
@@ -185,7 +195,7 @@ public class PubMedGraphExperiment {
 
 	
 
-	static EventProcessor<PubMedEntry> processDoiInCrossRef(Integer maxDepth) {
+	static EventProcessor<PubMedEntry> fetchCrossRefFromPubMed(Integer maxDepth) {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates
@@ -225,6 +235,7 @@ public class PubMedGraphExperiment {
 						.collect(Collectors.toList());
 					referencedDois.forEach(endDoi -> mapHasReference(optDoi.get(),endDoi,graph));
 					//no reason to send further event once written to graph
+					//pick up written stubs through graph watcher
 					//context.send(Events.namedTypedEvent(referencedDois, optDoi.get(), XREF_REFERENCES_FOR_DOI));
 				});
 	}

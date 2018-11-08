@@ -142,12 +142,12 @@ public class PubMedGraphUtils {
 		try (Transaction tx = graph.get().beginTx()) {
 			Node start = graph.get().findNode(ARTICLE, "doi", citingDoi);
 			if (start==null) {
-				start = graph.get().createNode(ARTICLE,STUB);
+				start = graph.get().createNode(ARTICLE,DOI_STUB);
 				start.setProperty("doi", citingDoi);
 			}
 			Node end = graph.get().findNode(ARTICLE, "doi", citedDoi);
 			if (end==null) {
-				end = graph.get().createNode(ARTICLE,STUB);
+				end = graph.get().createNode(ARTICLE,DOI_STUB);
 				end.setProperty("doi", citedDoi);
 			}
 			out = start.createRelationshipTo(end, HAS_REFERENCE);
