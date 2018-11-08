@@ -1,6 +1,8 @@
 package uk.co.terminological.literaturereview;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -137,26 +139,32 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}
 	
-	public static Optional<Relationship> mapHasReference(String citingDoi, String citedDoi, Integer depth, GraphDatabaseApi graph) {
-		Relationship out = null;
+	public static List<Relationship> mapHasReferences(String citingDoi, List<String> citedDois, Integer depth, GraphDatabaseApi graph) {
+		List<Relationship> out = new ArrayList<>();
 		
 		try (Transaction tx = graph.get().beginTx()) {
-			Node start = graph.get().findNode(ARTICLE, "doi", citingDoi);
-			if (start==null) {
-				start = graph.get().createNode(ARTICLE,DOI_STUB);
-				start.setProperty("doi", citingDoi);
-			}
+			Node start = 
+				Optional.ofNullable(
+					graph.get().findNode(ARTICLE, "doi", citingDoi)
+				).orElseGet(() -> {
+					Node other = graph.get().createNode(ARTICLE,DOI_STUB);
+					other.setProperty("doi", citingDoi);
+					return other;
+				}); 
+			citedDois.forEach(citedDoi -> {
 			Node end = graph.get().findNode(ARTICLE, "doi", citedDoi);
 			if (end==null) {
 				end = graph.get().createNode(ARTICLE,DOI_STUB);
 				end.setProperty("doi", citedDoi);
+				end.setProperty("depth", depth);
 			}
-			out = start.createRelationshipTo(end, HAS_REFERENCE);
-			out.setProperty("depth", depth);
+			out.add(start.createRelationshipTo(end, HAS_REFERENCE));
+			
+			});
 			tx.success();
 		}
 		
-		return Optional.ofNullable(out);
+		return out;
 	}
 	
 	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, Integer depth, GraphDatabaseApi graph) {
