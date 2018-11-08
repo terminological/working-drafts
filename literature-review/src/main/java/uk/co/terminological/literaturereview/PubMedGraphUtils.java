@@ -28,7 +28,7 @@ public class PubMedGraphUtils {
 		try ( Transaction tx = graph.get().beginTx() ) {
 			Node tmp = graph.get().findNode(ARTICLE, "doi", doi);
 			if (tmp == null) {
-				tmp = graph.get().createNode(ARTICLE, STUB);
+				tmp = graph.get().createNode(ARTICLE, DOI_STUB);
 			}
 			tmp.setProperty("doi", doi);
 			tx.success();
@@ -44,7 +44,7 @@ public class PubMedGraphUtils {
 		try ( Transaction tx = graph.get().beginTx() ) {
 			Node tmp = graph.get().findNode(ARTICLE, "pmid", pmid);
 			if (tmp == null) {
-				tmp = graph.get().createNode(ARTICLE, STUB);
+				tmp = graph.get().createNode(ARTICLE, PMID_STUB);
 			}
 			tmp.setProperty("pmid", pmid);
 			tx.success();
@@ -72,7 +72,8 @@ public class PubMedGraphUtils {
 			entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 			node.setProperty("abstract", entry.getAbstract());
 			node.setProperty("title", entry.getTitle());
-			node.removeLabel(STUB);
+			node.removeLabel(DOI_STUB);
+			node.removeLabel(PMID_STUB);
 			entry.getAuthors().forEach(au -> {
 				Optional<Node> targetNode = mapAuthorToNode(au,graph);
 				targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
@@ -151,6 +152,28 @@ public class PubMedGraphUtils {
 				end.setProperty("doi", citedDoi);
 			}
 			out = start.createRelationshipTo(end, HAS_REFERENCE);
+			tx.success();
+		}
+		
+		return Optional.ofNullable(out);
+	}
+	
+	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, GraphDatabaseApi graph) {
+		Relationship out = null;
+		
+		try (Transaction tx = graph.get().beginTx()) {
+			Node start = graph.get().findNode(ARTICLE, "pmid", sourcePMID);
+			if (start==null) {
+				start = graph.get().createNode(ARTICLE,PMID_STUB);
+				start.setProperty("pmid", sourcePMID);
+			}
+			Node end = graph.get().findNode(ARTICLE, "pmid", targetPMID);
+			if (end==null) {
+				end = graph.get().createNode(ARTICLE,PMID_STUB);
+				end.setProperty("pmid", targetPMID);
+			}
+			out = start.createRelationshipTo(end, HAS_RELATED);
+			out.setProperty("relatedness", relatedness);
 			tx.success();
 		}
 		

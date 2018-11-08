@@ -35,6 +35,8 @@ import uk.co.terminological.pubmedclient.CrossRefResult.Work;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
+
 public class PubMedGraphExperiment {
 
 

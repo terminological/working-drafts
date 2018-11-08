@@ -20,7 +20,7 @@ public class PubMedGraphSchema {
 	}
 	
 	public enum Rel implements RelationshipType {
-	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE
+	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE, HAS_RELATED
 	}
 	
 	
