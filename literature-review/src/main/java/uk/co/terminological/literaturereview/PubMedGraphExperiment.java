@@ -106,8 +106,8 @@ public class PubMedGraphExperiment {
 		.withApi(biblioApi)
 		.withApi(new PMIDList())
 		.withEventGenerator(searchPubMed(search))
-		.withEventGenerator(GraphDatabaseWatcher.newLabelledNodeTrigger(PMID_STUB))
-		.withEventGenerator(GraphDatabaseWatcher.newLabelledNodeTrigger(DOI_STUB))
+		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMID_STUB))
+		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(DOI_STUB))
 
 		;
 
