@@ -1,6 +1,9 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntryToNode;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReference;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -8,18 +11,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.neo4j.graphdb.Label;
 
-import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents;
@@ -28,15 +31,11 @@ import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
 import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
-import uk.co.terminological.pipestream.HandlerTypes.Terminal;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
+import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
-
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
 
 public class PubMedGraphExperiment {
 	
@@ -44,20 +43,22 @@ public class PubMedGraphExperiment {
 	
 	
 	// Event types
-	public static final String PUBMED_SEARCH_RESULT = "PubMed search result";
-	public static final String PUBMED_FETCH_RESULT = "PubMed fetch result";
-	public static final String NEO4J_NEW_NODE = "Neo4j node created";
+	static final String PUBMED_SEARCH_RESULT = "PubMed search result";
+	static final String PUBMED_FETCH_RESULT = "PubMed fetch result";
+	static final String PMID_DOI_MAP = "PubMed to Doi";
+	static final String NEO4J_NEW_NODE = "Neo4j node created";
+	static final String XREF_FETCH_RESULT = "CrossRef metadata entry";
+	static final String XREF_REFERENCES_FOR_DOI = "CrossRef reference list";
 	
-	// Event names
-	public static final String PMID_LIST = "PubMed ids";
-	public static final String DOI_LIST = "DOIs";
-	public static final String PUBMED_ENTRY_AVAILABLE = "PubMed Entry";
+	//Event names
+	//static final String PMID_LIST = "PubMed ids";
+	//static final String DOI_LIST = "DOIs";
+	//public static final String PUBMED_ENTRY_AVAILABLE = "PubMed Entry";
 	
 	// Handlers & Generators
 	public static final String PUBMED_SEARCHER = "PubMed searcher";
 	public static final String PUBMED_FETCHER = "PubMed record fetch";
 	public static final String CROSS_REF_LOOKUP = "Crossref lookup";
-	//public static final String NEO4J_ARTICLE_FINDER = "Neo4j new article finder";
 	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
 	public static final String NEO4J_WRITER = "Neo4j node watcher";
 	
@@ -129,13 +130,13 @@ public class PubMedGraphExperiment {
 						return Collections.emptyList();
 					}
 				},
-				name -> PMID_LIST, 
+				name -> search, 
 				type -> PUBMED_SEARCH_RESULT);
 	}
 	
 	static EventProcessor<List<String>> fetchPubMedEntries() {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
-				Predicates.matchNameAndType(PMID_LIST, PUBMED_SEARCH_RESULT), 
+				Predicates.matchType(PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
 					try {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
@@ -145,11 +146,16 @@ public class PubMedGraphExperiment {
 							.getPMEntriesByPMIds(event.get());
 						
 						entries.stream().forEach(entry -> {
-								context.send(Events.namedTypedEvent(entry, PUBMED_ENTRY_AVAILABLE, PUBMED_FETCH_RESULT));
+								context.send(Events.namedTypedEvent(entry, entry.getPMID().get(), PUBMED_FETCH_RESULT));
 						});
 												
-						List<String> dois = entries.stream().flatMap(entry -> entry.getDoi().stream()).collect(Collectors.toList());
-						context.send(Events.namedTypedEvent(dois, DOI_LIST, PUBMED_FETCH_RESULT));
+						Map<String,String> pmids2dois = new HashMap<>();
+						entries.stream().forEach(entry -> {
+							if (entry.getPMID().isPresent() && entry.getDoi().isPresent()) {
+								pmids2dois.put(entry.getPMID().get(), entry.getDoi().get());
+							}
+						});
+						context.send(Events.typedEvent(pmids2dois, type -> PMID_DOI_MAP));
 						
 						
 					} catch (BibliographicApiException e) {
@@ -158,16 +164,10 @@ public class PubMedGraphExperiment {
 				});
 	}
 	
-	static EventProcessor<PubMedEntry> writeToGraph(Label... labels) {
-		return Handlers.eventProcessor(NEO4J_WRITER, Predicates.matchName(PUBMED_ENTRY_AVAILABLE), 
-				(entry,context) -> {
-			GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
-			mapEntryToNode(entry.get(), graph, labels);
-		});
-	}
+	
 	
 	static EventProcessor<PubMedEntry> processDoiInCrossRef() {
-		return Handlers.<PubMedEntry>eventProcessor(CROSS_REF_LOOKUP, Predicates.matchName(PUBMED_ENTRY_AVAILABLE), 
+		return Handlers.<PubMedEntry>eventProcessor(CROSS_REF_LOOKUP, Predicates.matchType(PUBMED_FETCH_RESULT), 
 				(entry,context) -> {
 			BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
 			GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
@@ -175,17 +175,19 @@ public class PubMedGraphExperiment {
 			if (!optDoi.isPresent()) return;
 			try {
 				SingleResult tmp = api.getCrossref().getByDoi(optDoi.get());
+				tmp.work.ifPresent(work -> context.send(Events.namedTypedEvent(work,optDoi.get(),XREF_FETCH_RESULT)));
+				
 				List<String> referencedDois = tmp.work.stream()
 						.flatMap(w -> w.reference.stream())
 						.flatMap(r -> r.DOI.stream())
 						.collect(Collectors.toList());
 				referencedDois.forEach(endDoi -> mapHasReference(optDoi.get(),endDoi,graph));
-				context.send(Events.namedTypedEvent(referencedDois, DOI_LIST, CROSS_REF_LOOKUP));
+				
+				context.send(Events.namedTypedEvent(referencedDois, optDoi.get(), XREF_REFERENCES_FOR_DOI));
+				
 			} catch (BibliographicApiException e) {
 				context.getEventBus().handleException(e);
 			}
-			
-				
 		});
 		
 	}
@@ -203,6 +205,12 @@ public class PubMedGraphExperiment {
 				});
 	}
 	
-	
+	static EventProcessor<PubMedEntry> writeToGraph(Label... labels) {
+		return Handlers.eventProcessor(NEO4J_WRITER, Predicates.matchType(PUBMED_FETCH_RESULT), 
+				(entry,context) -> {
+			GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+			mapEntryToNode(entry.get(), graph, labels);
+		});
+	}
 	
 }
