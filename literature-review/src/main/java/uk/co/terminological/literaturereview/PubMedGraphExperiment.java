@@ -104,6 +104,8 @@ public class PubMedGraphExperiment {
 		Integer maxDepth = Integer.parseInt(prop.getProperty("max-depth"));
 
 		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
+		
+		graphApi.waitAndShutdown();
 	}
 
 	public static class PMIDList extends ArrayList<String> {}
