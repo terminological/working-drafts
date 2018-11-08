@@ -366,36 +366,38 @@ public class EntrezClient {
 		return new EntrezResult.Links(linkResult);
 	}
 
-	public Map<String,Long> getSimilarScoredPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
+	public Map<String,Long> getSimilarScoredPMIdsByPMId(String pmid) throws BibliographicApiException {
 		Map<String,Long> out = new HashMap<>();
-		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+		this.buildLinksQueryForIdsAndDatabase(Collections.singletonList(pmid), Database.PUBMED)
 			.command(Command.NEIGHBOR_SCORE)
 			.withLinkname("pubmed_pubmed")
 			.execute().stream()
 			.forEach(l -> {
-				out.put(l.fromId, l.score.orElse(0L));
+				l.toId.ifPresent(to -> out.put(to, l.score.orElse(0L)));
 			});
 		return out;
 	}
 
-	public List<String> getPubMedCentralIdsByPMId(List<String> pmids) throws BibliographicApiException {
-		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+	public Map<String,String> getPubMedCentralIdsByPMId(List<String> pmids) throws BibliographicApiException {
+		Map<String,String> out = new HashMap<>();
+		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 				.toDatabase(Database.PMC)
 				.command(Command.NEIGHBOR)
 				.withLinkname("pubmed_pmc")
 				.execute().stream()
-				.flatMap(l -> l.toId.stream())
-				.collect(Collectors.toList());
+				.forEach(l -> l.toId.ifPresent(to -> out.put(l.fromId, to)));
+		return out;
 	}
 
-	public List<String> getReferencedPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
-		return this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+	public Map<String,String> getReferencedPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
+		Map<String,String> out = new HashMap<>();
+		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 				.toDatabase(Database.PUBMED)
 				.command(Command.NEIGHBOR)
 				.withLinkname("pubmed_pubmed_refs")
 				.execute().stream()
-				.flatMap(l -> l.toId.stream())
-				.collect(Collectors.toList());
+				.forEach(l -> l.toId.ifPresent(to -> out.put(l.fromId, to)));
+		return out;
 	}
 
 	public List<String> getReferencingPubMedCentralIdsByPubMedCentralId(String pmcId) throws BibliographicApiException {

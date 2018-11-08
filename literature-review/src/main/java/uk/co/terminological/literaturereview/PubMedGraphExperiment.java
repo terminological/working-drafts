@@ -56,8 +56,10 @@ public class PubMedGraphExperiment {
 	//public static final String PUBMED_ENTRY_AVAILABLE = "PubMed Entry";
 
 	// Handlers & Generators
-	public static final String PUBMED_SEARCHER = "PubMed searcher";
-	public static final String PUBMED_FETCHER = "PubMed record fetch";
+	public static final String PUBMED_SEARCHER = "PubMed eSearch";
+	public static final String PUBMED_LINKER = "PubMed eLink";
+
+	public static final String PUBMED_FETCHER = "PubMed eFetch";
 	public static final String XREF_LOOKUP = "Crossref lookup";
 	public static final String DOI_EXPANDER = "Doi reverse lookup";
 
@@ -161,9 +163,19 @@ public class PubMedGraphExperiment {
 	}
 	
 	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs() {
-		//TODO: Return some sort of search result for fetching Pub Med entries
-		//TODO: write results into graph, create stub entries
-		return null;
+		return Handlers.eventProcessor(PUBMED_LINKER, 
+				Predicates.matchType(PUBMED_SEARCH_RESULT), 
+				(event,context) -> {
+					try {
+						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
+						Integer depth = Optional.ofNullable((Integer) event.get("depth")).orElse(0);
+						bib.getEntrez().getSimilarScoredPMIdsByPMId(pmids)
+						
+					} catch (BibliographicApiException e) {
+							context.getEventBus().handleException(e);
+						}
+					});
+
 	}
 	
 	static EventProcessor<List<String>> fetchPubMedEntries() {
