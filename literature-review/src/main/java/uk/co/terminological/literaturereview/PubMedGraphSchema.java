@@ -9,7 +9,8 @@ public class PubMedGraphSchema {
 	
 	public static class Labels {
 		public static Label ARTICLE = Label.label("Article");
-		public static Label STUB = Label.label("Stub");
+		public static Label DOI_STUB = Label.label("Doi stub");
+		public static Label PMID_STUB = Label.label("Doi stub");
 		public static Label AUTHOR = Label.label("Author");
 		public static Label AFFILIATION = Label.label("Affiliation");
 		public static Label MESH_CODE = Label.label("Mesh code");
