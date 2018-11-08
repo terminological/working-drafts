@@ -1,7 +1,5 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntryToNode;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReference;
 
@@ -25,7 +23,6 @@ import org.neo4j.graphdb.Label;
 
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
-import uk.co.terminological.pipestream.FluentEvents;
 import uk.co.terminological.pipestream.FluentEvents.Events;
 import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
