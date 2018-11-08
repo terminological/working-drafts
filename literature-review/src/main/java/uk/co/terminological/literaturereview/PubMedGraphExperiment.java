@@ -125,6 +125,11 @@ public class PubMedGraphExperiment {
 		.withHandler(fetchCrossRefFromPubMed(maxDepth))
 		.withHandler(findCrossRefReferences())
 		.withHandler(findRelatedArticlesFromPMIDs(broaderSearch))
+		.debugMode()
+		.execute()
+		.sendShutdownMessage()
+		.writeExecutionGraphs(outputDir)
+		.shutdown();
 		;
 
 	}
