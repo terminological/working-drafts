@@ -123,8 +123,8 @@ public class PubMedGraphExperiment {
 		.withHandler(expandPMIDStubs())
 		.withHandler(fetchPubMedEntries())
 		.withHandler(fetchCrossRefFromPubMed(maxDepth))
-		.withHandler(findCrossRefReferences())
-		.withHandler(findRelatedArticlesFromPMIDs(broaderSearch))
+		.withHandler(findCrossRefReferences(maxDepth))
+		.withHandler(findRelatedArticlesFromPMIDs(maxDepth,broaderSearch))
 		.debugMode()
 		.execute()
 		.sendShutdownMessage()
@@ -199,9 +199,11 @@ public class PubMedGraphExperiment {
 				});
 	}
 	
-	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs(String searchWithin) {
+	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs(Integer maxDepth,String searchWithin) {
 		return Handlers.eventProcessor(PUBMED_LINKER, 
-				Predicates.matchType(PUBMED_SEARCH_RESULT), 
+				Predicates.matchType(PUBMED_SEARCH_RESULT)
+				.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
+				
 				(event,context) -> {
 					try {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
@@ -292,10 +294,12 @@ public class PubMedGraphExperiment {
 				});
 	}
 
-	static EventProcessor<Work> findCrossRefReferences() {
+	static EventProcessor<Work> findCrossRefReferences(Integer maxDepth) {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
-				Predicates.matchType(XREF_FETCH_RESULT), 
+				Predicates
+					.matchType(XREF_FETCH_RESULT)
+					.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
 				(entry,context) -> {
 					Integer depth = Optional.ofNullable((Integer) entry.get("depth")).orElse(0);
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
