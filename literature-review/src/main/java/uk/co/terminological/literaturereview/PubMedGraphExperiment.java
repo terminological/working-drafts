@@ -1,7 +1,7 @@
 package uk.co.terminological.literaturereview;
 
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntryToNode;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReference;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReferences;
 
 import java.io.IOException;
 import java.nio.file.Files;
