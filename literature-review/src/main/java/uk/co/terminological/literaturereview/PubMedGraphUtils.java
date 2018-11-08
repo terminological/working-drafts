@@ -75,7 +75,7 @@ public class PubMedGraphUtils {
 			node.setProperty("abstract", entry.getAbstract());
 			node.setProperty("title", entry.getTitle());
 			node.setProperty("depth", depth);
-			//TODO: a date field
+			entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
 			node.removeLabel(DOI_STUB);
 			node.removeLabel(PMID_STUB);
 			entry.getAuthors().forEach(au -> {
