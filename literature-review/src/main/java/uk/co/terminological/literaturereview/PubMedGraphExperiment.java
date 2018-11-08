@@ -32,6 +32,7 @@ import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.Work;
+import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
@@ -169,7 +170,9 @@ public class PubMedGraphExperiment {
 					try {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
 						Integer depth = Optional.ofNullable((Integer) event.get("depth")).orElse(0);
-						bib.getEntrez().getSimilarScoredPMIdsByPMId(pmids)
+						bib.getEntrez()
+							.buildLinksQueryForIdsAndDatabase(event.get(), Database.PUBMED);
+							
 						
 					} catch (BibliographicApiException e) {
 							context.getEventBus().handleException(e);
