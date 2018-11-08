@@ -59,6 +59,7 @@ public class PubMedGraphExperiment {
 	public static final String PUBMED_SEARCHER = "PubMed searcher";
 	public static final String PUBMED_FETCHER = "PubMed record fetch";
 	public static final String XREF_LOOKUP = "Crossref lookup";
+	public static final String DOI_EXPANDER = "Doi reverse lookup";
 
 	public static final String NEO4J_WRITER = "Neo4j pubmed node writer";
 
@@ -135,12 +136,13 @@ public class PubMedGraphExperiment {
 	}
 
 	static EventProcessor<List<Long>> expandDoiStubs() {
-		return Handlers.eventProcessor(PUBMED_FETCHER, 
-				Predicates.matchNameAndType(DOI_STUB.name(),NEO4J_NEW_NODE), 
+		return Handlers.eventProcessor(DOI_EXPANDER, 
+				Predicates.matchNameAndType(DOI_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
 				(event,context) -> {
 					
 				});
 		//TODO: 
+		//so a problem here is lack of information about depth....
 		//collect into array and if gets to 100 or shutdown issued
 		//then submit as doi search to get pmids...
 		//should a handler be interruptable? 
@@ -233,16 +235,13 @@ public class PubMedGraphExperiment {
 				XREF_LOOKUP, 
 				Predicates.matchType(XREF_FETCH_RESULT), 
 				(entry,context) -> {
-					
+					Integer depth = Optional.ofNullable((Integer) entry.get("depth")).orElse(0);
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 					Optional<String> optDoi = entry.getMetadata().name();
 					List<String> referencedDois = entry.get().reference.stream()
 						.flatMap(r -> r.DOI.stream())
 						.collect(Collectors.toList());
-					referencedDois.forEach(endDoi -> mapHasReference(optDoi.get(),endDoi,graph));
-					//no reason to send further event once written to graph
-					//pick up written stubs through graph watcher
-					//context.send(Events.namedTypedEvent(referencedDois, optDoi.get(), XREF_REFERENCES_FOR_DOI));
+					mapHasReferences(optDoi.get(),referencedDois,depth,graph);
 				});
 	}
 
@@ -251,8 +250,9 @@ public class PubMedGraphExperiment {
 				NEO4J_WRITER, 
 				Predicates.matchType(PUBMED_FETCH_RESULT), 
 				(entry,context) -> {
+					Integer depth = Optional.ofNullable((Integer) entry.get("depth")).orElse(0);
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
-					mapEntryToNode(entry.get(), graph, labels);
+					mapEntryToNode(entry.get(), depth, graph, labels);
 				});
 	}
 

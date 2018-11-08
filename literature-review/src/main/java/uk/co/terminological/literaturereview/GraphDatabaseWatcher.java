@@ -25,7 +25,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 	TransactionEventHandler<Void> txListener;
 	
 	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
-	static final String NEO4J_NEW_NODE = "Neo4j node created";
+	public static final String NEO4J_NEW_NODE = "Neo4j node created";
 	
 	static EventGenerator<Set<Long>> newLabelTrigger(Label label) {
 		return GraphDatabaseWatcher.create(NEO4J_NODE_WATCHER, 
