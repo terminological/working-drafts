@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,6 +81,9 @@ public class PubMedGraphExperiment {
 
 	public static void main(String args[]) throws IOException {
 
+		BasicConfigurator.configure();
+		Logger.getRootLogger().setLevel(Level.DEBUG);
+		
 		String propFilename = args.length ==1? args[0]: "~/Dropbox/litReview/project.prop";
 		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
 		Properties prop = System.getProperties();
@@ -94,8 +98,7 @@ public class PubMedGraphExperiment {
 		if (!Files.exists(outputDir)) Files.createDirectories(outputDir);
 
 
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+		
 		BibliographicApis biblioApi = BibliographicApis.create(secretsPath);
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphOptionsPath);
 
@@ -157,13 +160,13 @@ public class PubMedGraphExperiment {
 				type -> PUBMED_SEARCH_RESULT);
 	}
 
-	static EventProcessor<List<Long>> expandDoiStubs() {
+	static EventProcessor<Set<Long>> expandDoiStubs() {
 		return Handlers.eventProcessor(DOI_EXPANDER, 
 				Predicates.matchNameAndType(DOI_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
 				(event,context) -> {
 					BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
 					Integer depth = Optional.ofNullable((Integer) event.get("depth")).orElse(0);
-					List<Long> nodeIds = event.get();
+					Set<Long> nodeIds = event.get();
 					List<String> dois = new ArrayList<>();
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 					nodeIds.forEach(id -> {
@@ -182,12 +185,12 @@ public class PubMedGraphExperiment {
 				});
 	}
 	
-	static EventProcessor<List<Long>> expandPMIDStubs() {
+	static EventProcessor<Set<Long>> expandPMIDStubs() {
 		return Handlers.eventProcessor(PMID_EXPANDER, 
 				Predicates.matchNameAndType(PMID_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
 				(event,context) -> {
 					Integer depth = Optional.ofNullable((Integer) event.get("depth")).orElse(0);
-					List<Long> nodeIds = event.get();
+					Set<Long> nodeIds = event.get();
 					List<String> pubMedIds = new ArrayList<>();
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 					nodeIds.forEach(id -> {
