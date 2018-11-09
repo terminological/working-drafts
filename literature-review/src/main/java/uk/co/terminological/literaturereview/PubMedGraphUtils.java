@@ -131,7 +131,7 @@ public class PubMedGraphUtils {
 				if (depth<maxDepth) {
 					node.addLabel(EXPAND);
 				} else {
-					log.debug("not expanding at depth "+depth+": "+entry.getTitle());
+					logger.debug("not expanding at depth "+depth+": "+entry.getTitle());
 				}
 				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
 				node.removeLabel(DOI_STUB);
