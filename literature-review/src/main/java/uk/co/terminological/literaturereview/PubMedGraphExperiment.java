@@ -119,6 +119,7 @@ public class PubMedGraphExperiment {
 
 	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search, String broaderSearch, Integer maxDepth) throws IOException {
 
+		log.info("Starting graphDb build");
 		PubMedGraphSchema.setupSchema(graphApi);
 
 		EventBus.get()
