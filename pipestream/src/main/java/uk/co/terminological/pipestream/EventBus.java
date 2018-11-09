@@ -46,6 +46,7 @@ public class EventBus {
 	List<Closeable> openResources = new ArrayList<>();
 	
 	Map<Class<?>,Object> apis = new HashMap<Class<?>, Object>();
+	Logger log = LoggerFactory.getLogger(EventBus.class);
 	
 	boolean rethrowErrors = false;
 	
@@ -65,7 +66,7 @@ public class EventBus {
 		return Optional.ofNullable((X) apis.get(apiClass));
 	}
 	
-	Logger log = LoggerFactory.getLogger(EventBus.class);
+	
 	
 	
 	@SuppressWarnings("unchecked")
