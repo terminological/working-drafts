@@ -197,10 +197,12 @@ public class EntrezClient {
 
 
 	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
+		if (searchTerm == null || searchTerm.isEmpty()) return Collections.emptyList(); 
 		return this.buildSearchQuery(searchTerm).execute().getIds();
 	}
 
 	public List<String> findPMIdsByDois(List<String> dois) throws BibliographicApiException {
+		if (dois.isEmpty()) return Collections.emptyList();
 		return this.buildSearchQuery(dois.stream().collect(Collectors.joining(" OR "))).execute().getIds();
 	}
 
@@ -231,6 +233,7 @@ public class EntrezClient {
 	}
 
 	public Optional<EntrezResult.PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
+		if (pmid == null || pmid.isEmpty()) return Optional.empty(); 
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
 
@@ -240,17 +243,18 @@ public class EntrezClient {
 	 * @return
 	 * @throws JAXBException
 	 */
-	public InputStream getPubMedCentralXMLByPubMedCentralId(String pmcId) {
+	public Optional<InputStream> getPubMedCentralXMLByPubMedCentralId(String pmcId) {
+		if (pmcId == null || pmcId.isEmpty()) return Optional.empty();
 		return getXMLByIdsAndDatabase(Collections.singletonList(pmcId), Database.PMC);
 	}
 
 
-	public InputStream getPubMedCentralXMLByPMEntries(EntrezResult.PubMedEntries pmEntries) {
+	public Optional<InputStream> getPubMedCentralXMLByPMEntries(EntrezResult.PubMedEntries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
 		return getXMLByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
-	public InputStream getPubMedCentralXMLByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
+	public Optional<InputStream> getPubMedCentralXMLByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
 		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
 		return getPubMedCentralXMLByPubMedCentralId(pmcId);
 	}
@@ -260,14 +264,18 @@ public class EntrezClient {
 	 * @param list of ids
 	 * @return
 	 */
-	public InputStream getXMLByIdsAndDatabase(List<String> ids,Database db) {
+	public Optional<InputStream> getXMLByIdsAndDatabase(List<String> ids,Database db) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", db.name().toLowerCase());
 		params.add("retmode", "xml");
 		params.add("id", ids.stream().collect(Collectors.joining(",")));
 		logger.debug("making efetch query with params {}", params.toString());
 		rateLimiter.consume();
-		return eFetchResource.queryParams(params).post(InputStream.class);
+		try {
+			return Optional.of(eFetchResource.queryParams(params).post(InputStream.class));
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 
 

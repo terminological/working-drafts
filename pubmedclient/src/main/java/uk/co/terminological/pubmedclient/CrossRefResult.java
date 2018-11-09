@@ -50,7 +50,7 @@ public class CrossRefResult {
 		@JsonProperty("search-terms") public Optional<String> searchTerm = Optional.empty();
 	}
 	
-	public static class Work {
+	public static class Work extends ExtensibleJson {
 		@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
 		@JsonProperty("original-title") public List<String> originalTitle = Collections.emptyList(); // No-Work titles in the work's original publication language
@@ -78,7 +78,7 @@ public class CrossRefResult {
 		@JsonProperty("issue") public Optional<String> issue = Optional.empty(); // No-Issue Integer of an article's journal
 		@JsonProperty("volume") public Optional<String> volume = Optional.empty(); // No-Volume Integer of an article's journal
 		@JsonProperty("page") public Optional<String> page = Optional.empty(); // No-Pages numbers of an article within its journal
-		@JsonProperty("article-Integer") public Optional<String> articleNumber = Optional.empty(); // No-
+		@JsonProperty("article-number") public Optional<String> articleNumber = Optional.empty(); // No-
 		@JsonProperty("published-print") public Optional<PartialDate> publishedPrint = Optional.empty(); // No-Date on which the work was published in print
 		@JsonProperty("published-online") public Optional<PartialDate> publishedOnline = Optional.empty(); // No-Date on which the work was published online
 		@JsonProperty("subject") public List<String> subject = Collections.emptyList(); // No-Subject category names, a controlled vocabulary from Sci-Val. Available for most journal articles
@@ -109,7 +109,6 @@ public class CrossRefResult {
 		@JsonProperty("journal-issue") public Optional<JournalIssue> journalIssue = Optional.empty(); //NOT IN SPEC
 		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType = Collections.emptyList(); //NOT IN SPEC
 		@JsonProperty("publisher-location") public Optional<String> publisherLocation = Optional.empty(); //NOT IN SPEC
-		
 	}
 
 	public static class Event extends ExtensibleJson {
