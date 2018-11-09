@@ -126,7 +126,7 @@ public class PubMedGraphUtils {
 					Node other = r.getOtherNode(node);
 					Integer tmpDepth = (Integer) other.getProperty("depth", null);
 					if (depth == null) depth=tmpDepth;
-					if (tmpDepth!=null && tmpDepth<depth) depth=tmpDepth;
+					else if (tmpDepth!=null && tmpDepth<depth) depth=tmpDepth;
 				};
 				if (depth==null) depth = 0;
 				node.setProperty("depth", depth);
