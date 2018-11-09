@@ -252,7 +252,7 @@ public class PubMedGraphExperiment {
 						PubMedEntries entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
-						mapEntryToNode(entries, depth, graph);
+						mapEntriesToNode(entries, depth, graph);
 						
 						entries.stream().forEach(entry -> {
 							
