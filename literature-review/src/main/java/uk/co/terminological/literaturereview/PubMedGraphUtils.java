@@ -33,15 +33,18 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 public class PubMedGraphUtils {
 
 	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb) {
-		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"}) RETURN n";
+		return doMerge(label,indexName,indexValue,graphDb, null);
+	}
+	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb, Label label2) {
+		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"})"+
+				(label2!=null ? " SET n:"+label2.name():"")+" RETURN n";
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put( indexName, indexValue );
 		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
 		Node result = resultIterator.next();
 		return result;
 	}
-    
-    
+        
 	
 	public static Optional<Node> mapDoiToNode(String doi, GraphDatabaseApi graph, Label... additionalLabels) {
 		Node out = null;
@@ -177,23 +180,11 @@ public class PubMedGraphUtils {
 		List<Relationship> out = new ArrayList<>();
 		
 		try (Transaction tx = graph.get().beginTx()) {
-			Node start = 
-				Optional.ofNullable(
-					graph.get().findNode(ARTICLE, "doi", citingDoi)
-				).orElseGet(() -> {
-					Node other = graph.get().createNode(ARTICLE,DOI_STUB);
-					other.setProperty("doi", citingDoi);
-					return other;
-				}); 
+			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get(), DOI_STUB);
 			citedDois.forEach(citedDoi -> {
-			Node end = graph.get().findNode(ARTICLE, "doi", citedDoi);
-			if (end==null) {
-				end = graph.get().createNode(ARTICLE,DOI_STUB);
-				end.setProperty("doi", citedDoi);
+				Node end = doMerge(ARTICLE, "doi", citedDoi,graph.get(), PMID_STUB);
 				end.setProperty("depth", depth);
-			}
-			out.add(start.createRelationshipTo(end, HAS_REFERENCE));
-			
+				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
 			});
 			tx.success();
 		}
@@ -205,8 +196,8 @@ public class PubMedGraphUtils {
 		Relationship out = null;
 		
 		try (Transaction tx = graph.get().beginTx()) {
-			Node start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get());
-			Node end = doMerge(ARTICLE, "pmid", targetPMID, graph.get());
+			Node start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get(), PMID_STUB);
+			Node end = doMerge(ARTICLE, "pmid", targetPMID, graph.get(), PMID_STUB);
 			out = start.createRelationshipTo(end, HAS_RELATED);
 			out.setProperty("relatedness", relatedness);
 			out.setProperty("depth", depth);
