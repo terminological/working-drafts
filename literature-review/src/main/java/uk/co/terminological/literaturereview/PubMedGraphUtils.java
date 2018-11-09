@@ -121,12 +121,14 @@ public class PubMedGraphUtils {
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
-				Integer depth = 1000;
+				Integer depth = null;
 				for (Relationship r: node.getRelationships(Direction.INCOMING, HAS_REFERENCE, HAS_RELATED)) {
 					Node other = r.getOtherNode(node);
-					Integer tmpDepth = (Integer) other.getProperty("depth", depth);
-					if (tmpDepth<depth) depth=tmpDepth;
+					Integer tmpDepth = (Integer) other.getProperty("depth", null);
+					if (depth == null) depth=tmpDepth;
+					if (tmpDepth!=null && tmpDepth<depth) depth=tmpDepth;
 				};
+				if (depth==null) depth = 0;
 				node.setProperty("depth", depth);
 				if (depth<maxDepth) {
 					node.addLabel(EXPAND);
