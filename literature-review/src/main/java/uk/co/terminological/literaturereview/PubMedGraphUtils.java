@@ -111,13 +111,14 @@ public class PubMedGraphUtils {
 				} else if (tmp2!=null) {
 					tmp = tmp2;
 				} else {
-					tmp = graph.get().createNode(ARTICLE);
+					Node newNode = graph.get().createNode(ARTICLE);
+					entry.getPMID().ifPresent(pmid -> newNode.setProperty("pmid", pmid));
+					entry.getDoi().ifPresent(doi -> newNode.setProperty("doi", doi));
+					tmp = newNode;
 				}
 				
 				Node node = tmp;
 				Arrays.stream(additionalLabels).forEach(label -> node.addLabel(label));
-				entry.getPMID().ifPresent(pmid -> node.setProperty("pmid", pmid));
-				entry.getDoi().ifPresent(doi -> node.setProperty("doi", doi));
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
