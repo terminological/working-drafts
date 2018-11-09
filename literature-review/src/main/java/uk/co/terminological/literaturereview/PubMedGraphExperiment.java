@@ -134,9 +134,8 @@ public class PubMedGraphExperiment {
 		.withHandler(expandDoiStubs())
 		.withHandler(expandPMIDStubs())
 		.withHandler(fetchPubMedEntries(maxDepth))
-		.withHandler(fetchCrossRefFromPubMed())
-		.withHandler(findCrossRefReferences())
-		.withHandler(findRelatedArticlesFromPMIDs(broaderSearch))
+		.withHandler(findCrossRefReferencesFromNodes())
+		.withHandler(findRelatedArticlesFromNodes(broaderSearch))
 		.debugMode()
 		.execute()
 		.sendShutdownMessage()
@@ -296,7 +295,7 @@ public class PubMedGraphExperiment {
 
 	}
 
-	static EventProcessor<Set<Long>> fetchCrossRefFromNodes() {
+	static EventProcessor<Set<Long>> findCrossRefReferencesFromNodes() {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates.matchNameAndType(EXPAND.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
