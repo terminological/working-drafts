@@ -5,6 +5,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.AUT
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.MESH_CODE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AUTHOR;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;

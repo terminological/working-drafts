@@ -2,6 +2,7 @@ package uk.co.terminological.literaturereview;
 
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasRelated;
@@ -129,12 +130,13 @@ public class PubMedGraphExperiment {
 		.withEventGenerator(searchPubMed(search))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMID_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(DOI_STUB))
+		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(EXPAND))
 		.withHandler(expandDoiStubs())
 		.withHandler(expandPMIDStubs())
-		.withHandler(fetchPubMedEntries())
-		.withHandler(fetchCrossRefFromPubMed(maxDepth))
-		.withHandler(findCrossRefReferences(maxDepth))
-		.withHandler(findRelatedArticlesFromPMIDs(maxDepth,broaderSearch))
+		.withHandler(fetchPubMedEntries(maxDepth))
+		.withHandler(fetchCrossRefFromPubMed())
+		.withHandler(findCrossRefReferences())
+		.withHandler(findRelatedArticlesFromPMIDs(broaderSearch))
 		.debugMode()
 		.execute()
 		.sendShutdownMessage()
@@ -213,7 +215,7 @@ public class PubMedGraphExperiment {
 				});
 	}
 
-	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs(Integer maxDepth,String searchWithin) {
+	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs(String searchWithin) {
 		return Handlers.eventProcessor(PUBMED_LINKER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT),
 				//.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
@@ -241,7 +243,7 @@ public class PubMedGraphExperiment {
 
 	}
 
-	static EventProcessor<List<String>> fetchPubMedEntries() {
+	static EventProcessor<List<String>> fetchPubMedEntries(Integer maxDepth) {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
@@ -253,7 +255,7 @@ public class PubMedGraphExperiment {
 						PubMedEntries entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
-						mapEntriesToNode(entries, graph);
+						mapEntriesToNode(entries, graph,maxDepth);
 						
 						entries.stream().forEach(entry -> {
 							
@@ -281,13 +283,11 @@ public class PubMedGraphExperiment {
 
 
 
-	static EventProcessor<PubMedEntry> fetchCrossRefFromPubMed(Integer maxDepth) {
+	static EventProcessor<PubMedEntry> fetchCrossRefFromPubMed() {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates
-				.matchType(PUBMED_FETCH_RESULT)
-				.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth
-						), 
+				.matchType(PUBMED_FETCH_RESULT), 
 				(entry,context) -> {
 					BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
 					Optional<String> optDoi = entry.get().getDoi();
@@ -305,7 +305,7 @@ public class PubMedGraphExperiment {
 				});
 	}
 
-	static EventProcessor<Work> findCrossRefReferences(Integer maxDepth) {
+	static EventProcessor<Work> findCrossRefReferences() {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates
