@@ -75,10 +75,7 @@ public class PubMedGraphExperiment {
 
 	// Metadata keys
 
-	static Path fromProperty(Properties prop, String name) {
-		return Paths.get( 
-				prop.getProperty(name).replace("~", System.getProperty("user.home")));
-	}
+	
 
 	public static void main(String args[]) throws IOException {
 
@@ -112,6 +109,11 @@ public class PubMedGraphExperiment {
 		graphApi.waitAndShutdown();
 	}
 
+	static Path fromProperty(Properties prop, String name) {
+		return Paths.get( 
+				prop.getProperty(name).replace("~", System.getProperty("user.home")));
+	}
+	
 	public static class PMIDList extends ArrayList<String> {}
 
 	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search, String broaderSearch, Integer maxDepth) throws IOException {
