@@ -72,7 +72,7 @@ public class PubMedGraphUtils {
 	}
 
 
-	public static List<Node> mapEntriesToNode(PubMedEntries entries, Integer depth, GraphDatabaseApi graph, Label... additionalLabels) {
+	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, Label... additionalLabels) {
 
 		List<Node> out = new ArrayList<>();
 
@@ -114,6 +114,12 @@ public class PubMedGraphUtils {
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
+				Integer depth = 1000;
+				for (Relationship r: node.getRelationships(Direction.INCOMING, HAS_REFERENCE, HAS_RELATED)) {
+					Node other = r.getOtherNode(node);
+					Integer tmpDepth = (Integer) other.getProperty("depth", depth);
+					if (tmpDepth<depth) depth=tmpDepth;
+				};
 				node.setProperty("depth", depth);
 				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
 				node.removeLabel(DOI_STUB);
@@ -177,14 +183,13 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}
 	
-	public static List<Relationship> mapHasReferences(String citingDoi, List<String> citedDois, Integer depth, GraphDatabaseApi graph) {
+	public static List<Relationship> mapHasReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
 		
 		try (Transaction tx = graph.get().beginTx()) {
 			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get(), DOI_STUB);
 			citedDois.forEach(citedDoi -> {
-				Node end = doMerge(ARTICLE, "doi", citedDoi,graph.get(), PMID_STUB);
-				end.setProperty("depth", depth);
+				Node end = doMerge(ARTICLE, "doi", citedDoi,graph.get(), DOI_STUB);
 				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
 			});
 			tx.success();
@@ -193,7 +198,7 @@ public class PubMedGraphUtils {
 		return out;
 	}
 	
-	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, Integer depth, GraphDatabaseApi graph) {
+	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, GraphDatabaseApi graph) {
 		Relationship out = null;
 		Node start;
 		Node end;
@@ -208,7 +213,6 @@ public class PubMedGraphUtils {
 		try (Transaction tx = graph.get().beginTx()) {
 			out = start.createRelationshipTo(end, HAS_RELATED);
 			out.setProperty("relatedness", relatedness);
-			out.setProperty("depth", depth);
 			tx.success();
 		}
 		
