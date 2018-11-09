@@ -12,14 +12,18 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RE
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.neo4j.graphdb.Direction;
+import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
@@ -28,7 +32,16 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
 public class PubMedGraphUtils {
 
-	
+	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb) {
+		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"}) RETURN n";
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put( indexName, indexValue );
+		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
+		Node result = resultIterator.next();
+		return result;
+	}
+    
+    
 	
 	public static Optional<Node> mapDoiToNode(String doi, GraphDatabaseApi graph, Label... additionalLabels) {
 		Node out = null;

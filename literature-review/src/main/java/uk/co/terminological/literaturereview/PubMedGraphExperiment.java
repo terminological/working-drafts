@@ -70,7 +70,7 @@ public class PubMedGraphExperiment {
 	public static final String PUBMED_FETCHER = "PubMed eFetch";
 	public static final String XREF_LOOKUP = "Crossref lookup";
 	public static final String DOI_EXPANDER = "Doi reverse lookup";
-	public static final String PMID_EXPANDER = "Convert similar to search result";
+	public static final String PMID_EXPANDER = "Similarity search PMID";
 
 	public static final String NEO4J_WRITER = "Neo4j pubmed node writer";
 
