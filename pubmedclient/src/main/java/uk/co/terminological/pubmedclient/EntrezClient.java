@@ -384,6 +384,7 @@ public class EntrezClient {
 			.command(Command.NEIGHBOR_SCORE)
 			.withLinkname("pubmed_pubmed")
 			.execute().stream()
+			.flatMap(o -> o.stream())
 			.forEach(l -> {
 				l.toId.ifPresent(to -> out.put(to, l.score.orElse(0L)));
 			});
@@ -397,6 +398,7 @@ public class EntrezClient {
 				.command(Command.NEIGHBOR)
 				.withLinkname("pubmed_pmc")
 				.execute().stream()
+				.flatMap(o -> o.stream())
 				.forEach(l -> l.toId.ifPresent(to -> out.put(l.fromId, to)));
 		return out;
 	}
@@ -408,6 +410,7 @@ public class EntrezClient {
 				.command(Command.NEIGHBOR)
 				.withLinkname("pubmed_pubmed_refs")
 				.execute().stream()
+				.flatMap(o -> o.stream())
 				.forEach(l -> l.toId.ifPresent(to -> out.put(l.fromId, to)));
 		return out;
 	}
@@ -418,6 +421,7 @@ public class EntrezClient {
 				.command(Command.NEIGHBOR)
 				.withLinkname("pmc_pmc_citedby")
 				.execute().stream()
+				.flatMap(o -> o.stream())
 				.flatMap(l -> l.toId.stream())
 				.collect(Collectors.toList());
 	}
@@ -428,6 +432,7 @@ public class EntrezClient {
 				.command(Command.NEIGHBOR)
 				.withLinkname("pmc_pmc_cites")
 				.execute().stream()
+				.flatMap(o -> o.stream())
 				.flatMap(l -> l.toId.stream())
 				.collect(Collectors.toList());
 	}
