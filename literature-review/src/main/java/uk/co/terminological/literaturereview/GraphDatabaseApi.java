@@ -3,18 +3,13 @@ package uk.co.terminological.literaturereview;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.function.BiConsumer;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.event.TransactionData;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.configuration.BoltConnector;
 import org.neo4j.kernel.configuration.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.co.terminological.pipestream.EventGenerator.Watcher;
-import uk.co.terminological.pipestream.FluentEvents;
 
 public class GraphDatabaseApi {
 
