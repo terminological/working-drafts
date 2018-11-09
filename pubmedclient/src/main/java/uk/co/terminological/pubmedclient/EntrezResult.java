@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -185,8 +186,12 @@ public class EntrezResult {
 					.flatMap(o -> o.getTextContent().stream());
 		}
 		public String getIdentifier() {
-			return lastName()+"_"+firstName();
+			return lastName().orElse(UUID.randomUUID().toString())+"_"+initials().orElse("unknown");
 		}
+		public String toString() {
+			return lastName().orElse("unknown")+", "+initials().orElse("unknown");
+		}
+		
 	}
 	
 	public static class MeshHeading {

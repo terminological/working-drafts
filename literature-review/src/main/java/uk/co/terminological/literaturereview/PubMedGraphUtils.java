@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -63,12 +64,34 @@ public class PubMedGraphUtils {
 
 		try ( Transaction tx = graph.get().beginTx() ) {
 			entries.stream().forEach(entry -> {
-				Node tmp = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
-				if (tmp == null) tmp = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
-				if (tmp == null) {
+				Node tmp = null;
+				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
+				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
+				if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
+					//merge tmp1 and tmp2
+					tmp2.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
+					tmp2.getRelationships(Direction.INCOMING).forEach(r -> {
+						Node other = r.getOtherNode(tmp2);
+						Relationship r2 = other.createRelationshipTo(tmp1, r.getType());
+						r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+						r.delete();
+					});
+					tmp2.getRelationships(Direction.OUTGOING).forEach(r -> {
+						Node other = r.getOtherNode(tmp2);
+						Relationship r2 = tmp1.createRelationshipTo(other, r.getType());
+						r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+						r.delete();
+					});
+					tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
+					tmp2.delete();
+				} else if (tmp1!=null) {
+					tmp = tmp1;
+				} else if (tmp2!=null) {
+					tmp = tmp2;
+				} else {
 					tmp = graph.get().createNode(ARTICLE);
 				}
-
+				
 				Node node = tmp;
 				Arrays.stream(additionalLabels).forEach(label -> node.addLabel(label));
 				entry.getPMID().ifPresent(pmid -> node.setProperty("pmid", pmid));
