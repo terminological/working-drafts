@@ -205,16 +205,8 @@ public class PubMedGraphUtils {
 		Relationship out = null;
 		
 		try (Transaction tx = graph.get().beginTx()) {
-			Node start = graph.get().findNode(ARTICLE, "pmid", sourcePMID);
-			if (start==null) {
-				start = graph.get().createNode(ARTICLE,PMID_STUB);
-				start.setProperty("pmid", sourcePMID);
-			}
-			Node end = graph.get().findNode(ARTICLE, "pmid", targetPMID);
-			if (end==null) {
-				end = graph.get().createNode(ARTICLE,PMID_STUB);
-				end.setProperty("pmid", targetPMID);
-			}
+			Node start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get());
+			Node end = doMerge(ARTICLE, "pmid", targetPMID, graph.get());
 			out = start.createRelationshipTo(end, HAS_RELATED);
 			out.setProperty("relatedness", relatedness);
 			out.setProperty("depth", depth);
