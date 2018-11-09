@@ -25,6 +25,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Transaction;
 
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
@@ -83,7 +84,7 @@ public class PubMedGraphExperiment {
 
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.DEBUG);
-		
+
 		String propFilename = args.length ==1? args[0]: "~/Dropbox/litReview/project.prop";
 		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
 		Properties prop = System.getProperties();
@@ -98,7 +99,7 @@ public class PubMedGraphExperiment {
 		if (!Files.exists(outputDir)) Files.createDirectories(outputDir);
 
 
-		
+
 		BibliographicApis biblioApi = BibliographicApis.create(secretsPath);
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphOptionsPath);
 
@@ -107,7 +108,7 @@ public class PubMedGraphExperiment {
 		Integer maxDepth = Integer.parseInt(prop.getProperty("max-depth"));
 
 		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
-		
+
 		graphApi.waitAndShutdown();
 	}
 
@@ -169,22 +170,25 @@ public class PubMedGraphExperiment {
 					Set<Long> nodeIds = event.get();
 					List<String> dois = new ArrayList<>();
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
-					nodeIds.forEach(id -> {
-						Node n = graph.get().getNodeById(id);
-						Optional.ofNullable(n.getProperty("doi",null)).ifPresent(
-								doi -> dois.add(doi.toString()));
-					});
+					try  ( Transaction tx = graph.get().beginTx() ) {
+						nodeIds.forEach(id -> {
+							Node n = graph.get().getNodeById(id);
+							Optional.ofNullable(n.getProperty("doi",null)).ifPresent(
+									doi -> dois.add(doi.toString()));
+						});
+						tx.success();
+					}
 					try {
 						List<String> pmids = bib.getEntrez().findPMIdsByDois(dois);
 						context.send(
-							Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT).put("depth",depth)
-						);
+								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT).put("depth",depth)
+								);
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
 					}
 				});
 	}
-	
+
 	static EventProcessor<Set<Long>> expandPMIDStubs() {
 		return Handlers.eventProcessor(PMID_EXPANDER, 
 				Predicates.matchNameAndType(PMID_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
@@ -193,45 +197,48 @@ public class PubMedGraphExperiment {
 					Set<Long> nodeIds = event.get();
 					List<String> pubMedIds = new ArrayList<>();
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
-					nodeIds.forEach(id -> {
-						Node n = graph.get().getNodeById(id);
-						Optional.ofNullable(n.getProperty("pmid",null)).ifPresent(
-								pmid -> pubMedIds.add(pmid.toString()));
-					});
+					try  ( Transaction tx = graph.get().beginTx() ) {
+						nodeIds.forEach(id -> {
+							Node n = graph.get().getNodeById(id);
+							Optional.ofNullable(n.getProperty("pmid",null)).ifPresent(
+									pmid -> pubMedIds.add(pmid.toString()));
+						});
+						tx.success();
+					}
 					context.send(
-						Events.typedEvent(pubMedIds,type -> PUBMED_SEARCH_RESULT).put("depth",depth)
-					);
+							Events.typedEvent(pubMedIds,type -> PUBMED_SEARCH_RESULT).put("depth",depth)
+							);
 				});
 	}
-	
+
 	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs(Integer maxDepth,String searchWithin) {
 		return Handlers.eventProcessor(PUBMED_LINKER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT)
 				.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
-				
+
 				(event,context) -> {
 					try {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
 						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 						Integer depth = Optional.ofNullable((Integer) event.get("depth")).orElse(0);
 						Stream<Link> tmp = bib.getEntrez()
-							.buildLinksQueryForIdsAndDatabase(event.get(), Database.PUBMED)
-							.command(Command.NEIGHBOR_SCORE)
-							.withLinkname("pubmed_pubmed")
-							.searchLinked(searchWithin)
-							.execute().stream();
+								.buildLinksQueryForIdsAndDatabase(event.get(), Database.PUBMED)
+								.command(Command.NEIGHBOR_SCORE)
+								.withLinkname("pubmed_pubmed")
+								.searchLinked(searchWithin)
+								.execute().stream();
 						tmp.forEach(link -> { 
 							link.toId.ifPresent(toId -> mapHasRelated(link.fromId, toId, link.score.orElse(0L), depth, graph));
 						});
-						
-						
+
+
 					} catch (BibliographicApiException e) {
-							context.getEventBus().handleException(e);
-						}
-					});
+						context.getEventBus().handleException(e);
+					}
+				});
 
 	}
-	
+
 	static EventProcessor<List<String>> fetchPubMedEntries() {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT), 
@@ -241,7 +248,7 @@ public class PubMedGraphExperiment {
 						Integer depth = Optional.ofNullable((Integer) event.get("depth")).orElse(0);
 
 						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
-						
+
 						PubMedEntries entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
@@ -250,8 +257,8 @@ public class PubMedGraphExperiment {
 							context.send(
 									//Add a depth parameter to the event 
 									Events.namedTypedEvent(entry, entry.getPMID().get(), PUBMED_FETCH_RESULT)
-										.put("depth",depth+1)
-							);
+									.put("depth",depth+1)
+									);
 						});
 
 						Map<String,String> pmids2dois = new HashMap<>();
@@ -270,28 +277,28 @@ public class PubMedGraphExperiment {
 	}
 
 
-	
+
 
 	static EventProcessor<PubMedEntry> fetchCrossRefFromPubMed(Integer maxDepth) {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates
-					.matchType(PUBMED_FETCH_RESULT)
-					.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth
-				), 
+				.matchType(PUBMED_FETCH_RESULT)
+				.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth
+						), 
 				(entry,context) -> {
 					BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
 					Optional<String> optDoi = entry.get().getDoi();
 					if (!optDoi.isPresent()) return;
-					
+
 					Integer depth = Optional.ofNullable((Integer) entry.get("depth")).orElse(0);
-										
+
 					try {
 						SingleResult tmp = api.getCrossref().getByDoi(optDoi.get());
 						tmp.work.ifPresent(work -> context.send(
-							Events.namedTypedEvent(work,optDoi.get(),XREF_FETCH_RESULT)
+								Events.namedTypedEvent(work,optDoi.get(),XREF_FETCH_RESULT)
 								.put("depth", depth+1)
-						));
+								));
 
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
@@ -303,19 +310,19 @@ public class PubMedGraphExperiment {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates
-					.matchType(XREF_FETCH_RESULT)
-					.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
+				.matchType(XREF_FETCH_RESULT)
+				.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
 				(entry,context) -> {
 					Integer depth = Optional.ofNullable((Integer) entry.get("depth")).orElse(0);
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 					Optional<String> optDoi = entry.getMetadata().name();
 					List<String> referencedDois = entry.get().reference.stream()
-						.flatMap(r -> r.DOI.stream())
-						.collect(Collectors.toList());
+							.flatMap(r -> r.DOI.stream())
+							.collect(Collectors.toList());
 					mapHasReferences(optDoi.get(),referencedDois,depth,graph);
 				});
 	}
 
-	
+
 
 }
