@@ -98,6 +98,7 @@ public class PubMedGraphUtils {
 					});
 					tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
 					tmp2.delete();
+					tmp = tmp1;
 				} else if (tmp1!=null) {
 					tmp = tmp1;
 				} else if (tmp2!=null) {
