@@ -131,7 +131,7 @@ public class PubMedGraphExperiment {
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMID_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(DOI_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(EXPAND))
-		.withHandler(expandDoiStubs())
+		.withHandler(expandDOIStubs())
 		.withHandler(expandPMIDStubs())
 		.withHandler(fetchPubMedEntries(maxDepth))
 		.withHandler(findCrossRefReferencesFromNodes())
@@ -166,7 +166,7 @@ public class PubMedGraphExperiment {
 				type -> PUBMED_SEARCH_RESULT);
 	}
 
-	static EventProcessor<Set<Long>> expandDoiStubs() {
+	static EventProcessor<Set<Long>> expandDOIStubs() {
 		return Handlers.eventProcessor(DOI_EXPANDER, 
 				Predicates.matchNameAndType(DOI_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
 				(event,context) -> {
