@@ -50,8 +50,6 @@ public class EntrezClient {
 	private WebResource eLinkResource;
 	private JAXBContext jcSearch;
 	private JAXBContext jcLink;
-	//private Unmarshaller linkUnmarshaller;
-	//private Unmarshaller searchUnmarshaller;
 	private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(EntrezClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
