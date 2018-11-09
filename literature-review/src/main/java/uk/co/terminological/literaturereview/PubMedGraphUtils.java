@@ -1,5 +1,15 @@
 package uk.co.terminological.literaturereview;
 
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.AUTHOR;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.MESH_CODE;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AUTHOR;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RELATED;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,17 +20,11 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
-import org.neo4j.graphdb.schema.Schema;
 
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
 
 public class PubMedGraphUtils {
 
