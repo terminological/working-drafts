@@ -138,13 +138,7 @@ public class PubMedGraphUtils {
 		
 		try ( Transaction tx = graph.get().beginTx() ) {
 			
-			Node tmp = graph.get().findNode(AUTHOR, "identifier", author.getIdentifier());
-			if (tmp == null) {
-				tmp = graph.get().createNode(AUTHOR);
-				tmp.setProperty("identifier", author.getIdentifier());
-			}
-			
-			Node node = tmp;
+			Node node = doMerge(AUTHOR, "identifier", author.getIdentifier(), graph.get());
 			author.firstName().ifPresent(fn -> node.setProperty("firstName", fn));
 			author.lastName().ifPresent(fn -> node.setProperty("lastName", fn));
 			author.initials().ifPresent(fn -> node.setProperty("initials", fn));
