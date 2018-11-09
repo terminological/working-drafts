@@ -252,8 +252,10 @@ public class PubMedGraphExperiment {
 						PubMedEntries entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
+						mapEntryToNode(entries, depth, graph);
+						
 						entries.stream().forEach(entry -> {
-							mapEntryToNode(entry, depth, graph);
+							
 							context.send(
 									//Add a depth parameter to the event 
 									Events.namedTypedEvent(entry, entry.getPMID().get(), PUBMED_FETCH_RESULT)

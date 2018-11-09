@@ -15,6 +15,7 @@ import org.neo4j.graphdb.schema.Schema;
 
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
@@ -54,44 +55,47 @@ public class PubMedGraphUtils {
 		}
 		return Optional.ofNullable(out);
 	}
-	
-	
-	public static Optional<Node> mapEntryToNode(PubMedEntry entry, Integer depth, GraphDatabaseApi graph, Label... additionalLabels) {
-		
-		Node out = null;
-		
+
+
+	public static List<Node> mapEntriesToNode(PubMedEntries entries, Integer depth, GraphDatabaseApi graph, Label... additionalLabels) {
+
+		List<Node> out = new ArrayList<>();
+
 		try ( Transaction tx = graph.get().beginTx() ) {
-			Node tmp = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
-			if (tmp == null) tmp = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
-			if (tmp == null) {
-				tmp = graph.get().createNode(ARTICLE);
-			}
-			
-			Node node = tmp;
-			Arrays.stream(additionalLabels).forEach(label -> node.addLabel(label));
-			entry.getPMID().ifPresent(pmid -> node.setProperty("pmid", pmid));
-			entry.getDoi().ifPresent(doi -> node.setProperty("doi", doi));
-			entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
-			node.setProperty("abstract", entry.getAbstract());
-			node.setProperty("title", entry.getTitle());
-			node.setProperty("depth", depth);
-			entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
-			node.removeLabel(DOI_STUB);
-			node.removeLabel(PMID_STUB);
-			entry.getAuthors().forEach(au -> {
-				Optional<Node> targetNode = mapAuthorToNode(au,graph);
-				targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
+			entries.stream().forEach(entry -> {
+				Node tmp = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
+				if (tmp == null) tmp = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
+				if (tmp == null) {
+					tmp = graph.get().createNode(ARTICLE);
+				}
+
+				Node node = tmp;
+				Arrays.stream(additionalLabels).forEach(label -> node.addLabel(label));
+				entry.getPMID().ifPresent(pmid -> node.setProperty("pmid", pmid));
+				entry.getDoi().ifPresent(doi -> node.setProperty("doi", doi));
+				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
+				node.setProperty("abstract", entry.getAbstract());
+				node.setProperty("title", entry.getTitle());
+				node.setProperty("depth", depth);
+				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
+				node.removeLabel(DOI_STUB);
+				node.removeLabel(PMID_STUB);
+				entry.getAuthors().forEach(au -> {
+					Optional<Node> targetNode = mapAuthorToNode(au,graph);
+					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
+				});
+				entry.getMeshHeadings().forEach(mh -> {
+					Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph);
+					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_MESH));
+				});
+				out.add(node);
 			});
-			entry.getMeshHeadings().forEach(mh -> {
-				Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph);
-				targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_MESH));
-			});
-			out = node;
-		    tx.success();
+			tx.success();
+
 		}
-		
-		return Optional.ofNullable(out);
-		
+
+		return out;
+
 	}
 
 	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph) {
