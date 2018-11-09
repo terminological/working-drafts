@@ -215,33 +215,7 @@ public class PubMedGraphExperiment {
 				});
 	}
 
-	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs(String searchWithin) {
-		return Handlers.eventProcessor(PUBMED_LINKER, 
-				Predicates.matchType(PUBMED_SEARCH_RESULT),
-				//.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
-
-				(event,context) -> {
-					try {
-						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
-						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
-						Stream<Link> tmp = bib.getEntrez()
-								.buildLinksQueryForIdsAndDatabase(event.get(), Database.PUBMED)
-								.command(Command.NEIGHBOR_SCORE)
-								.withLinkname("pubmed_pubmed")
-								.searchLinked(searchWithin)
-								.execute().stream()
-								.flatMap(o -> o.stream());
-						tmp.forEach(link -> { 
-							link.toId.ifPresent(toId -> mapHasRelated(link.fromId, toId, link.score.orElse(0L), graph));
-						});
-
-
-					} catch (BibliographicApiException e) {
-						context.getEventBus().handleException(e);
-					}
-				});
-
-	}
+	
 
 	static EventProcessor<List<String>> fetchPubMedEntries(Integer maxDepth) {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
@@ -256,7 +230,9 @@ public class PubMedGraphExperiment {
 								.getPMEntriesByPMIds(event.get());
 
 						mapEntriesToNode(entries, graph,maxDepth);
-						
+						//so the problem is that  need to make a decision about whether to expand based on 
+						//depth. nodes created above will have a EXPAND label.
+						//However crossref lookup if on an individual
 						entries.stream().forEach(entry -> {
 							
 							context.send(
@@ -281,45 +257,83 @@ public class PubMedGraphExperiment {
 	}
 
 
+	static EventProcessor<Set<Long>> findRelatedArticlesFromNodes(String searchWithin) {
+		return Handlers.eventProcessor(PUBMED_LINKER, 
+				Predicates.matchNameAndType(EXPAND.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE),
+				//.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
 
+				(event,context) -> {
+					try {
+						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
+						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+						
+						List<String> pmids = new ArrayList<>();
+						try  ( Transaction tx = graph.get().beginTx() ) {
+							event.get().forEach(id -> {
+								Node n = graph.get().getNodeById(id);
+								Optional.ofNullable(n.getProperty("pmid",null)).ifPresent(
+										pmid -> pmids.add(pmid.toString()));
+							});
+							tx.success();
+						}
+						
+						Stream<Link> tmp = bib.getEntrez()
+								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+								.command(Command.NEIGHBOR_SCORE)
+								.withLinkname("pubmed_pubmed")
+								.searchLinked(searchWithin)
+								.execute().stream()
+								.flatMap(o -> o.stream());
+						
+						tmp.forEach(link -> { 
+							link.toId.ifPresent(toId -> mapHasRelated(link.fromId, toId, link.score.orElse(0L), graph));
+						});
 
-	static EventProcessor<PubMedEntry> fetchCrossRefFromPubMed() {
-		return Handlers.eventProcessor(
-				XREF_LOOKUP, 
-				Predicates
-				.matchType(PUBMED_FETCH_RESULT), 
-				(entry,context) -> {
-					BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
-					Optional<String> optDoi = entry.get().getDoi();
-					if (!optDoi.isPresent()) return;
-
-										try {
-						SingleResult tmp = api.getCrossref().getByDoi(optDoi.get());
-						tmp.work.ifPresent(work -> context.send(
-								Events.namedTypedEvent(work,optDoi.get(),XREF_FETCH_RESULT)
-								));
 
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
 					}
 				});
+
 	}
 
-	static EventProcessor<Work> findCrossRefReferences() {
+	static EventProcessor<Set<Long>> fetchCrossRefFromNodes() {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
-				Predicates
-				.matchType(XREF_FETCH_RESULT),
-				//.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
-				(entry,context) -> {
+				Predicates.matchNameAndType(EXPAND.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
+				(event,context) -> {
+					BibliographicApis api = context.getEventBus().getApi(BibliographicApis.class).get();
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
-					Optional<String> optDoi = entry.getMetadata().name();
-					List<String> referencedDois = entry.get().reference.stream()
-							.flatMap(r -> r.DOI.stream())
-							.collect(Collectors.toList());
-					mapHasReferences(optDoi.get(),referencedDois,graph);
+					
+					List<String> dois = new ArrayList<>();
+					try  ( Transaction tx = graph.get().beginTx() ) {
+						event.get().forEach(id -> {
+							Node n = graph.get().getNodeById(id);
+							Optional.ofNullable(n.getProperty("doi",null)).ifPresent(
+									doi -> dois.add(doi.toString()));
+						});
+						tx.success();
+					}
+					
+					dois->forEach(doi -> {
+						try {
+							SingleResult tmp = api.getCrossref().getByDoi(doi);
+							tmp.work.ifPresent(work -> context.send(
+								Events.namedTypedEvent(work,optDoi.get(),XREF_FETCH_RESULT)
+								));
+							List<String> referencedDois = tmp.work.stream()
+								.flatMap(w -> w.reference.stream())
+								.flatMap(r -> r.DOI.stream())
+								.collect(Collectors.toList());
+							mapHasReferences(doi,referencedDois,graph);
+						} catch (BibliographicApiException e) {
+							context.getEventBus().handleException(e);
+						}
+					});
 				});
 	}
+
+	
 
 
 
