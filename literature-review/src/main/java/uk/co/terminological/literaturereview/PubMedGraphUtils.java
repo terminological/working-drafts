@@ -194,10 +194,17 @@ public class PubMedGraphUtils {
 	
 	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, Integer depth, GraphDatabaseApi graph) {
 		Relationship out = null;
-		
+		Node start;
+		Node end;
 		try (Transaction tx = graph.get().beginTx()) {
-			Node start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get(), PMID_STUB);
-			Node end = doMerge(ARTICLE, "pmid", targetPMID, graph.get(), PMID_STUB);
+			start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get(), PMID_STUB);
+			tx.success();
+		}
+		try (Transaction tx = graph.get().beginTx()) {
+			end = doMerge(ARTICLE, "pmid", targetPMID, graph.get(), PMID_STUB);
+			tx.success();
+		}
+		try (Transaction tx = graph.get().beginTx()) {
 			out = start.createRelationshipTo(end, HAS_RELATED);
 			out.setProperty("relatedness", relatedness);
 			out.setProperty("depth", depth);
