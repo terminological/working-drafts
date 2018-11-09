@@ -2,7 +2,7 @@ package uk.co.terminological.literaturereview;
 
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntryToNode;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasRelated;
 
