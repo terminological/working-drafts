@@ -9,14 +9,14 @@ public class PubMedGraphSchema {
 	
 	public static class Labels {
 		public static Label ARTICLE = Label.label("Article");
-		public static Label DOI_STUB = Label.label("DOI stub");
-		public static Label PMID_STUB = Label.label("PMID stub");
+		public static Label DOI_STUB = Label.label("DOIStub");
+		public static Label PMID_STUB = Label.label("PMIDStub");
 		public static Label AUTHOR = Label.label("Author");
 		public static Label AFFILIATION = Label.label("Affiliation");
-		public static Label MESH_CODE = Label.label("Mesh code");
+		public static Label MESH_CODE = Label.label("MeshCode");
 		public static Label TOKEN = Label.label("Token");
-		public static Label SEARCH_RESULT = Label.label("Search result");
-		public static Label PDF_AVAILABLE = Label.label("Pdf available");
+		public static Label SEARCH_RESULT = Label.label("SearchResult");
+		public static Label PDF_AVAILABLE = Label.label("PdfAvailable");
 	}
 	
 	public enum Rel implements RelationshipType {
