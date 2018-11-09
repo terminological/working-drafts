@@ -104,7 +104,7 @@ public class EntrezClient {
 	public static class ESearchQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-		
+		boolean empty=false;
 		EntrezClient client;
 
 		protected WebResource get(WebResource searchService) {
@@ -116,6 +116,7 @@ public class EntrezClient {
 			this.searchParams = searchParams;
 			this.searchParams.remove("db");
 			this.searchParams.add("term", searchTerm);
+			if (searchTerm.isEmpty()) empty=true;
 			this.searchParams.add("db", "pubmed");
 			this.client = client;
 		}
@@ -158,8 +159,9 @@ public class EntrezClient {
 			return this;
 		}
 
-		public EntrezResult.Search execute() throws BibliographicApiException {
-			return client.search(this);
+		public Optional<EntrezResult.Search> execute() throws BibliographicApiException {
+			if (empty) return Optional.empty();
+			return Optional.of(client.search(this));
 		}
 		
 		public String toString() {return searchParams.toString();}
@@ -198,12 +200,12 @@ public class EntrezClient {
 
 	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
 		if (searchTerm == null || searchTerm.isEmpty()) return Collections.emptyList(); 
-		return this.buildSearchQuery(searchTerm).execute().getIds();
+		return this.buildSearchQuery(searchTerm).execute().get().getIds();
 	}
 
 	public List<String> findPMIdsByDois(List<String> dois) throws BibliographicApiException {
 		if (dois.isEmpty()) return Collections.emptyList();
-		return this.buildSearchQuery(dois.stream().collect(Collectors.joining(" OR "))).execute().getIds();
+		return this.buildSearchQuery(dois.stream().collect(Collectors.joining(" OR "))).execute().get().getIds();
 	}
 
 	/**
