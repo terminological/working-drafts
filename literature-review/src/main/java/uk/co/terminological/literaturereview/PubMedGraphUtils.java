@@ -26,13 +26,19 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import jdk.internal.jline.internal.Log;
+import uk.co.terminological.pubmedclient.EntrezClient;
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
 public class PubMedGraphUtils {
 
+	private static final Logger logger = LoggerFactory.getLogger(PubMedGraphUtils.class);
+	
 	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb) {
 		return doMerge(label,indexName,indexValue,graphDb, null);
 	}
@@ -122,7 +128,11 @@ public class PubMedGraphUtils {
 					if (tmpDepth<depth) depth=tmpDepth;
 				};
 				node.setProperty("depth", depth);
-				if (depth<maxDepth) node.addLabel(EXPAND);
+				if (depth<maxDepth) {
+					node.addLabel(EXPAND);
+				} else {
+					log.debug("not expanding at depth "+depth+": "+entry.getTitle());
+				}
 				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
