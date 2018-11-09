@@ -260,8 +260,7 @@ public class PubMedGraphExperiment {
 	static EventProcessor<Set<Long>> findRelatedArticlesFromNodes(String searchWithin) {
 		return Handlers.eventProcessor(PUBMED_LINKER, 
 				Predicates.matchNameAndType(EXPAND.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE),
-				//.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
-
+				
 				(event,context) -> {
 					try {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
@@ -315,11 +314,11 @@ public class PubMedGraphExperiment {
 						tx.success();
 					}
 					
-					dois->forEach(doi -> {
+					for (String doi: dois) {
 						try {
 							SingleResult tmp = api.getCrossref().getByDoi(doi);
 							tmp.work.ifPresent(work -> context.send(
-								Events.namedTypedEvent(work,optDoi.get(),XREF_FETCH_RESULT)
+									Events.namedTypedEvent(work,doi,XREF_FETCH_RESULT)
 								));
 							List<String> referencedDois = tmp.work.stream()
 								.flatMap(w -> w.reference.stream())
@@ -329,7 +328,7 @@ public class PubMedGraphExperiment {
 						} catch (BibliographicApiException e) {
 							context.getEventBus().handleException(e);
 						}
-					});
+					}
 				});
 	}
 
