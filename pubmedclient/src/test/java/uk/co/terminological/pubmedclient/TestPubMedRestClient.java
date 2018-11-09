@@ -39,19 +39,19 @@ public class TestPubMedRestClient {
 			
 		Search result = restClient.buildSearchQuery("Doxapram")
 			.limit(0, 10)
-			.execute();
+			.execute().get();
 		
 		result.getIds().forEach(System.out::println);
 		
 		Links links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds(), Database.PUBMED)
 				.command(Command.PRLINKS)
-				.execute();
+				.execute().get();
 		
 		links.stream().forEach(System.out::println);
 		
 		Links links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds(), Database.PUBMED)
 				.command(Command.NEIGHBOR)
-				.execute();
+				.execute().get();
 		
 		links2.stream().forEach(System.out::println);
 		
