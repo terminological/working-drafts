@@ -290,7 +290,7 @@ public class EntrezClient {
 	public static class ELinksQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-		
+		boolean empty = false;
 		EntrezClient client;
 
 		protected WebResource get(WebResource searchService) {
@@ -304,6 +304,7 @@ public class EntrezClient {
 			this.searchParams.add("cmd", "neighbour_score");
 			this.searchParams.add("retmode", "xml");
 			ids.forEach(id -> this.searchParams.add("id", id));
+			if (ids.isEmpty()) empty=true;
 			this.client = client;
 		}
 
@@ -348,8 +349,9 @@ public class EntrezClient {
 			return this;
 		}
 
-		public Links execute() throws BibliographicApiException {
-			return client.link(this);
+		public Optional<Links> execute() throws BibliographicApiException {
+			if (empty) return Optional.empty();
+			return Optional.of(client.link(this));
 		}
 		
 		public String toString() {return searchParams.toString();}
