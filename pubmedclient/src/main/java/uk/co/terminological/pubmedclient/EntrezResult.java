@@ -58,17 +58,23 @@ public class EntrezResult {
 		public PubMedEntries(XmlElement raw) {this.raw = raw;}
 		
 		public Stream<PubMedEntry> stream() {
+			if (raw == null) return Stream.empty();
 			return raw.childElements("PubmedArticle").stream().map(o-> new PubMedEntry(o));
 			
 		}
 		
 		public Stream<String> getTitles() {
+			if (raw == null) return Stream.empty();
 			try {
 				return this.raw.doXpath(".//ArticleTitle")
 						.getManyAsStream(XmlElement.class).flatMap(o -> o.getTextContent().stream());
 			} catch (XmlException e) {
 				throw new RuntimeException(e);
 			}
+		}
+
+		public static PubMedEntries empty() {
+			return new PubMedEntries(null);
 		}
 		
 	}

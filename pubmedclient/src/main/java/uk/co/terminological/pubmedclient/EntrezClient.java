@@ -213,6 +213,7 @@ public class EntrezClient {
 	 * @throws JAXBException
 	 */
 	public EntrezResult.PubMedEntries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
+		if (pmids.isEmpty()) return EntrezResult.PubMedEntries.empty(); 
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		pmids.forEach(id -> fetchParams.add("id",id));
