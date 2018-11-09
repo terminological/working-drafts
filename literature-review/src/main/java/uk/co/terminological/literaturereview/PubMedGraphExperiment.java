@@ -23,9 +23,10 @@ import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
@@ -46,7 +47,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 public class PubMedGraphExperiment {
 
-
+	static Logger log = LoggerFactory.getLogger(PubMedGraphExperiment.class);
 
 
 	// Event types
@@ -80,7 +81,7 @@ public class PubMedGraphExperiment {
 	public static void main(String args[]) throws IOException {
 
 		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.DEBUG);
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
 
 		String propFilename = args.length ==1? args[0]: "~/Dropbox/litReview/project.prop";
 		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
