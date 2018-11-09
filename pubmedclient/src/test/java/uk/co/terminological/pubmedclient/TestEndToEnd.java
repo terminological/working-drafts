@@ -38,7 +38,7 @@ public class TestEndToEnd {
 		
 		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
 				LocalDate.of(2016, 01, 1), 
-				LocalDate.of(2017, 01, 1)).execute();
+				LocalDate.of(2017, 01, 1)).execute().get();
 		
 		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds()).stream().flatMap(pme -> pme.getDoi().stream()).collect(Collectors.toList());
 		List<String> dois = mapper.getDoisByIdAndType(result.getIds(), IdType.PMID);
