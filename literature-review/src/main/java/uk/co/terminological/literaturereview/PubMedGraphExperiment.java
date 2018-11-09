@@ -215,8 +215,8 @@ public class PubMedGraphExperiment {
 
 	static EventProcessor<List<String>> findRelatedArticlesFromPMIDs(Integer maxDepth,String searchWithin) {
 		return Handlers.eventProcessor(PUBMED_LINKER, 
-				Predicates.matchType(PUBMED_SEARCH_RESULT)
-				.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
+				Predicates.matchType(PUBMED_SEARCH_RESULT),
+				//.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
 
 				(event,context) -> {
 					try {
@@ -309,8 +309,8 @@ public class PubMedGraphExperiment {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
 				Predicates
-				.matchType(XREF_FETCH_RESULT)
-				.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
+				.matchType(XREF_FETCH_RESULT),
+				//.and(ev -> Optional.ofNullable((Integer) ev.get("depth")).orElse(0) < maxDepth), 
 				(entry,context) -> {
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 					Optional<String> optDoi = entry.getMetadata().name();

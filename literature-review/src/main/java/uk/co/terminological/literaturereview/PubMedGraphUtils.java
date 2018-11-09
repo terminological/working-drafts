@@ -72,7 +72,7 @@ public class PubMedGraphUtils {
 	}
 
 
-	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, Label... additionalLabels) {
+	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, Integer maxDepth, Label... additionalLabels) {
 
 		List<Node> out = new ArrayList<>();
 
@@ -121,6 +121,7 @@ public class PubMedGraphUtils {
 					if (tmpDepth<depth) depth=tmpDepth;
 				};
 				node.setProperty("depth", depth);
+				if (depth<maxDepth) node.addLabel(EXPAND);
 				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
