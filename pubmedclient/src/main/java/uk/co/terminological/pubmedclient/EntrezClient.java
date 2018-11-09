@@ -50,8 +50,8 @@ public class EntrezClient {
 	private WebResource eLinkResource;
 	private JAXBContext jcSearch;
 	private JAXBContext jcLink;
-	private Unmarshaller linkUnmarshaller;
-	private Unmarshaller searchUnmarshaller;
+	//private Unmarshaller linkUnmarshaller;
+	//private Unmarshaller searchUnmarshaller;
 	private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(EntrezClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
@@ -80,9 +80,9 @@ public class EntrezClient {
 		eLinkResource = client.resource(this.baseUrl + ELINK);
 		try {
 			jcSearch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.esearch");
-			searchUnmarshaller = jcSearch.createUnmarshaller();
+			
 			jcLink = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.elink");
-			linkUnmarshaller = jcLink.createUnmarshaller();
+			
 		} catch (JAXBException e) {
 			throw new RuntimeException("Problem initialising JAXB",e);
 		}
@@ -185,7 +185,9 @@ public class EntrezClient {
 		rateLimiter.consume();
 		InputStream is = builder.get(eSearchResource).post(InputStream.class);
 		ESearchResult searchResult;
+		
 		try {
+			Unmarshaller searchUnmarshaller = jcSearch.createUnmarshaller();
 			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
 			is.close();
 
@@ -357,6 +359,7 @@ public class EntrezClient {
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		ELinkResult linkResult;
 		try {
+			Unmarshaller linkUnmarshaller = jcLink.createUnmarshaller();
 			linkResult = (ELinkResult) linkUnmarshaller.unmarshal(is);
 			is.close();
 
