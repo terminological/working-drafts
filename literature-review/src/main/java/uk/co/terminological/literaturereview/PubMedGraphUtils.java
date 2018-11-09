@@ -47,11 +47,8 @@ public class PubMedGraphUtils {
 		Node out = null;
 		
 		try ( Transaction tx = graph.get().beginTx() ) {
-			Node tmp = graph.get().findNode(ARTICLE, "doi", doi);
-			if (tmp == null) {
-				tmp = graph.get().createNode(ARTICLE, DOI_STUB);
-			}
-			tmp.setProperty("doi", doi);
+			Node tmp = doMerge(ARTICLE, "doi", doi, graph.get());
+			tmp.addLabel(DOI_STUB);
 			tx.success();
 			out = tmp;
 		}
@@ -63,11 +60,8 @@ public class PubMedGraphUtils {
 		Node out = null;
 		
 		try ( Transaction tx = graph.get().beginTx() ) {
-			Node tmp = graph.get().findNode(ARTICLE, "pmid", pmid);
-			if (tmp == null) {
-				tmp = graph.get().createNode(ARTICLE, PMID_STUB);
-			}
-			tmp.setProperty("pmid", pmid);
+			Node tmp = doMerge(ARTICLE, "pmid", pmid,graph.get());
+			tmp.addLabel(PMID_STUB);
 			tx.success();
 			out = tmp;
 		}
@@ -82,8 +76,8 @@ public class PubMedGraphUtils {
 		try ( Transaction tx = graph.get().beginTx() ) {
 			entries.stream().forEach(entry -> {
 				Node tmp = null;
-				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
-				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
+				Node tmp1 = entry.getPMID().isPresent() ? doMerge(ARTICLE, "pmid", entry.getPMID().get(), graph.get()) : null;
+				Node tmp2 = entry.getDoi().isPresent() ? doMerge(ARTICLE, "doi", entry.getDoi().get(), graph.get()) : null;
 				if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
 					//merge tmp1 and tmp2
 					tmp2.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
