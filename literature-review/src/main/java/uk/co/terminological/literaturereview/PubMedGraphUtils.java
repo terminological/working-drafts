@@ -120,6 +120,7 @@ public class PubMedGraphUtils {
 				Node node = tmp;
 				Arrays.stream(additionalLabels).forEach(label -> node.addLabel(label));
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
+				//TODO:: DEadlock here
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
 				Integer depth = null;
@@ -218,6 +219,7 @@ public class PubMedGraphUtils {
 		Node start;
 		Node end;
 		try (Transaction tx = graph.get().beginTx()) {
+			//TODO:: DEadlock here
 			start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get(), PMID_STUB);
 			tx.success();
 		}
