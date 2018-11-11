@@ -141,6 +141,7 @@ public class PubMedGraphExperiment {
 		.withHandler(findCrossRefReferencesFromNodes())
 		.withHandler(findRelatedArticlesFromNodes(broaderSearch))
 		.debugMode()
+		.singleThread()
 		.execute()
 		.sendShutdownMessage()
 		.writeExecutionGraphs(outputDir)
