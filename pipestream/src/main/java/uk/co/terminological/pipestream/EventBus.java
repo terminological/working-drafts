@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,7 @@ public class EventBus {
 	Logger log = LoggerFactory.getLogger(EventBus.class);
 	
 	boolean rethrowErrors = false;
+	boolean parallel = true;
 	
 	public EventBus withApi(Object api) {
 		this.apis.put(api.getClass(),api);
@@ -58,6 +60,11 @@ public class EventBus {
 	
 	public EventBus debugMode() {
 		rethrowErrors = true;
+		return this;
+	}
+	
+	public EventBus singleThread() {
+		parallel = false;
 		return this;
 	}
 	
@@ -95,15 +102,18 @@ public class EventBus {
 		// https://github.com/reactive-streams/reactive-streams-jvm/blob/v1.0.0/README.md
 		// http://www.paralleluniverse.co/quasar/
 		this.eventHistory.and(metadata, event.getMetadata());
+		
 		if (event.getMetadata().reusable()) {
-			handlers.parallelStream().filter(h -> h.canHandle(event)).forEach(
+			Stream<EventHandler<Event<?>>> hStream = parallel ? handlers.parallelStream() : handlers.stream();
+			hStream.filter(h -> h.canHandle(event)).forEach(
 					h -> {
 						log.debug("handling message: {} with handler: {}",event.getMetadata(), h.getMetadata());
 						processingHistory.and(event.getMetadata(),h.getMetadata());
 						h.handle(event);
 					}
 			);
-			handlerGenerators.parallelStream().filter(hg -> hg.canCreateHandler(event)).forEach(
+			Stream<EventHandlerGenerator<Event<?>>> hgStream = parallel ? handlerGenerators.parallelStream() : handlerGenerators.stream();
+			hgStream.filter(hg -> hg.canCreateHandler(event)).forEach(
 					hg -> {
 						EventHandler<Event<?>> h = hg.createHandlerFor(event);
 						log.debug("handling message: {} with handler: {}",event.getMetadata(), h.getMetadata());
