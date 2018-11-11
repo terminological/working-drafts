@@ -185,7 +185,7 @@ public class EventBus {
 	//maybe use quartz for this.
 	public EventBus execute() {
 		log.info("Starting eventBus generators");
-		generators.parallelStream().forEach(g -> {while(g.execute()) {};});
+		(parallel ? generators.parallelStream() : generators.stream()).forEach(g -> {while(g.execute()) {};});
 		return this;
 	}
 	
