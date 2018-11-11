@@ -123,7 +123,9 @@ public class PubMedGraphExperiment {
 		log.error("Starting graphDb build");
 		PubMedGraphSchema.setupSchema(graphApi);
 
-		lockNode = graphApi.get().createNode();
+		try ( Transaction tx = graphApi.get().beginTx() ) {
+			lockNode = graphApi.get().createNode();
+		}
 		
 		EventBus.get()
 		.withApi(graphApi)
