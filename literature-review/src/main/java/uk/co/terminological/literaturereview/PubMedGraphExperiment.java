@@ -77,7 +77,7 @@ public class PubMedGraphExperiment {
 
 	// Metadata keys
 
-	
+	static Node lockNode;
 
 	public static void main(String args[]) throws IOException {
 
@@ -123,6 +123,8 @@ public class PubMedGraphExperiment {
 		log.error("Starting graphDb build");
 		PubMedGraphSchema.setupSchema(graphApi);
 
+		lockNode = graphApi.get().createNode();
+		
 		EventBus.get()
 		.withApi(graphApi)
 		.withApi(biblioApi)
@@ -201,6 +203,7 @@ public class PubMedGraphExperiment {
 					List<String> pubMedIds = new ArrayList<>();
 					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 					try  ( Transaction tx = graph.get().beginTx() ) {
+						tx.acquireWriteLock(lockNode);
 						nodeIds.forEach(id -> {
 							Node n = graph.get().getNodeById(id);
 							Optional.ofNullable(n.getProperty("pmid",null)).ifPresent(
@@ -235,7 +238,6 @@ public class PubMedGraphExperiment {
 						entries.stream().forEach(entry -> {
 							
 							context.send(
-									//Add a depth parameter to the event 
 									Events.namedTypedEvent(entry, entry.getPMID().get(), PUBMED_FETCH_RESULT)
 									);
 						});
@@ -267,6 +269,7 @@ public class PubMedGraphExperiment {
 						
 						List<String> pmids = new ArrayList<>();
 						try  ( Transaction tx = graph.get().beginTx() ) {
+							tx.acquireWriteLock(lockNode);
 							event.get().forEach(id -> {
 								Node n = graph.get().getNodeById(id);
 								Optional.ofNullable(n.getProperty("pmid",null)).ifPresent(
@@ -305,6 +308,7 @@ public class PubMedGraphExperiment {
 					
 					List<String> dois = new ArrayList<>();
 					try  ( Transaction tx = graph.get().beginTx() ) {
+						tx.acquireWriteLock(lockNode);
 						event.get().forEach(id -> {
 							Node n = graph.get().getNodeById(id);
 							Optional.ofNullable(n.getProperty("doi",null)).ifPresent(

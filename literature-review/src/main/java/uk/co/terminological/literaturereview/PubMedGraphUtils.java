@@ -35,6 +35,8 @@ import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
+import static uk.co.terminological.literaturereview.PubMedGraphExperiment.lockNode;
+
 public class PubMedGraphUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(PubMedGraphUtils.class);
@@ -84,6 +86,7 @@ public class PubMedGraphUtils {
 		List<Node> out = new ArrayList<>();
 
 		try ( Transaction tx = graph.get().beginTx() ) {
+			tx.acquireWriteLock(lockNode);
 			entries.stream().forEach(entry -> {
 				Node tmp = null;
 				Node tmp1 = entry.getPMID().isPresent() ? doMerge(ARTICLE, "pmid", entry.getPMID().get(), graph.get()) : null;
@@ -163,6 +166,7 @@ public class PubMedGraphUtils {
 		Node out = null;
 		
 		try ( Transaction tx = graph.get().beginTx() ) {
+			tx.acquireWriteLock(lockNode);
 			
 			Node node = doMerge(AUTHOR, "identifier", author.getIdentifier(), graph.get());
 			author.firstName().ifPresent(fn -> node.setProperty("firstName", fn));
@@ -203,6 +207,7 @@ public class PubMedGraphUtils {
 		List<Relationship> out = new ArrayList<>();
 		
 		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
 			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get(), DOI_STUB);
 			citedDois.forEach(citedDoi -> {
 				Node end = doMerge(ARTICLE, "doi", citedDoi,graph.get(), DOI_STUB);
@@ -219,6 +224,7 @@ public class PubMedGraphUtils {
 		Node start;
 		Node end;
 		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
 			//TODO:: DEadlock here
 			start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get(), PMID_STUB);
 			tx.success();
