@@ -291,10 +291,7 @@ public class PubMedGraphExperiment {
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						
-						mapHasRelated(tmp);
-						
-						
-
+						mapHasRelated(tmp, graph);
 
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
