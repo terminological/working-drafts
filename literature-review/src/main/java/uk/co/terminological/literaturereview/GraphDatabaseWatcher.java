@@ -40,6 +40,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 							nodelist.add(labelledNode.node().getId());
 						}
 					});
+					logger.debug("Matching nodes found for label: "+label.name()+"="+nodelist.size());
 					context.send(
 						FluentEvents.Events.namedTypedEvent(nodelist, label.name(), NEO4J_NEW_NODE)	
 					);
@@ -55,6 +56,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 							nodelist.add(node.getId());
 						}
 					});
+					logger.debug("Matching nodes found: "+nodelist.size());
 					context.send(
 						FluentEvents.Events.namedTypedEvent(nodelist, name, NEO4J_NEW_NODE)	
 					);
