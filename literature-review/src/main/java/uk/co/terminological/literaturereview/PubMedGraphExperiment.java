@@ -162,6 +162,7 @@ public class PubMedGraphExperiment {
 								g.getEventBus().getApi(StatusRecord.class).get()
 									.add(pmid, Collections.emptyMap())
 							);*/
+						g.getEventBus().logInfo("Pubmed search found: "+tmp.size()+" results");
 						return tmp;
 					} catch (BibliographicApiException e) {
 						g.getEventBus().handleException(e);
@@ -190,6 +191,7 @@ public class PubMedGraphExperiment {
 					}
 					try {
 						List<String> pmids = bib.getEntrez().findPMIdsByDois(dois);
+						context.getEventBus().logInfo("Looked up "+nodeIds.size()+" dois and found "+pmids.size()+" pubmed records");
 						context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
 								);
@@ -215,6 +217,7 @@ public class PubMedGraphExperiment {
 						});
 						tx.success();
 					}
+					context.getEventBus().logInfo("Looked up "+pubMedIds.size()+" from related pubmed records");
 					context.send(
 							Events.typedEvent(pubMedIds,type -> PUBMED_SEARCH_RESULT)
 							);
