@@ -55,7 +55,7 @@ public class PubMedGraphUtils {
 		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
 		Node result = resultIterator.next();
 		return result;*/
-		Node out = graphDb.findNode(label2, indexName, indexValue);
+		Node out = graphDb.findNode(label, indexName, indexValue);
 		if (out == null) {
 			out =graphDb.createNode(label,label2);
 			out.setProperty(indexName, indexValue);
