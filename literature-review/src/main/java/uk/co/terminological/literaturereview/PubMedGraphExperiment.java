@@ -108,7 +108,7 @@ public class PubMedGraphExperiment {
 		String broaderSearch = prop.getProperty("broader-search");
 		Integer maxDepth = Integer.parseInt(prop.getProperty("max-depth"));
 
-		//execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
+		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
 
 		graphApi.waitAndShutdown();
 	}

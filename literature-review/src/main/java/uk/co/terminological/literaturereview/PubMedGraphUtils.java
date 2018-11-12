@@ -45,7 +45,7 @@ public class PubMedGraphUtils {
 	}
 	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb, Label label2) {
 		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"})"+
-				(label2!=null ? " SET n:"+label2.name():"")+" RETURN n";
+				(label2!=null ? " ON CREATE SET n:"+label2.name():"")+" RETURN n";
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put( indexName, indexValue );
 		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
