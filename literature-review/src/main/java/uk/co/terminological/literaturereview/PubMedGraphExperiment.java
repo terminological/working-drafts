@@ -143,7 +143,17 @@ public class PubMedGraphExperiment {
 		.withHandler(findCrossRefReferencesFromNodes())
 		.withHandler(findRelatedArticlesFromNodes(broaderSearch))
 		.debugMode()
-		.execute()
+		.execute();
+		
+		System.out.println("Press Enter key to shutdown EventBus...");
+		try
+		{
+			System.in.read();
+		}  
+		catch(Exception e)
+		{}  
+		
+		EventBus.get()
 		.sendShutdownMessage()
 		.writeExecutionGraphs(outputDir)
 		.shutdown();
