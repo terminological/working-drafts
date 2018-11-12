@@ -82,7 +82,7 @@ public class PubMedGraphExperiment {
 	public static void main(String args[]) throws IOException {
 
 		BasicConfigurator.configure();
-		org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 
 		String propFilename = args.length ==1? args[0]: "~/Dropbox/litReview/project.prop";
 		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
