@@ -57,7 +57,11 @@ public class PubMedGraphUtils {
 		return result;*/
 		Node out = graphDb.findNode(label, indexName, indexValue);
 		if (out == null) {
-			out =graphDb.createNode(label,label2);
+			if (label2 != null) {
+				out =graphDb.createNode(label,label2);
+			} else {
+				out =graphDb.createNode(label);
+			}
 			out.setProperty(indexName, indexValue);
 		}
 		return out;
