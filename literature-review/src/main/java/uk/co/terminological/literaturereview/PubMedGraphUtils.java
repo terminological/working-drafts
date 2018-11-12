@@ -53,7 +53,7 @@ public class PubMedGraphUtils {
 		parameters.put( indexName, indexValue );
 		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
 		Node result = resultIterator.next();
-		if (result.hasLabel(label2)) logger.debug("Created node: {} with {}={}",label.name(),indexName,indexValue.toString());
+		if (label2 != null && result.hasLabel(label2)) logger.debug("Created node: {} with {}={}",label.name(),indexName,indexValue.toString());
 		return result;
 	}
 
