@@ -46,14 +46,14 @@ public class PubMedGraphUtils {
 		return doMerge(label,indexName,indexValue,graphDb, null);
 	}
 	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb, Label label2) {
-		logger.debug("Looking for: {} with {}={}",label.name(),indexName,indexValue.toString());
+		// logger.debug("Looking for: {} with {}={}",label.name(),indexName,indexValue.toString());
 		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"})"+
 				(label2!=null ? " ON CREATE SET n:"+label2.name():"")+" RETURN n";
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put( indexName, indexValue );
 		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
 		Node result = resultIterator.next();
-		if (label2 != null && result.hasLabel(label2)) logger.debug("Created node: {} with {}={}",label.name(),indexName,indexValue.toString());
+		// if (label2 != null && result.hasLabel(label2)) logger.debug("Created node: {} with {}={}",label.name(),indexName,indexValue.toString());
 		return result;
 	}
 

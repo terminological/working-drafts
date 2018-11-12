@@ -93,7 +93,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 			@Override
 			public void afterCommit(TransactionData data, Void state) {
 				new Thread(() -> {
-					logger.debug("Post transaction hook fired");
+					logger.debug("Post transaction hook fired on transaction: "+data.getTransactionId());
 					afterCommit.accept(data, GraphDatabaseWatcher.this);
 				}).start();
 			}
