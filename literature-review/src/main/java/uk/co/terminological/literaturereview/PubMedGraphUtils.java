@@ -295,13 +295,11 @@ public class PubMedGraphUtils {
 		Node out = null;
 
 		try ( Transaction tx = graph.get().beginTx() ) {
-
-			Node tmp = graph.get().findNode(MESH_CODE, "code", meshCode.getCode());
-			if (tmp == null) {
-				tmp = graph.get().createNode(MESH_CODE);
-				tmp.setProperty("code", meshCode.getCode());
-				tmp.setProperty("term", meshCode.getTerm());
-			}
+			tx.acquireWriteLock(lockNode);
+			
+			Node tmp = doMerge(MESH_CODE, "code", meshCode.getCode(), graph.get());
+			tmp.setProperty("code", meshCode.getCode());
+			tmp.setProperty("term", meshCode.getTerm());
 			out = tmp;
 			tx.success();
 
@@ -328,10 +326,11 @@ public class PubMedGraphUtils {
 
 	public static List<Relationship> mapHasRelated(List<Link> links, GraphDatabaseApi graph) {
 		logger.info("Adding "+links.size()+" as related content");
+		List<Relationship> out = new ArrayList<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
 
-			List<Relationship> out = new ArrayList<>();
+			
 
 			links.forEach(link -> { 
 				link.toId.ifPresent(toId -> {
