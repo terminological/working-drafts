@@ -13,6 +13,8 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.event.TransactionData;
 import org.neo4j.graphdb.event.TransactionEventHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents;
@@ -20,6 +22,8 @@ import uk.co.terminological.pipestream.Metadata;
 
 public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
+	private static final Logger logger = LoggerFactory.getLogger(GraphDatabaseWatcher.class);
+	
 	GraphDatabaseService graph;
 	BiConsumer<TransactionData, Watcher<Y>> afterCommit;
 	TransactionEventHandler<Void> txListener;
@@ -82,7 +86,10 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
 			@Override
 			public void afterCommit(TransactionData data, Void state) {
-				new Thread(() -> afterCommit.accept(data, GraphDatabaseWatcher.this));;
+				new Thread(() -> {
+					logger.debug("Post transaction hook fired");
+					afterCommit.accept(data, GraphDatabaseWatcher.this);
+					});
 			}
 
 			@Override
