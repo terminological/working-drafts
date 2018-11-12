@@ -197,14 +197,13 @@ public class PubMedGraphExperiment {
 						tx.success();
 					}
 					try {
-						List<String> pmids = bib.getEntrez().findPMIdsByDois(dois);
-						context.getEventBus().logInfo("Looked up "+nodeIds.size()+" dois and found "+pmids.size()+" pubmed records");
-						while (pmids.size() > 0) {
+						while(dois.size() > 0) {
+							List<String> pmids = bib.getEntrez().findPMIdsByDois(dois.subList(0, Math.min(100, dois.size())));
+							context.getEventBus().logInfo("Looked up "+nodeIds.size()+" dois and found "+pmids.size()+" pubmed records");
 							context.send(
-								Events.typedEvent(pmids.subList(0, Math.min(200, pmids.size())),
-										type -> PUBMED_SEARCH_RESULT)
+								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
 								);
-							pmids.subList(0, Math.min(200, pmids.size())).clear();
+							dois.subList(0, Math.min(200, dois.size())).clear();
 						}
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
