@@ -11,6 +11,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AU
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RELATED;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasRelated;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
+import uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
@@ -310,10 +312,10 @@ public class PubMedGraphUtils {
 
 	public static List<Relationship> mapHasReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
-
+		logger.info("Adding "+citedDois+" references to "+citingDoi);
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get(), DOI_STUB);
+			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get());
 			citedDois.forEach(citedDoi -> {
 				Node end = doMerge(ARTICLE, "doi", citedDoi,graph.get(), DOI_STUB);
 				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
@@ -324,23 +326,21 @@ public class PubMedGraphUtils {
 		return out;
 	}
 
-	public static Optional<Relationship> mapHasRelated(String sourcePMID, String targetPMID, Long relatedness, GraphDatabaseApi graph) {
-		Relationship out = null;
-		Node start;
-		Node end;
+	public static List<Relationship> mapHasRelated(List<Link> links, GraphDatabaseApi graph) {
+		logger.info("Adding "+links.size()+" as related content");
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			//TODO:: DEadlock here
-			start = doMerge(ARTICLE, "pmid", sourcePMID,graph.get(), PMID_STUB);
-			tx.success();
-		}
-		try (Transaction tx = graph.get().beginTx()) {
-			end = doMerge(ARTICLE, "pmid", targetPMID, graph.get(), PMID_STUB);
-			tx.success();
-		}
-		try (Transaction tx = graph.get().beginTx()) {
-			out = start.createRelationshipTo(end, HAS_RELATED);
-			out.setProperty("relatedness", relatedness);
+
+			List<Relationship> out = new ArrayList<>();
+
+			links.forEach(link -> { 
+				link.toId.ifPresent(toId -> {
+					Node start = doMerge(ARTICLE, "pmid", link.fromId,graph.get());
+					Node end = doMerge(ARTICLE, "pmid", link.toId.get(), graph.get(), PMID_STUB);
+					Relationship tmp = start.createRelationshipTo(end, HAS_RELATED);
+					link.score.ifPresent(s -> tmp.setProperty("relatedness", s));
+				});
+			});
 			tx.success();
 		}
 

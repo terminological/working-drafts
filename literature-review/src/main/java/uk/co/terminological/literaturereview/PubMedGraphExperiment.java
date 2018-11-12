@@ -281,17 +281,19 @@ public class PubMedGraphExperiment {
 							tx.success();
 						}
 						
-						Stream<Link> tmp = bib.getEntrez()
+						context.getEventBus().logInfo("");
+						
+						List<Link> tmp = bib.getEntrez()
 								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 								.command(Command.NEIGHBOR_SCORE)
 								.withLinkname("pubmed_pubmed")
 								.searchLinked(searchWithin)
 								.execute().stream()
-								.flatMap(o -> o.stream());
+								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						
-						tmp.forEach(link -> { 
-							link.toId.ifPresent(toId -> mapHasRelated(link.fromId, toId, link.score.orElse(0L), graph));
-						});
+						mapHasRelated(tmp);
+						
+						
 
 
 					} catch (BibliographicApiException e) {
