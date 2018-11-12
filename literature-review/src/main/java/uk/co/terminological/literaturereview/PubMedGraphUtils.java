@@ -13,6 +13,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RE
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RELATED;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasRelated;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -254,7 +255,8 @@ public class PubMedGraphUtils {
 				Node node = tmp;
 				
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
-				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
+				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt.format(
+					      DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
 
