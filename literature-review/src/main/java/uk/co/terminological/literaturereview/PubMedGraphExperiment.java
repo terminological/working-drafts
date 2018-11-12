@@ -158,10 +158,6 @@ public class PubMedGraphExperiment {
 					try {
 						List<String> tmp = g.getEventBus().getApi(BibliographicApis.class).get()
 								.getEntrez().findPMIdsBySearch(search);
-						/*tmp.forEach(pmid ->
-								g.getEventBus().getApi(StatusRecord.class).get()
-									.add(pmid, Collections.emptyMap())
-							);*/
 						g.getEventBus().logInfo("Pubmed search found: "+tmp.size()+" results");
 						return tmp;
 					} catch (BibliographicApiException e) {
