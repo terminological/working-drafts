@@ -82,7 +82,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
 			@Override
 			public void afterCommit(TransactionData data, Void state) {
-				afterCommit.accept(data, GraphDatabaseWatcher.this);
+				new Thread(() -> afterCommit.accept(data, GraphDatabaseWatcher.this));;
 			}
 
 			@Override
