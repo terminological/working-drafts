@@ -28,6 +28,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -111,7 +112,7 @@ public class CrossRefClient {
 	}
 
 	
-	public SingleResult getByDoi(String doi) throws BibliographicApiException {
+	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
 		rateLimiter.consume();
 		logger.debug("Retrieving crossref record for:" + doi);
 		String url = baseUrl+"works/"+encode(doi);
@@ -119,9 +120,13 @@ public class CrossRefClient {
 		try {
 			ClientResponse r = wr.get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
-			InputStream is = r.getEntityInputStream(); 
-			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
-			return response;
+			if (r.getClientResponseStatus().equals(Status.OK)) {
+				InputStream is = r.getEntityInputStream(); 
+				CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
+				return Optional.of(response);
+			} else {
+				return Optional.empty();
+			}
 		} catch (JsonParseException | JsonMappingException e) {
 			throw new BibliographicApiException("Malformed response to: "+url,e);
 		} catch (IOException | UniformInterfaceException e) {
