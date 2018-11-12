@@ -22,12 +22,12 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
-			<version>3.4.9</version>
+			<version>3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-bolt</artifactId>
-			<version>3.4.9</version>
+			<version>3.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
