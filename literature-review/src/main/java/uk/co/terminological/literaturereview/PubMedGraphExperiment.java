@@ -110,6 +110,8 @@ public class PubMedGraphExperiment {
 
 		//execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
 
+		
+		
 		graphApi.waitAndShutdown();
 	}
 

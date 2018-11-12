@@ -46,6 +46,8 @@ public class GraphDatabaseApi {
 				.setConfig( bolt.listen_address, "localhost:7687" )
 				.newGraphDatabase();
 
+		
+		
 		Runtime.getRuntime().addShutdownHook( new Thread()
 		{
 			@Override
