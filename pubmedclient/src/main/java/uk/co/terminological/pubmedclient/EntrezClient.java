@@ -104,6 +104,7 @@ public class EntrezClient {
 	public static class ESearchQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+		
 		boolean empty=false;
 		EntrezClient client;
 
@@ -114,10 +115,10 @@ public class EntrezClient {
 
 		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, String searchTerm, EntrezClient client) {
 			this.searchParams = searchParams;
-			this.searchParams.remove("db");
 			this.searchParams.add("term", searchTerm);
 			if (searchTerm.isEmpty()) empty=true;
 			this.searchParams.add("db", "pubmed");
+			this.searchParams.add("retmax", "100000");
 			this.client = client;
 		}
 
