@@ -1,11 +1,12 @@
 package uk.co.terminological.literaturereview;
 
+import static uk.co.terminological.literaturereview.PubMedGraphExperiment.lockNode;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.AUTHOR;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.MESH_CODE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AUTHOR;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;
@@ -29,13 +30,9 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jdk.internal.jline.internal.Log;
-import uk.co.terminological.pubmedclient.EntrezClient;
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
-
-import static uk.co.terminological.literaturereview.PubMedGraphExperiment.lockNode;
 
 public class PubMedGraphUtils {
 
