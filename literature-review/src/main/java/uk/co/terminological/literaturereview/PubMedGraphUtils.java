@@ -344,7 +344,7 @@ public class PubMedGraphUtils {
 			tx.success();
 		}
 
-		return Optional.ofNullable(out);
+		return out;
 	}
 
 }
