@@ -172,7 +172,7 @@ public class CrossRefResult {
 		@JsonProperty("name") public Optional<String> name = Optional.empty(); // Yes-
 		@JsonProperty("value") public Optional<String> value = Optional.empty(); // Yes-
 		@JsonProperty("URL") public Optional<URL> URL = Optional.empty(); // No-
-		@JsonProperty("explanation") public Optional<String> explanation = Optional.empty(); // No-
+		@JsonProperty("explanation") public Optional<ExtensibleJson> explanation = Optional.empty(); // No-
 		@JsonProperty("label") public Optional<String> label = Optional.empty(); // No-
 		@JsonProperty("order") public Optional<Integer> order = Optional.empty(); // No-
 		@JsonProperty("group") public Optional<AssertionGroup> group = Optional.empty(); // No-
