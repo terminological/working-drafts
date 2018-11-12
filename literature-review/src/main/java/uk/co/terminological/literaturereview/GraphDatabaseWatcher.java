@@ -62,8 +62,8 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 					});
 					logger.debug("Matching nodes found: "+nodelist.size());
 					context.send(
-							FluentEvents.Events.namedTypedEvent(nodelist, name, NEO4J_NEW_NODE)	
-							);
+						FluentEvents.Events.namedTypedEvent(nodelist, name, NEO4J_NEW_NODE)	
+					);
 				});
 	}
 

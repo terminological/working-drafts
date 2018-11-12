@@ -31,6 +31,8 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oracle.tools.packager.Log;
+
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
@@ -44,17 +46,19 @@ public class PubMedGraphUtils {
 		return doMerge(label,indexName,indexValue,graphDb, null);
 	}
 	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb, Label label2) {
+		logger.debug("Looking for: {} with {}={}",label.name(),indexName,indexValue.toString());
 		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"})"+
 				(label2!=null ? " ON CREATE SET n:"+label2.name():"")+" RETURN n";
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put( indexName, indexValue );
 		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
 		Node result = resultIterator.next();
+		if (result.hasLabel(label2)) logger.debug("Created node: {} with {}={}",label.name(),indexName,indexValue.toString());
 		return result;
 	}
 
 
-	public static Optional<Node> mapDoiToNode(String doi, GraphDatabaseApi graph, Label... additionalLabels) {
+	/*public static Optional<Node> mapDoiToNode(String doi, GraphDatabaseApi graph) {
 		Node out = null;
 
 		try ( Transaction tx = graph.get().beginTx() ) {
@@ -69,7 +73,7 @@ public class PubMedGraphUtils {
 	}
 
 
-	public static Optional<Node> mapPMIDToNode(String pmid, GraphDatabaseApi graph, Label... additionalLabels) {
+	public static Optional<Node> mapPMIDToNode(String pmid, GraphDatabaseApi graph) {
 		Node out = null;
 
 		try ( Transaction tx = graph.get().beginTx() ) {
@@ -81,7 +85,7 @@ public class PubMedGraphUtils {
 			tx.success();
 		}
 		return Optional.ofNullable(out);
-	}
+	}*/
 
 
 	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, Integer maxDepth) {
@@ -317,6 +321,7 @@ public class PubMedGraphUtils {
 				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
 			});
 			tx.success();
+			logger.info(out.size()+" relationships added");
 		}
 
 		return out;
