@@ -198,8 +198,8 @@ public class PubMedGraphUtils {
 			
 			entries.stream().forEach(entry -> {
 				Node tmp = null;
-				Node tmp1 = entry.getPMID().isPresent() ? doMerge(ARTICLE, "pmid", entry.getPMID().get(), graph.get()) : null;
-				Node tmp2 = entry.getDoi().isPresent() ? doMerge(ARTICLE, "doi", entry.getDoi().get(), graph.get()) : null;
+				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
+				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
 				if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
 					logger.info("Merging article pubmed: "+entry.getPMID().get()+" with doi: "+entry.getDoi().get());
 					//merge tmp1 and tmp2
@@ -311,7 +311,7 @@ public class PubMedGraphUtils {
 		logger.info("Adding "+citedDois+" references to "+citingDoi);
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get());
+			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get(), DOI_STUB);
 			citedDois.forEach(citedDoi -> {
 				Node end = doMerge(ARTICLE, "doi", citedDoi,graph.get(), DOI_STUB);
 				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
@@ -332,7 +332,7 @@ public class PubMedGraphUtils {
 
 			links.forEach(link -> { 
 				link.toId.ifPresent(toId -> {
-					Node start = doMerge(ARTICLE, "pmid", link.fromId,graph.get());
+					Node start = doMerge(ARTICLE, "pmid", link.fromId,graph.get(), PMID_STUB);
 					Node end = doMerge(ARTICLE, "pmid", link.toId.get(), graph.get(), PMID_STUB);
 					Relationship tmp = start.createRelationshipTo(end, HAS_RELATED);
 					link.score.ifPresent(s -> tmp.setProperty("relatedness", s));
