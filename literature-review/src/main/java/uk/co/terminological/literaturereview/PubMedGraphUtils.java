@@ -89,15 +89,17 @@ public class PubMedGraphUtils {
 
 		entries.stream().forEach(entry -> {
 			Node tmp = null;
-			Node tmp1 = null;
-			Node tmp2 = null;
+			Node tmp3 = null;
+			Node tmp4 = null;
 			try ( Transaction tx = graph.get().beginTx() ) {
 				tx.acquireWriteLock(lockNode);
 				tmp = null;
-				tmp1 = entry.getPMID().isPresent() ? doMerge(ARTICLE, "pmid", entry.getPMID().get(), graph.get()) : null;
-				tmp2 = entry.getDoi().isPresent() ? doMerge(ARTICLE, "doi", entry.getDoi().get(), graph.get()) : null;
+				tmp3 = entry.getPMID().isPresent() ? doMerge(ARTICLE, "pmid", entry.getPMID().get(), graph.get()) : null;
+				tmp4 = entry.getDoi().isPresent() ? doMerge(ARTICLE, "doi", entry.getDoi().get(), graph.get()) : null;
 				tx.success();
 			}
+			Node tmp1=tmp3;
+			Node tmp2=tmp4;
 			if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
 				//merge tmp1 and tmp2
 				try ( Transaction tx = graph.get().beginTx() ) {
