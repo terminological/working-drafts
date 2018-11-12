@@ -89,6 +89,8 @@ public class PubMedGraphExperiment {
 		Properties prop = System.getProperties();
 		prop.load(Files.newInputStream(propPath));
 
+		prop.forEach((k,v) -> prop.put(k, v.toString().replace("~", System.getProperty("user.home")))); 
+		
 		Path secretsPath = fromProperty(prop,"bibliography-secrets");
 		Path graphOptionsPath = fromProperty(prop,"graph-db-directory");
 		Path workingDir = fromProperty(prop,"working-directory");
