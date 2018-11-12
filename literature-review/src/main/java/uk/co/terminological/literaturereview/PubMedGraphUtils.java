@@ -251,11 +251,11 @@ public class PubMedGraphUtils {
 					logger.debug("not expanding at depth "+depth+": "+entry.getTitle());
 				}
 				entry.getAuthors().forEach(au -> {
-					Optional<Node> targetNode = mapAuthorToNode(au,graph);
+					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);
 					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
 				});
 				entry.getMeshHeadings().forEach(mh -> {
-					Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph);
+					Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph, tx);
 					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_MESH));
 				});
 				out.add(node);
@@ -268,12 +268,9 @@ public class PubMedGraphUtils {
 
 	}
 
-	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph) {
+	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 
 		Node out = null;
-
-		try ( Transaction tx = graph.get().beginTx() ) {
-			tx.acquireWriteLock(lockNode);
 
 			Node node = doMerge(AUTHOR, "identifier", author.getIdentifier(), graph.get());
 			author.firstName().ifPresent(fn -> node.setProperty("firstName", fn));
@@ -283,27 +280,18 @@ public class PubMedGraphUtils {
 			if (affiliations.length > 0) node.setProperty("affiliations", affiliations);
 
 			out = node;
-			tx.success();
-
-		}
 
 		return Optional.ofNullable(out);
 
 	}
 
-	public static Optional<Node> mapMeshCodeToNode(MeshCode meshCode, GraphDatabaseApi graph) {
+	public static Optional<Node> mapMeshCodeToNode(MeshCode meshCode, GraphDatabaseApi graph, Transaction tx) {
 		Node out = null;
 
-		try ( Transaction tx = graph.get().beginTx() ) {
-			tx.acquireWriteLock(lockNode);
-			
 			Node tmp = doMerge(MESH_CODE, "code", meshCode.getCode(), graph.get());
 			tmp.setProperty("code", meshCode.getCode());
 			tmp.setProperty("term", meshCode.getTerm());
 			out = tmp;
-			tx.success();
-
-		}
 
 		return Optional.ofNullable(out);
 	}
