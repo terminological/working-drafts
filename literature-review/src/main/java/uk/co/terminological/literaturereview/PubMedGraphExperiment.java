@@ -199,9 +199,13 @@ public class PubMedGraphExperiment {
 					try {
 						List<String> pmids = bib.getEntrez().findPMIdsByDois(dois);
 						context.getEventBus().logInfo("Looked up "+nodeIds.size()+" dois and found "+pmids.size()+" pubmed records");
-						context.send(
-								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
+						while (pmids.size() > 0) {
+							context.send(
+								Events.typedEvent(pmids.subList(0, Math.min(200, pmids.size())),
+										type -> PUBMED_SEARCH_RESULT)
 								);
+							pmids.subList(0, Math.min(200, pmids.size())).clear();
+						}
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
 					}
@@ -225,9 +229,14 @@ public class PubMedGraphExperiment {
 						tx.success();
 					}
 					context.getEventBus().logInfo("Looked up "+pubMedIds.size()+" from related pubmed records");
-					context.send(
-							Events.typedEvent(pubMedIds,type -> PUBMED_SEARCH_RESULT)
+					while(pubMedIds.size() > 0) {//TODO: BATCH INTO SMALLER SIZES
+						context.send(
+							Events.typedEvent(
+									pubMedIds.subList(0, Math.min(200, pubMedIds.size())),
+									type -> PUBMED_SEARCH_RESULT)
 							);
+						pubMedIds.subList(0, Math.min(200, pubMedIds.size())).clear();
+					}
 				});
 	}
 
