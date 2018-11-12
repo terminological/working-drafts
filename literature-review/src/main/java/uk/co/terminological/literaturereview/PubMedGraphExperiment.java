@@ -281,7 +281,7 @@ public class PubMedGraphExperiment {
 							tx.success();
 						}
 						
-						context.getEventBus().logInfo("");
+						
 						
 						List<Link> tmp = bib.getEntrez()
 								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
@@ -290,6 +290,8 @@ public class PubMedGraphExperiment {
 								.searchLinked(searchWithin)
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
+						
+						context.getEventBus().logInfo("Found "+tmp.size()+" articles related to "+pmids.size()+" pubmed article");
 						
 						mapHasRelated(tmp, graph);
 
@@ -329,6 +331,7 @@ public class PubMedGraphExperiment {
 								.flatMap(w -> w.reference.stream())
 								.flatMap(r -> r.DOI.stream())
 								.collect(Collectors.toList());
+							context.getEventBus().logInfo("Found "+referencedDois.size()+" articles related to: "+doi);
 							mapHasReferences(doi,referencedDois,graph);
 						} catch (BibliographicApiException e) {
 							context.getEventBus().handleException(e);

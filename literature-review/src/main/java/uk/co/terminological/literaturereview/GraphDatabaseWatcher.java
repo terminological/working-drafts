@@ -36,7 +36,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 				(txData, context) -> {
 					Set<Long> nodelist = new HashSet<>();
 					txData.assignedLabels().forEach( labelledNode -> {
-						if (labelledNode.label().equals(label)) {
+						if (labelledNode.label().name().equals(label.name())) {
 							nodelist.add(labelledNode.node().getId());
 						}
 					});
