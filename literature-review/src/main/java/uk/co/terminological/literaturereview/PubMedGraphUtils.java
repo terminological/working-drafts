@@ -25,6 +25,7 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.NotInTransactionException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
@@ -312,6 +313,14 @@ public class PubMedGraphUtils {
 
 	public static List<Relationship> mapHasReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
+		try {
+			graph.get().getNodeById(lockNode.getId());
+			throw new RuntimeException("Was in transaction already");
+		} catch (NotInTransactionException e) {
+			
+		}
+			
+			
 		logger.info("Adding "+citedDois.size()+" references to "+citingDoi);
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
@@ -321,13 +330,22 @@ public class PubMedGraphUtils {
 				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
 			});
 			tx.success();
-			logger.info(out.size()+" relationships added");
+			logger.info(out.size()+" relationships added in transaction: ");
 		}
 
 		return out;
 	}
 
 	public static List<Relationship> mapHasRelated(List<Link> links, GraphDatabaseApi graph) {
+		graph.get().getNodeById(lockNode.getId());
+		
+		try {
+			graph.get().getNodeById(lockNode.getId());
+			throw new RuntimeException("Was in transaction already");
+		} catch (NotInTransactionException e) {
+			
+		}
+		
 		logger.info("Adding "+links.size()+" as related content");
 		List<Relationship> out = new ArrayList<>();
 		try (Transaction tx = graph.get().beginTx()) {
