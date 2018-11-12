@@ -161,7 +161,7 @@ public class PubMedGraphUtils {
 				};
 				tx.success();
 			}
-			if (depth==null) depth = 0;
+			if (depth==null) depth = 0; else depth = depth+1;
 			try ( Transaction tx = graph.get().beginTx() ) {
 				tx.acquireWriteLock(lockNode);
 				node.setProperty("depth", depth);
