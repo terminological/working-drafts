@@ -159,10 +159,7 @@ public class PubMedGraphUtils {
 					if (depth == null) depth=tmpDepth;
 					else if (tmpDepth!=null && tmpDepth<depth) depth=tmpDepth;
 				};
-				tx.success();
-			}
-			if (depth==null) depth = 0; else depth = depth+1;
-			try ( Transaction tx = graph.get().beginTx() ) {
+				if (depth==null) depth = 0; else depth = depth+1;
 				tx.acquireWriteLock(lockNode);
 				node.setProperty("depth", depth);
 				node.removeLabel(DOI_STUB);
