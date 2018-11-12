@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>graph-algorithms-algo</artifactId>
-			<version>3.4.9</version>
+			<version>3.4.9.0</version>
 		</dependency>
 	</dependencies>
 </project>
