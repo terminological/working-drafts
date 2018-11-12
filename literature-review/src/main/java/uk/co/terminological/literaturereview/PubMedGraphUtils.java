@@ -308,7 +308,7 @@ public class PubMedGraphUtils {
 
 	public static List<Relationship> mapHasReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
-		logger.info("Adding "+citedDois+" references to "+citingDoi);
+		logger.info("Adding "+citedDois.size()+" references to "+citingDoi);
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
 			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get(), DOI_STUB);

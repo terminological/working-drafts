@@ -23,14 +23,14 @@ import uk.co.terminological.pipestream.Metadata;
 public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
 	private static final Logger logger = LoggerFactory.getLogger(GraphDatabaseWatcher.class);
-	
+
 	GraphDatabaseService graph;
 	BiConsumer<TransactionData, Watcher<Y>> afterCommit;
 	TransactionEventHandler<Void> txListener;
-	
+
 	public static final String NEO4J_NODE_WATCHER = "Neo4j node watcher";
 	public static final String NEO4J_NEW_NODE = "Neo4j node created";
-	
+
 	static EventGenerator<Set<Long>> newLabelTrigger(Label label) {
 		return GraphDatabaseWatcher.create(NEO4J_NODE_WATCHER, 
 				(txData, context) -> {
@@ -40,13 +40,17 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 							nodelist.add(labelledNode.node().getId());
 						}
 					});
-					logger.debug("Matching nodes found for label: "+label.name()+"="+nodelist.size());
-					context.send(
-						FluentEvents.Events.namedTypedEvent(nodelist, label.name(), NEO4J_NEW_NODE)	
-					);
+					if (!nodelist.isEmpty()) {
+						logger.debug("Matching nodes found for label: "+label.name()+"="+nodelist.size());
+						context.send(
+								FluentEvents.Events.namedTypedEvent(nodelist, label.name(), NEO4J_NEW_NODE)	
+								);
+					} else {
+						logger.debug("Nothing found for label: "+label.name());
+					}
 				});
 	}
-	
+
 	static EventGenerator<Set<Long>> newNodeTrigger(Predicate<Node> nodeTester, String name) {
 		return GraphDatabaseWatcher.create(NEO4J_NODE_WATCHER, 
 				(txData, context) -> {
@@ -58,15 +62,15 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 					});
 					logger.debug("Matching nodes found: "+nodelist.size());
 					context.send(
-						FluentEvents.Events.namedTypedEvent(nodelist, name, NEO4J_NEW_NODE)	
-					);
+							FluentEvents.Events.namedTypedEvent(nodelist, name, NEO4J_NEW_NODE)	
+							);
 				});
 	}
-	
+
 	public static <Y> GraphDatabaseWatcher<Y> create(String type, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
 		return new GraphDatabaseWatcher<Y>(FluentEvents.Metadata.forGenerator(type), afterCommit);
 	}
-	
+
 	public GraphDatabaseWatcher(Metadata metadata, GraphDatabaseService graph, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
 		super(metadata);
 		this.graph = graph;
@@ -78,7 +82,7 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 		this.graph = this.getEventBus().getApi(GraphDatabaseApi.class).get().get();
 		this.afterCommit = afterCommit;
 	}
-	
+
 	@Override
 	public Object setupWatcher() {
 		txListener = new TransactionEventHandler<Void>() {
@@ -91,12 +95,12 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 				new Thread(() -> {
 					logger.debug("Post transaction hook fired");
 					afterCommit.accept(data, GraphDatabaseWatcher.this);
-					}).start();
+				}).start();
 			}
 
 			@Override
 			public void afterRollback(TransactionData data, Void state) {}
-			
+
 		};
 		graph.registerTransactionEventHandler(txListener);
 		return null;
