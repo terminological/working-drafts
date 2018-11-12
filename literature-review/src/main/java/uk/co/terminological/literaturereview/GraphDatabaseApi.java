@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.neo4j.graphdb.config.Setting;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.neo4j.kernel.configuration.BoltConnector;
 import org.neo4j.kernel.configuration.Config;
@@ -28,6 +29,7 @@ public class GraphDatabaseApi {
 		//http://neo4j-contrib.github.io/neo4j-jdbc/
 		Config config = Config.builder()
 				.withServerDefaults()
+				.withSetting("dbms.security.procedures.unrestricted", "algo.*")
 				.build();
 
 		if (Files.exists(graphDbPath) && !Files.isDirectory(graphDbPath)) {
