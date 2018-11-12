@@ -45,6 +45,7 @@ public class GraphDatabaseApi {
 		
 		graphDb = new GraphDatabaseFactory()
 				.newEmbeddedDatabaseBuilder( graphDbPath.toFile() )
+				.loadPropertiesFromFile("/media/data/Data/neo4j/conf/neo4j.conf")
 				.setConfig( bolt.type, "BOLT" )
 				.setConfig( bolt.enabled, "true" )
 				.setConfig( bolt.listen_address, "localhost:7687" )
