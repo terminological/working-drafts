@@ -1,5 +1,6 @@
 package uk.co.terminological.literaturereview;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,7 +30,8 @@ public class GraphDatabaseApi {
 		//http://neo4j-contrib.github.io/neo4j-jdbc/
 		Config config = Config.builder()
 				.withServerDefaults()
-				.withSetting("dbms.security.procedures.unrestricted", "algo.*")
+				.withFile(new File("/media/data/Data/neo4j/conf/neo4j.conf"))
+				//.withSetting("dbms.security.procedures.unrestricted", "algo.*")
 				.build();
 
 		if (Files.exists(graphDbPath) && !Files.isDirectory(graphDbPath)) {
