@@ -28,27 +28,27 @@ public class GraphDatabaseApi {
 	public GraphDatabaseApi(Path graphDbPath) {
 
 		//http://neo4j-contrib.github.io/neo4j-jdbc/
-		Config config = Config.builder()
+		/*Config config = Config.builder()
 				.withServerDefaults()
 				.withFile(new File("/media/data/Data/neo4j/conf/neo4j.conf"))
 				//.withSetting("dbms.security.procedures.unrestricted", "algo.*")
-				.build();
+				.build();*/
 
 		if (Files.exists(graphDbPath) && !Files.isDirectory(graphDbPath)) {
 			//TODO: if a properties file is supplied instead
 			throw new UnsupportedOperationException();
 		}
 		
-		BoltConnector bolt = config.boltConnectors().get(0);
+		//BoltConnector bolt = config.boltConnectors().get(0);
 
 		logger.info("Opening graphdb in: "+graphDbPath);
 		
 		graphDb = new GraphDatabaseFactory()
 				.newEmbeddedDatabaseBuilder( graphDbPath.toFile() )
 				.loadPropertiesFromFile("/media/data/Data/neo4j/conf/neo4j.conf")
-				.setConfig( bolt.type, "BOLT" )
-				.setConfig( bolt.enabled, "true" )
-				.setConfig( bolt.listen_address, "localhost:7687" )
+				//.setConfig( bolt.type, "BOLT" )
+				//.setConfig( bolt.enabled, "true" )
+				//.setConfig( bolt.listen_address, "localhost:7687" )
 				.newGraphDatabase();
 
 		
