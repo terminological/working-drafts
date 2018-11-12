@@ -85,8 +85,9 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
 	@Override
 	public Object setupWatcher() {
-		txListener = new TransactionEventHandler<Void>() {
-
+		new Thread(() -> {
+			txListener = new TransactionEventHandler<Void>() {
+		
 			@Override
 			public Void beforeCommit(TransactionData data) throws Exception { return null; }
 
@@ -100,8 +101,9 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 			@Override
 			public void afterRollback(TransactionData data, Void state) {}
 
-		};
-		graph.registerTransactionEventHandler(txListener);
+			};
+			graph.registerTransactionEventHandler(txListener);
+		}).run();
 		return null;
 	}
 
