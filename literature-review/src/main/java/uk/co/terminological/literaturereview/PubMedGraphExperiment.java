@@ -342,11 +342,13 @@ public class PubMedGraphExperiment {
 					
 					for (String doi: dois) {
 						try {
-							SingleResult tmp = api.getCrossref().getByDoi(doi);
-							tmp.work.ifPresent(work -> context.send(
+							Optional<SingleResult> tmp = api.getCrossref().getByDoi(doi);
+							tmp.ifPresent(t ->
+									t.work.ifPresent(work -> context.send(
 									Events.namedTypedEvent(work,doi,XREF_FETCH_RESULT)
-								));
-							List<String> referencedDois = tmp.work.stream()
+								)));
+							List<String> referencedDois = tmp.stream()
+								.flatMap(t -> t.work.stream())
 								.flatMap(w -> w.reference.stream())
 								.flatMap(r -> r.DOI.stream())
 								.collect(Collectors.toList());
