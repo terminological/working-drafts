@@ -110,8 +110,6 @@ public class PubMedGraphExperiment {
 
 		//execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
 
-		org.neo4j.graphalgo.PageRankProc
-		
 		graphApi.waitAndShutdown();
 	}
 
