@@ -48,14 +48,22 @@ public class PubMedGraphUtils {
 	}
 	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb, Label label2) {
 		// logger.debug("Looking for: {} with {}={}",label.name(),indexName,indexValue.toString());
-		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"})"+
+		/*String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"})"+
 				(label2!=null ? " ON CREATE SET n:"+label2.name():"")+" RETURN n";
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put( indexName, indexValue );
 		ResourceIterator<Node> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
 		Node result = resultIterator.next();
+		return result;*/
+		Node out = graphDb.findNode(label2, indexName, indexValue);
+		if (out == null) {
+			out =graphDb.createNode(label,label2);
+			out.setProperty(indexName, indexValue);
+		}
+		return out;
+		
 		// if (label2 != null && result.hasLabel(label2)) logger.debug("Created node: {} with {}={}",label.name(),indexName,indexValue.toString());
-		return result;
+		
 	}
 
 
@@ -337,7 +345,6 @@ public class PubMedGraphUtils {
 	}
 
 	public static List<Relationship> mapHasRelated(List<Link> links, GraphDatabaseApi graph) {
-		graph.get().getNodeById(lockNode.getId());
 		
 		try {
 			graph.get().getNodeById(lockNode.getId());
