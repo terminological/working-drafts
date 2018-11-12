@@ -84,7 +84,7 @@ public class PubMedGraphUtils {
 	}
 
 
-	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, Integer maxDepth, Label... additionalLabels) {
+	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, Integer maxDepth) {
 
 		List<Node> out = new ArrayList<>();
 
@@ -194,11 +194,14 @@ public class PubMedGraphUtils {
 		try ( Transaction tx = graph.get().beginTx() ) {
 			tx.acquireWriteLock(lockNode);
 
+			
+			
 			entries.stream().forEach(entry -> {
 				Node tmp = null;
 				Node tmp1 = entry.getPMID().isPresent() ? doMerge(ARTICLE, "pmid", entry.getPMID().get(), graph.get()) : null;
 				Node tmp2 = entry.getDoi().isPresent() ? doMerge(ARTICLE, "doi", entry.getDoi().get(), graph.get()) : null;
 				if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
+					logger.info("Merging article pubmed: "+entry.getPMID().get()+" with doi: "+entry.getDoi().get());
 					//merge tmp1 and tmp2
 					tmp2.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
 					tmp2.getRelationships(Direction.INCOMING).forEach(r -> {
@@ -216,11 +219,15 @@ public class PubMedGraphUtils {
 					tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
 					tmp2.delete();
 					tmp = tmp1;
+					
 				} else if (tmp1!=null) {
+					logger.info("Updating pubmed article: "+entry.getPMID().get());
 					tmp = tmp1;
 				} else if (tmp2!=null) {
+					logger.info("Updating doi article: "+entry.getDoi().get());
 					tmp = tmp2;
 				} else {
+					logger.info("Creating new article record: pmid"+entry.getPMID().orElse("none")+" doi:"+entry.getDoi().orElse("none"));
 					Node newNode = graph.get().createNode(ARTICLE);
 					entry.getPMID().ifPresent(pmid -> newNode.setProperty("pmid", pmid));
 					entry.getDoi().ifPresent(doi -> newNode.setProperty("doi", doi));
@@ -228,8 +235,9 @@ public class PubMedGraphUtils {
 				}
 
 				Node node = tmp;
-				Arrays.stream(additionalLabels).forEach(label -> node.addLabel(label));
+				
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
+				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
 
@@ -239,12 +247,14 @@ public class PubMedGraphUtils {
 					Integer tmpDepth = (Integer) other.getProperty("depth", null);
 					if (depth == null) depth=tmpDepth;
 					else if (tmpDepth!=null && tmpDepth<depth) depth=tmpDepth;
+					
 				};
 				if (depth==null) depth = 0; else depth = depth+1;
 				node.setProperty("depth", depth);
+				logger.debug("depth for node: "+depth+": "+entry.getTitle());
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
-				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt));
+				
 				if (depth<maxDepth) {
 					node.addLabel(EXPAND);
 				} else {
