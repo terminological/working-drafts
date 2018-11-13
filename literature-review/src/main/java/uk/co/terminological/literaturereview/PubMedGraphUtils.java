@@ -1,12 +1,7 @@
 package uk.co.terminological.literaturereview;
 
 import static uk.co.terminological.literaturereview.PubMedGraphExperiment.lockNode;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.AUTHOR;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.MESH_CODE;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AUTHOR;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;
@@ -357,11 +352,19 @@ public class PubMedGraphUtils {
 		return out;
 	}
 
-	public static List<Relationship> mapHasRelated(List<Link> links, GraphDatabaseApi graph) {
-		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_RELATED, graph);
+	public static List<Relationship> mapPubmedRelated(List<Link> links, GraphDatabaseApi graph) {
+		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_RELATED, graph, false);
 	}
 	
-	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph) {
+	public static List<Relationship> mapPubMedCentalReferences(List<Link> links, GraphDatabaseApi graph) {
+		return mapEntrez(links, "pmcid", PMCENTRAL_STUB, "pmid", PMID_STUB, HAS_REFERENCE, graph, false);
+	}
+	
+	public static List<Relationship> mapPubMedCentalCitedBy(List<Link> links, GraphDatabaseApi graph) {
+		return mapEntrez(links, "pmcid", PMCENTRAL_STUB, "pmcid", PMCENTRAL_STUB, HAS_REFERENCE, graph, true);
+	}
+	
+	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
 		
 		try {
 			graph.get().getNodeById(lockNode.getId());
@@ -381,7 +384,12 @@ public class PubMedGraphUtils {
 				link.toId.ifPresent(toId -> {
 					Node start = doMerge(ARTICLE, inIdType, link.fromId,graph.get(), inLabel);
 					Node end = doMerge(ARTICLE, outIdType, link.toId.get(), graph.get(), outLabel);
-					Relationship tmp = start.createRelationshipTo(end, relType);
+					Relationship tmp;
+					if (invert) {
+						tmp = end.createRelationshipTo(start, relType);
+					} else {
+						tmp = start.createRelationshipTo(end, relType);
+					}
 					link.score.ifPresent(s -> tmp.setProperty("relatedness", s));
 				});
 			});

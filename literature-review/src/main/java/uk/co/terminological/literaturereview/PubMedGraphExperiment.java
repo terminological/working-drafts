@@ -65,6 +65,7 @@ public class PubMedGraphExperiment {
 	// Handlers & Generators
 	public static final String PUBMED_SEARCHER = "PubMed eSearch";
 	public static final String PUBMED_LINKER = "PubMed eLink";
+	public static final String PUBMED_CENTRAL_LINKER = "PubMedCentral eLink";
 
 	public static final String PUBMED_FETCHER = "PubMed eFetch";
 	public static final String XREF_LOOKUP = "Crossref lookup";
@@ -315,7 +316,7 @@ public class PubMedGraphExperiment {
 						
 						context.getEventBus().logInfo("Found "+tmp.size()+" articles related to "+pmids.size()+" pubmed article");
 						
-						mapHasRelated(tmp, graph);
+						mapPubmedRelated(tmp, graph);
 
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
@@ -348,15 +349,15 @@ public class PubMedGraphExperiment {
 						}
 						
 						List<Link> tmp = bib.getEntrez()
-								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+								.buildLinksQueryForIdsAndDatabase(pmcids, Database.PUBMED)
 								.command(Command.NEIGHBOR)
 								.withLinkname("pmc_refs_pubmed")
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						
-						context.getEventBus().logInfo("Found "+tmp.size()+" articles related to "+pmids.size()+" pubmed article");
+						context.getEventBus().logInfo("Found "+tmp.size()+" articles related to "+pmcids.size()+" pubmed article");
 						
-						mapHasPMC2PMIDReferences(tmp, graph);
+						mapPubMedCentralReferences(tmp, graph);
 
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
