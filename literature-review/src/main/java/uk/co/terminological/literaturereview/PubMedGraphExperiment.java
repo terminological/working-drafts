@@ -404,7 +404,7 @@ public class PubMedGraphExperiment {
 								.flatMap(r -> r.DOI.stream())
 								.collect(Collectors.toList());
 							context.getEventBus().logInfo("Found "+referencedDois.size()+" articles related to: "+doi);
-							mapHasDoi2DoiReferences(doi,referencedDois,graph);
+							mapCrossRefReferences(doi,referencedDois,graph);
 						} catch (BibliographicApiException e) {
 							context.getEventBus().handleException(e);
 						}

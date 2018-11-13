@@ -328,7 +328,7 @@ public class PubMedGraphUtils {
 
 	
 	
-	public static List<Relationship> mapHasDoi2DoiReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
+	public static List<Relationship> mapCrossRefReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
 		return mapHasReferences("doi",citingDoi,DOI_STUB,"doi",citedDois,DOI_STUB, HAS_REFERENCE,graph);
 	}
 	
