@@ -325,7 +325,11 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}
 
-	public static List<Relationship> mapHasReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
+	public static List<Relationship> mapHasDoi2DoiReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
+		return mapHasReferences("doi",citingDoi,DOI_STUB,"doi",citedDois,DOI_STUB,graph);
+	}
+	
+	public static List<Relationship> mapHasReferences(String citingType, String citingDoi, Label citingStubLabel, String citedType, List<String> citedDois, Label citedStubLabel, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
 		try {
 			graph.get().getNodeById(lockNode.getId());
@@ -338,9 +342,9 @@ public class PubMedGraphUtils {
 		logger.info("Adding "+citedDois.size()+" references to "+citingDoi);
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			Node start = doMerge(ARTICLE, "doi", citingDoi, graph.get(), DOI_STUB);
+			Node start = doMerge(ARTICLE, citingType, citingDoi, graph.get(), citingStubLabel);
 			citedDois.forEach(citedDoi -> {
-				Node end = doMerge(ARTICLE, "doi", citedDoi,graph.get(), DOI_STUB);
+				Node end = doMerge(ARTICLE, citedType, citedDoi,graph.get(), citedStubLabel);
 				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
 			});
 			tx.success();

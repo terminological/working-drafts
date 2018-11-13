@@ -209,6 +209,14 @@ public class EntrezClient {
 		return this.buildSearchQuery(dois.stream().collect(Collectors.joining(" OR "))).execute().get().getIds();
 	}
 
+	public List<String> findPMIdsByPudbMedCentralIds(List<String> pmcids) throws BibliographicApiException {
+		if (pmcids.isEmpty()) return Collections.emptyList();
+		
+		return this.buildSearchQuery(pmcids.stream()
+				.map(s -> "PMC"+s.replace("PMC", ""))
+				.collect(Collectors.joining(" OR "))).execute().get().getIds();
+	}
+	
 	/**
 	 * Fetch PubMed article metadata and abstract
 	 * 

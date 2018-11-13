@@ -32,8 +32,10 @@ public class PubMedGraphSchema {
 		    Schema schema = graph.get().schema();
 		    schema.indexFor( Labels.ARTICLE ).on( "pmid" ).create();
 		    schema.indexFor( Labels.ARTICLE ).on( "doi" ).create();
+		    schema.indexFor( Labels.ARTICLE ).on( "pmcid" ).create();
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("pmid");
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("doi");
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("pmcid");
 		    schema.indexFor( Labels.AUTHOR ).on( "identifier" ).create();
 		    schema.indexFor( Labels.MESH_CODE ).on( "code" ).create();
 		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique("code");
