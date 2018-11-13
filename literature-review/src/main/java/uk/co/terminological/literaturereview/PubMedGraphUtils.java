@@ -356,11 +356,11 @@ public class PubMedGraphUtils {
 		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_RELATED, graph, false);
 	}
 	
-	public static List<Relationship> mapPubMedCentalReferences(List<Link> links, GraphDatabaseApi graph) {
+	public static List<Relationship> mapPubMedCentralReferences(List<Link> links, GraphDatabaseApi graph) {
 		return mapEntrez(links, "pmcid", PMCENTRAL_STUB, "pmid", PMID_STUB, HAS_REFERENCE, graph, false);
 	}
 	
-	public static List<Relationship> mapPubMedCentalCitedBy(List<Link> links, GraphDatabaseApi graph) {
+	public static List<Relationship> mapPubMedCentralCitedBy(List<Link> links, GraphDatabaseApi graph) {
 		return mapEntrez(links, "pmcid", PMCENTRAL_STUB, "pmcid", PMCENTRAL_STUB, HAS_REFERENCE, graph, true);
 	}
 	
