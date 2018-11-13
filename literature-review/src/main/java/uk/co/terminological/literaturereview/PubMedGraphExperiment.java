@@ -181,6 +181,8 @@ public class PubMedGraphExperiment {
 				type -> PUBMED_SEARCH_RESULT);
 	}
 
+	//TODO: PMCID expander
+	
 	static EventProcessor<Set<Long>> expandDOIStubs() {
 		return Handlers.eventProcessor(DOI_EXPANDER, 
 				Predicates.matchNameAndType(DOI_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
@@ -281,6 +283,8 @@ public class PubMedGraphExperiment {
 	}
 
 
+	//TODO: Disable this
+	@Deprecated
 	static EventProcessor<Set<Long>> findRelatedArticlesFromNodes(String searchWithin) {
 		return Handlers.eventProcessor(PUBMED_LINKER, 
 				Predicates.matchNameAndType(EXPAND.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE),
@@ -322,6 +326,52 @@ public class PubMedGraphExperiment {
 
 	}
 
+	
+	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pubmed&id=212403&cmd=neighbor&linkname=pmc_refs_pubmed
+	// provides pubmed ids for all citations if has a pmc id
+	static EventProcessor<Set<Long>> findPMCReferencesFromNodes() {
+		return Handlers.eventProcessor(PUBMED_CENTRAL_LINKER, 
+				Predicates.matchNameAndType(EXPAND.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE),
+				
+				(event,context) -> {
+					try {
+						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
+						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+						
+						List<String> pmcids = new ArrayList<>();
+						try  ( Transaction tx = graph.get().beginTx() ) {
+							tx.acquireWriteLock(lockNode);
+							event.get().forEach(id -> {
+								Node n = graph.get().getNodeById(id);
+								Optional.ofNullable(n.getProperty("pmcid",null)).ifPresent(
+										pmcid -> pmcids.add(pmcid.toString()));
+							});
+							tx.success();
+						}
+						
+						List<Link> tmp = bib.getEntrez()
+								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+								.command(Command.NEIGHBOR)
+								.withLinkname("pmc_refs_pubmed")
+								.execute().stream()
+								.flatMap(o -> o.stream()).collect(Collectors.toList());
+						
+						context.getEventBus().logInfo("Found "+tmp.size()+" articles related to "+pmids.size()+" pubmed article");
+						
+						mapHasPMCReferences(tmp, graph);
+
+					} catch (BibliographicApiException e) {
+						context.getEventBus().handleException(e);
+					}
+				});
+
+	}
+	
+	
+	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pmc&id=212403&cmd=neighbor&linkname=pmc_pmc_citedby
+	//provides pmc articles citing this pmc article	
+	
+	
 	static EventProcessor<Set<Long>> findCrossRefReferencesFromNodes() {
 		return Handlers.eventProcessor(
 				XREF_LOOKUP, 
@@ -354,7 +404,7 @@ public class PubMedGraphExperiment {
 								.flatMap(r -> r.DOI.stream())
 								.collect(Collectors.toList());
 							context.getEventBus().logInfo("Found "+referencedDois.size()+" articles related to: "+doi);
-							mapHasReferences(doi,referencedDois,graph);
+							mapHasDoi2DoiReferences(doi,referencedDois,graph);
 						} catch (BibliographicApiException e) {
 							context.getEventBus().handleException(e);
 						}
