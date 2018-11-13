@@ -1,15 +1,11 @@
 package uk.co.terminological.literaturereview;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.config.Setting;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.kernel.configuration.BoltConnector;
-import org.neo4j.kernel.configuration.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +18,8 @@ public class GraphDatabaseApi {
 
 	public static void main(String[] args) {
 		Path f = Paths.get(args[0]);
-		GraphDatabaseApi.create(f).waitAndShutdown();
+		Path g = Paths.get(args[1]);
+		GraphDatabaseApi.create(f,g).waitAndShutdown();
 	}
 
 	public GraphDatabaseApi(Path graphDbPath, Path graphConfPath) {
@@ -87,8 +84,8 @@ public class GraphDatabaseApi {
 
 	public GraphDatabaseService get() {return graphDb;}
 
-	public static GraphDatabaseApi create(Path graphDbPath) {
-		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath);
+	public static GraphDatabaseApi create(Path graphDbPath, Path graphConfPath) {
+		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath, graphConfPath);
 		return singleton;
 	}
 
