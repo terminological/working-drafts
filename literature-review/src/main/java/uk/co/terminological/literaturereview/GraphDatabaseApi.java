@@ -25,7 +25,7 @@ public class GraphDatabaseApi {
 		GraphDatabaseApi.create(f).waitAndShutdown();
 	}
 
-	public GraphDatabaseApi(Path graphDbPath) {
+	public GraphDatabaseApi(Path graphDbPath, Path graphConfPath) {
 
 		//http://neo4j-contrib.github.io/neo4j-jdbc/
 		/*Config config = Config.builder()
@@ -45,7 +45,7 @@ public class GraphDatabaseApi {
 		
 		graphDb = new GraphDatabaseFactory()
 				.newEmbeddedDatabaseBuilder( graphDbPath.toFile() )
-				.loadPropertiesFromFile("/media/data/Data/neo4j/conf/neo4j.conf")
+				.loadPropertiesFromFile( graphConfPath.toString() )
 				//.setConfig( bolt.type, "BOLT" )
 				//.setConfig( bolt.enabled, "true" )
 				//.setConfig( bolt.listen_address, "localhost:7687" )
