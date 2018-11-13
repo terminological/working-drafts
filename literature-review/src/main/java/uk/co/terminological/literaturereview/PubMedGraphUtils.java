@@ -11,7 +11,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AU
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RELATED;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasRelated;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntrez;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotInTransactionException;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -325,11 +326,13 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}
 
+	
+	
 	public static List<Relationship> mapHasDoi2DoiReferences(String citingDoi, List<String> citedDois, GraphDatabaseApi graph) {
-		return mapHasReferences("doi",citingDoi,DOI_STUB,"doi",citedDois,DOI_STUB,graph);
+		return mapHasReferences("doi",citingDoi,DOI_STUB,"doi",citedDois,DOI_STUB, HAS_REFERENCE,graph);
 	}
 	
-	public static List<Relationship> mapHasReferences(String citingType, String citingDoi, Label citingStubLabel, String citedType, List<String> citedDois, Label citedStubLabel, GraphDatabaseApi graph) {
+	public static List<Relationship> mapHasReferences(String citingType, String citingDoi, Label citingStubLabel, String citedType, List<String> citedDois, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
 		try {
 			graph.get().getNodeById(lockNode.getId());
@@ -345,7 +348,7 @@ public class PubMedGraphUtils {
 			Node start = doMerge(ARTICLE, citingType, citingDoi, graph.get(), citingStubLabel);
 			citedDois.forEach(citedDoi -> {
 				Node end = doMerge(ARTICLE, citedType, citedDoi,graph.get(), citedStubLabel);
-				out.add(start.createRelationshipTo(end, HAS_REFERENCE));
+				out.add(start.createRelationshipTo(end, relType));
 			});
 			tx.success();
 			logger.info(out.size()+" relationships added in transaction: ");
@@ -355,6 +358,10 @@ public class PubMedGraphUtils {
 	}
 
 	public static List<Relationship> mapHasRelated(List<Link> links, GraphDatabaseApi graph) {
+		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_RELATED, graph);
+	}
+	
+	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph) {
 		
 		try {
 			graph.get().getNodeById(lockNode.getId());
@@ -372,9 +379,9 @@ public class PubMedGraphUtils {
 
 			links.forEach(link -> { 
 				link.toId.ifPresent(toId -> {
-					Node start = doMerge(ARTICLE, "pmid", link.fromId,graph.get(), PMID_STUB);
-					Node end = doMerge(ARTICLE, "pmid", link.toId.get(), graph.get(), PMID_STUB);
-					Relationship tmp = start.createRelationshipTo(end, HAS_RELATED);
+					Node start = doMerge(ARTICLE, inIdType, link.fromId,graph.get(), inLabel);
+					Node end = doMerge(ARTICLE, outIdType, link.toId.get(), graph.get(), outLabel);
+					Relationship tmp = start.createRelationshipTo(end, relType);
 					link.score.ifPresent(s -> tmp.setProperty("relatedness", s));
 				});
 			});

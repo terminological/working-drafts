@@ -5,7 +5,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMI
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReferences;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasRelated;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntrez;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -358,7 +358,7 @@ public class PubMedGraphExperiment {
 						
 						context.getEventBus().logInfo("Found "+tmp.size()+" articles related to "+pmids.size()+" pubmed article");
 						
-						mapHasPMCReferences(tmp, graph);
+						mapHasPMC2PMIDReferences(tmp, graph);
 
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
