@@ -93,6 +93,7 @@ public class PubMedGraphExperiment {
 		
 		Path secretsPath = fromProperty(prop,"bibliography-secrets");
 		Path graphOptionsPath = fromProperty(prop,"graph-db-directory");
+		Path graphConfPath = fromProperty(prop,"graph-conf-file");
 		Path workingDir = fromProperty(prop,"working-directory");
 		Path outputDir = fromProperty(prop,"output-directory");
 		if (!Files.exists(graphOptionsPath)) Files.createDirectories(graphOptionsPath);
@@ -102,7 +103,7 @@ public class PubMedGraphExperiment {
 
 
 		BibliographicApis biblioApi = BibliographicApis.create(secretsPath);
-		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphOptionsPath);
+		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphOptionsPath, graphConfPath);
 
 		String search = prop.getProperty("search");
 		String broaderSearch = prop.getProperty("broader-search");
