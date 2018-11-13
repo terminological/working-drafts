@@ -3,9 +3,7 @@ package uk.co.terminological.literaturereview;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapHasReferences;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntrez;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
