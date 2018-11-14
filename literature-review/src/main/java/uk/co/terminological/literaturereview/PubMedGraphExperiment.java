@@ -142,7 +142,6 @@ public class PubMedGraphExperiment {
 		.withEventGenerator(searchPubMed(search, earliest, latest))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMID_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(DOI_STUB))
-		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMCENTRAL_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(EXPAND))
 		.withHandler(expandDOIStubs())
 		.withHandler(expandPMIDStubs())
