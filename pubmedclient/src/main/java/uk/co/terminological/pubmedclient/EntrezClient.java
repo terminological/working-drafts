@@ -204,17 +204,14 @@ public class EntrezClient {
 		return this.buildSearchQuery(searchTerm).execute().get().getIds();
 	}
 
-	public List<String> findPMIdsByDois(List<String> dois) throws BibliographicApiException {
-		if (dois.isEmpty()) return Collections.emptyList();
-		return this.buildSearchQuery(dois.stream().collect(Collectors.joining(" OR "))).execute().get().getIds();
+	public List<String> findPMIdsByDoi(String doi) throws BibliographicApiException {
+		if (doi.isEmpty()) return Collections.emptyList();
+		return this.buildSearchQuery(doi).execute().get().getIds();
 	}
 
-	public List<String> findPMIdsByPubMedCentralIds(List<String> pmcids) throws BibliographicApiException {
-		if (pmcids.isEmpty()) return Collections.emptyList();
-		
-		return this.buildSearchQuery(pmcids.stream()
-				.map(s -> "PMC"+s.replace("PMC", ""))
-				.collect(Collectors.joining(" OR "))).execute().get().getIds();
+	public List<String> findPMIdsByPubMedCentralIds(String pmcid) throws BibliographicApiException {
+		if (pmcid.isEmpty()) return Collections.emptyList();
+		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds();
 	}
 	
 	/**

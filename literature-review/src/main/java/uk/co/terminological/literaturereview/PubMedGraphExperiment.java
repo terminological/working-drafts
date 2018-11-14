@@ -211,7 +211,7 @@ public class PubMedGraphExperiment {
 					try {
 						while(dois.size() > 0) {
 							List<String> batchDois = dois.subList(0, Math.min(100, dois.size()));
-							List<String> pmids = bib.getEntrez().findPMIdsByDois(batchDois);
+							List<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchDois, IdType.DOI);
 							context.getEventBus().logInfo("Looked up "+batchDois.size()+" dois and found "+pmids.size()+" pubmed records");
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
