@@ -288,9 +288,7 @@ public class PubMedGraphExperiment {
 								.getPMEntriesByPMIds(event.get());
 
 						mapEntriesToNode(entries, graph,maxDepth);
-						//so the problem is that  need to make a decision about whether to expand based on 
-						//depth. nodes created above will have a EXPAND label.
-						//However crossref lookup if on an individual
+						
 						entries.stream().forEach(entry -> {
 							
 							context.send(
