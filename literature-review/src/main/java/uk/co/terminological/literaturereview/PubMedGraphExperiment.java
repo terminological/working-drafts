@@ -380,39 +380,40 @@ public class PubMedGraphExperiment {
 						BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
 						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 						
-						List<String> pmcids = new ArrayList<>();
+						List<String> pmids = new ArrayList<>();
 						try  ( Transaction tx = graph.get().beginTx() ) {
 							tx.acquireWriteLock(lockNode);
 							event.get().forEach(id -> {
 								Node n = graph.get().getNodeById(id);
-								Optional.ofNullable(n.getProperty("pmcid",null)).ifPresent(
-										pmcid -> pmcids.add(pmcid.toString()));
+								Optional.ofNullable(n.getProperty("pmid",null)).ifPresent(
+										pmid -> pmids.add(pmid.toString()));
 							});
 							tx.success();
 						}
 						
 						List<Link> tmp = bib.getEntrez()
-								.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
+								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 								.toDatabase(Database.PUBMED)
 								.command(Command.NEIGHBOR)
-								.withLinkname("pmc_refs_pubmed")
+								.withLinkname("pubmed_pubmed_refs")
 								//.betweenDates(earliest, LocalDate.now())
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						
-						context.getEventBus().logInfo("Found "+tmp.size()+" pubmed articles referenced by "+pmcids.size()+" PMC articles");
+						context.getEventBus().logInfo("Entrez found "+tmp.size()+" pubmed articles referenced by "+pmids.size()+" pubmed articles");
 						
 						mapPubMedCentralReferences(tmp, graph);
 						
 						List<Link> tmp2 = bib.getEntrez()
-								.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
+								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+								.toDatabase(Database.PUBMED)
 								.command(Command.NEIGHBOR)
-								.withLinkname("pmc_pmc_citedby")
+								.withLinkname("pubmed_pubmed_citedin")
 								//.betweenDates(earliest, LocalDate.now())
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						
-						context.getEventBus().logInfo("Found "+tmp2.size()+" PMC articles citing "+pmcids.size()+" PMC article");
+						context.getEventBus().logInfo("Entrez found "+tmp2.size()+" pubmed articles citing "+pmids.size()+" pubmed article");
 						
 						mapPubMedCentralCitedBy(tmp2, graph);
 
@@ -459,7 +460,7 @@ public class PubMedGraphExperiment {
 								.flatMap(w -> w.reference.stream())
 								.flatMap(r -> r.DOI.stream())
 								.collect(Collectors.toList());
-							context.getEventBus().logInfo("Found "+referencedDois.size()+" articles related to: "+doi);
+							context.getEventBus().logInfo("Crossref found "+referencedDois.size()+" articles related to: "+doi);
 							mapCrossRefReferences(doi,referencedDois,graph);
 						} catch (BibliographicApiException e) {
 							context.getEventBus().handleException(e);

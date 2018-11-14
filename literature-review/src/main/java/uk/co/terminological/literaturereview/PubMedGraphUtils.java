@@ -400,11 +400,11 @@ public class PubMedGraphUtils {
 	}
 	
 	public static List<Relationship> mapPubMedCentralReferences(List<Link> links, GraphDatabaseApi graph) {
-		return mapEntrez(links, "pmcid", PMCENTRAL_STUB, "pmid", PMID_STUB, HAS_REFERENCE, graph, false);
+		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_REFERENCE, graph, false);
 	}
 	
 	public static List<Relationship> mapPubMedCentralCitedBy(List<Link> links, GraphDatabaseApi graph) {
-		return mapEntrez(links, "pmcid", PMCENTRAL_STUB, "pmcid", PMCENTRAL_STUB, HAS_REFERENCE, graph, true);
+		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_REFERENCE, graph, true);
 	}
 	
 	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
