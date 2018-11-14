@@ -213,41 +213,77 @@ public class PubMedGraphUtils {
 			entries.stream().forEach(entry -> {
 				Node tmp = null;
 				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
-				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
-				if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
-					logger.info("Merging article pubmed: "+entry.getPMID().get()+" with doi: "+entry.getDoi().get());
-					//merge tmp1 and tmp2
-					tmp2.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
-					tmp2.getRelationships(Direction.INCOMING).forEach(r -> {
-						Node other = r.getOtherNode(tmp2);
-						Relationship r2 = other.createRelationshipTo(tmp1, r.getType());
-						r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
-						r.delete();
-					});
-					tmp2.getRelationships(Direction.OUTGOING).forEach(r -> {
-						Node other = r.getOtherNode(tmp2);
-						Relationship r2 = tmp1.createRelationshipTo(other, r.getType());
-						r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
-						r.delete();
-					});
-					tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
-					tmp2.delete();
-					tmp = tmp1;
-					
-				} else if (tmp1!=null) {
-					logger.info("Updating pubmed article: "+entry.getPMID().get());
-					tmp = tmp1;
-				} else if (tmp2!=null) {
-					logger.info("Updating doi article: "+entry.getDoi().get());
-					tmp = tmp2;
-				} else {
+				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
+				Node tmp3 = entry.getPMCID().isPresent() ? graph.get().findNode(ARTICLE, "pmcid", entry.getPMCID().get()) : null;
+				
+				if (tmp1 == null && tmp2 == null && tmp3 == null) {
 					logger.info("Creating new article record: pmid"+entry.getPMID().orElse("none")+" doi:"+entry.getDoi().orElse("none"));
 					Node newNode = graph.get().createNode(ARTICLE);
 					entry.getPMID().ifPresent(pmid -> newNode.setProperty("pmid", pmid));
 					entry.getDoi().ifPresent(doi -> newNode.setProperty("doi", doi));
+					entry.getPMCID().ifPresent(pmcid -> newNode.setProperty("pmcid", pmcid));
 					tmp = newNode;
+				} else {
+				
+					//Merge pubmed and doi stubs
+					if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
+						logger.info("Merging article pubmed: "+entry.getPMID().get()+" with doi: "+entry.getDoi().get());
+						//merge tmp1 and tmp2
+						tmp2.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
+						tmp2.getRelationships(Direction.INCOMING).forEach(r -> {
+							Node other = r.getOtherNode(tmp2);
+							Relationship r2 = other.createRelationshipTo(tmp1, r.getType());
+							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+							r.delete();
+						});
+						tmp2.getRelationships(Direction.OUTGOING).forEach(r -> {
+							Node other = r.getOtherNode(tmp2);
+							Relationship r2 = tmp1.createRelationshipTo(other, r.getType());
+							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+							r.delete();
+						});
+						tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
+						tmp2.delete();
+						tmp = tmp1;
+					} 
+					
+					//Merge pubmed and pmc stubs
+					if (tmp1 != null && tmp3 != null && tmp1.getId() != tmp3.getId()) {
+						logger.info("Merging article pubmed: "+entry.getPMID().get()+" with PMCID: "+entry.getPMCID().get());
+						//merge tmp1 and tmp2
+						tmp3.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
+						tmp3.getRelationships(Direction.INCOMING).forEach(r -> {
+							Node other = r.getOtherNode(tmp3);
+							Relationship r2 = other.createRelationshipTo(tmp1, r.getType());
+							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+							r.delete();
+						});
+						tmp3.getRelationships(Direction.OUTGOING).forEach(r -> {
+							Node other = r.getOtherNode(tmp3);
+							Relationship r2 = tmp1.createRelationshipTo(other, r.getType());
+							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+							r.delete();
+						});
+						tmp3.getLabels().forEach(l -> tmp1.addLabel(l));
+						tmp3.delete();
+						tmp = tmp1;
+					}
+					
+					if (tmp == null) {
+						if (tmp1!=null) {
+							logger.info("Updating pubmed article: "+entry.getPMID().get());
+							tmp = tmp1;
+						} else if (tmp2!=null) {
+							logger.info("Updating doi article: "+entry.getDoi().get());
+							tmp = tmp2;
+						} else if (tmp3!=null) {
+							logger.info("Updating pmc article: "+entry.getPMCID().get());
+							tmp = tmp3;
+						} else {
+							//cannot happen because of check at beginning
+						}
+					}
 				}
-
 				Node node = tmp;
 				
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
@@ -269,6 +305,7 @@ public class PubMedGraphUtils {
 				logger.debug("depth for node: "+depth+": "+entry.getTitle());
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
+				node.removeLabel(PMCENTRAL_STUB);
 				
 				if (depth<maxDepth) {
 					node.addLabel(EXPAND);
