@@ -101,7 +101,7 @@ public class PubMedGraphUtils {
 	}*/
 
 
-	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest, boolean originalSearch) {
+	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest, LocalDate latest, boolean originalSearch) {
 
 		List<Node> out = new ArrayList<>();
 
@@ -292,7 +292,7 @@ public class PubMedGraphUtils {
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
 				entry.getPubMedDate().ifPresent(dt -> {
 					node.setProperty("date", dt);
-					if (dt.isAfter(earliest)) {
+					if (dt.isAfter(earliest) && dt.isBefore(latest)) {
 						node.addLabel(EXPAND);
 					} else {
 						logger.debug("not expanding: date="+dt.format(DateTimeFormatter.ISO_LOCAL_DATE)+" title="+entry.getTitle() );

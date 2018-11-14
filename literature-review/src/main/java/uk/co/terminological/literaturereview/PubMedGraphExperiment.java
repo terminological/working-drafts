@@ -112,6 +112,7 @@ public class PubMedGraphExperiment {
 		String search = prop.getProperty("search");
 		String broaderSearch = prop.getProperty("broader-search");
 		LocalDate earliest = LocalDate.parse(prop.getProperty("earliest"));
+		LocalDate latest = LocalDate.parse(prop.getProperty("latest"));
 
 		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, earliest);
 
@@ -125,7 +126,7 @@ public class PubMedGraphExperiment {
 	
 	public static class PMIDList extends ArrayList<String> {}
 
-	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search, String broaderSearch, LocalDate earliest) throws IOException {
+	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search, String broaderSearch, LocalDate earliest, LocalDate latest) throws IOException {
 
 		log.error("Starting graphDb build");
 		PubMedGraphSchema.setupSchema(graphApi);
@@ -138,7 +139,7 @@ public class PubMedGraphExperiment {
 		.withApi(graphApi)
 		.withApi(biblioApi)
 		.withApi(new PMIDList())
-		.withEventGenerator(searchPubMed(search, earliest))
+		.withEventGenerator(searchPubMed(search, earliest, latest))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMID_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(DOI_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMCENTRAL_STUB))
@@ -146,7 +147,7 @@ public class PubMedGraphExperiment {
 		.withHandler(expandDOIStubs())
 		.withHandler(expandPMIDStubs())
 		.withHandler(expandPMCIDStubs())
-		.withHandler(fetchPubMedEntries(earliest))
+		.withHandler(fetchPubMedEntries(earliest, latest))
 		.withHandler(findCrossRefReferencesFromNodes())
 		.withHandler(findPMCReferencesFromNodes())
 		//.withHandler(findRelatedArticlesFromNodes(broaderSearch))
@@ -169,7 +170,7 @@ public class PubMedGraphExperiment {
 
 	}
 
-	static EventGenerator<List<String>> searchPubMed(String search, LocalDate earliest) {
+	static EventGenerator<List<String>> searchPubMed(String search, LocalDate earliest, LocalDate latest) {
 		return Generators.generator(search, 
 				PUBMED_SEARCHER, 
 				g -> {
@@ -177,7 +178,7 @@ public class PubMedGraphExperiment {
 						List<String> tmp = g.getEventBus().getApi(BibliographicApis.class).get()
 								.getEntrez()
 								.buildSearchQuery(search)
-								.betweenDates(earliest, LocalDate.now())
+								.betweenDates(earliest, latest)
 								.execute().get().getIds();
 								
 						g.getEventBus().logInfo("Pubmed search found: "+tmp.size()+" results");
@@ -286,7 +287,7 @@ public class PubMedGraphExperiment {
 
 	
 
-	static EventProcessor<List<String>> fetchPubMedEntries(LocalDate earliest) {
+	static EventProcessor<List<String>> fetchPubMedEntries(LocalDate earliest, LocalDate latest) {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
@@ -299,7 +300,7 @@ public class PubMedGraphExperiment {
 								.getPMEntriesByPMIds(event.get());
 
 						boolean originalSearch = event.getMetadata().name().orElse("none").equals(ORIGINAL_SEARCH);
-						mapEntriesToNode(entries, graph, earliest, originalSearch);
+						mapEntriesToNode(entries, graph, earliest, latest, originalSearch);
 						
 						entries.stream().forEach(entry -> {
 							
