@@ -46,6 +46,7 @@ import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
 public class PubMedGraphExperiment {
 
@@ -241,8 +242,9 @@ public class PubMedGraphExperiment {
 					}
 					try {
 						while(pmcids.size() > 0) {
-							List<String> pmids = bib.getEntrez().findPMIdsByPubMedCentralIds(pmcids.subList(0, Math.min(100, pmcids.size())));
-							context.getEventBus().logInfo("Looked up "+nodeIds.size()+" dois and found "+pmids.size()+" pubmed records");
+							List<String> batchPmcids = pmcids.subList(0, Math.min(100, pmcids.size()));
+							List<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchPmcids,IdType.PMCID);
+							context.getEventBus().logInfo("Looked up "+batchPmcids.size()+" PMCIDs and found "+pmids.size()+" pubmed records");
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
 								);

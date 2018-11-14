@@ -123,7 +123,6 @@ public class IdConverterClient {
 	
 	
 	//https://github.com/FasterXML/jackson-modules-java8
-	//TODO: replace with optionals
 	public static class Result extends ExtensibleJson {
 		@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("responseDate") public Optional<String> responseDate = Optional.empty();
