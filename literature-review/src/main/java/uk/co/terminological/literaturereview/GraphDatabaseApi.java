@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.neo4j.kernel.configuration.BoltConnector;
+import org.neo4j.kernel.configuration.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,29 +27,27 @@ public class GraphDatabaseApi {
 	public GraphDatabaseApi(Path graphDbPath, Path graphConfPath) {
 
 		//http://neo4j-contrib.github.io/neo4j-jdbc/
-		/*Config config = Config.builder()
-				.withServerDefaults()
-				.withFile(new File("/media/data/Data/neo4j/conf/neo4j.conf"))
-				//.withSetting("dbms.security.procedures.unrestricted", "algo.*")
-				.build();*/
-
-		if (Files.exists(graphDbPath) && !Files.isDirectory(graphDbPath)) {
-			//TODO: if a properties file is supplied instead
-			throw new UnsupportedOperationException();
-		}
-		
-		//BoltConnector bolt = config.boltConnectors().get(0);
-
 		logger.info("Opening graphdb in: "+graphDbPath);
 		
-		graphDb = new GraphDatabaseFactory()
+		if (graphConfPath != null) {
+			
+			graphDb = new GraphDatabaseFactory()
 				.newEmbeddedDatabaseBuilder( graphDbPath.toFile() )
 				.loadPropertiesFromFile( graphConfPath.toString() )
-				//.setConfig( bolt.type, "BOLT" )
-				//.setConfig( bolt.enabled, "true" )
-				//.setConfig( bolt.listen_address, "localhost:7687" )
 				.newGraphDatabase();
-
+		} else {
+			Config config = Config.builder()
+				.withServerDefaults()
+				.build();
+			BoltConnector bolt = config.boltConnectors().get(0);
+			graphDb = new GraphDatabaseFactory()
+					.newEmbeddedDatabaseBuilder( graphDbPath.toFile() )
+					.setConfig( bolt.type, "BOLT" )
+					.setConfig( bolt.enabled, "true" )
+					.setConfig( bolt.listen_address, "localhost:7687" )
+					.newGraphDatabase();
+					
+		}
 		
 		
 		Runtime.getRuntime().addShutdownHook( new Thread()
@@ -86,6 +86,11 @@ public class GraphDatabaseApi {
 
 	public static GraphDatabaseApi create(Path graphDbPath, Path graphConfPath) {
 		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath, graphConfPath);
+		return singleton;
+	}
+	
+	public static GraphDatabaseApi create(Path graphDbPath) {
+		if (singleton == null) singleton = new GraphDatabaseApi(graphDbPath, null);
 		return singleton;
 	}
 
