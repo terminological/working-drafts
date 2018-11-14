@@ -209,7 +209,7 @@ public class EntrezClient {
 		return this.buildSearchQuery(dois.stream().collect(Collectors.joining(" OR "))).execute().get().getIds();
 	}
 
-	public List<String> findPMIdsByPudbMedCentralIds(List<String> pmcids) throws BibliographicApiException {
+	public List<String> findPMIdsByPubMedCentralIds(List<String> pmcids) throws BibliographicApiException {
 		if (pmcids.isEmpty()) return Collections.emptyList();
 		
 		return this.buildSearchQuery(pmcids.stream()

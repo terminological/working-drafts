@@ -1,8 +1,6 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
 
 import java.io.IOException;
@@ -69,8 +67,9 @@ public class PubMedGraphExperiment {
 
 	public static final String PUBMED_FETCHER = "PubMed eFetch";
 	public static final String XREF_LOOKUP = "Crossref lookup";
-	public static final String DOI_EXPANDER = "Doi reverse lookup";
-	public static final String PMID_EXPANDER = "Similarity search PMID";
+	public static final String DOI_EXPANDER = "Resolve Dois";
+	public static final String PMID_EXPANDER = "Resolve PMIDs";
+	public static final String PMCID_EXPANDER = "Resolve PubMedCentral ids";
 
 	public static final String NEO4J_WRITER = "Neo4j pubmed node writer";
 
@@ -205,7 +204,38 @@ public class PubMedGraphExperiment {
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
 								);
-							dois.subList(0, Math.min(200, dois.size())).clear();
+							dois.subList(0, Math.min(100, dois.size())).clear();
+						}
+					} catch (BibliographicApiException e) {
+						context.getEventBus().handleException(e);
+					}
+				});
+	}
+	
+	static EventProcessor<Set<Long>> expandPMCIDStubs() {
+		return Handlers.eventProcessor(PMCID_EXPANDER, 
+				Predicates.matchNameAndType(PMCENTRAL_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
+				(event,context) -> {
+					BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
+					Set<Long> nodeIds = event.get();
+					List<String> pmcids = new ArrayList<>();
+					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+					try  ( Transaction tx = graph.get().beginTx() ) {
+						nodeIds.forEach(id -> {
+							Node n = graph.get().getNodeById(id);
+							Optional.ofNullable(n.getProperty("pmcid",null)).ifPresent(
+									pmcid -> pmcids.add(pmcid.toString()));
+						});
+						tx.success();
+					}
+					try {
+						while(pmcids.size() > 0) {
+							List<String> pmids = bib.getEntrez().findPMIdsByPubMedCentralIds(pmcids.subList(0, Math.min(100, pmcids.size())));
+							context.getEventBus().logInfo("Looked up "+nodeIds.size()+" dois and found "+pmids.size()+" pubmed records");
+							context.send(
+								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
+								);
+							dois.subList(0, Math.min(100, pmcids.size())).clear();
 						}
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
@@ -349,15 +379,27 @@ public class PubMedGraphExperiment {
 						}
 						
 						List<Link> tmp = bib.getEntrez()
-								.buildLinksQueryForIdsAndDatabase(pmcids, Database.PUBMED)
+								.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
+								.toDatabase(Database.PUBMED)
 								.command(Command.NEIGHBOR)
 								.withLinkname("pmc_refs_pubmed")
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						
-						context.getEventBus().logInfo("Found "+tmp.size()+" articles related to "+pmcids.size()+" pubmed article");
+						context.getEventBus().logInfo("Found "+tmp.size()+" pubmed articles referenced by "+pmcids.size()+" PMC articles");
 						
 						mapPubMedCentralReferences(tmp, graph);
+						
+						List<Link> tmp2 = bib.getEntrez()
+								.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
+								.command(Command.NEIGHBOR)
+								.withLinkname("pmc_pmc_citedby")
+								.execute().stream()
+								.flatMap(o -> o.stream()).collect(Collectors.toList());
+						
+						context.getEventBus().logInfo("Found "+tmp2.size()+" PMC articles citing "+pmcids.size()+" PMC article");
+						
+						mapPubMedCentralCitedBy(tmp2, graph);
 
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
