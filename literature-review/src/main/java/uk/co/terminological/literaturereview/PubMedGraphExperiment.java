@@ -191,8 +191,6 @@ public class PubMedGraphExperiment {
 				type -> PUBMED_SEARCH_RESULT);
 	}
 
-	//TODO: PMCID expander
-	
 	static EventProcessor<Set<Long>> expandDOIStubs() {
 		return Handlers.eventProcessor(DOI_EXPANDER, 
 				Predicates.matchNameAndType(DOI_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
@@ -323,7 +321,7 @@ public class PubMedGraphExperiment {
 	}
 
 
-	//TODO: Disable this
+	//TODO: Currently disabled as expands scope of articles. 
 	@Deprecated
 	static EventProcessor<Set<Long>> findRelatedArticlesFromNodes(String searchWithin) {
 		return Handlers.eventProcessor(PUBMED_LINKER, 
