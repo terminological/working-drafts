@@ -12,6 +12,7 @@ public class PubMedGraphSchema {
 		public static Label DOI_STUB = Label.label("DOIStub");
 		public static Label PMID_STUB = Label.label("PMIDStub");
 		public static Label PMCENTRAL_STUB = Label.label("PMCentralStub");
+		public static Label ORIGINAL_SEARCH = Label.label("PubmedSearchResult");
 		public static Label EXPAND = Label.label("Expand");
 		public static Label AUTHOR = Label.label("Author");
 		public static Label AFFILIATION = Label.label("Affiliation");

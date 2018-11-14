@@ -99,7 +99,7 @@ public class PubMedGraphUtils {
 	}*/
 
 
-	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest) {
+	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest, boolean originalSearch) {
 
 		List<Node> out = new ArrayList<>();
 
@@ -313,6 +313,7 @@ public class PubMedGraphUtils {
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
 				node.removeLabel(PMCENTRAL_STUB);
+				if (originalSearch) {node.addLabel(ORIGINAL_SEARCH);}
 								
 				entry.getAuthors().forEach(au -> {
 					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);

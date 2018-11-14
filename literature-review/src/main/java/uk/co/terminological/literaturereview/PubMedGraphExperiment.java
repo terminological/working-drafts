@@ -61,7 +61,7 @@ public class PubMedGraphExperiment {
 	static final String XREF_REFERENCES_FOR_DOI = "CrossRef reference list";
 
 	//Event names
-	//static final String PMID_LIST = "PubMed ids";
+	static final String ORIGINAL_SEARCH = "Pubmed search result";
 	//static final String DOI_LIST = "DOIs";
 	//public static final String PUBMED_ENTRY_AVAILABLE = "PubMed Entry";
 
@@ -137,7 +137,7 @@ public class PubMedGraphExperiment {
 		.withApi(graphApi)
 		.withApi(biblioApi)
 		.withApi(new PMIDList())
-		.withEventGenerator(searchPubMed(search))
+		.withEventGenerator(searchPubMed(search, earliest))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMID_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(DOI_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMCENTRAL_STUB))
@@ -168,13 +168,17 @@ public class PubMedGraphExperiment {
 
 	}
 
-	static EventGenerator<List<String>> searchPubMed(String search) {
+	static EventGenerator<List<String>> searchPubMed(String search, LocalDate earliest) {
 		return Generators.generator(search, 
 				PUBMED_SEARCHER, 
 				g -> {
 					try {
 						List<String> tmp = g.getEventBus().getApi(BibliographicApis.class).get()
-								.getEntrez().findPMIdsBySearch(search);
+								.getEntrez()
+								.buildSearchQuery(search)
+								.betweenDates(earliest, LocalDate.now())
+								.execute().get().getIds();
+								
 						g.getEventBus().logInfo("Pubmed search found: "+tmp.size()+" results");
 						//tmp = tmp.subList(0, 10);
 						return tmp;
@@ -183,7 +187,7 @@ public class PubMedGraphExperiment {
 						return Collections.emptyList();
 					}
 				},
-				name -> search, 
+				name -> ORIGINAL_SEARCH, 
 				type -> PUBMED_SEARCH_RESULT);
 	}
 
@@ -293,7 +297,8 @@ public class PubMedGraphExperiment {
 						PubMedEntries entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
-						mapEntriesToNode(entries, graph, earliest);
+						boolean originalSearch = event.getMetadata().name().orElse("none").equals(ORIGINAL_SEARCH);
+						mapEntriesToNode(entries, graph, earliest, originalSearch);
 						
 						entries.stream().forEach(entry -> {
 							
