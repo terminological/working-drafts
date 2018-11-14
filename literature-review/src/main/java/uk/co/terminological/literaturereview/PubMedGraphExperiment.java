@@ -272,7 +272,7 @@ public class PubMedGraphExperiment {
 						tx.success();
 					}
 					context.getEventBus().logInfo("Looked up "+pubMedIds.size()+" from related pubmed records");
-					while(pubMedIds.size() > 0) {//TODO: BATCH INTO SMALLER SIZES
+					while(pubMedIds.size() > 0) {
 						context.send(
 							Events.typedEvent(
 									pubMedIds.subList(0, Math.min(200, pubMedIds.size())),
