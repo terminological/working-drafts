@@ -209,8 +209,9 @@ public class PubMedGraphExperiment {
 					}
 					try {
 						while(dois.size() > 0) {
-							List<String> pmids = bib.getEntrez().findPMIdsByDois(dois.subList(0, Math.min(100, dois.size())));
-							context.getEventBus().logInfo("Looked up "+nodeIds.size()+" dois and found "+pmids.size()+" pubmed records");
+							List<String> batchDois = dois.subList(0, Math.min(100, dois.size()));
+							List<String> pmids = bib.getEntrez().findPMIdsByDois(batchDois);
+							context.getEventBus().logInfo("Looked up "+batchDois.size()+" dois and found "+pmids.size()+" pubmed records");
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
 								);
@@ -273,10 +274,10 @@ public class PubMedGraphExperiment {
 					while(pubMedIds.size() > 0) {
 						context.send(
 							Events.typedEvent(
-									pubMedIds.subList(0, Math.min(200, pubMedIds.size())),
+									pubMedIds.subList(0, Math.min(100, pubMedIds.size())),
 									type -> PUBMED_SEARCH_RESULT)
 							);
-						pubMedIds.subList(0, Math.min(200, pubMedIds.size())).clear();
+						pubMedIds.subList(0, Math.min(100, pubMedIds.size())).clear();
 					}
 				});
 	}
