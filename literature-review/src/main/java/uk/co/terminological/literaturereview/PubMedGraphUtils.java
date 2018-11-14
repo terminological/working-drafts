@@ -1,17 +1,22 @@
 package uk.co.terminological.literaturereview;
 
 import static uk.co.terminological.literaturereview.PubMedGraphExperiment.lockNode;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.AUTHOR;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.MESH_CODE;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ORIGINAL_SEARCH;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMCENTRAL_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AUTHOR;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RELATED;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntrez;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,15 +27,12 @@ import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.NotInTransactionException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.oracle.tools.packager.Log;
 
 import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.Link;
