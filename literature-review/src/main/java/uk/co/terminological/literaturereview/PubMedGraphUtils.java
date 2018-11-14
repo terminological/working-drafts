@@ -329,13 +329,12 @@ public class PubMedGraphUtils {
 	
 	public static List<Relationship> mapHasReferences(String citingType, String citingDoi, Label citingStubLabel, String citedType, List<String> citedDois, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
-		try {
+		/*try {
 			graph.get().getNodeById(lockNode.getId());
 			throw new RuntimeException("Was in transaction already");
 		} catch (NotInTransactionException e) {
 			
-		}
-			
+		}*/
 			
 		logger.info("Adding "+citedDois.size()+" references to "+citingDoi);
 		try (Transaction tx = graph.get().beginTx()) {
@@ -343,7 +342,9 @@ public class PubMedGraphUtils {
 			Node start = doMerge(ARTICLE, citingType, citingDoi, graph.get(), citingStubLabel);
 			citedDois.forEach(citedDoi -> {
 				Node end = doMerge(ARTICLE, citedType, citedDoi,graph.get(), citedStubLabel);
-				out.add(start.createRelationshipTo(end, relType));
+				Relationship tmp = start.createRelationshipTo(end, relType);
+				tmp.setProperty("source", "crossref");
+				out.add(tmp);
 			});
 			tx.success();
 			logger.info(out.size()+" relationships added in transaction: ");
@@ -366,12 +367,12 @@ public class PubMedGraphUtils {
 	
 	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
 		
-		try {
+		/*try {
 			graph.get().getNodeById(lockNode.getId());
 			throw new RuntimeException("Was in transaction already");
 		} catch (NotInTransactionException e) {
 			
-		}
+		}*/
 		
 		logger.info("Adding "+links.size()+" as related content");
 		List<Relationship> out = new ArrayList<>();
@@ -391,6 +392,7 @@ public class PubMedGraphUtils {
 						tmp = start.createRelationshipTo(end, relType);
 					}
 					link.score.ifPresent(s -> tmp.setProperty("relatedness", s));
+					tmp.setProperty("source", "entrez");
 				});
 			});
 			tx.success();

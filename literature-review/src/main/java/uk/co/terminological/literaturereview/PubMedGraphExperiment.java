@@ -138,9 +138,11 @@ public class PubMedGraphExperiment {
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(EXPAND))
 		.withHandler(expandDOIStubs())
 		.withHandler(expandPMIDStubs())
+		.withHandler(expandPMCIDStubs())
 		.withHandler(fetchPubMedEntries(maxDepth))
 		.withHandler(findCrossRefReferencesFromNodes())
-		.withHandler(findRelatedArticlesFromNodes(broaderSearch))
+		.withHandler(findPMCReferencesFromNodes())
+		//.withHandler(findRelatedArticlesFromNodes(broaderSearch))
 		.debugMode()
 		.execute();
 		
@@ -235,7 +237,7 @@ public class PubMedGraphExperiment {
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
 								);
-							dois.subList(0, Math.min(100, pmcids.size())).clear();
+							pmcids.subList(0, Math.min(100, pmcids.size())).clear();
 						}
 					} catch (BibliographicApiException e) {
 						context.getEventBus().handleException(e);
