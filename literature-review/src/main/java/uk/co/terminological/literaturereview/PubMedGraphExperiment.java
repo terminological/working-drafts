@@ -108,7 +108,7 @@ public class PubMedGraphExperiment {
 		String broaderSearch = prop.getProperty("broader-search");
 		LocalDate earliest = LocalDate.parse(prop.getProperty("earliest"));
 
-		//execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
+		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, earliest);
 
 		graphApi.waitAndShutdown();
 	}
@@ -120,7 +120,7 @@ public class PubMedGraphExperiment {
 	
 	public static class PMIDList extends ArrayList<String> {}
 
-	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search, String broaderSearch, Integer maxDepth) throws IOException {
+	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search, String broaderSearch, LocalDate earliest) throws IOException {
 
 		log.error("Starting graphDb build");
 		PubMedGraphSchema.setupSchema(graphApi);
@@ -141,7 +141,7 @@ public class PubMedGraphExperiment {
 		.withHandler(expandDOIStubs())
 		.withHandler(expandPMIDStubs())
 		.withHandler(expandPMCIDStubs())
-		.withHandler(fetchPubMedEntries(LocalDate.of(2016, 01, 01)));
+		.withHandler(fetchPubMedEntries(earliest))
 		.withHandler(findCrossRefReferencesFromNodes())
 		.withHandler(findPMCReferencesFromNodes())
 		//.withHandler(findRelatedArticlesFromNodes(broaderSearch))
