@@ -145,7 +145,7 @@ public class PubMedGraphExperiment {
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(EXPAND))
 		.withHandler(expandDOIStubs())
 		.withHandler(expandPMIDStubs())
-		.withHandler(expandPMCIDStubs())
+		//.withHandler(expandPMCIDStubs())
 		.withHandler(fetchPubMedEntries(earliest, latest))
 		.withHandler(findCrossRefReferencesFromNodes())
 		.withHandler(findPMCReferencesFromNodes())
