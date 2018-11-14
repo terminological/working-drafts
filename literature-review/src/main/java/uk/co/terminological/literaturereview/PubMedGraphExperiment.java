@@ -1,7 +1,14 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMCENTRAL_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapCrossRefReferences;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralCitedBy;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralReferences;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubmedRelated;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +24,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -36,12 +42,10 @@ import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
-import uk.co.terminological.pubmedclient.CrossRefResult.Work;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 public class PubMedGraphExperiment {
 
