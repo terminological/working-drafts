@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -105,7 +106,7 @@ public class PubMedGraphExperiment {
 
 		String search = prop.getProperty("search");
 		String broaderSearch = prop.getProperty("broader-search");
-		Integer maxDepth = Integer.parseInt(prop.getProperty("max-depth"));
+		LocalDate earliest = LocalDate.parse(prop.getProperty("earliest"));
 
 		//execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, maxDepth);
 
@@ -140,7 +141,7 @@ public class PubMedGraphExperiment {
 		.withHandler(expandDOIStubs())
 		.withHandler(expandPMIDStubs())
 		.withHandler(expandPMCIDStubs())
-		.withHandler(fetchPubMedEntries(maxDepth))
+		.withHandler(fetchPubMedEntries(LocalDate.of(2016, 01, 01)));
 		.withHandler(findCrossRefReferencesFromNodes())
 		.withHandler(findPMCReferencesFromNodes())
 		//.withHandler(findRelatedArticlesFromNodes(broaderSearch))
@@ -276,7 +277,7 @@ public class PubMedGraphExperiment {
 
 	
 
-	static EventProcessor<List<String>> fetchPubMedEntries(Integer maxDepth) {
+	static EventProcessor<List<String>> fetchPubMedEntries(LocalDate earliest) {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
@@ -288,7 +289,7 @@ public class PubMedGraphExperiment {
 						PubMedEntries entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
-						mapEntriesToNode(entries, graph,maxDepth);
+						mapEntriesToNode(entries, graph, earliest);
 						
 						entries.stream().forEach(entry -> {
 							
@@ -384,6 +385,7 @@ public class PubMedGraphExperiment {
 								.toDatabase(Database.PUBMED)
 								.command(Command.NEIGHBOR)
 								.withLinkname("pmc_refs_pubmed")
+								//.betweenDates(earliest, LocalDate.now())
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						
@@ -395,6 +397,7 @@ public class PubMedGraphExperiment {
 								.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
 								.command(Command.NEIGHBOR)
 								.withLinkname("pmc_pmc_citedby")
+								//.betweenDates(earliest, LocalDate.now())
 								.execute().stream()
 								.flatMap(o -> o.stream()).collect(Collectors.toList());
 						

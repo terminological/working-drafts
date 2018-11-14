@@ -8,6 +8,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RE
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RELATED;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntrez;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -98,7 +99,7 @@ public class PubMedGraphUtils {
 	}*/
 
 
-	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, Integer maxDepth) {
+	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest) {
 
 		List<Node> out = new ArrayList<>();
 
@@ -287,8 +288,14 @@ public class PubMedGraphUtils {
 				Node node = tmp;
 				
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
-				entry.getPubMedDate().ifPresent(dt -> node.setProperty("date", dt.format(
-					      DateTimeFormatter.ofPattern("dd-MM-yyyy"))));
+				entry.getPubMedDate().ifPresent(dt -> {
+					node.setProperty("date", dt);
+					if (dt.isAfter(earliest)) {
+						node.addLabel(EXPAND);
+					} else {
+						logger.debug("not expanding: date="+dt.format(DateTimeFormatter.ISO_LOCAL_DATE)+" title="+entry.getTitle() );
+					}
+				});
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
 
@@ -306,12 +313,7 @@ public class PubMedGraphUtils {
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
 				node.removeLabel(PMCENTRAL_STUB);
-				
-				if (depth<maxDepth) {
-					node.addLabel(EXPAND);
-				} else {
-					logger.debug("not expanding at depth "+depth+": "+entry.getTitle());
-				}
+								
 				entry.getAuthors().forEach(au -> {
 					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);
 					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
