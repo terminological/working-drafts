@@ -22,72 +22,87 @@ import uk.co.terminological.fluentxml.XmlException;
 
 public class EntrezResult {
 
+	//TODO: Better (i.e. some) error handling
+
 	public static class Search {
 
-		private ESearchResult raw;
+		private XmlElement raw;
 
-		public Search(ESearchResult raw) {
+		public Search(XmlElement raw) {
 			this.raw = raw;
 		}
 
-		public ESearchResult raw() {return raw;}
+		public XmlElement raw() {return raw;}
 
 		public Optional<Integer> count() {
-			return raw
-					.getCountOrRetMaxOrRetStartOrQueryKeyOrWebEnvOrIdListOrTranslationSetOrTranslationStackOrQueryTranslationOrERROR().stream()
-					.filter(o -> o instanceof Count).map(o -> (Count) o)
-					.findFirst()
-					.map(c -> Integer.parseInt(c.getvalue()));			
+			try {
+				return raw.doXpath(".//Count").getOne(XmlElement.class).getTextContent().map(s -> Integer.parseInt(s));
+			} catch (XmlException e) {
+				return Optional.empty();
+			}
 		}
-		
-		public List<String> getIds() {
-			return raw.getCountOrRetMaxOrRetStartOrQueryKeyOrWebEnvOrIdListOrTranslationSetOrTranslationStackOrQueryTranslationOrERROR()
-				.stream()
-				.filter(o -> (o instanceof gov.nih.nlm.ncbi.eutils.generated.esearch.IdList))
-				.map(o -> (gov.nih.nlm.ncbi.eutils.generated.esearch.IdList) o)
-				.flatMap(idl -> idl.getId().stream())
-				.map(id -> id.getvalue())
-				.collect(Collectors.toList());
+
+		public Stream<String> getIds() {
+			try {
+				return raw.doXpath(".//Id")
+						.getManyAsStream(XmlElement.class).flatMap(o -> o.getTextContent().stream());
+			} catch (XmlException e) {
+				return Stream.empty();
+			}
+		}
+
+		public Optional<PubMedEntries> getStoredResult(EntrezClient client) throws BibliographicApiException {
+
+			try {
+				Optional<String> webEnv = raw.doXpath(".//WebEnv").getOne(XmlElement.class).getTextContent();
+				Optional<String> queryKey = raw.doXpath(".//QueryKey").getOne(XmlElement.class).getTextContent();
+				if (webEnv.isPresent() && queryKey.isPresent()) {
+					return Optional.of(client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get()));
+				}
+			} catch (XmlException e) {
+
+			}
+			return Optional.empty();
 		}
 
 	}
-	
+
 	public static class PubMedEntries {
 
 		private XmlElement raw; //PubmedArticleSet
-		
+
 		public PubMedEntries(XmlElement raw) {this.raw = raw;}
-		
+
 		public Stream<PubMedEntry> stream() {
 			if (raw == null) return Stream.empty();
 			return raw.childElements("PubmedArticle").stream().map(o-> new PubMedEntry(o));
-			
+
 		}
-		
+
 		public Stream<String> getTitles() {
 			if (raw == null) return Stream.empty();
 			try {
 				return this.raw.doXpath(".//ArticleTitle")
 						.getManyAsStream(XmlElement.class).flatMap(o -> o.getTextContent().stream());
 			} catch (XmlException e) {
-				throw new RuntimeException(e);
+				return Stream.empty();
 			}
 		}
 
 		public static PubMedEntries empty() {
 			return new PubMedEntries(null);
 		}
-		
+
 	}
-	
+
 	public static class PubMedEntry {
-		
+
 		private XmlElement raw; //PubmedArticle
-		
+
 		public PubMedEntry(XmlElement raw) {this.raw = raw;}
-		
+
 		public XmlElement getRaw() {return raw;}
-		
+
 		public String getTitle() {
 			try {
 				return raw.doXpath(".//ArticleTitle").getOne(XmlElement.class).getTextContent().get();
@@ -95,31 +110,31 @@ public class EntrezResult {
 				throw new RuntimeException(e);
 			}
 		}
-		
+
 		public Optional<String> getDoi() {
 			try {
 				return raw.doXpath(".//ArticleId[@IdType='doi']").get(XmlElement.class).flatMap(o -> o.getTextContent());
 			} catch (XmlException e) {
-				throw new RuntimeException(e);
+				return Optional.empty();
 			}
 		}
-		
+
 		public Optional<String> getPMCID() {
 			try {
 				return raw.doXpath(".//ArticleId[@IdType='pmc']").get(XmlElement.class).flatMap(o -> o.getTextContent());
 			} catch (XmlException e) {
-				throw new RuntimeException(e);
+				return Optional.empty();
 			}
 		}
-		
+
 		public Optional<String> getPMID() {
 			try {
 				return raw.doXpath(".//ArticleId[@IdType='pubmed']").get(XmlElement.class).flatMap(o -> o.getTextContent());
 			} catch (XmlException e) {
-				throw new RuntimeException(e);
+				return Optional.empty();
 			}
 		}
-		
+
 		public Optional<LocalDate> getPubMedDate() {
 			try {
 				Optional<XmlElement> date = raw.doXpath(".//PubMedPubDate[@PubStatus='pubmed']").get(XmlElement.class);
@@ -130,21 +145,21 @@ public class EntrezResult {
 					return year.map(y -> LocalDate.of(y, month.orElse(1), day.orElse(1)));
 				});
 			} catch (XmlException e) {
-				throw new RuntimeException(e);
+				return Optional.empty();
 			}
 		}
-		
+
 		public Stream<MeshHeading> getMeshHeadings() {			
 			try {
 				return raw.doXpath(".//MeshHeading").getManyAsStream(XmlElement.class).map(o -> new MeshHeading(o));
 			} catch (XmlException e) {
-				throw new RuntimeException(e);
+				return Stream.empty();
 			}
 		}
 
 		public String getAbstract() {return getAbstract(true);}
 		public String getUnlabelledAbstract() {return getAbstract(false);}
-		
+
 		private String getAbstract(final boolean labelled) {
 			try {
 				return raw.doXpath(".//AbstractText").getManyAsStream(XmlElement.class)
@@ -162,13 +177,13 @@ public class EntrezResult {
 			try {
 				return raw.doXpath(".//Author").getManyAsStream(XmlElement.class).map(o -> new Author(o));
 			} catch (XmlException e) {
-				throw new RuntimeException(e);
+				return Stream.empty();
 			}
 		}
 	}
-	
+
 	public static class Author {
-		
+
 		private XmlElement raw;
 		public Author(XmlElement raw) {this.raw = raw;}
 		public Optional<String> lastName() {
@@ -191,9 +206,9 @@ public class EntrezResult {
 		public String toString() {
 			return lastName().orElse("unknown")+", "+initials().orElse("unknown");
 		}
-		
+
 	}
-	
+
 	public static class MeshHeading {
 		private XmlElement raw;
 		public MeshHeading(XmlElement raw) {this.raw = raw;}
@@ -207,7 +222,7 @@ public class EntrezResult {
 			return getDescriptor().toString()+ " ["+getQualifiers().map(q -> q.toString()).collect(Collectors.joining("; "))+"]";
 		}
 	}
-	
+
 	public static class MeshCode {
 		private XmlElement raw;
 		public MeshCode(XmlElement raw) {this.raw = raw;}
@@ -215,32 +230,34 @@ public class EntrezResult {
 		public String getTerm() { return raw.getTextContent().get(); }
 		public String toString() {return getCode()+":"+getTerm();}
 	}
-	
+
+
+	//TODO: convert away from JAXB to XPath binding.
 	public static class Links {
-		
+
 		private ELinkResult raw;
 		public Links(ELinkResult raw) {this.raw	=raw; convert();}
 		public ELinkResult raw() {return raw;}
-		
+
 		private List<Link> links;
-		
+
 		public Stream<Link> stream() {return links.stream();}
-		
+
 		private void convert() {
 			links = new ArrayList<Link>();
 			for (LinkSet ls: raw.getLinkSet()) {
-				
+
 				Optional<Id> idListId = ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
 						.filter(o -> o instanceof gov.nih.nlm.ncbi.eutils.generated.elink.IdList)
 						.map(o -> (gov.nih.nlm.ncbi.eutils.generated.elink.IdList) o)
 						.flatMap(idl -> idl.getId().stream()).findFirst();
-				
-				
+
+
 				for (Object o: ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR()) {
-					
+
 					if (o instanceof LinkSetDb) {
 						LinkSetDb lsd = ((LinkSetDb) o); 
-						
+
 						lsd.getLinkOrInfo().stream()
 						.filter(o2 -> o2 instanceof gov.nih.nlm.ncbi.eutils.generated.elink.Link)
 						.map(o2 -> (gov.nih.nlm.ncbi.eutils.generated.elink.Link) o2)
@@ -248,11 +265,11 @@ public class EntrezResult {
 								new Link(ls,idListId.get(),lsd,l)
 								));
 						;
-						
+
 					} else if  (o instanceof IdUrlList) {
-						
+
 						for (IdUrlSet ius: ((IdUrlList) o).getIdUrlSet()) {
-							
+
 							ius.getObjUrlOrInfo().stream()
 							.filter(o3 -> o3 instanceof ObjUrl)
 							.map(o3 -> (ObjUrl) o3).forEach(
@@ -263,13 +280,13 @@ public class EntrezResult {
 				}
 			}
 		}
-		
-		
-		
+
+
+
 		//public List<String> getSimilar
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * type: https://eutils.ncbi.nlm.nih.gov/entrez/query/static/entrezlinks.html
@@ -293,14 +310,14 @@ public class EntrezResult {
 		public Optional<Long> score = Optional.empty();
 		public String toDbOrUrl;
 		public Optional<String> toId = Optional.empty();
-		
+
 		protected Link(LinkSet linkSet, IdUrlSet idUrlSet, ObjUrl objUrl) {
 			this.fromDb = linkSet.getDbFrom();
 			this.fromId = idUrlSet.getId().getvalue();
 			this.typeOrCategory = objUrl.getCategory().stream().findFirst().map(c -> c.getvalue());
 			this.toDbOrUrl = objUrl.getUrl();
 		}
-		
+
 		protected Link(LinkSet linkSet, Id fromId, LinkSetDb linkSetDb, gov.nih.nlm.ncbi.eutils.generated.elink.Link link) {
 			this.fromDb = linkSet.getDbFrom();
 			this.fromId = fromId.getvalue();
@@ -309,10 +326,10 @@ public class EntrezResult {
 			this.toId = Optional.of(link.getId().getvalue());
 			this.score = Optional.ofNullable(link.getScore()).map(sc -> Long.parseLong(sc));
 		}
-		
+
 		public String toString() {
 			return fromDb+"\t"+fromId+"\t"+typeOrCategory.orElse("")+"\t"+toDbOrUrl+"\t"+toId.orElse("")+"\t"+score.orElse(0L);
 		}
-		
+
 	}
 }

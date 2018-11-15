@@ -1,11 +1,5 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.lockNode;
-
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMCENTRAL_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapCrossRefReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralCitedBy;
@@ -24,24 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
-import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.terminological.pipestream.EventBus;
-import uk.co.terminological.pipestream.EventGenerator;
-import uk.co.terminological.pipestream.FluentEvents.Events;
-import uk.co.terminological.pipestream.FluentEvents.Generators;
-import uk.co.terminological.pipestream.FluentEvents.Handlers;
-import uk.co.terminological.pipestream.FluentEvents.Predicates;
-import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
@@ -50,6 +35,7 @@ import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
+import uk.co.terminological.pubmedclient.IdConverterClient.Record;
 
 public class PubMedGraphExperiment2 {
 
@@ -110,23 +96,17 @@ public class PubMedGraphExperiment2 {
 	public void execute() throws IOException {
 
 		log.error("Starting graphDb build");
-		PubMedGraphSchema.setupSchema(graphApi);
-
-		try ( Transaction tx = graphApi.get().beginTx() ) {
-			lockNode = graphApi.get().createNode();
+		
+		if (!graphApi.get().schema().getIndexes().iterator().hasNext()) {
+			PubMedGraphSchema.setupSchema(graphApi);
 		}
 
 		//TODO: Main loop
+		List<String> broadSearchIds = searchPubMed(this.broaderSearch);
+		List<String> narrowSearchIds = searchPubMed(this.search);
 
-
-		System.out.println("Press Enter key to shutdown EventBus...");
-		try
-		{
-			System.in.read();
-		}  
-		catch(Exception e)
-		{}  
-
+		
+		
 		graphApi.waitAndShutdown();
 
 	}
@@ -136,7 +116,7 @@ public class PubMedGraphExperiment2 {
 			List<String> tmp = biblioApi.getEntrez()
 					.buildSearchQuery(search)
 					.betweenDates(earliest, latest)
-					.execute().get().getIds();
+					.execute().get().getIds().collect(Collectors.toList());
 
 			log.info("Pubmed search found: "+tmp.size()+" results");
 			return tmp;
@@ -147,16 +127,19 @@ public class PubMedGraphExperiment2 {
 	}
 
 
-	List<String> expandDOIStubs(List<String> dois) {
-		List<String> out = new ArrayList<>();
+	List<Record> lookupIds(List<String> ids, IdType ofType) {
+		List<Record> out = new ArrayList<>();
 
 		try {
-			while(dois.size() > 0) {
-				List<String> batchDois = dois.subList(0, Math.min(100, dois.size()));
-				List<String> pmids = biblioApi.getPmcIdConv().getPMIdsByIdAndType(batchDois, IdType.DOI);
-				log.info("Looked up "+batchDois.size()+" dois and found "+pmids.size()+" pubmed records");
+			while(ids.size() > 0) {
+				List<String> batchDois = ids.subList(0, Math.min(100, ids.size()));
+				List<Record> pmids = biblioApi.getPmcIdConv()
+						.getConverterForIdsAndType(batchDois, ofType)
+						.records
+						;
+				log.info("Looked up "+batchDois.size()+" "+ofType.name()+" and found "+pmids.size()+" linked records");
 				out.addAll(pmids);
-				dois.subList(0, Math.min(100, dois.size())).clear();
+				ids.subList(0, Math.min(100, ids.size())).clear();
 			}
 		} catch (BibliographicApiException e) {
 			e.printStackTrace();
@@ -164,26 +147,6 @@ public class PubMedGraphExperiment2 {
 		return out;
 
 	}
-
-	List<String> expandPMCIDStubs(List<String> pmcids) {
-		List<String> out = new ArrayList<String>();
-		try {
-			while(pmcids.size() > 0) {
-				List<String> batchPmcids = pmcids.subList(0, Math.min(100, pmcids.size()));
-				List<String> pmids = biblioApi.getPmcIdConv().getPMIdsByIdAndType(batchPmcids,IdType.PMCID);
-				log.info("Looked up "+batchPmcids.size()+" PMCIDs and found "+pmids.size()+" pubmed records");
-				out.addAll(pmids);
-				pmcids.subList(0, Math.min(100, pmcids.size())).clear();
-			}
-		} catch (BibliographicApiException e) {
-			e.printStackTrace();
-		}
-		return out;
-	}
-
-
-
-
 
 	List<Node> fetchPubMedEntries(List<String> pmids, boolean originalSearch) {
 		List<Node> out = new ArrayList<>();

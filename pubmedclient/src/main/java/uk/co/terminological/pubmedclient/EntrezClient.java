@@ -159,6 +159,12 @@ public class EntrezClient {
 			this.searchParams.add("field", field);
 			return this;
 		}
+		
+		public ESearchQueryBuilder useHistory() {
+			searchParams.remove("usehistory");
+			this.searchParams.add("usehistory", "y");
+			return this;
+		}
 
 		public Optional<EntrezResult.Search> execute() throws BibliographicApiException {
 			if (empty) return Optional.empty();
@@ -185,33 +191,30 @@ public class EntrezClient {
 		logger.debug("making esearch query with params {}", builder.toString());
 		rateLimiter.consume();
 		InputStream is = builder.get(eSearchResource).post(InputStream.class);
-		ESearchResult searchResult;
 		
 		try {
-			Unmarshaller searchUnmarshaller = jcSearch.createUnmarshaller();
-			searchResult = (ESearchResult) searchUnmarshaller.unmarshal(is);
-			is.close();
-
-		} catch (JAXBException | IOException e1) {
+			Xml resp = Xml.fromStream(is);
+			return new EntrezResult.Search(resp.content());
+		} catch (XmlException e1) {
 			throw new BibliographicApiException("could not parse result",e1);
 		}
-		return new EntrezResult.Search(searchResult);
+		
 	}
 
 
 	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
 		if (searchTerm == null || searchTerm.isEmpty()) return Collections.emptyList(); 
-		return this.buildSearchQuery(searchTerm).execute().get().getIds();
+		return this.buildSearchQuery(searchTerm).execute().get().getIds().collect(Collectors.toList());
 	}
 
 	public List<String> findPMIdsByDoi(String doi) throws BibliographicApiException {
 		if (doi.isEmpty()) return Collections.emptyList();
-		return this.buildSearchQuery(doi).execute().get().getIds();
+		return this.buildSearchQuery(doi).execute().get().getIds().collect(Collectors.toList());
 	}
 
 	public List<String> findPMIdsByPubMedCentralIds(String pmcid) throws BibliographicApiException {
 		if (pmcid.isEmpty()) return Collections.emptyList();
-		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds();
+		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds().collect(Collectors.toList());
 	}
 	
 	/**
@@ -228,6 +231,24 @@ public class EntrezClient {
 		fetchParams.add("db", "pubmed");
 		pmids.forEach(id -> fetchParams.add("id",id));
 		fetchParams.add("format", "xml");
+		rateLimiter.consume();
+		logger.debug("making efetch query with params {}", fetchParams.toString());
+		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
+		Xml xml;
+		try {
+			xml = Xml.fromStream(is);
+		} catch (XmlException e) {
+			throw new BibliographicApiException("could not parse result",e);
+		}
+		return new EntrezResult.PubMedEntries(xml.content());
+	}
+	
+	public EntrezResult.PubMedEntries getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey) throws BibliographicApiException {
+		MultivaluedMap<String, String> fetchParams = defaultApiParams();
+		fetchParams.add("db", "pubmed");
+		fetchParams.add("format", "xml");
+		fetchParams.add("query_key", queryKey);
+		fetchParams.add("WebEnv", webEnv);
 		rateLimiter.consume();
 		logger.debug("making efetch query with params {}", fetchParams.toString());
 		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
