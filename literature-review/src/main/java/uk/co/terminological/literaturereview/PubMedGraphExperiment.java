@@ -114,7 +114,7 @@ public class PubMedGraphExperiment {
 		LocalDate earliest = LocalDate.parse(prop.getProperty("earliest"));
 		LocalDate latest = LocalDate.parse(prop.getProperty("latest"));
 
-		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, earliest, latest);
+		//execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, earliest, latest);
 
 		graphApi.waitAndShutdown();
 	}
