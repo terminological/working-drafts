@@ -180,7 +180,7 @@ public class PubMedGraphExperiment {
 								.getEntrez()
 								.buildSearchQuery(search)
 								.betweenDates(earliest, latest)
-								.execute().get().getIds();
+								.execute().get().getIds().collect(Collectors.toList());
 								
 						g.getEventBus().logInfo("Pubmed search found: "+tmp.size()+" results");
 						//tmp = tmp.subList(0, 10);
