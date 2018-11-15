@@ -1,6 +1,6 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.literaturereview.PubMedGraphExperiment.lockNode;
+
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.AUTHOR;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
