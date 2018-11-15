@@ -98,19 +98,19 @@ public class IdConverterClient {
 	public List<String> getDoisByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		Result tmp = getConverterForIdsAndType(ids, type);
 		return tmp.records.stream()
-				.flatMap(r -> r.doi.stream()).filter(o -> o != null)
+				.flatMap(r -> r.doi.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPubMedCentralIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
-				.flatMap(r -> r.pmcid.stream()).filter(o -> o != null)
+				.flatMap(r -> r.pmcid.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toList());
 	}
 	
 	public List<String> getPMIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
-				.flatMap(r -> r.pmid.stream()).filter(o -> o != null)
+				.flatMap(r -> r.pmid.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toList());
 	}
 	
