@@ -48,6 +48,8 @@ import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.lockNode;
+
 public class PubMedGraphExperiment {
 
 	static Logger log = LoggerFactory.getLogger(PubMedGraphExperiment.class);
@@ -81,7 +83,7 @@ public class PubMedGraphExperiment {
 
 	// Metadata keys
 
-	static Node lockNode;
+	
 
 	public static void main(String args[]) throws IOException {
 

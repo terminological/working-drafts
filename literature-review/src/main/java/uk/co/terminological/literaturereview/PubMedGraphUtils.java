@@ -41,6 +41,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 
 public class PubMedGraphUtils {
 
+	static Node lockNode;
 	private static final Logger logger = LoggerFactory.getLogger(PubMedGraphUtils.class);
 
 	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb) {

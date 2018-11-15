@@ -53,35 +53,10 @@ public class PubMedGraphExperiment2 {
 	static Logger log = LoggerFactory.getLogger(PubMedGraphExperiment2.class);
 
 
-	// Event types
-	static final String PUBMED_SEARCH_RESULT = "PubMed search result";
-	static final String PUBMED_FETCH_RESULT = "PubMed fetch result";
-	static final String PMID_DOI_MAP = "PubMed to Doi";
-
-	static final String XREF_FETCH_RESULT = "CrossRef metadata entry";
-	static final String XREF_REFERENCES_FOR_DOI = "CrossRef reference list";
-
-	//Event names
-	static final String ORIGINAL_SEARCH = "Pubmed search result";
-	//static final String DOI_LIST = "DOIs";
-	//public static final String PUBMED_ENTRY_AVAILABLE = "PubMed Entry";
-
-	// Handlers & Generators
-	public static final String PUBMED_SEARCHER = "PubMed eSearch";
-	public static final String PUBMED_LINKER = "PubMed eLink";
-	public static final String PUBMED_CENTRAL_LINKER = "PubMedCentral eLink";
-
-	public static final String PUBMED_FETCHER = "PubMed eFetch";
-	public static final String XREF_LOOKUP = "Crossref lookup";
-	public static final String DOI_EXPANDER = "Resolve Dois";
-	public static final String PMID_EXPANDER = "Resolve PMIDs";
-	public static final String PMCID_EXPANDER = "Resolve PubMedCentral ids";
-
-	public static final String NEO4J_WRITER = "Neo4j pubmed node writer";
-
+	
 	// Metadata keys
 
-	static Node lockNode;
+	
 
 	public static void main(String args[]) throws IOException {
 
@@ -114,7 +89,7 @@ public class PubMedGraphExperiment2 {
 		LocalDate earliest = LocalDate.parse(prop.getProperty("earliest"));
 		LocalDate latest = LocalDate.parse(prop.getProperty("latest"));
 
-		//execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, earliest, latest);
+		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, earliest, latest);
 
 		graphApi.waitAndShutdown();
 	}
@@ -169,11 +144,8 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	static EventGenerator<List<String>> searchPubMed(String search, LocalDate earliest, LocalDate latest) {
-		return Generators.generator(search, 
-				PUBMED_SEARCHER, 
-				g -> {
-					try {
+	static List<String> searchPubMed(String search, LocalDate earliest, LocalDate latest) {
+		try {
 						List<String> tmp = g.getEventBus().getApi(BibliographicApis.class).get()
 								.getEntrez()
 								.buildSearchQuery(search)
@@ -184,22 +156,15 @@ public class PubMedGraphExperiment2 {
 						//tmp = tmp.subList(0, 10);
 						return tmp;
 					} catch (BibliographicApiException e) {
-						g.getEventBus().handleException(e);
+						e.printStackTrace();
 						return Collections.emptyList();
 					}
-				},
-				name -> ORIGINAL_SEARCH, 
-				type -> PUBMED_SEARCH_RESULT);
-	}
+				}
+	
 
-	static EventProcessor<Set<Long>> expandDOIStubs() {
-		return Handlers.eventProcessor(DOI_EXPANDER, 
-				Predicates.matchNameAndType(DOI_STUB.name(),GraphDatabaseWatcher.NEO4J_NEW_NODE), 
-				(event,context) -> {
-					BibliographicApis bib = context.getEventBus().getApi(BibliographicApis.class).get();
-					Set<Long> nodeIds = event.get();
-					List<String> dois = new ArrayList<>();
-					GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
+	static List<String> expandDOIStubs(Set<Long> nodeIds, BibliographicApis bib, GraphDatabaseApi graph) {
+		 List<String> dois = new ArrayList<>();
+					
 					try  ( Transaction tx = graph.get().beginTx() ) {
 						nodeIds.forEach(id -> {
 							Node n = graph.get().getNodeById(id);
