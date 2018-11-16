@@ -101,6 +101,16 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}*/
 
+	public static void addLabelsByIds(Label existingLabel, String indexProp, List<?> values, Label newLabel, GraphDatabaseApi graph) {
+		try ( Transaction tx = graph.get().beginTx() ) {
+			tx.acquireWriteLock(lockNode);
+			values.forEach(v -> {
+				graph.get().findNode(existingLabel, indexProp, v).addLabel(newLabel);
+			});
+			tx.success();
+		}
+	}
+	
 
 	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest, LocalDate latest, boolean originalSearch) {
 

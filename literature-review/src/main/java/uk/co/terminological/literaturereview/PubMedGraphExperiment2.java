@@ -114,6 +114,12 @@ public class PubMedGraphExperiment2 {
 			}
 		});
 		
+		entries.ifPresent(ent -> {
+			mapEntriesToNode(ent, graphApi, earliest, latest, false);
+		});
+		
+		
+		
 		graphApi.waitAndShutdown();
 
 	}
