@@ -125,29 +125,8 @@ public class PubMedGraphExperiment2 {
 		});
 		
 		List<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toList());
-		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, EXPAND, graphApi);
-		
-		try {
-			Links tmp = biblioApi.getEntrez().buildLinksQueryForSearchResult(broadSearch.get(), Database.PUBMED)
-				.toDatabase(Database.PUBMED)
-				.command(Command.NEIGHBOR)
-				.withLinkname("pubmed_pubmed_refs")
-				.execute().get();
-			mapPubMedCentralReferences(tmp.stream().collect(Collectors.toList()), graphApi);
-		} catch (BibliographicApiException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			Links tmp = biblioApi.getEntrez().buildLinksQueryForSearchResult(broadSearch.get(), Database.PUBMED)
-				.toDatabase(Database.PUBMED)
-				.command(Command.NEIGHBOR)
-				.withLinkname("pubmed_pubmed_citedin")
-				.execute().get();
-			mapPubMedCentralReferences(tmp.stream().collect(Collectors.toList()), graphApi);
-		} catch (BibliographicApiException e) {
-			e.printStackTrace();
-		}
+		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, ORIGINAL_SEARCH, graphApi);
+		findPMCReferencesFromNodes(broadSearch.get());
 
 		
 		graphApi.waitAndShutdown();

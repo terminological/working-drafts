@@ -317,7 +317,7 @@ public class PubMedGraphUtils {
 				node.setProperty("abstract", entry.getAbstract());
 				node.setProperty("title", entry.getTitle());
 
-				Integer depth = null;
+				/*Integer depth = null;
 				for (Relationship r: node.getRelationships(Direction.INCOMING, HAS_REFERENCE, HAS_RELATED)) {
 					Node other = r.getOtherNode(node);
 					Integer tmpDepth = (Integer) other.getProperty("depth", null);
@@ -327,7 +327,7 @@ public class PubMedGraphUtils {
 				};
 				if (depth==null) depth = 0; else depth = depth+1;
 				node.setProperty("depth", depth);
-				logger.debug("depth for node: "+depth+": "+entry.getTitle());
+				logger.debug("depth for node: "+depth+": "+entry.getTitle());*/
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
 				node.removeLabel(PMCENTRAL_STUB);
