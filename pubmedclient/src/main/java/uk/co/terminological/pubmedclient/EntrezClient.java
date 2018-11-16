@@ -30,6 +30,7 @@ import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
+import uk.co.terminological.pubmedclient.EntrezResult.Search;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -306,6 +307,10 @@ public class EntrezClient {
 		return new ELinksQueryBuilder(defaultApiParams(),ids, fromDb, this);
 	}
 
+	public ELinksQueryBuilder buildLinksQueryForSearchResult(Search search, Database fromDb) {
+		return new ELinksQueryBuilder(defaultApiParams(), search, fromDb, this);
+	}
+	
 	public static class ELinksQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -324,6 +329,16 @@ public class EntrezClient {
 			this.searchParams.add("retmode", "xml");
 			ids.forEach(id -> this.searchParams.add("id", id));
 			if (ids.isEmpty()) empty=true;
+			this.client = client;
+		}
+		
+		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, String webEnv, String queryKey, Database fromDb, EntrezClient client) {
+			this.searchParams = searchParams;
+			this.searchParams.add("dbfrom", fromDb.name().toLowerCase());
+			this.searchParams.add("cmd", "neighbour_score");
+			this.searchParams.add("retmode", "xml");
+			this.searchParams.add("WebEnv", "webEnv");
+			this.searchParams.add("query_key", "queryKey");
 			this.client = client;
 		}
 

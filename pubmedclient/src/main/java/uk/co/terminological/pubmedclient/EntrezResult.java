@@ -49,20 +49,33 @@ public class EntrezResult {
 			}
 		}
 
-		public Optional<PubMedEntries> getStoredResult(EntrezClient client) throws BibliographicApiException {
-
+		public Optional<String> getWebEnv() {
 			try {
-				Optional<String> webEnv = raw.doXpath(".//WebEnv").getOne(XmlElement.class).getTextContent();
-				Optional<String> queryKey = raw.doXpath(".//QueryKey").getOne(XmlElement.class).getTextContent();
-				if (webEnv.isPresent() && queryKey.isPresent()) {
-					return Optional.of(client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get()));
-				}
+				return raw.doXpath(".//WebEnv").getOne(XmlElement.class).getTextContent();
 			} catch (XmlException e) {
-
+				return Optional.empty();
+			}
+		}
+		
+		public Optional<String> getQueryKey() {
+			try {
+				return raw.doXpath(".//QueryKey").getOne(XmlElement.class).getTextContent();
+			} catch (XmlException e) {
+				return Optional.empty();
+			}
+		}
+		
+		public Optional<PubMedEntries> getStoredResult(EntrezClient client) throws BibliographicApiException {
+			Optional<String> webEnv = getWebEnv(); 
+			Optional<String> queryKey = getQueryKey();
+			if (webEnv.isPresent() && queryKey.isPresent()) {
+				return Optional.of(client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get()));
 			}
 			return Optional.empty();
 		}
 
+		
+		
 	}
 
 	public static class PubMedEntries {
