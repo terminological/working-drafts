@@ -245,7 +245,7 @@ public class PubMedGraphExperiment {
 					try {
 						while(pmcids.size() > 0) {
 							List<String> batchPmcids = pmcids.subList(0, Math.min(100, pmcids.size()));
-							List<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchPmcids,IdType.PMCID);
+							Set<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchPmcids,IdType.PMCID);
 							context.getEventBus().logInfo("Looked up "+batchPmcids.size()+" PMCIDs and found "+pmids.size()+" pubmed records");
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
