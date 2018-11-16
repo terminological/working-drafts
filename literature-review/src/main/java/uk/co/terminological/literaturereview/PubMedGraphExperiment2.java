@@ -147,7 +147,16 @@ public class PubMedGraphExperiment2 {
 		Set<String> toDois = findCrossRefReferencesFromNodes(loadedDois);
 		
 		toDois.removeAll(loadedDois);
-		Set<String> morePmids = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
+		
+		try {
+			
+			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
+			Set<PubMedEntry> entries3 = fetchPubMedEntries(morePMIDs,false);
+			entries3.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f)));
+			
+		} catch (BibliographicApiException e1) {
+			e1.printStackTrace();
+		}
 		
 		
 		graphApi.waitAndShutdown();
@@ -209,7 +218,7 @@ public class PubMedGraphExperiment2 {
 			PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(pmids);
 			mapEntriesToNode(entries, graphApi, earliest, latest, originalSearch);
 			return entries.stream().collect(Collectors.toSet());
-			;
+			
 		} catch (BibliographicApiException e) {
 			e.printStackTrace();
 		}
