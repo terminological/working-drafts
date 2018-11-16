@@ -105,7 +105,12 @@ public class PubMedGraphUtils {
 		try ( Transaction tx = graph.get().beginTx() ) {
 			tx.acquireWriteLock(lockNode);
 			values.forEach(v -> {
-				graph.get().findNode(existingLabel, indexProp, v).addLabel(newLabel);
+				Node tmp = graph.get().findNode(existingLabel, indexProp, v);
+				if (tmp != null) {	
+					tmp.addLabel(newLabel);
+				} else {
+					logger.warn("No {} found for {} with value of {}", existingLabel.name(),indexProp,v.toString());
+				}
 			});
 			tx.success();
 		}

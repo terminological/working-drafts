@@ -6,6 +6,10 @@ import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCe
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubmedRelated;
 
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Props.*;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -117,6 +121,10 @@ public class PubMedGraphExperiment2 {
 		entries.ifPresent(ent -> {
 			mapEntriesToNode(ent, graphApi, earliest, latest, false);
 		});
+		
+		List<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toList());
+		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, EXPAND, graphApi);
+		
 		
 		
 		
