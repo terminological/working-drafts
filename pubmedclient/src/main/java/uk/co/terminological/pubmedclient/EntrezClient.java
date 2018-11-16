@@ -27,7 +27,6 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
