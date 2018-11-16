@@ -16,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,9 +138,13 @@ public class PubMedGraphExperiment2 {
 		
 		toPMIDs.removeAll(loadedPMIDs);
 		
+		fetchPubMedEntries(toPMIDs,false);
+		
 		Set<String> toDois = findCrossRefReferencesFromNodes(loadedDois);
 		
 		toDois.removeAll(loadedDois);
+		
+		
 		
 		graphApi.waitAndShutdown();
 
@@ -195,7 +200,7 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	List<Node> fetchPubMedEntries(List<String> pmids, boolean originalSearch) {
+	List<Node> fetchPubMedEntries(Collection<String> pmids, boolean originalSearch) {
 		List<Node> out = new ArrayList<>();
 		try {
 			PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(pmids);
