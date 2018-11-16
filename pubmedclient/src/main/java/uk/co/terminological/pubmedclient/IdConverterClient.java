@@ -2,9 +2,12 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -51,15 +54,16 @@ public class IdConverterClient {
 		return getMapping(Collections.singletonList(id), Optional.empty());
 	}
 	
-	public Result getConverterForPMIds(List<String> id) throws BibliographicApiException {
+	public Result getConverterForPMIds(Collection<String> id) throws BibliographicApiException {
 		return getMapping(id, Optional.of(IdType.PMID));
 	}
 	
-	public Result getConverterForIdsAndType(List<String> id, IdType type) throws BibliographicApiException {
+	public Result getConverterForIdsAndType(Collection<String> id, IdType type) throws BibliographicApiException {
 		return getMapping(id, Optional.of(type));
 	}
 	
-	private Result getMapping(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
+	private Result getMapping(Collection<String> id2, Optional<IdType> idType) throws BibliographicApiException {
+		List<String> id = new ArrayList<String>(id2);
 		Result out = null;
 		int start = 0;
 		while (start<id.size()) {
@@ -75,7 +79,7 @@ public class IdConverterClient {
 		return out;
 	}
 	
-	private Result doCall(List<String> id, Optional<IdType> idType) throws BibliographicApiException {
+	private Result doCall(Collection<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		id.forEach(i -> params.add("ids", i));
@@ -95,23 +99,23 @@ public class IdConverterClient {
 	}
 	
 	
-	public List<String> getDoisByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
+	public Set<String> getDoisByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
 		Result tmp = getConverterForIdsAndType(ids, type);
 		return tmp.records.stream()
 				.flatMap(r -> r.doi.stream()).filter(o -> !o.isEmpty())
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 	
-	public List<String> getPubMedCentralIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
+	public Set<String> getPubMedCentralIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
 				.flatMap(r -> r.pmcid.stream()).filter(o -> !o.isEmpty())
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 	
-	public List<String> getPMIdsByIdAndType(List<String> ids, IdType type) throws BibliographicApiException {
+	public Set<String> getPMIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
 		return getConverterForIdsAndType(ids, type).records.stream()
 				.flatMap(r -> r.pmid.stream()).filter(o -> !o.isEmpty())
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 	}
 	
 	public static enum IdType {

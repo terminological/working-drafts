@@ -43,6 +43,7 @@ import uk.co.terminological.pubmedclient.EntrezClient.ELinksQueryBuilder;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import uk.co.terminological.pubmedclient.EntrezResult.Search;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 import uk.co.terminological.pubmedclient.IdConverterClient.Record;
@@ -134,16 +135,19 @@ public class PubMedGraphExperiment2 {
 		
 		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
 		Set<String> loadedPMIDs = entries.get().stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
+		
 		Set<String> loadedDois = entries.get().stream().flatMap(e -> e.getDoi().stream()).collect(Collectors.toSet());
 		
 		toPMIDs.removeAll(loadedPMIDs);
+		//fetch all the entries that were pointed to by pmid citations
+		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs,false);
+		entries2.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f)));
 		
-		fetchPubMedEntries(toPMIDs,false);
-		
+		//fetch all doi cross references
 		Set<String> toDois = findCrossRefReferencesFromNodes(loadedDois);
 		
 		toDois.removeAll(loadedDois);
-		
+		Set<String> morePmids = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
 		
 		
 		graphApi.waitAndShutdown();
@@ -200,24 +204,16 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	List<Node> fetchPubMedEntries(Collection<String> pmids, boolean originalSearch) {
-		List<Node> out = new ArrayList<>();
+	Set<PubMedEntry> fetchPubMedEntries(Collection<String> pmids, boolean originalSearch) {
 		try {
 			PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(pmids);
-			out = mapEntriesToNode(entries, graphApi, earliest, latest, originalSearch);
-
-			Map<String,String> pmids2dois = new HashMap<>();
-			entries.stream().forEach(entry -> {
-				if (entry.getPMID().isPresent() && entry.getDoi().isPresent()) {
-					pmids2dois.put(entry.getPMID().get(), entry.getDoi().get());
-				}
-			});
-
-
+			mapEntriesToNode(entries, graphApi, earliest, latest, originalSearch);
+			return entries.stream().collect(Collectors.toSet());
+			;
 		} catch (BibliographicApiException e) {
 			e.printStackTrace();
 		}
-		return out;
+		return Collections.emptySet();
 	}
 
 
