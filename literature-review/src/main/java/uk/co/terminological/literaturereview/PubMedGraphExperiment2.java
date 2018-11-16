@@ -36,7 +36,9 @@ import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
+import uk.co.terminological.pubmedclient.EntrezClient.ELinksQueryBuilder;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
+import uk.co.terminological.pubmedclient.EntrezResult.Links;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.Search;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
@@ -125,8 +127,28 @@ public class PubMedGraphExperiment2 {
 		List<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toList());
 		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, EXPAND, graphApi);
 		
-		
-		
+		try {
+			Links tmp = biblioApi.getEntrez().buildLinksQueryForSearchResult(broadSearch.get(), Database.PUBMED)
+				.toDatabase(Database.PUBMED)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pubmed_pubmed_refs")
+				.execute().get();
+			mapPubMedCentralReferences(tmp.stream().collect(Collectors.toList()), graphApi);
+		} catch (BibliographicApiException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			Links tmp = biblioApi.getEntrez().buildLinksQueryForSearchResult(broadSearch.get(), Database.PUBMED)
+				.toDatabase(Database.PUBMED)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pubmed_pubmed_citedin")
+				.execute().get();
+			mapPubMedCentralReferences(tmp.stream().collect(Collectors.toList()), graphApi);
+		} catch (BibliographicApiException e) {
+			e.printStackTrace();
+		}
+
 		
 		graphApi.waitAndShutdown();
 
@@ -210,14 +232,21 @@ public class PubMedGraphExperiment2 {
 		return Collections.emptyList();
 	}
 
+	
+	List<Link> findPMCReferencesFromNodes(List<String> pmids) {
+		return findPMCReferencesFromNodes(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
+	}
 
+	List<Link> findPMCReferencesFromNodes(Search search) {
+		return findPMCReferencesFromNodes(biblioApi.getEntrez().buildLinksQueryForSearchResult(search, Database.PUBMED));
+	}
+	
 	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pubmed&id=212403&cmd=neighbor&linkname=pmc_refs_pubmed
 	// provides pubmed ids for all citations if has a pmc id
-	List<Link> findPMCReferencesFromNodes(List<String> pmids) {
+	List<Link> findPMCReferencesFromNodes(ELinksQueryBuilder elqb) {
 		try {
 
-			List<Link> tmp = biblioApi.getEntrez()
-					.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+			List<Link> tmp = elqb
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_refs")
@@ -229,8 +258,7 @@ public class PubMedGraphExperiment2 {
 
 			mapPubMedCentralReferences(tmp, graphApi);
 
-			List<Link> tmp2 = biblioApi.getEntrez()
-					.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+			List<Link> tmp2 = elqb
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_citedin")
