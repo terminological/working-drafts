@@ -15,8 +15,6 @@ import gov.nih.nlm.ncbi.eutils.generated.elink.IdUrlSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSet;
 import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.Count;
-import gov.nih.nlm.ncbi.eutils.generated.esearch.ESearchResult;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 

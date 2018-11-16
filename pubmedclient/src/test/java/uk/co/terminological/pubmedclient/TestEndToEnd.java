@@ -40,8 +40,8 @@ public class TestEndToEnd {
 				LocalDate.of(2016, 01, 1), 
 				LocalDate.of(2017, 01, 1)).execute().get();
 		
-		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds()).stream().flatMap(pme -> pme.getDoi().stream()).collect(Collectors.toList());
-		List<String> dois = mapper.getDoisByIdAndType(result.getIds(), IdType.PMID);
+		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds().collect(Collectors.toList())).stream().flatMap(pme -> pme.getDoi().stream()).collect(Collectors.toList());
+		List<String> dois = mapper.getDoisByIdAndType(result.getIds().collect(Collectors.toList()), IdType.PMID);
 
 		List<String> tmp = new ArrayList<>(dois2);
 		tmp.removeAll(dois);
