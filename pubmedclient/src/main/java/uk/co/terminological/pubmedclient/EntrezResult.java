@@ -17,6 +17,7 @@ import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
 import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.pubmedclient.EntrezClient.Database;
 
 public class EntrezResult {
 

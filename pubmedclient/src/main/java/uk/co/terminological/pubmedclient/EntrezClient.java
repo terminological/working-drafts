@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -216,7 +217,7 @@ public class EntrezClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public EntrezResult.PubMedEntries getPMEntriesByPMIds(List<String> pmids) throws BibliographicApiException {
+	public EntrezResult.PubMedEntries getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
 		if (pmids.isEmpty()) return EntrezResult.PubMedEntries.empty(); 
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
@@ -284,7 +285,7 @@ public class EntrezClient {
 	 * @param list of ids
 	 * @return
 	 */
-	public Optional<InputStream> getXMLByIdsAndDatabase(List<String> ids,Database db) {
+	public Optional<InputStream> getXMLByIdsAndDatabase(Collection<String> ids,Database db) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("db", db.name().toLowerCase());
 		params.add("retmode", "xml");
@@ -303,7 +304,7 @@ public class EntrezClient {
 	 * Elinks
 	 * @return
 	 */
-	public ELinksQueryBuilder buildLinksQueryForIdsAndDatabase(List<String> ids, Database fromDb) {
+	public ELinksQueryBuilder buildLinksQueryForIdsAndDatabase(Collection<String> ids, Database fromDb) {
 		return new ELinksQueryBuilder(defaultApiParams(),ids, fromDb, this);
 	}
 
@@ -322,7 +323,7 @@ public class EntrezClient {
 			return tdmCopy.queryParams(searchParams);
 		}
 
-		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, List<String> ids, Database fromDb, EntrezClient client) {
+		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, Collection<String> ids, Database fromDb, EntrezClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.add("dbfrom", fromDb.name().toLowerCase());
 			this.searchParams.add("cmd", "neighbour_score");
@@ -425,7 +426,7 @@ public class EntrezClient {
 		return out;
 	}
 
-	public Map<String,String> getPubMedCentralIdsByPMId(List<String> pmids) throws BibliographicApiException {
+	public Map<String,String> getPubMedCentralIdsByPMId(Collection<String> pmids) throws BibliographicApiException {
 		Map<String,String> out = new HashMap<>();
 		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 				.toDatabase(Database.PMC)
@@ -437,7 +438,7 @@ public class EntrezClient {
 		return out;
 	}
 
-	public Map<String,String> getReferencedPMIdsByPMId(List<String> pmids) throws BibliographicApiException {
+	public Map<String,String> getReferencedPMIdsByPMId(Collection<String> pmids) throws BibliographicApiException {
 		Map<String,String> out = new HashMap<>();
 		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 				.toDatabase(Database.PUBMED)

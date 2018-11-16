@@ -18,10 +18,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
@@ -109,7 +111,7 @@ public class PubMedGraphExperiment2 {
 		}
 
 		//TODO: Main loop
-		Optional<Search> broadSearch = searchPubMed(this.broaderSearch);
+		Optional<Search> broadSearch = fullSearchPubMed(this.broaderSearch);
 		Optional<Search> narrowSearchIds = searchPubMed(this.search);
 
 		Optional<PubMedEntries> entries = broadSearch.flatMap(s -> {
@@ -126,8 +128,18 @@ public class PubMedGraphExperiment2 {
 		
 		List<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toList());
 		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, ORIGINAL_SEARCH, graphApi);
-		findPMCReferencesFromNodes(broadSearch.get());
+		List<Link> links = findPMCReferencesFromNodes(broadSearch.get());
 
+		
+		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
+		Set<String> loadedPMIDs = entries.get().stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
+		Set<String> loadedDois = entries.get().stream().flatMap(e -> e.getDoi().stream()).collect(Collectors.toSet());
+		
+		toPMIDs.removeAll(loadedPMIDs);
+		
+		Set<String> toDois = findCrossRefReferencesFromNodes(loadedDois);
+		
+		toDois.removeAll(loadedDois);
 		
 		graphApi.waitAndShutdown();
 
@@ -148,6 +160,19 @@ public class PubMedGraphExperiment2 {
 		}
 	}
 
+	Optional<Search> fullSearchPubMed(String search) {
+		try {
+			Optional<Search> tmp = biblioApi.getEntrez()
+					.buildSearchQuery(search)
+					.execute();
+
+			log.info("Pubmed search found: "+tmp.flatMap(o -> o.count()).orElse(0)+" results");
+			return tmp;
+		} catch (BibliographicApiException e) {
+			e.printStackTrace();
+			return Optional.empty();
+		}
+	}
 
 	List<Record> lookupIds(List<String> ids, IdType ofType) {
 		List<Record> out = new ArrayList<>();
@@ -264,7 +289,8 @@ public class PubMedGraphExperiment2 {
 	//provides pmc articles citing this pmc article	
 
 
-	List<Relationship> findCrossRefReferencesFromNodes(List<String> dois) {
+	Set<String> findCrossRefReferencesFromNodes(Set<String> dois) {
+		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
 				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
@@ -274,12 +300,13 @@ public class PubMedGraphExperiment2 {
 						.flatMap(r -> r.DOI.stream())
 						.collect(Collectors.toList());
 				log.info("Crossref found "+referencedDois.size()+" articles related to: "+doi);
-				return mapCrossRefReferences(doi,referencedDois,graphApi);
+				mapCrossRefReferences(doi,referencedDois,graphApi);
+				outDois.addAll(referencedDois);
 			} catch (BibliographicApiException e) {
 				e.printStackTrace();
 			}
 		}
-		return Collections.emptyList();
+		return outDois;
 	}
 
 
