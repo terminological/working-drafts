@@ -26,21 +26,29 @@ public class PubMedGraphSchema {
 	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE, HAS_RELATED
 	}
 	
+	public static class Props {
+		public static String PMID = "pmid";
+		public static String DOI = "doi";
+		public static String PMCID = "pmcid";
+		public static String AUTHOR_ID = "identifier";
+		public static String MESH_CODE = "code";
+		
+	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {
 		
 		try ( Transaction tx = graph.get().beginTx() )
 		{
 		    Schema schema = graph.get().schema();
-		    schema.indexFor( Labels.ARTICLE ).on( "pmid" ).create();
-		    schema.indexFor( Labels.ARTICLE ).on( "doi" ).create();
-		    schema.indexFor( Labels.ARTICLE ).on( "pmcid" ).create();
-		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("pmid");
-		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("doi");
-		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique("pmcid");
-		    schema.indexFor( Labels.AUTHOR ).on( "identifier" ).create();
-		    schema.indexFor( Labels.MESH_CODE ).on( "code" ).create();
-		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique("code");
+		    schema.indexFor( Labels.ARTICLE ).on( Props.PMID ).create();
+		    schema.indexFor( Labels.ARTICLE ).on( Props.DOI ).create();
+		    schema.indexFor( Labels.ARTICLE ).on( Props.PMCID ).create();
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.PMID );
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.DOI );
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.PMCID );
+		    schema.indexFor( Labels.AUTHOR ).on( Props.AUTHOR_ID ).create();
+		    schema.indexFor( Labels.MESH_CODE ).on( Props.MESH_CODE ).create();
+		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique( Props.MESH_CODE );
 		    tx.success();
 		}
 	}
