@@ -254,7 +254,7 @@ public class PubMedGraphExperiment2 {
 					.execute().stream()
 					.flatMap(o -> o.stream()).collect(Collectors.toList());
 
-			log.info("Entrez found "+tmp.size()+" pubmed articles referenced by "+pmids.size()+" pubmed articles");
+			log.info("Entrez found "+tmp.size()+" pubmed articles referenced by pubmed articles");
 
 			mapPubMedCentralReferences(tmp, graphApi);
 
@@ -266,7 +266,7 @@ public class PubMedGraphExperiment2 {
 					.execute().stream()
 					.flatMap(o -> o.stream()).collect(Collectors.toList());
 
-			log.info("Entrez found "+tmp2.size()+" pubmed articles citing "+pmids.size()+" pubmed article");
+			log.info("Entrez found "+tmp2.size()+" pubmed articles citing pubmed articles");
 
 			mapPubMedCentralCitedBy(tmp2, graphApi);
 
