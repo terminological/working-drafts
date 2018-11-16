@@ -171,23 +171,23 @@ public class PubMedGraphExperiment {
 
 	}
 
-	static EventGenerator<List<String>> searchPubMed(String search, LocalDate earliest, LocalDate latest) {
+	static EventGenerator<Set<String>> searchPubMed(String search, LocalDate earliest, LocalDate latest) {
 		return Generators.generator(search, 
 				PUBMED_SEARCHER, 
 				g -> {
 					try {
-						List<String> tmp = g.getEventBus().getApi(BibliographicApis.class).get()
+						Set<String> tmp = g.getEventBus().getApi(BibliographicApis.class).get()
 								.getEntrez()
 								.buildSearchQuery(search)
 								.betweenDates(earliest, latest)
-								.execute().get().getIds().collect(Collectors.toList());
+								.execute().get().getIds().collect(Collectors.toSet());
 								
 						g.getEventBus().logInfo("Pubmed search found: "+tmp.size()+" results");
 						//tmp = tmp.subList(0, 10);
 						return tmp;
 					} catch (BibliographicApiException e) {
 						g.getEventBus().handleException(e);
-						return Collections.emptyList();
+						return Collections.emptySet();
 					}
 				},
 				name -> ORIGINAL_SEARCH, 
@@ -288,7 +288,7 @@ public class PubMedGraphExperiment {
 
 	
 
-	static EventProcessor<List<String>> fetchPubMedEntries(LocalDate earliest, LocalDate latest) {
+	static EventProcessor<Set<String>> fetchPubMedEntries(LocalDate earliest, LocalDate latest) {
 		return Handlers.eventProcessor(PUBMED_FETCHER, 
 				Predicates.matchType(PUBMED_SEARCH_RESULT), 
 				(event,context) -> {
