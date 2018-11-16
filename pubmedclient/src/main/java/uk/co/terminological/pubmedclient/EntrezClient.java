@@ -308,7 +308,7 @@ public class EntrezClient {
 	}
 
 	public ELinksQueryBuilder buildLinksQueryForSearchResult(Search search, Database fromDb) {
-		return new ELinksQueryBuilder(defaultApiParams(), search, fromDb, this);
+		return new ELinksQueryBuilder(defaultApiParams(), search.getWebEnv().get(), search.getQueryKey().get(),fromDb, this);
 	}
 	
 	public static class ELinksQueryBuilder {
