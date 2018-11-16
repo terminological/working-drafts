@@ -47,7 +47,6 @@ public class EntrezClient {
 	private WebResource eSearchResource;
 	private WebResource eFetchResource;
 	private WebResource eLinkResource;
-	private JAXBContext jcSearch;
 	private JAXBContext jcLink;
 	private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(EntrezClient.class);
@@ -76,10 +75,7 @@ public class EntrezClient {
 		eFetchResource = client.resource(this.baseUrl + EFETCH);
 		eLinkResource = client.resource(this.baseUrl + ELINK);
 		try {
-			jcSearch = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.esearch");
-			
 			jcLink = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.elink");
-			
 		} catch (JAXBException e) {
 			throw new RuntimeException("Problem initialising JAXB",e);
 		}
