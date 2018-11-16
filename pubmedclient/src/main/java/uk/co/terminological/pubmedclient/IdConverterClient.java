@@ -62,6 +62,7 @@ public class IdConverterClient {
 		return getMapping(id, Optional.of(type));
 	}
 	
+	// Batches the calls to groups of max 200 ids
 	private Result getMapping(Collection<String> id2, Optional<IdType> idType) throws BibliographicApiException {
 		List<String> id = new ArrayList<String>(id2);
 		Result out = null;
@@ -79,6 +80,7 @@ public class IdConverterClient {
 		return out;
 	}
 	
+	//TODO: Change to list of records
 	private Result doCall(Collection<String> id, Optional<IdType> idType) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
