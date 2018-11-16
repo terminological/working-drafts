@@ -119,6 +119,7 @@ public class EntrezClient {
 			if (searchTerm.isEmpty()) empty=true;
 			this.searchParams.add("db", "pubmed");
 			this.searchParams.add("retmax", "100000");
+			this.searchParams.add("usehistory", "y");
 			this.client = client;
 		}
 
@@ -160,12 +161,6 @@ public class EntrezClient {
 			return this;
 		}
 		
-		public ESearchQueryBuilder useHistory() {
-			searchParams.remove("usehistory");
-			this.searchParams.add("usehistory", "y");
-			return this;
-		}
-
 		public Optional<EntrezResult.Search> execute() throws BibliographicApiException {
 			if (empty) return Optional.empty();
 			return Optional.of(client.search(this));

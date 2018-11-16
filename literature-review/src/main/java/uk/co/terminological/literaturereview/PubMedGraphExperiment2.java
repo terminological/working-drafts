@@ -34,6 +34,7 @@ import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.EntrezResult.Search;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 import uk.co.terminological.pubmedclient.IdConverterClient.Record;
 
@@ -102,27 +103,33 @@ public class PubMedGraphExperiment2 {
 		}
 
 		//TODO: Main loop
-		List<String> broadSearchIds = searchPubMed(this.broaderSearch);
-		List<String> narrowSearchIds = searchPubMed(this.search);
+		Optional<Search> broadSearch = searchPubMed(this.broaderSearch);
+		Optional<Search> narrowSearchIds = searchPubMed(this.search);
 
-		
+		Optional<PubMedEntries> entries = broadSearch.flatMap(s -> {
+			try {
+				return s.getStoredResult(biblioApi.getEntrez());
+			} catch (BibliographicApiException e) {
+				return Optional.empty();
+			}
+		});
 		
 		graphApi.waitAndShutdown();
 
 	}
 
-	List<String> searchPubMed(String search) {
+	Optional<Search> searchPubMed(String search) {
 		try {
-			List<String> tmp = biblioApi.getEntrez()
+			Optional<Search> tmp = biblioApi.getEntrez()
 					.buildSearchQuery(search)
 					.betweenDates(earliest, latest)
-					.execute().get().getIds().collect(Collectors.toList());
+					.execute();
 
-			log.info("Pubmed search found: "+tmp.size()+" results");
+			log.info("Pubmed search found: "+tmp.flatMap(o -> o.count()).orElse(0)+" results");
 			return tmp;
 		} catch (BibliographicApiException e) {
 			e.printStackTrace();
-			return Collections.emptyList();
+			return Optional.empty();
 		}
 	}
 
