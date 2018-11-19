@@ -64,7 +64,9 @@ public class PubMedGraphExperiment2 {
 		Properties prop = System.getProperties();
 		prop.load(Files.newInputStream(propPath));
 
-		new PubMedGraphExperiment2(prop).execute();
+		PubMedGraphExperiment2 tmp = new PubMedGraphExperiment2(prop);
+		//tmp.execute();
+		tmp.graphApi.waitAndShutdown();
 	}
 
 	private Path secretsPath;
@@ -213,7 +215,7 @@ public class PubMedGraphExperiment2 {
 		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
 		
-		graphApi.waitAndShutdown();
+		
 
 	}
 
