@@ -247,12 +247,17 @@ public class EntrezResult {
 	public static class Links {
 
 		private XmlElement raw;
-		public Links(XmlElement raw) throws XmlException {this.raw=raw; convert();}
+		public Links(XmlElement raw) throws XmlException {
+			this.raw=raw; 
+			convert();
+		}
 		public XmlElement raw() {return raw;}
 
 		private List<Link> links;
 
-		public Stream<Link> stream() {return links.stream();}
+		public Stream<Link> stream() {
+			return links.stream();
+		}
 
 		private void convert() throws XmlException {
 			links = new ArrayList<Link>();
