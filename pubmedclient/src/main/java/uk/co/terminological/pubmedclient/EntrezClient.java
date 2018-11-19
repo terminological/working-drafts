@@ -403,16 +403,17 @@ public class EntrezClient {
 		logger.debug("making elink query with params {}", builder.toString());
 		rateLimiter.consume();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
-		ELinkResult linkResult;
 		try {
-			Unmarshaller linkUnmarshaller = jcLink.createUnmarshaller();
-			linkResult = (ELinkResult) linkUnmarshaller.unmarshal(is);
+			Xml resp = Xml.fromStream(is);
 			is.close();
+			return new EntrezResult.Links(resp.content());
+			
+			
 
-		} catch (JAXBException | IOException e1) {
+		} catch (XmlException | IOException e1) {
 			throw new BibliographicApiException("could not parse result",e1);
-		}
-		return new EntrezResult.Links(linkResult);
+		} 
+		
 	}
 
 	public Map<String,Long> getSimilarScoredPMIdsByPMId(String pmid) throws BibliographicApiException {

@@ -247,16 +247,16 @@ public class EntrezResult {
 	public static class Links {
 
 		private XmlElement raw;
-		public Links(XmlElement raw) {this.raw=raw; convert();}
+		public Links(XmlElement raw) throws XmlException {this.raw=raw; convert();}
 		public XmlElement raw() {return raw;}
 
 		private List<Link> links;
 
 		public Stream<Link> stream() {return links.stream();}
 
-		private void convert() {
+		private void convert() throws XmlException {
 			links = new ArrayList<Link>();
-			try {
+			
 				for (XmlElement linkSet: raw.doXpath(".//LinkSet").getMany(XmlElement.class)) {
 
 					Optional<String> dbFrom = linkSet.doXpath("./DbFrom").get(XmlElement.class).flatMap(el -> el.getTextContent());
@@ -296,9 +296,7 @@ public class EntrezResult {
 
 					
 				}
-			} catch (XmlException e) {
-				throw new RuntimeException(e);
-			}
+			
 		}
 
 
