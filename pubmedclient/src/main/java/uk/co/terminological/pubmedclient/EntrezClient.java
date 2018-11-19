@@ -398,7 +398,7 @@ public class EntrezClient {
 	public EntrezResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
 		logger.debug("making elink query with params {}", builder.toString());
 		rateLimiter.consume();
-		InputStream is = builder.get(eLinkResource).post(InputStream.class);
+		InputStream is = builder.post(eLinkResource, InputStream.class);
 		try {
 			
 			Xml resp = Xml.fromStream(is);
