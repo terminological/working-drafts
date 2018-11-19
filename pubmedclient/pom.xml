@@ -205,9 +205,9 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>${project.build.directory}/generated-sources/xjc/1</source>
+								<!-- <source>${project.build.directory}/generated-sources/xjc/1</source> -->
 								<!-- <source>${project.build.directory}/generated-sources/xjc/2</source> -->
-								<source>${project.build.directory}/generated-sources/xjc/3</source>
+								<!-- <source>${project.build.directory}/generated-sources/xjc/3</source> -->
 							</sources>
 						</configuration>
 					</execution>
