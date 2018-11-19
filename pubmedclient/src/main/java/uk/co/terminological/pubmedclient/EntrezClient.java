@@ -28,7 +28,6 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
-import uk.co.terminological.pubmedclient.EntrezResult.Search;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
