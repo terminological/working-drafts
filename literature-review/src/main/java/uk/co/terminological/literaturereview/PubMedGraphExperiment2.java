@@ -65,7 +65,7 @@ public class PubMedGraphExperiment2 {
 		prop.load(Files.newInputStream(propPath));
 
 		PubMedGraphExperiment2 tmp = new PubMedGraphExperiment2(prop);
-		//tmp.execute();
+		tmp.execute();
 		tmp.graphApi.waitAndShutdown();
 	}
 
