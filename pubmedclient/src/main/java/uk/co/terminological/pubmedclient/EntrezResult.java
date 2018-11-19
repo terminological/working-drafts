@@ -247,9 +247,9 @@ public class EntrezResult {
 	//TODO: convert away from JAXB to XPath binding.
 	public static class Links {
 
-		private ELinkResult raw;
-		public Links(ELinkResult raw) {this.raw	=raw; convert();}
-		public ELinkResult raw() {return raw;}
+		private XmlElement raw;
+		public Links(XmlElement raw) {this.raw=raw; convert();}
+		public XmlElement raw() {return raw;}
 
 		private List<Link> links;
 
@@ -257,8 +257,27 @@ public class EntrezResult {
 
 		private void convert() {
 			links = new ArrayList<Link>();
-			for (LinkSet ls: raw.getLinkSet()) {
+			for (XmlElement linkSet: raw.doXpath(".//LinkSet").getMany(XmlElement.class)) {
 
+				Optional<String> dbFrom = linkSet.doXpath("./DbFrom").getOne(XmlElement.class).getTextContent();
+				Optional<String> fromId = linkSet.doXpath("./IdList/Id").getOne(XmlElement.class).getTextContent();
+				
+				for (XmlElement linkSetDb: linkSet.doXpath("./LinkSetDb").getMany(XmlElement.class)) {
+					
+					Optional<String> dbTo = linkSetDb.doXpath("./DbTo").getOne(XmlElement.class).getTextContent();
+					Optional<String> linkName = linkSetDb.doXpath("./LinkName").getOne(XmlElement.class).getTextContent();
+					
+					for (XmlElement linkId: linkSetDb.doXpath("./Link/Id").getMany(XmlElement.class)) {
+						
+						Optional<String> toId = linkId.getTextContent();
+						if (dbFrom.isPresent() && fromId.isPresent() && toId.isPresent()) {
+							links.add(new Link(dbFrom.get(),fromId.get(),linkName,dbTo,toId));
+						}
+						
+					}
+					
+				}
+				
 				Optional<Id> idListId = ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
 						.filter(o -> o instanceof gov.nih.nlm.ncbi.eutils.generated.elink.IdList)
 						.map(o -> (gov.nih.nlm.ncbi.eutils.generated.elink.IdList) o)
@@ -330,13 +349,13 @@ public class EntrezResult {
 			this.toDbOrUrl = objUrl.getUrl();
 		}
 
-		protected Link(LinkSet linkSet, Id fromId, LinkSetDb linkSetDb, gov.nih.nlm.ncbi.eutils.generated.elink.Link link) {
-			this.fromDb = linkSet.getDbFrom();
-			this.fromId = fromId.getvalue();
-			this.typeOrCategory = Optional.of(linkSetDb.getLinkName());
-			this.toDbOrUrl = linkSetDb.getDbTo();
-			this.toId = Optional.of(link.getId().getvalue());
-			this.score = Optional.ofNullable(link.getScore()).map(sc -> Long.parseLong(sc));
+		protected Link(String fromDb, String fromId, Optional<String> type, Optional<String> toDb, String toId) {
+			this.fromDb = fromDb;
+			this.fromId = fromId;
+			this.typeOrCategory = type;
+			this.toDbOrUrl = toDb.orElse(fromDb);
+			this.toId = Optional.of(toId);
+			this.score = Optional.empty();
 		}
 
 		public String toString() {
