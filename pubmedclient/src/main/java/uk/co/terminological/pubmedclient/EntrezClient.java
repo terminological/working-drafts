@@ -14,9 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
@@ -27,7 +25,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
@@ -49,7 +46,6 @@ public class EntrezClient {
 	private WebResource eSearchResource;
 	private WebResource eFetchResource;
 	private WebResource eLinkResource;
-	private JAXBContext jcLink;
 	private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(EntrezClient.class);
 	private static final String ESEARCH = "esearch.fcgi";
@@ -76,11 +72,6 @@ public class EntrezClient {
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
 		eFetchResource = client.resource(this.baseUrl + EFETCH);
 		eLinkResource = client.resource(this.baseUrl + ELINK);
-		try {
-			jcLink = JAXBContext.newInstance("gov.nih.nlm.ncbi.eutils.generated.elink");
-		} catch (JAXBException e) {
-			throw new RuntimeException("Problem initialising JAXB",e);
-		}
 		this.apiKey = apiKey;
 		this.appId = appId;
 		this.developerEmail = developerEmail;
