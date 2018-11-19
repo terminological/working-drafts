@@ -314,6 +314,11 @@ public class EntrezClient {
 			return tdmCopy.queryParams(searchParams);
 		}
 
+		protected <X> X post(WebResource searchService, Class<X> output) {
+			WebResource tdmCopy = searchService;
+			return tdmCopy.post(output,searchParams);
+		}
+		
 		//TODO: use putSingle instead of add
 		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, Collection<String> ids, Database fromDb, EntrezClient client) {
 			this.searchParams = searchParams;
@@ -397,6 +402,7 @@ public class EntrezClient {
 		try {
 			
 			Xml resp = Xml.fromStream(is);
+			resp.doTransform().write(System.out);
 			is.close();
 			return new EntrezResult.Links(resp.content());
 			
