@@ -404,12 +404,11 @@ public class EntrezClient {
 		rateLimiter.consume();
 		InputStream is = builder.get(eLinkResource).post(InputStream.class);
 		try {
+			
 			Xml resp = Xml.fromStream(is);
 			is.close();
 			return new EntrezResult.Links(resp.content());
 			
-			
-
 		} catch (XmlException | IOException e1) {
 			throw new BibliographicApiException("could not parse result",e1);
 		} 
