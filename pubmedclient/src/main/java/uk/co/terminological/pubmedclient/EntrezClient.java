@@ -403,7 +403,6 @@ public class EntrezClient {
 		try {
 			
 			Xml resp = Xml.fromStream(is);
-			resp.doTransform().write(System.out);
 			is.close();
 			return new EntrezResult.Links(resp.content());
 			
