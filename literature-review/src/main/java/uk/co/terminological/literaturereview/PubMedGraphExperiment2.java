@@ -166,6 +166,7 @@ public class PubMedGraphExperiment2 {
 		toPMIDs.removeAll(loadedPMIDs);
 		log.info("Of which {} are articles outside of broad search",toPMIDs.size());
 		
+		/*
 		// fetch all the entries that were outside broader search but pointed to by pmid citations
 		// write these in as stubs.
 		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs);
@@ -214,7 +215,7 @@ public class PubMedGraphExperiment2 {
 		// TODO: Query graph for broader search nodes (labelled with EXPAND) that do not have any citations - these could be 
 		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
-		
+		*/
 		
 
 	}

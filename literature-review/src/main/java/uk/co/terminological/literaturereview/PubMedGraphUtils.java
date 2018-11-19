@@ -277,7 +277,7 @@ public class PubMedGraphUtils {
 	}
 	
 	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
-		logger.debug("Adding {} entries {}:{} <-{}- {}:{}",links.size(), outIdType, outLabel, relType, inIdType, inLabel);
+		logger.info("Adding {} entries {}:{} <-{}- {}:{}",links.size(), outIdType, outLabel, relType, inIdType, inLabel);
 		List<Relationship> out = new ArrayList<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
@@ -285,7 +285,7 @@ public class PubMedGraphUtils {
 			links.forEach(link -> { 
 				link.toId.ifPresent(toId -> {
 					Node start = doMerge(ARTICLE, inIdType, link.fromId, graph.get(), inLabel);
-					Node end = doMerge(ARTICLE, outIdType, link.toId.get(), graph.get(), outLabel);
+					Node end = doMerge(ARTICLE, outIdType, toId, graph.get(), outLabel);
 					Relationship tmp;
 					if (invert) {
 						tmp = end.createRelationshipTo(start, relType);
