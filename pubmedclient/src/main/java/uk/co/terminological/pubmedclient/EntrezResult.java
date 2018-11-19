@@ -8,16 +8,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nih.nlm.ncbi.eutils.generated.elink.ELinkResult;
-import gov.nih.nlm.ncbi.eutils.generated.elink.Id;
-import gov.nih.nlm.ncbi.eutils.generated.elink.IdUrlList;
-import gov.nih.nlm.ncbi.eutils.generated.elink.IdUrlSet;
-import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSet;
-import gov.nih.nlm.ncbi.eutils.generated.elink.LinkSetDb;
-import gov.nih.nlm.ncbi.eutils.generated.elink.ObjUrl;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
-import uk.co.terminological.pubmedclient.EntrezClient.Database;
 
 public class EntrezResult {
 
