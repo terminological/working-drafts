@@ -284,7 +284,7 @@ public class PubMedGraphUtils {
 
 			links.forEach(link -> { 
 				link.toId.ifPresent(toId -> {
-					Node start = doMerge(ARTICLE, inIdType, link.fromId,graph.get(), inLabel);
+					Node start = doMerge(ARTICLE, inIdType, link.fromId, graph.get(), inLabel);
 					Node end = doMerge(ARTICLE, outIdType, link.toId.get(), graph.get(), outLabel);
 					Relationship tmp;
 					if (invert) {
