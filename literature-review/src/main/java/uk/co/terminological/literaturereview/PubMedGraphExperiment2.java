@@ -159,7 +159,7 @@ public class PubMedGraphExperiment2 {
 		// and write them into database. crating stubs if required
 		// work out what pmids we already have written in graph from the broader search and which we need to get.
 		// TODO: could use the entrez history mechanism to do this in previous step
-		List<Link> links = findPMCReferencesFromSearch(broadSearch);
+		List<Link> links = findPMCReferencesFromPMIDs(broadSearch.getIds().collect(Collectors.toList()));
 		
 		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
 		toPMIDs.addAll(links.stream().map(l -> l.fromId).collect(Collectors.toSet()));
@@ -309,9 +309,9 @@ public class PubMedGraphExperiment2 {
 		return findPMCReferences(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
 	}
 
-	List<Link> findPMCReferencesFromSearch(Search search) {
+	/*List<Link> findPMCReferencesFromSearch(Search search) {
 		return findPMCReferences(biblioApi.getEntrez().buildLinksQueryForSearchResult(search, Database.PUBMED));
-	}
+	}*/
 	
 	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pubmed&id=212403&cmd=neighbor&linkname=pmc_refs_pubmed
 	// provides pubmed ids for all citations if has a pmc id

@@ -310,6 +310,7 @@ public class EntrezClient {
 		boolean empty = false;
 		EntrezClient client;
 
+		@Deprecated
 		protected WebResource get(WebResource searchService) {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
