@@ -280,7 +280,7 @@ public class EntrezResult {
 						
 					}
 					
-					for (XmlElement idUrlSet: linkSet.doXpath("./LinkSetDb").getMany(XmlElement.class)) { 
+					for (XmlElement idUrlSet: linkSet.doXpath("./IdUrlList").getMany(XmlElement.class)) { 
 						
 						fromId = idUrlSet.doXpath("./Id").get(XmlElement.class).flatMap(el -> el.getTextContent());
 						for (XmlElement objUrl: idUrlSet.doXpath("./ObjUrl").getMany(XmlElement.class)) {
