@@ -45,7 +45,7 @@ public class TestPubMedRestClient {
 		result.getIds().forEach(System.out::println);
 		
 		Links links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
-				.command(Command.PRLINKS)
+				.command(Command.LLINKS)
 				.execute().get();
 		
 		links.stream().forEach(System.out::println);
