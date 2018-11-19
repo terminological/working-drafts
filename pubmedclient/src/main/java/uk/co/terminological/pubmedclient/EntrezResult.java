@@ -244,7 +244,6 @@ public class EntrezResult {
 	}
 
 
-	//TODO: convert away from JAXB to XPath binding.
 	public static class Links {
 
 		private XmlElement raw;
@@ -257,58 +256,48 @@ public class EntrezResult {
 
 		private void convert() {
 			links = new ArrayList<Link>();
-			for (XmlElement linkSet: raw.doXpath(".//LinkSet").getMany(XmlElement.class)) {
+			try {
+				for (XmlElement linkSet: raw.doXpath(".//LinkSet").getMany(XmlElement.class)) {
 
-				Optional<String> dbFrom = linkSet.doXpath("./DbFrom").getOne(XmlElement.class).getTextContent();
-				Optional<String> fromId = linkSet.doXpath("./IdList/Id").getOne(XmlElement.class).getTextContent();
-				
-				for (XmlElement linkSetDb: linkSet.doXpath("./LinkSetDb").getMany(XmlElement.class)) {
+					Optional<String> dbFrom = linkSet.doXpath("./DbFrom").get(XmlElement.class).flatMap(el -> el.getTextContent());
+					Optional<String> fromId = linkSet.doXpath("./IdList/Id").get(XmlElement.class).flatMap(el -> el.getTextContent());
 					
-					Optional<String> dbTo = linkSetDb.doXpath("./DbTo").getOne(XmlElement.class).getTextContent();
-					Optional<String> linkName = linkSetDb.doXpath("./LinkName").getOne(XmlElement.class).getTextContent();
-					
-					for (XmlElement linkId: linkSetDb.doXpath("./Link/Id").getMany(XmlElement.class)) {
+					for (XmlElement linkSetDb: linkSet.doXpath("./LinkSetDb").getMany(XmlElement.class)) {
 						
-						Optional<String> toId = linkId.getTextContent();
-						if (dbFrom.isPresent() && fromId.isPresent() && toId.isPresent()) {
-							links.add(new Link(dbFrom.get(),fromId.get(),linkName,dbTo,toId));
+						Optional<String> dbTo = linkSetDb.doXpath("./DbTo").get(XmlElement.class).flatMap(el -> el.getTextContent());
+						Optional<String> linkName = linkSetDb.doXpath("./LinkName").get(XmlElement.class).flatMap(el -> el.getTextContent());
+						
+						for (XmlElement link: linkSetDb.doXpath("./Link").getMany(XmlElement.class)) {
+							
+							Optional<String> toId = link.doXpath("./Id").get(XmlElement.class).flatMap(el -> el.getTextContent());
+							Optional<Long> score = link.doXpath("./Score").get(XmlElement.class).flatMap(el -> el.getTextContent()).map(s -> Long.parseLong(s));
+							
+							if (dbFrom.isPresent() && fromId.isPresent() && toId.isPresent()) {
+								links.add(new Link(dbFrom.get(),fromId.get(),linkName,dbTo,toId.get(), score));
+							}
+							
 						}
 						
 					}
 					
-				}
-				
-				Optional<Id> idListId = ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR().stream()
-						.filter(o -> o instanceof gov.nih.nlm.ncbi.eutils.generated.elink.IdList)
-						.map(o -> (gov.nih.nlm.ncbi.eutils.generated.elink.IdList) o)
-						.flatMap(idl -> idl.getId().stream()).findFirst();
-
-
-				for (Object o: ls.getIdListOrLinkSetDbOrLinkSetDbHistoryOrWebEnvOrIdUrlListOrIdCheckListOrERROR()) {
-
-					if (o instanceof LinkSetDb) {
-						LinkSetDb lsd = ((LinkSetDb) o); 
-
-						lsd.getLinkOrInfo().stream()
-						.filter(o2 -> o2 instanceof gov.nih.nlm.ncbi.eutils.generated.elink.Link)
-						.map(o2 -> (gov.nih.nlm.ncbi.eutils.generated.elink.Link) o2)
-						.forEach(l -> links.add(
-								new Link(ls,idListId.get(),lsd,l)
-								));
-						;
-
-					} else if  (o instanceof IdUrlList) {
-
-						for (IdUrlSet ius: ((IdUrlList) o).getIdUrlSet()) {
-
-							ius.getObjUrlOrInfo().stream()
-							.filter(o3 -> o3 instanceof ObjUrl)
-							.map(o3 -> (ObjUrl) o3).forEach(
-									ou -> links.add(new Link(ls,ius,ou))
-									);
+					for (XmlElement idUrlSet: linkSet.doXpath("./LinkSetDb").getMany(XmlElement.class)) { 
+						
+						fromId = idUrlSet.doXpath("./Id").get(XmlElement.class).flatMap(el -> el.getTextContent());
+						for (XmlElement objUrl: idUrlSet.doXpath("./ObjUrl").getMany(XmlElement.class)) {
+							
+							Optional<String> category = objUrl.doXpath("./Category").get(XmlElement.class).flatMap(el -> el.getTextContent());
+							Optional<String> toUrl = objUrl.doXpath("./Url").get(XmlElement.class).flatMap(el -> el.getTextContent());
+							
+							if (dbFrom.isPresent() && fromId.isPresent() && toUrl.isPresent()) {
+								links.add(new Link(dbFrom.get(),fromId.get(),category,toUrl.get()));
+							}
 						}
 					}
+
+					
 				}
+			} catch (XmlException e) {
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -342,20 +331,20 @@ public class EntrezResult {
 		public String toDbOrUrl;
 		public Optional<String> toId = Optional.empty();
 
-		protected Link(LinkSet linkSet, IdUrlSet idUrlSet, ObjUrl objUrl) {
-			this.fromDb = linkSet.getDbFrom();
-			this.fromId = idUrlSet.getId().getvalue();
-			this.typeOrCategory = objUrl.getCategory().stream().findFirst().map(c -> c.getvalue());
-			this.toDbOrUrl = objUrl.getUrl();
+		protected Link(String dbFrom, String fromId, Optional<String> category, String toUrl) {
+			this.fromDb = dbFrom;
+			this.fromId = fromId;
+			this.typeOrCategory = category;
+			this.toDbOrUrl = toUrl;
 		}
 
-		protected Link(String fromDb, String fromId, Optional<String> type, Optional<String> toDb, String toId) {
+		protected Link(String fromDb, String fromId, Optional<String> type, Optional<String> toDb, String toId, Optional<Long> score) {
 			this.fromDb = fromDb;
 			this.fromId = fromId;
 			this.typeOrCategory = type;
 			this.toDbOrUrl = toDb.orElse(fromDb);
 			this.toId = Optional.of(toId);
-			this.score = Optional.empty();
+			this.score = score;
 		}
 
 		public String toString() {
