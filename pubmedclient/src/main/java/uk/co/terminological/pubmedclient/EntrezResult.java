@@ -295,6 +295,9 @@ public class EntrezResult {
 				}
 			
 		}
+		public List<Link> getLinks() {
+			return links;
+		}
 
 
 

@@ -160,7 +160,10 @@ public class PubMedGraphExperiment2 {
 		// work out what pmids we already have written in graph from the broader search and which we need to get.
 		// TODO: could use the entrez history mechanism to do this in previous step
 		List<Link> links = findPMCReferencesFromSearch(broadSearch);
+		
 		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
+		toPMIDs.addAll(links.stream().map(l -> l.fromId).collect(Collectors.toSet()));
+		
 		log.info("Pubmed broad search refer to {} articles",toPMIDs.size());
 		Set<String> loadedPMIDs = ent.stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
 		toPMIDs.removeAll(loadedPMIDs);
@@ -319,8 +322,7 @@ public class PubMedGraphExperiment2 {
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_refs")
-					.execute().stream()
-					.flatMap(o -> o.stream()).collect(Collectors.toList());
+					.execute().get().getLinks();
 
 			log.info("Entrez found "+tmp.size()+" pubmed articles referenced by pubmed articles");
 
@@ -330,8 +332,7 @@ public class PubMedGraphExperiment2 {
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_citedin")
-					.execute().stream()
-					.flatMap(o -> o.stream()).collect(Collectors.toList());
+					.execute().get().getLinks();
 
 			log.info("Entrez found "+tmp2.size()+" pubmed articles citing pubmed articles");
 
