@@ -1,14 +1,17 @@
 package uk.co.terminological.literaturereview;
 
+import static uk.co.terminological.datatypes.StreamExceptions.logWarn;
+import static uk.co.terminological.datatypes.StreamExceptions.tryRethrow;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ORIGINAL_SEARCH;
+import static uk.co.terminological.literaturereview.PubMedGraphSchema.Props.PMID;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapCrossRefReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralCitedBy;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubmedRelated;
-
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.*;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Props.*;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.*;
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.updateCrossRefMetadata;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,10 +21,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
@@ -29,19 +30,20 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
-import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
+import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import uk.co.terminological.pubmedclient.EntrezClient.ELinksQueryBuilder;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
-import uk.co.terminological.pubmedclient.EntrezResult.Links;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import uk.co.terminological.pubmedclient.EntrezResult.Search;
@@ -53,7 +55,7 @@ public class PubMedGraphExperiment2 {
 	static Logger log = LoggerFactory.getLogger(PubMedGraphExperiment2.class);
 
 
-	public static void main(String args[]) throws IOException {
+	public static void main(String args[]) throws IOException, BibliographicApiException {
 		BasicConfigurator.configure();
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
 
@@ -104,59 +106,111 @@ public class PubMedGraphExperiment2 {
 		return Paths.get(prop.getProperty(name).replace("~", System.getProperty("user.home")));
 	}
 
-	public void execute() throws IOException {
+	public void execute() throws IOException, BibliographicApiException {
 
 		log.error("Starting graphDb build");
 		
-		if (!graphApi.get().schema().getIndexes().iterator().hasNext()) {
+		//if (!graphApi.get().schema().getIndexes().iterator().hasNext()) {
 			PubMedGraphSchema.setupSchema(graphApi);
-		}
+		//}
 
 		//TODO: Main loop
-		Optional<Search> broadSearch = fullSearchPubMed(this.broaderSearch);
-		Optional<Search> narrowSearchIds = searchPubMed(this.search);
-
-		Optional<PubMedEntries> entries = broadSearch.flatMap(s -> {
-			try {
-				return s.getStoredResult(biblioApi.getEntrez());
-			} catch (BibliographicApiException e) {
-				return Optional.empty();
-			}
-		});
-		
-		entries.ifPresent(ent -> {
-			mapEntriesToNode(ent, graphApi, earliest, latest, false);
-		});
-		
-		List<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toList());
-		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, ORIGINAL_SEARCH, graphApi);
-		List<Link> links = findPMCReferencesFromNodes(broadSearch.get());
-
-		
-		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
-		Set<String> loadedPMIDs = entries.get().stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
-		
-		Set<String> loadedDois = entries.get().stream().flatMap(e -> e.getDoi().stream()).collect(Collectors.toSet());
-		
-		toPMIDs.removeAll(loadedPMIDs);
-		//fetch all the entries that were pointed to by pmid citations
-		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs,false);
-		entries2.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f)));
-		
-		//fetch all doi cross references
-		Set<String> toDois = findCrossRefReferencesFromNodes(loadedDois);
-		
-		toDois.removeAll(loadedDois);
-		
-		try {
 			
-			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
-			Set<PubMedEntry> entries3 = fetchPubMedEntries(morePMIDs,false);
-			entries3.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f)));
-			
-		} catch (BibliographicApiException e1) {
-			e1.printStackTrace();
+		try ( Transaction tx = graphApi.get().beginTx() ) {
+			PubMedGraphUtils.lockNode = graphApi.get().createNode();
+			tx.success();
 		}
+			
+		
+		//TODO: some problem with nodeId 1 - How Cognitive Machines Can Augment Medical Imaging
+		
+		// get search results for broad catch all terms without any date constraints.
+		// This may be a large set and shoudl be tested to be reasonable
+		Search broadSearch = fullSearchPubMed(this.broaderSearch).get();
+		log.info("Pubmed broad search found to {} articles with metadata",broadSearch.count().get());
+		
+		// once search is conducted use entrez history to retrieve result.
+		// and write the result into the graph
+		// TODO: what fields actually need to be written into graph?
+		// TODO: best to cache the results of this maybe, or at least save the answer for downstream?
+		PubMedEntries ent = broadSearch.getStoredResult(biblioApi.getEntrez()).get();
+		log.info("Pubmed broad search found to {} articles with metadata",ent.stream().count());
+		
+		mapEntriesToNode(ent, graphApi, earliest, latest, EXPAND);
+		Path tmp = workingDir.resolve("xml");
+		tryRethrow(tmp, t -> Files.createDirectories(t));
+		ent.stream().forEach(
+				logWarn(entry -> {
+					Path tmp2 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+					entry.getRaw().write(Files.newOutputStream(tmp2));
+		}));
+		
+		
+		// get narrow search result - date constrained specific search.
+		// the intersection of this set and the borader set will be tagged to make finding them easier.
+		Optional<Search> narrowSearchIds = searchPubMed(this.search);
+		Set<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toSet());
+		log.info("Pubmed narrow search refer to {} articles",pmids.size());
+		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, ORIGINAL_SEARCH, graphApi);
+		
+		// get all the links for the broad search using entrez history
+		// and write them into database. crating stubs if required
+		// work out what pmids we already have written in graph from the broader search and which we need to get.
+		// TODO: could use the entrez history mechanism to do this in previous step
+		List<Link> links = findPMCReferencesFromSearch(broadSearch);
+		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
+		log.info("Pubmed broad search refer to {} articles",toPMIDs.size());
+		Set<String> loadedPMIDs = ent.stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
+		toPMIDs.removeAll(loadedPMIDs);
+		log.info("Of which {} are articles outside of broad search",toPMIDs.size());
+		
+		// fetch all the entries that were outside broader search but pointed to by pmid citations
+		// write these in as stubs.
+		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs);
+		log.info("retrieved {} articles referred to in broad search",entries2.size());
+		
+		// now for DOIs...
+		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
+		Set<String> broadSearchDois = ent.stream().flatMap(e -> e.getDoi().stream()).collect(Collectors.toSet());
+		log.info("Pubmed broad search include {} articles with a doi",broadSearchDois.size());
+		//TODO: could lookup those without a doi in id cross reference - maybe the same data though.
+		Set<String> loadedDois = new HashSet<>(broadSearchDois);
+		loadedDois.addAll(entries2.stream().flatMap(e -> e.getDoi().stream()).collect(Collectors.toSet()));
+		log.info("With referenced articles there are {} articles with a doi",loadedDois.size()); 
+		
+		
+		// fetch all doi cross references for broader search, load into graph.
+		// and find all resulting dois that we do not already know about.
+		// TODO: chance that mapping api does not know about a PMID->DOI mapping that we do already know about via pubmed - does this matter?
+		Set<String> toDois = findCrossRefReferencesFromNodes(broadSearchDois);
+		log.info("Found {} dois, referred to by {} articles in broad search with doi", toDois.size(), broadSearchDois.size());
+		toDois.removeAll(loadedDois);
+		log.info("Of which {} are not yet known in the graph", toDois.size());
+		
+		// reverse lookup unknown dois that XRef found but are not already in the graph
+		// grab those from pubmed and update graph metadata
+		// TODO: will this be a massive number and need to be broken into batches?
+		log.info("Mapping {} dois back to pubmed",toDois.size()); 
+		tryRethrow( t -> {
+			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
+			Set<PubMedEntry> entries3 = fetchPubMedEntries(morePMIDs);
+			entries3.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f)));
+			log.info("Found additional {} pubmed entries",entries3.size());
+		}); 
+		
+		// There are some DOIs that will neither have been found by original pubmed searched or the pubmed id converter.
+		// We look them up in XRef
+		// TODO: Cache metadata entry in case
+		toDois.removeAll(loadedDois);
+		log.info("Looking up {} dois with metadata on Xref",toDois.size());
+		Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);
+		loadedDois.addAll(xrefSourced);
+		toDois.removeAll(xrefSourced);
+		log.info("Leaving {} dois with no metadata",toDois.size());
+		
+		// TODO: grab pdfs for broader search nodes (with EXPAND label) using unpaywall and broadSearchDois.
+		// TODO: Query graph for broader search nodes (labelled with EXPAND) that do not have any citations - these could be 
+		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
 		
 		graphApi.waitAndShutdown();
@@ -169,7 +223,6 @@ public class PubMedGraphExperiment2 {
 					.buildSearchQuery(search)
 					.betweenDates(earliest, latest)
 					.execute();
-
 			log.info("Pubmed search found: "+tmp.flatMap(o -> o.count()).orElse(0)+" results");
 			return tmp;
 		} catch (BibliographicApiException e) {
@@ -183,8 +236,7 @@ public class PubMedGraphExperiment2 {
 			Optional<Search> tmp = biblioApi.getEntrez()
 					.buildSearchQuery(search)
 					.execute();
-
-			log.info("Pubmed search found: "+tmp.flatMap(o -> o.count()).orElse(0)+" results");
+			log.debug("Pubmed search found: "+tmp.flatMap(o -> o.count()).orElse(0)+" results");
 			return tmp;
 		} catch (BibliographicApiException e) {
 			e.printStackTrace();
@@ -192,7 +244,7 @@ public class PubMedGraphExperiment2 {
 		}
 	}
 
-	List<Record> lookupIds(List<String> ids, IdType ofType) {
+	List<Record> lookupIdMapping(List<String> ids, IdType ofType) {
 		List<Record> out = new ArrayList<>();
 
 		try {
@@ -202,7 +254,7 @@ public class PubMedGraphExperiment2 {
 						.getConverterForIdsAndType(batchDois, ofType)
 						.records
 						;
-				log.info("Looked up "+batchDois.size()+" "+ofType.name()+" and found "+pmids.size()+" linked records");
+				log.debug("Looked up "+batchDois.size()+" "+ofType.name()+" and found "+pmids.size()+" linked records");
 				out.addAll(pmids);
 				ids.subList(0, Math.min(100, ids.size())).clear();
 			}
@@ -213,10 +265,10 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	Set<PubMedEntry> fetchPubMedEntries(Collection<String> pmids, boolean originalSearch) {
+	Set<PubMedEntry> fetchPubMedEntries(Collection<String> pmids, Label... labels) {
 		try {
 			PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(pmids);
-			mapEntriesToNode(entries, graphApi, earliest, latest, originalSearch);
+			mapEntriesToNode(entries, graphApi, earliest, latest, labels);
 			return entries.stream().collect(Collectors.toSet());
 			
 		} catch (BibliographicApiException e) {
@@ -226,7 +278,7 @@ public class PubMedGraphExperiment2 {
 	}
 
 
-	List<Relationship> findRelatedArticlesFromPMIDS(List<String> pmids, String searchWithin) {
+	List<Relationship> findRelatedArticlesFromPMIDs(List<String> pmids, String searchWithin) {
 		try {
 			List<Link> tmp = biblioApi.getEntrez()
 					.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
@@ -247,24 +299,23 @@ public class PubMedGraphExperiment2 {
 	}
 
 	
-	List<Link> findPMCReferencesFromNodes(List<String> pmids) {
-		return findPMCReferencesFromNodes(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
+	List<Link> findPMCReferencesFromPMIDs(List<String> pmids) {
+		return findPMCReferences(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
 	}
 
-	List<Link> findPMCReferencesFromNodes(Search search) {
-		return findPMCReferencesFromNodes(biblioApi.getEntrez().buildLinksQueryForSearchResult(search, Database.PUBMED));
+	List<Link> findPMCReferencesFromSearch(Search search) {
+		return findPMCReferences(biblioApi.getEntrez().buildLinksQueryForSearchResult(search, Database.PUBMED));
 	}
 	
 	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pubmed&id=212403&cmd=neighbor&linkname=pmc_refs_pubmed
 	// provides pubmed ids for all citations if has a pmc id
-	List<Link> findPMCReferencesFromNodes(ELinksQueryBuilder elqb) {
+	List<Link> findPMCReferences(ELinksQueryBuilder elqb) {
 		try {
 
 			List<Link> tmp = elqb
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_refs")
-					//.betweenDates(earliest, LocalDate.now())
 					.execute().stream()
 					.flatMap(o -> o.stream()).collect(Collectors.toList());
 
@@ -276,7 +327,6 @@ public class PubMedGraphExperiment2 {
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_citedin")
-					//.betweenDates(earliest, LocalDate.now())
 					.execute().stream()
 					.flatMap(o -> o.stream()).collect(Collectors.toList());
 
@@ -304,14 +354,13 @@ public class PubMedGraphExperiment2 {
 		for (String doi: dois) {
 			try {
 				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
-				List<String> referencedDois = tmp.stream()
+				List<Reference> referencedDois = tmp.stream()
 						.flatMap(t -> t.work.stream())
 						.flatMap(w -> w.reference.stream())
-						.flatMap(r -> r.DOI.stream())
 						.collect(Collectors.toList());
-				log.info("Crossref found "+referencedDois.size()+" articles related to: "+doi);
+				log.debug("Crossref found "+referencedDois.size()+" articles related to: "+doi);
 				mapCrossRefReferences(doi,referencedDois,graphApi);
-				outDois.addAll(referencedDois);
+				outDois.addAll(referencedDois.stream().flatMap(c -> c.DOI.stream()).collect(Collectors.toSet()));
 			} catch (BibliographicApiException e) {
 				e.printStackTrace();
 			}
@@ -319,8 +368,23 @@ public class PubMedGraphExperiment2 {
 		return outDois;
 	}
 
-
-
-
-
+	Set<String> updateMetadataFromCrossRef(Set<String> dois) {
+		Set<String> outDois = new HashSet<>();
+		for (String doi: dois) {
+			try {
+				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
+				tmp.ifPresent(t -> {
+					t.work.ifPresent(w -> {
+						Optional<String> out = updateCrossRefMetadata(w,graphApi);
+						out.ifPresent(o->outDois.add(o));
+						});
+				});
+			} catch (BibliographicApiException e) {
+				e.printStackTrace();
+			}
+		}
+		return outDois;
+	}
+	
+	
 }

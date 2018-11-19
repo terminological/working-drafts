@@ -225,7 +225,7 @@ public class EntrezClient {
 		fetchParams.add("format", "xml");
 		rateLimiter.consume();
 		logger.debug("making efetch query with params {}", fetchParams.toString());
-		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
+		InputStream is = eFetchResource.post(InputStream.class,fetchParams);
 		Xml xml;
 		try {
 			xml = Xml.fromStream(is);
@@ -243,7 +243,7 @@ public class EntrezClient {
 		fetchParams.add("WebEnv", webEnv);
 		rateLimiter.consume();
 		logger.debug("making efetch query with params {}", fetchParams.toString());
-		InputStream is = eFetchResource.queryParams(fetchParams).post(InputStream.class);
+		InputStream is = eFetchResource.post(InputStream.class,fetchParams);
 		Xml xml;
 		try {
 			xml = Xml.fromStream(is);
@@ -293,7 +293,7 @@ public class EntrezClient {
 		logger.debug("making efetch query with params {}", params.toString());
 		rateLimiter.consume();
 		try {
-			return Optional.of(eFetchResource.queryParams(params).post(InputStream.class));
+			return Optional.of(eFetchResource.post(InputStream.class,params));
 		} catch (Exception e) {
 			return Optional.empty();
 		}
@@ -323,11 +323,13 @@ public class EntrezClient {
 			return tdmCopy.queryParams(searchParams);
 		}
 
+		//TODO: use putSingle instead of add
 		protected ELinksQueryBuilder(MultivaluedMap<String, String> searchParams, Collection<String> ids, Database fromDb, EntrezClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.add("dbfrom", fromDb.name().toLowerCase());
 			this.searchParams.add("cmd", "neighbour_score");
 			this.searchParams.add("retmode", "xml");
+			this.searchParams.add("retmax", "100000");
 			ids.forEach(id -> this.searchParams.add("id", id));
 			if (ids.isEmpty()) empty=true;
 			this.client = client;
@@ -338,8 +340,9 @@ public class EntrezClient {
 			this.searchParams.add("dbfrom", fromDb.name().toLowerCase());
 			this.searchParams.add("cmd", "neighbour_score");
 			this.searchParams.add("retmode", "xml");
-			this.searchParams.add("WebEnv", "webEnv");
-			this.searchParams.add("query_key", "queryKey");
+			this.searchParams.add("WebEnv", webEnv);
+			this.searchParams.add("retmax", "100000");
+			this.searchParams.add("query_key", queryKey);
 			this.client = client;
 		}
 
@@ -356,13 +359,12 @@ public class EntrezClient {
 		}
 
 		public ELinksQueryBuilder withLinkname(String linkName) {
-			this.searchParams.add("linkname", linkName);
+			this.searchParams.putSingle("linkname", linkName);
 			return this;
 		}
 
 		public ELinksQueryBuilder searchLinked(String term) {
-			searchParams.remove("term");
-			this.searchParams.add("term", term);
+			this.searchParams.putSingle("term", term);
 			return this;
 		}
 

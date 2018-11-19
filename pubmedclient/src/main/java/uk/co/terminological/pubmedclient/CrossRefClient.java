@@ -43,7 +43,10 @@ public class CrossRefClient {
 	// http://tdmsupport.crossref.org/researchers/
 	// http://clickthroughsupport.crossref.org/
 	
-	
+	// XML format also available:
+	// http://api.crossref.org/works/10.1038/ncomms6976.xml
+	// http://api.crossref.org/works/10.1038/ncomms6976/transform/application/vnd.crossref.unixsd+xml
+	// http://www.crossref.org/schemas/crossref_query_output3.0.xsd
 	
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	

@@ -35,7 +35,7 @@ public class EntrezResult {
 
 		public Optional<Integer> count() {
 			try {
-				return raw.doXpath(".//Count").getOne(XmlElement.class).getTextContent().map(s -> Integer.parseInt(s));
+				return raw.doXpath("/eSearchResult/Count").getOne(XmlElement.class).getTextContent().map(s -> Integer.parseInt(s));
 			} catch (XmlException e) {
 				return Optional.empty();
 			}
@@ -213,7 +213,7 @@ public class EntrezResult {
 					.flatMap(o -> o.getTextContent().stream());
 		}
 		public String getIdentifier() {
-			return lastName().orElse(UUID.randomUUID().toString())+"_"+initials().orElse("unknown");
+			return (lastName().orElse(UUID.randomUUID().toString())+"_"+initials().orElse("unknown").substring(0, 1)).toLowerCase();
 		}
 		public String toString() {
 			return lastName().orElse("unknown")+", "+initials().orElse("unknown");

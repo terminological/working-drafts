@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
+import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -42,6 +43,7 @@ import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
+import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
@@ -301,7 +303,8 @@ public class PubMedGraphExperiment {
 								.getPMEntriesByPMIds(event.get());
 
 						boolean originalSearch = event.getMetadata().name().orElse("none").equals(ORIGINAL_SEARCH);
-						mapEntriesToNode(entries, graph, earliest, latest, originalSearch);
+						 
+						mapEntriesToNode(entries, graph, earliest, latest, originalSearch ? new Label[] {EXPAND} : new Label[] {});
 						
 						entries.stream().forEach(entry -> {
 							
@@ -456,10 +459,9 @@ public class PubMedGraphExperiment {
 									t.work.ifPresent(work -> context.send(
 									Events.namedTypedEvent(work,doi,XREF_FETCH_RESULT)
 								)));
-							List<String> referencedDois = tmp.stream()
+							List<Reference> referencedDois = tmp.stream()
 								.flatMap(t -> t.work.stream())
 								.flatMap(w -> w.reference.stream())
-								.flatMap(r -> r.DOI.stream())
 								.collect(Collectors.toList());
 							context.getEventBus().logInfo("Crossref found "+referencedDois.size()+" articles related to: "+doi);
 							mapCrossRefReferences(doi,referencedDois,graph);

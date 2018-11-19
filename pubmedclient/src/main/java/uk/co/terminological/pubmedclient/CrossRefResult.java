@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -145,6 +146,10 @@ public class CrossRefResult {
 		@JsonProperty("ORCID") public Optional<URL> ORCID = Optional.empty(); // No-URL-form of an ORCID identifier
 		@JsonProperty("authenticated-orcid") public Optional<Boolean> authenticatedOrcid = Optional.empty(); // No-If true, record owner asserts that the ORCID user completed ORCID OAuth authentication
 		@JsonProperty("affiliation") public List<Affiliation> affiliation = Collections.emptyList(); // No-
+		
+		public String getIdentifier() {
+			return (family.orElse(UUID.randomUUID().toString())+"_"+given.orElse("unknown").substring(0, 1)).toLowerCase();
+		}
 	}
 
 	public static class Affiliation extends ExtensibleJson {

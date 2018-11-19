@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
@@ -43,19 +44,19 @@ public class TestPubMedRestClient {
 		
 		result.getIds().forEach(System.out::println);
 		
-		Links links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds(), Database.PUBMED)
+		Links links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
 				.command(Command.PRLINKS)
 				.execute().get();
 		
 		links.stream().forEach(System.out::println);
 		
-		Links links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds(), Database.PUBMED)
+		Links links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
 				.command(Command.NEIGHBOR)
 				.execute().get();
 		
 		links2.stream().forEach(System.out::println);
 		
-		PubMedEntries entries = restClient.getPMEntriesByPMIds(result.getIds());
+		PubMedEntries entries = restClient.getPMEntriesByPMIds(result.getIds().collect(Collectors.toSet()));
 		entries.getTitles().forEach(System.out::println);
 		
 		

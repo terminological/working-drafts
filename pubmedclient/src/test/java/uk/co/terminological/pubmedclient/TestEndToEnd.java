@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
@@ -41,7 +42,7 @@ public class TestEndToEnd {
 				LocalDate.of(2017, 01, 1)).execute().get();
 		
 		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds().collect(Collectors.toList())).stream().flatMap(pme -> pme.getDoi().stream()).collect(Collectors.toList());
-		List<String> dois = mapper.getDoisByIdAndType(result.getIds().collect(Collectors.toList()), IdType.PMID);
+		Set<String> dois = mapper.getDoisByIdAndType(result.getIds().collect(Collectors.toList()), IdType.PMID);
 
 		List<String> tmp = new ArrayList<>(dois2);
 		tmp.removeAll(dois);

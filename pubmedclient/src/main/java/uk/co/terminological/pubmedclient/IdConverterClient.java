@@ -62,20 +62,20 @@ public class IdConverterClient {
 		return getMapping(id, Optional.of(type));
 	}
 	
-	// Batches the calls to groups of max 200 ids
+	// Batches the calls to groups of max 50 ids
 	private Result getMapping(Collection<String> id2, Optional<IdType> idType) throws BibliographicApiException {
 		List<String> id = new ArrayList<String>(id2);
 		Result out = null;
 		int start = 0;
 		while (start<id.size()) {
-			int end = id.size()<start+200 ? id.size() : start+200;
+			int end = id.size()<start+50 ? id.size() : start+50;
 			List<String> tmp2 = id.subList(start, end);
 			Result outTmp = doCall(tmp2,idType);
 			if (out == null) out = outTmp; 
 			else {
 				out.records.addAll(outTmp.records);
 			}
-			start += 200;
+			start += 50;
 		}
 		return out;
 	}
@@ -87,16 +87,17 @@ public class IdConverterClient {
 		id.forEach(i -> params.add("ids", i));
 		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
 		logger.debug("calling id converter with params: "+params);
-		WebResource wr = lookupService.queryParams(params);
+		//WebResource wr = lookupService.queryParams(params);
+		
 		try {
-			InputStream is = wr.get(InputStream.class); 
+			InputStream is = lookupService.post(InputStream.class,params); 
 			Result  response = objectMapper.readValue(is, Result.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
 			e.printStackTrace();
-			throw new BibliographicApiException("Malformed response");
+			throw new BibliographicApiException("Malformed response", e);
 		} catch (IOException | UniformInterfaceException e) {
-			throw new BibliographicApiException("Cannot connect");
+			throw new BibliographicApiException("Cannot connect", e);
 		}
 	}
 	
