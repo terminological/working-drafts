@@ -57,7 +57,7 @@ public class PubMedGraphExperiment2 {
 
 	public static void main(String args[]) throws IOException, BibliographicApiException {
 		BasicConfigurator.configure();
-		org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 
 		String propFilename = args.length ==1? args[0]: "~/Dropbox/litReview/project.prop";
 		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
