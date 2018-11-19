@@ -299,9 +299,10 @@ public class EntrezClient {
 		return new ELinksQueryBuilder(defaultApiParams(),ids, fromDb, this);
 	}
 
-	public ELinksQueryBuilder buildLinksQueryForSearchResult(Search search, Database fromDb) {
+	/* The history mechanism doesn't really work due to a bug in Entrez
+	 * public ELinksQueryBuilder buildLinksQueryForSearchResult(Search search, Database fromDb) {
 		return new ELinksQueryBuilder(defaultApiParams(), search.getWebEnv().get(), search.getQueryKey().get(),fromDb, this);
-	}
+	}*/
 	
 	public static class ELinksQueryBuilder {
 		MultivaluedMap<String, String> searchParams;
