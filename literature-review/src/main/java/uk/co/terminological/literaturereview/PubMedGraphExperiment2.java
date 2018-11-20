@@ -174,6 +174,11 @@ public class PubMedGraphExperiment2 {
 		// write these in as stubs.
 		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs);
 		log.info("retrieved {} articles referred to in broad search",entries2.size());
+		entries2.stream().forEach(
+				logWarn(entry -> {
+					Path tmp2 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+					entry.getRaw().write(Files.newOutputStream(tmp2));
+		}));
 		
 		// now for DOIs...
 		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
