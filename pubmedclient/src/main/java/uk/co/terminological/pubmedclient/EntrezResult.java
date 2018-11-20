@@ -36,7 +36,7 @@ public class EntrezResult {
 		public Stream<String> getIds() {
 			try {
 				return raw.doXpath(".//Id")
-						.getManyAsStream(XmlElement.class).flatMap(o -> o.getTextContent().stream());
+						.getManyAsStream(XmlElement.class).flatMap(o -> o.getTextContent().stream()).map(s->s.toLowerCase());
 			} catch (XmlException e) {
 				return Stream.empty();
 			}
@@ -117,7 +117,7 @@ public class EntrezResult {
 
 		public Optional<String> getDoi() {
 			try {
-				return raw.doXpath(".//ArticleId[@IdType='doi']").get(XmlElement.class).flatMap(o -> o.getTextContent());
+				return raw.doXpath(".//ArticleId[@IdType='doi']").get(XmlElement.class).flatMap(o -> o.getTextContent()).map(s->s.toLowerCase());
 			} catch (XmlException e) {
 				return Optional.empty();
 			}
@@ -125,7 +125,7 @@ public class EntrezResult {
 
 		public Optional<String> getPMCID() {
 			try {
-				return raw.doXpath(".//ArticleId[@IdType='pmc']").get(XmlElement.class).flatMap(o -> o.getTextContent());
+				return raw.doXpath(".//ArticleId[@IdType='pmc']").get(XmlElement.class).flatMap(o -> o.getTextContent()).map(s->s.toLowerCase());
 			} catch (XmlException e) {
 				return Optional.empty();
 			}
@@ -133,7 +133,7 @@ public class EntrezResult {
 
 		public Optional<String> getPMID() {
 			try {
-				return raw.doXpath(".//ArticleId[@IdType='pubmed']").get(XmlElement.class).flatMap(o -> o.getTextContent());
+				return raw.doXpath(".//ArticleId[@IdType='pubmed']").get(XmlElement.class).flatMap(o -> o.getTextContent()).map(s->s.toLowerCase());
 			} catch (XmlException e) {
 				return Optional.empty();
 			}
@@ -257,7 +257,7 @@ public class EntrezResult {
 				for (XmlElement linkSet: raw.doXpath(".//LinkSet").getMany(XmlElement.class)) {
 
 					Optional<String> dbFrom = linkSet.doXpath("./DbFrom").get(XmlElement.class).flatMap(el -> el.getTextContent());
-					Optional<String> fromId = linkSet.doXpath("./IdList/Id").get(XmlElement.class).flatMap(el -> el.getTextContent());
+					Optional<String> fromId = linkSet.doXpath("./IdList/Id").get(XmlElement.class).flatMap(el -> el.getTextContent()).map(s->s.toLowerCase());
 					
 					for (XmlElement linkSetDb: linkSet.doXpath("./LinkSetDb").getMany(XmlElement.class)) {
 						
@@ -266,7 +266,7 @@ public class EntrezResult {
 						
 						for (XmlElement link: linkSetDb.doXpath("./Link").getMany(XmlElement.class)) {
 							
-							Optional<String> toId = link.doXpath("./Id").get(XmlElement.class).flatMap(el -> el.getTextContent());
+							Optional<String> toId = link.doXpath("./Id").get(XmlElement.class).flatMap(el -> el.getTextContent()).map(s->s.toLowerCase());
 							Optional<Long> score = link.doXpath("./Score").get(XmlElement.class).flatMap(el -> el.getTextContent()).map(s -> Long.parseLong(s));
 							
 							if (dbFrom.isPresent() && fromId.isPresent() && toId.isPresent()) {
@@ -279,7 +279,7 @@ public class EntrezResult {
 					
 					for (XmlElement idUrlSet: linkSet.doXpath("./IdUrlList/IdUrlSet").getMany(XmlElement.class)) { 
 						
-						fromId = idUrlSet.doXpath("./Id").get(XmlElement.class).flatMap(el -> el.getTextContent());
+						fromId = idUrlSet.doXpath("./Id").get(XmlElement.class).flatMap(el -> el.getTextContent()).map(s->s.toLowerCase());
 						for (XmlElement objUrl: idUrlSet.doXpath("./ObjUrl").getMany(XmlElement.class)) {
 							
 							Optional<String> category = objUrl.doXpath("./Category").get(XmlElement.class).flatMap(el -> el.getTextContent());
