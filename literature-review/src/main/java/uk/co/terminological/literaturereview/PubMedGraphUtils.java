@@ -89,9 +89,9 @@ public class PubMedGraphUtils {
 				Node tmp = null;
 				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
 				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
-				Node tmp3 = entry.getPMCID().isPresent() ? graph.get().findNode(ARTICLE, "pmcid", entry.getPMCID().get()) : null;
+				//Node tmp3 = entry.getPMCID().isPresent() ? graph.get().findNode(ARTICLE, "pmcid", entry.getPMCID().get()) : null;
 				
-				if (tmp1 == null && tmp2 == null && tmp3 == null) {
+				if (tmp1 == null && tmp2 == null) {// && tmp3 == null) {
 					logger.debug("Creating new article record: pmid"+entry.getPMID().orElse("none")+" doi:"+entry.getDoi().orElse("none"));
 					Node newNode = graph.get().createNode(ARTICLE);
 					entry.getPMID().ifPresent(pmid -> newNode.setProperty("pmid", pmid));
@@ -117,11 +117,13 @@ public class PubMedGraphUtils {
 							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
 							r.delete();
 						});
+						entry.getPMCID().ifPresent(pmcid -> tmp2.setProperty("pmcid", pmcid));
 						tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
 						tmp2.delete();
 						tmp = tmp1;
 					} 
 					
+					/*
 					//Merge pubmed and pmc stubs
 					if (tmp1 != null && tmp3 != null && tmp1.getId() != tmp3.getId()) {
 						logger.debug("Merging article pubmed: "+entry.getPMID().get()+" with PMCID: "+entry.getPMCID().get());
@@ -139,21 +141,29 @@ public class PubMedGraphUtils {
 							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
 							r.delete();
 						});
+						entry.getDOI().ifPresent(pmcid -> tmp1.setProperty("pmcid", pmcid));
 						tmp3.getLabels().forEach(l -> tmp1.addLabel(l));
 						tmp3.delete();
 						tmp = tmp1;
 					}
+					*/
 					
 					if (tmp == null) {
 						if (tmp1!=null) {
 							logger.debug("Updating pubmed article: "+entry.getPMID().get());
+							entry.getDoi().ifPresent(doi -> tmp1.setProperty("doi", doi));
+							entry.getPMCID().ifPresent(pmcid -> tmp1.setProperty("pmcid", pmcid));
 							tmp = tmp1;
 						} else if (tmp2!=null) {
 							logger.debug("Updating doi article: "+entry.getDoi().get());
+							entry.getPMID().ifPresent(pmid -> tmp2.setProperty("pmid", pmid));
+							entry.getPMCID().ifPresent(pmcid -> tmp2.setProperty("pmcid", pmcid));
 							tmp = tmp2;
-						} else if (tmp3!=null) {
+						/*} else if (tmp3!=null) {
 							logger.debug("Updating pmc article: "+entry.getPMCID().get());
-							tmp = tmp3;
+							entry.getDoi().ifPresent(doi -> tmp3.setProperty("doi", doi));
+							entry.getPMID().ifPresent(pmid -> tmp3.setProperty("pmid", pmid));
+							tmp = tmp3;*/
 						} else {
 							//cannot happen because of check at beginning
 						}
@@ -249,8 +259,15 @@ public class PubMedGraphUtils {
 			Node start = doMerge(ARTICLE, citingType, citingDoi, graph.get(), citingStubLabel);
 			citedDois.forEach(cite -> {
 				cite.DOI.ifPresent(citedDoi -> {
+					
 					Node end = doMerge(ARTICLE, citedType, citedDoi,graph.get(), citedStubLabel);
-					Relationship tmp = start.createRelationshipTo(end, relType);
+					Relationship tmp = null;
+					for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
+						if (r.getEndNode().equals(end)) tmp=r;
+					};
+					if (tmp == null) {
+						tmp = start.createRelationshipTo(end, relType);						
+					}
 					tmp.setProperty("source", "crossref");
 					if (end.hasLabel(citedStubLabel)) {
 						cite.articleTitle.ifPresent(t -> end.setProperty("title", t));
@@ -286,13 +303,29 @@ public class PubMedGraphUtils {
 				link.toId.ifPresent(toId -> {
 					Node start = doMerge(ARTICLE, inIdType, link.fromId, graph.get(), inLabel);
 					Node end = doMerge(ARTICLE, outIdType, toId, graph.get(), outLabel);
-					Relationship tmp;
+					Relationship tmp = null;
 					if (invert) {
-						tmp = end.createRelationshipTo(start, relType);
+						for (Relationship r :end.getRelationships(Direction.OUTGOING,relType)) {
+							if (r.getEndNode().equals(start)) {
+								tmp=r;
+								break;
+							}
+						};
+						if (tmp == null) {
+							tmp = end.createRelationshipTo(start, relType);						
+						}
 					} else {
-						tmp = start.createRelationshipTo(end, relType);
+						for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
+							if (r.getEndNode().equals(end)) {
+								tmp=r;
+								break;
+							}
+						};
+						if (tmp == null) {
+							tmp = start.createRelationshipTo(end, relType);						
+						}
 					}
-					link.score.ifPresent(s -> tmp.setProperty("relatedness", s));
+					if (link.score.isPresent()) tmp.setProperty("relatedness", link.score.get());
 					tmp.setProperty("source", "entrez");
 				});
 			});
