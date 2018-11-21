@@ -276,18 +276,20 @@ public class PubMedGraphUtils {
 			
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			Node start = doMerge(ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
+			//Node start = 
+					doMerge(ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
 			citedDois.forEach(cite -> {
 				cite.DOI.ifPresent(citedDoi -> {
 					
 					Node end = doMerge(ARTICLE, citedType, citedDoi.toLowerCase(),graph.get(), citedStubLabel);
-					Relationship tmp = null;
+					/*Relationship tmp = null;
 					for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
 						if (r.getEndNode().equals(end)) tmp=r;
 					};
 					if (tmp == null) {
 						tmp = start.createRelationshipTo(end, relType);						
-					}
+					}*/
+					Relationship tmp = doMerge(ARTICLE, citingType, citingDoi.toLowerCase() ,relType, ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
 					tmp.setProperty("crossref", true);
 					if (end.hasLabel(citedStubLabel)) {
 						cite.articleTitle.ifPresent(t -> end.setProperty("title", t));
@@ -321,10 +323,13 @@ public class PubMedGraphUtils {
 
 			links.forEach(link -> { 
 				link.toId.ifPresent(toId -> {
-					Node start = doMerge(ARTICLE, inIdType, link.fromId, graph.get(), inLabel);
-					Node end = doMerge(ARTICLE, outIdType, toId, graph.get(), outLabel);
+					//Node start = 
+							doMerge(ARTICLE, inIdType, link.fromId, graph.get(), inLabel);
+					//Node end = 
+							doMerge(ARTICLE, outIdType, toId, graph.get(), outLabel);
 					Relationship tmp = null;
 					if (invert) {
+						/*
 						for (Relationship r :end.getRelationships(Direction.OUTGOING,relType)) {
 							if (r.getEndNode().equals(start)) {
 								tmp=r;
@@ -333,9 +338,10 @@ public class PubMedGraphUtils {
 						};
 						if (tmp == null) {
 							tmp = end.createRelationshipTo(start, relType);						
-						}
+						}*/
+						tmp = doMerge(ARTICLE, outIdType, toId, relType, ARTICLE, inIdType, link.fromId, graph.get());
 					} else {
-						for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
+						/*for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
 							if (r.getEndNode().equals(end)) {
 								tmp=r;
 								break;
@@ -343,7 +349,8 @@ public class PubMedGraphUtils {
 						};
 						if (tmp == null) {
 							tmp = start.createRelationshipTo(end, relType);						
-						}
+						}*/
+						tmp = doMerge(ARTICLE, inIdType, link.fromId, relType, ARTICLE, outIdType, toId, graph.get());
 					}
 					if (link.score.isPresent()) tmp.setProperty("relatedness", link.score.get());
 					tmp.setProperty("entrez", true);
