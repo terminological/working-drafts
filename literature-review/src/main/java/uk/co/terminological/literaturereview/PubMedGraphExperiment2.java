@@ -223,14 +223,15 @@ public class PubMedGraphExperiment2 {
 		// TODO: Query graph for broader search nodes (labelled with EXPAND) that do not have any citations - these could be 
 		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
-		log.info("Looking up {} dois with no metadata",toDois.size());
-		Set<String> unpaywallSources = updateMetadataFromUnpaywall(toDois, false);
+		log.info("Looking up {} dois with no metadata on Unpaywall",toDois.size());
+		Set<String> unpaywallSources = updateMetadataFromUnpaywall(toDois);
 		toDois.removeAll(unpaywallSources);
 		loadedDois.addAll(unpaywallSources);
-		log.info("Looking up {} dois with metadata on Xref",toDois.size());
+		log.info("Leaving {} dois with no metadata",toDois.size());
 
-		Set<String> identifyPdf = updateMetadataFromUnpaywall(loadedDois, true);
-		
+		log.info("finding open access pdf links for {} dois",loadedDois.size());
+		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
+		log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
 	}
 
