@@ -61,6 +61,22 @@ public class PubMedGraphUtils {
 		Node result = resultIterator.next();
 		return result;	
 	}
+	
+	public static Relationship doMerge(Label srcLabel, String srcIndexName, Object srcIndexValue,RelationshipType relType, Label targetLabel, String targetIndexName, Object targetIndexValue, GraphDatabaseService graphDb) {
+		String queryString = 
+				"MATCH "+
+						"(n:"+srcLabel.name()+" {"+srcIndexName+": $src_"+srcIndexName+"}), "+
+						"(m:"+targetLabel.name()+" {"+targetIndexName+": $target_"+targetIndexName+"}) "+
+				"MERGE "+
+						"(n)-[r:"+relType.name()+"]->(m) "+
+				"RETURN r";
+		Map<String, Object> parameters = new HashMap<>();
+		parameters.put( "src_"+srcIndexName, srcIndexValue );
+		parameters.put( "target_"+targetIndexName, targetIndexValue );
+		ResourceIterator<Relationship> resultIterator = graphDb.execute( queryString, parameters ).columnAs( "r" );
+		Relationship result = resultIterator.next();
+		return result;	
+	}
 
 	public static void addLabelsByIds(Label existingLabel, String indexProp, Set<?> values, Label newLabel, GraphDatabaseApi graph) {
 		try ( Transaction tx = graph.get().beginTx() ) {
@@ -268,7 +284,7 @@ public class PubMedGraphUtils {
 					if (tmp == null) {
 						tmp = start.createRelationshipTo(end, relType);						
 					}
-					tmp.setProperty("source", "crossref");
+					tmp.setProperty("crossref", true);
 					if (end.hasLabel(citedStubLabel)) {
 						cite.articleTitle.ifPresent(t -> end.setProperty("title", t));
 					}
@@ -326,7 +342,7 @@ public class PubMedGraphUtils {
 						}
 					}
 					if (link.score.isPresent()) tmp.setProperty("relatedness", link.score.get());
-					tmp.setProperty("source", "entrez");
+					tmp.setProperty("entrez", true);
 				});
 			});
 			tx.success();
