@@ -5,11 +5,14 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -64,7 +67,7 @@ public class UnpaywallClient {
 
 	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
-			WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi));
+			WebResource wr = client.resource("https://unpaywall.org/"+encode(doi));
 			rateLimiter.consume();
 			return wr.get(InputStream.class);		
 		} catch (Exception e) {
@@ -77,8 +80,8 @@ public class UnpaywallClient {
 				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
 
-	public List<Result> getUnpaywallByDois(List<String> dois) throws BibliographicApiException {
-		List<Result> out = new ArrayList<>();
+	public Set<Result> getUnpaywallByDois(Collection<String> dois) throws BibliographicApiException {
+		Set<Result> out = new HashSet<>();
 		dois.forEach(i -> {
 			try {
 				out.add(doCall(i));
@@ -108,10 +111,9 @@ public class UnpaywallClient {
 			Result response = objectMapper.readValue(is, Result.class);
 			return response;
 		} catch (JsonParseException | JsonMappingException e) {
-			e.printStackTrace();
 			throw new BibliographicApiException("Malformed response");
 		} catch (IOException | UniformInterfaceException e) {
-			throw new BibliographicApiException("Cannot connect");
+			throw new BibliographicApiException("Cannot connect or not found");
 		}
 	}
 
