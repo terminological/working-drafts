@@ -403,13 +403,25 @@ public class PubMedGraphExperiment2 {
 		return outDois;
 	}
 	
-	Set<String> updateMetadataFromUnpaywall(Set<String> dois, boolean pdfOnly) {
+	Set<String> updateMetadataFromUnpaywall(Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
 			try {
-				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi);
-				updateUnpaywallMetadata(r, pdfOnly, graphApi);
-				out.add(r.doi.get().toLowerCase());
+				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+				updateUnpaywallMetadata(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));
+			} catch (BibliographicApiException e) {
+				//e.printStackTrace();
+			} 
+		}
+		return out;
+	}
+	
+	Set<String> updatePdfLinksFromUnpaywall(Set<String> dois) {
+		Set<String> out = new HashSet<String>();
+		for (String doi: dois) {
+			try {
+				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+				updatePdfLink(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));;
 			} catch (BibliographicApiException e) {
 				//e.printStackTrace();
 			} 
