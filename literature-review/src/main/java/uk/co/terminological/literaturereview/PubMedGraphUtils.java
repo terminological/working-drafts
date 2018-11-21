@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -439,5 +440,20 @@ public class PubMedGraphUtils {
 		}
 		return Optional.empty();
 	}
+	
+	public Set<String> lookupDoisForUnreferenced(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<Node> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() RETURN source").columnAs("source"); 
+			resultIterator.forEachRemaining(n -> {
+				if (n.hasProperty("doi")) {
+					out.add(n.getProperty("doi",null).toString());
+				}
+			});
+			tx.success();
+		}
+		return out;
+	}; 
 	
 }

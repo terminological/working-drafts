@@ -198,7 +198,9 @@ public class PubMedGraphExperiment2 {
 		toDois.removeAll(loadedDois);
 		log.info("Of which {} are not yet known in the graph", toDois.size());
 		
-		//TODO: Find out which broadSearch nodes have dois and no references
+		//TODO: Find out which broadSearch nodes have dois and no references (by query)
+		Set<String> pdfDois = lookupDoisForUnreferenced(); 
+		
 		//TODO: Look these up in unpaywall and get pdfs (can do directly)
 		//TODO: Use cermine to get references
 		//TODO: Use xref to get a doi for citations string.
