@@ -11,8 +11,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesT
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralCitedBy;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubmedRelated;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.updateCrossRefMetadata;
-
+import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -218,16 +217,21 @@ public class PubMedGraphExperiment2 {
 		Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);
 		loadedDois.addAll(xrefSourced);
 		toDois.removeAll(xrefSourced);
-		log.info("Leaving {} dois with no metadata",toDois.size());
+		
 		
 		// TODO: grab pdfs for broader search nodes (with EXPAND label) using unpaywall and broadSearchDois.
 		// TODO: Query graph for broader search nodes (labelled with EXPAND) that do not have any citations - these could be 
 		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
-		
-		updateMetadataFromUnpaywall(toDois);
-		
+		log.info("Looking up {} dois with no metadata",toDois.size());
+		Set<String> unpaywallSources = updateMetadataFromUnpaywall(toDois, false);
+		toDois.removeAll(unpaywallSources);
+		loadedDois.addAll(unpaywallSources);
+		log.info("Looking up {} dois with metadata on Xref",toDois.size());
 
+		Set<String> identifyPdf = updateMetadataFromUnpaywall(loadedDois, true);
+		
+		
 	}
 
 	
@@ -399,12 +403,12 @@ public class PubMedGraphExperiment2 {
 		return outDois;
 	}
 	
-	Set<String> updateMetadataFromUnpaywall(Set<String> dois) {
+	Set<String> updateMetadataFromUnpaywall(Set<String> dois, boolean pdfOnly) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
 			try {
 				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi);
-				updateUnpaywallMetadata(r, graphApi);
+				updateUnpaywallMetadata(r, pdfOnly, graphApi);
 				out.add(r.doi.get().toLowerCase());
 			} catch (BibliographicApiException e) {
 				//e.printStackTrace();

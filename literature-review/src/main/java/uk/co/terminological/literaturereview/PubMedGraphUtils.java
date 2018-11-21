@@ -427,4 +427,17 @@ public class PubMedGraphUtils {
 		return Optional.empty();
 	}
 	
+	public static Optional<String> updatePdfLink(Result work, GraphDatabaseApi graph) {
+		if (work.doi.isPresent() && work.bestOaLocation.isPresent()) {
+			try (Transaction tx = graph.get().beginTx()) {
+				tx.acquireWriteLock(lockNode);
+				Node node = doMerge(ARTICLE, "doi", work.doi.get().toLowerCase(), graph.get());
+				node.setProperty("pdfUrl", work.bestOaLocation.get());
+				tx.success();
+			}
+			return Optional.of(work.doi.get().toLowerCase());
+		}
+		return Optional.empty();
+	}
+	
 }
