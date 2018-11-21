@@ -186,6 +186,12 @@ public class CrossRefClient {
 		
 	}
 	
+	//TODO:
+	/*
+	 * curl -LH "Accept: application/x-bibtex" http://dx.doi.org/10.5555/12345678
+	 * gets the full doi result in bibtex
+	 */
+	
 	public Optional<Work> findWorkByCitationString(String citation) {
 		try {
 			return this.buildQuery()
