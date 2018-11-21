@@ -49,6 +49,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import uk.co.terminological.pubmedclient.EntrezResult.Search;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 import uk.co.terminological.pubmedclient.IdConverterClient.Record;
+import uk.co.terminological.pubmedclient.UnpaywallClient.Result;
 
 public class PubMedGraphExperiment2 {
 
@@ -224,9 +225,12 @@ public class PubMedGraphExperiment2 {
 		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
 		
+		updateMetadataFromUnpaywall(toDois);
 		
 
 	}
+
+	
 
 	Optional<Search> searchPubMed(String search) {
 		try {
@@ -369,7 +373,7 @@ public class PubMedGraphExperiment2 {
 						.collect(Collectors.toList());
 				log.debug("Crossref found "+referencedDois.size()+" articles related to: "+doi);
 				mapCrossRefReferences(doi,referencedDois,graphApi);
-				outDois.addAll(referencedDois.stream().flatMap(c -> c.DOI.stream()).collect(Collectors.toSet()));
+				outDois.addAll(referencedDois.stream().flatMap(c -> c.DOI.stream()).map(s -> s.toLowerCase()).collect(Collectors.toSet()));
 			} catch (BibliographicApiException e) {
 				e.printStackTrace();
 			}
@@ -385,15 +389,28 @@ public class PubMedGraphExperiment2 {
 				tmp.ifPresent(t -> {
 					t.work.ifPresent(w -> {
 						Optional<String> out = updateCrossRefMetadata(w,graphApi);
-						out.ifPresent(o->outDois.add(o));
+						out.ifPresent(o->outDois.add(o.toLowerCase()));
 						});
 				});
 			} catch (BibliographicApiException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 		return outDois;
 	}
 	
+	Set<String> updateMetadataFromUnpaywall(Set<String> dois) {
+		Set<String> out = new HashSet<String>();
+		for (String doi: dois) {
+			try {
+				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi);
+				updateUnpaywallMetadata(r, graphApi);
+				out.add(r.doi.get().toLowerCase());
+			} catch (BibliographicApiException e) {
+				//e.printStackTrace();
+			} 
+		}
+		return out;
+	}
 	
 }

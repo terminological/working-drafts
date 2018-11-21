@@ -43,6 +43,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.UnpaywallClient.Result;
 
 public class PubMedGraphUtils {
 
@@ -411,4 +412,19 @@ public class PubMedGraphUtils {
 		return Optional.empty();
 	}
 
+	public static Optional<String> updateUnpaywallMetadata(Result work, GraphDatabaseApi graph) {
+		if (work.doi.isPresent()) {
+			try (Transaction tx = graph.get().beginTx()) {
+				tx.acquireWriteLock(lockNode);
+				Node node = doMerge(ARTICLE, "doi", work.doi.get().toLowerCase(), graph.get());
+				work.bestOaLocation.ifPresent(url -> node.setProperty("pdfUrl", url));
+				work.getPublishedDate().ifPresent(date -> node.setProperty("date", date));
+				work.title.ifPresent(title -> node.setProperty("title", title));
+				tx.success();
+			}
+			return Optional.of(work.doi.get().toLowerCase());
+		}
+		return Optional.empty();
+	}
+	
 }
