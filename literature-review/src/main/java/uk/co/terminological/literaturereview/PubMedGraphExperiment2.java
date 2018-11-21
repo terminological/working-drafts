@@ -198,6 +198,12 @@ public class PubMedGraphExperiment2 {
 		toDois.removeAll(loadedDois);
 		log.info("Of which {} are not yet known in the graph", toDois.size());
 		
+		//TODO: Find out which broadSearch nodes have dois and no references
+		//TODO: Look these up in unpaywall and get pdfs (can do directly)
+		//TODO: Use cermine to get references
+		//TODO: Use xref to get a doi for citations string.
+		
+		
 		// reverse lookup unknown dois that XRef found but are not already in the graph
 		// grab those from pubmed and update graph metadata
 		// TODO: will this be a massive number and need to be broken into batches?
@@ -229,6 +235,7 @@ public class PubMedGraphExperiment2 {
 		loadedDois.addAll(unpaywallSources);
 		log.info("Leaving {} dois with no metadata",toDois.size());
 
+		
 		log.info("finding open access pdf links for {} dois",loadedDois.size());
 		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
 		log.info("found open access pdf links for {} dois",identifyPdf.size());
