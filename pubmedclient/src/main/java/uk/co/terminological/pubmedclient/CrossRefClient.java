@@ -35,6 +35,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
+import uk.co.terminological.pubmedclient.CrossRefResult.Work;
 
 public class CrossRefClient {
 	// https://www.crossref.org/schemas/
@@ -183,6 +184,21 @@ public class CrossRefClient {
 			throw new BibliographicApiException("no licensed content found");
 		}
 		
+	}
+	
+	public Optional<Work> findWorkByCitationString(String citation) {
+		try {
+			return this.buildQuery()
+					.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
+					.sortedBy(Sort.SCORE, SortOrder.DESC)
+					.limit(0, 1)
+					.execute()
+					.message.get()
+					.items.stream()
+					.findFirst();
+		} catch (BibliographicApiException e) {
+			return Optional.empty();
+		}
 	}
 		
 	public QueryBuilder buildQuery() {
