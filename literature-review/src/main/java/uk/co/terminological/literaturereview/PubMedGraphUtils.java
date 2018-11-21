@@ -375,13 +375,31 @@ public class PubMedGraphUtils {
 					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
 				});
 				work.journalAbstract.ifPresent(abs -> node.setProperty("abstract", abs));
-				work.publishedOnline.ifPresent(po -> {
+				if (work.publishedOnline.isPresent()) {
+					work.publishedOnline.ifPresent(po -> {
 					try {
 						node.setProperty("date",LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
 					} catch (Exception e) {
 						// date is not well formed
 					}
 				});
+				} else if (work.publishedPrint.isPresent()) {
+				work.publishedPrint.ifPresent(po -> {
+					try {
+						node.setProperty("date",LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
+					} catch (Exception e) {
+						// date is not well formed
+					}
+				});
+				} else if (work.issued.isPresent()) {
+					work.issued.ifPresent(po -> {
+						try {
+							node.setProperty("date",LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
+						} catch (Exception e) {
+							// date is not well formed
+						}
+					});
+				}
 				node.removeLabel(DOI_STUB);
 				node.removeLabel(PMID_STUB);
 				node.removeLabel(PMCENTRAL_STUB);
