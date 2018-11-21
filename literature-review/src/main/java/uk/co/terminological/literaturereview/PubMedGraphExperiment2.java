@@ -182,11 +182,11 @@ public class PubMedGraphExperiment2 {
 		
 		// now for DOIs...
 		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
-		Set<String> broadSearchDois = ent.stream().flatMap(e -> e.getDoi().stream()).collect(Collectors.toSet());
+		Set<String> broadSearchDois = ent.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet());
 		log.info("Pubmed broad search include {} articles with a doi",broadSearchDois.size());
 		//TODO: could lookup those without a doi in id cross reference - maybe the same data though.
 		Set<String> loadedDois = new HashSet<>(broadSearchDois);
-		loadedDois.addAll(entries2.stream().flatMap(e -> e.getDoi().stream()).collect(Collectors.toSet()));
+		loadedDois.addAll(entries2.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet()));
 		log.info("With referenced articles there are {} articles with a doi",loadedDois.size()); 
 		
 		
@@ -205,7 +205,7 @@ public class PubMedGraphExperiment2 {
 		tryRethrow( t -> {
 			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
 			Set<PubMedEntry> entries3 = fetchPubMedEntries(morePMIDs);
-			entries3.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f)));
+			entries3.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
 			log.info("Found additional {} pubmed entries",entries3.size());
 		}); 
 		

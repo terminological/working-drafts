@@ -49,10 +49,10 @@ public class PubMedGraphUtils {
 	static Node lockNode;
 	private static final Logger logger = LoggerFactory.getLogger(PubMedGraphUtils.class);
 
-	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb) {
+	public static Node doMerge(Label label, String indexName, String indexValue, GraphDatabaseService graphDb) {
 		return doMerge(label,indexName,indexValue,graphDb, null);
 	}
-	public static Node doMerge(Label label, String indexName, Object indexValue, GraphDatabaseService graphDb, Label label2) {
+	public static Node doMerge(Label label, String indexName, String indexValue, GraphDatabaseService graphDb, Label label2) {
 		String queryString = "MERGE (n:"+label.name()+" {"+indexName+": $"+indexName+"})"+
 				(label2!=null ? " ON CREATE SET n:"+label2.name():"")+" RETURN n";
 		Map<String, Object> parameters = new HashMap<>();
@@ -62,7 +62,7 @@ public class PubMedGraphUtils {
 		return result;	
 	}
 	
-	public static Relationship doMerge(Label srcLabel, String srcIndexName, Object srcIndexValue,RelationshipType relType, Label targetLabel, String targetIndexName, Object targetIndexValue, GraphDatabaseService graphDb) {
+	public static Relationship doMerge(Label srcLabel, String srcIndexName, String srcIndexValue,RelationshipType relType, Label targetLabel, String targetIndexName, String targetIndexValue, GraphDatabaseService graphDb) {
 		String queryString = 
 				"MATCH "+
 						"(n:"+srcLabel.name()+" {"+srcIndexName+": $src_"+srcIndexName+"}), "+
@@ -93,7 +93,26 @@ public class PubMedGraphUtils {
 		}
 	}
 	
-
+	private static Node mergeNodes(Node tmp1, Node tmp2, Transaction tx) {
+		tmp2.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
+		tmp2.getRelationships(Direction.INCOMING).forEach(r -> {
+			Node other = r.getOtherNode(tmp2);
+			Relationship r2 = other.createRelationshipTo(tmp1, r.getType());
+			r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+			r.delete();
+		});
+		tmp2.getRelationships(Direction.OUTGOING).forEach(r -> {
+			Node other = r.getOtherNode(tmp2);
+			Relationship r2 = tmp1.createRelationshipTo(other, r.getType());
+			r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
+			r.delete();
+		});
+		tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
+		tmp2.delete();
+		return tmp1;
+	}
+	
+	
 	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest, LocalDate latest, Label... additional) {
 
 		List<Node> out = new ArrayList<>();
@@ -104,14 +123,14 @@ public class PubMedGraphUtils {
 			entries.stream().forEach(entry -> {
 				Node tmp = null;
 				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
-				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get()) : null;
+				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get().toLowerCase()) : null;
 				//Node tmp3 = entry.getPMCID().isPresent() ? graph.get().findNode(ARTICLE, "pmcid", entry.getPMCID().get()) : null;
 				
 				if (tmp1 == null && tmp2 == null) {// && tmp3 == null) {
 					logger.debug("Creating new article record: pmid"+entry.getPMID().orElse("none")+" doi:"+entry.getDoi().orElse("none"));
 					Node newNode = graph.get().createNode(ARTICLE);
 					entry.getPMID().ifPresent(pmid -> newNode.setProperty("pmid", pmid));
-					entry.getDoi().ifPresent(doi -> newNode.setProperty("doi", doi));
+					entry.getDoi().ifPresent(doi -> newNode.setProperty("doi", doi.toLowerCase()));
 					entry.getPMCID().ifPresent(pmcid -> newNode.setProperty("pmcid", pmcid));
 					tmp = newNode;
 				} else {
@@ -120,23 +139,8 @@ public class PubMedGraphUtils {
 					if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
 						logger.debug("Merging article pubmed: "+entry.getPMID().get()+" with doi: "+entry.getDoi().get());
 						//merge tmp1 and tmp2
-						tmp2.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
-						tmp2.getRelationships(Direction.INCOMING).forEach(r -> {
-							Node other = r.getOtherNode(tmp2);
-							Relationship r2 = other.createRelationshipTo(tmp1, r.getType());
-							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
-							r.delete();
-						});
-						tmp2.getRelationships(Direction.OUTGOING).forEach(r -> {
-							Node other = r.getOtherNode(tmp2);
-							Relationship r2 = tmp1.createRelationshipTo(other, r.getType());
-							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
-							r.delete();
-						});
-						entry.getPMCID().ifPresent(pmcid -> tmp2.setProperty("pmcid", pmcid));
-						tmp2.getLabels().forEach(l -> tmp1.addLabel(l));
-						tmp2.delete();
-						tmp = tmp1;
+						entry.getPMCID().ifPresent(pmcid -> tmp1.setProperty("pmcid", pmcid));
+						tmp = mergeNodes(tmp1,tmp2,tx);
 					} 
 					
 					/*
@@ -167,7 +171,7 @@ public class PubMedGraphUtils {
 					if (tmp == null) {
 						if (tmp1!=null) {
 							logger.debug("Updating pubmed article: "+entry.getPMID().get());
-							entry.getDoi().ifPresent(doi -> tmp1.setProperty("doi", doi));
+							entry.getDoi().ifPresent(doi -> tmp1.setProperty("doi", doi.toLowerCase()));
 							entry.getPMCID().ifPresent(pmcid -> tmp1.setProperty("pmcid", pmcid));
 							tmp = tmp1;
 						} else if (tmp2!=null) {
@@ -272,11 +276,11 @@ public class PubMedGraphUtils {
 			
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			Node start = doMerge(ARTICLE, citingType, citingDoi, graph.get(), citingStubLabel);
+			Node start = doMerge(ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
 			citedDois.forEach(cite -> {
 				cite.DOI.ifPresent(citedDoi -> {
 					
-					Node end = doMerge(ARTICLE, citedType, citedDoi,graph.get(), citedStubLabel);
+					Node end = doMerge(ARTICLE, citedType, citedDoi.toLowerCase(),graph.get(), citedStubLabel);
 					Relationship tmp = null;
 					for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
 						if (r.getEndNode().equals(end)) tmp=r;
@@ -357,7 +361,7 @@ public class PubMedGraphUtils {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
 
-				Node node = doMerge(ARTICLE, "doi", work.DOI.get(), graph.get());
+				Node node = doMerge(ARTICLE, "doi", work.DOI.get().toLowerCase(), graph.get());
 				node.setProperty("title", work.title.stream().collect(Collectors.joining("\n")));
 				work.author.forEach(as -> {
 					Optional<Node> targetNode = mapAuthorToNode(as, graph, tx);
@@ -377,7 +381,7 @@ public class PubMedGraphUtils {
 				tx.success();
 			}
 
-			return Optional.of(work.DOI.get());
+			return Optional.of(work.DOI.get().toLowerCase());
 		}
 		return Optional.empty();
 	}
