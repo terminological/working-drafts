@@ -200,7 +200,7 @@ public class PubMedGraphExperiment2 {
 		
 		// Find out which broadSearch nodes have dois and no references (by query)
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
-		
+		log.info("Found {} articles with no references", pdfDois.size());
 		
 		ContentExtractor extractor = new ContentExtractor();
 		pdfDois.forEach(
@@ -208,12 +208,15 @@ public class PubMedGraphExperiment2 {
 						doi -> {
 							// Look these up in unpaywall and get pdfs (can do directly)
 							InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), workingDir.resolve("pdf"));
+							log.info("Found pdf for {}", doi);
 							extractor.setPDF(is);
 							//Use cermine to get references
 							List<BibEntry> refs = extractor.getReferences();
+							log.info("Found {} references for {}", refs.size(), doi);
 							Set<Work> works = refs.stream().flatMap(ref ->
 								//Use xref to get a doi for citations string.
 								biblioApi.getCrossref().findWorkByCitationString(ref.getText()).stream()).collect(Collectors.toSet());
+							log.info("Found {} xref entries for {} references", works.size(), refs.size());
 							mapCermineReferences(doi, works, graphApi);
 		}));
 		
