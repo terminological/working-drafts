@@ -445,6 +445,9 @@ public class PubMedGraphUtils {
 				work.pdfUrl().ifPresent(url -> node.setProperty("pdfUrl", url));
 				work.getPublishedDate().ifPresent(date -> node.setProperty("date", date));
 				work.title.ifPresent(title -> node.setProperty("title", title));
+				node.removeLabel(DOI_STUB);
+				node.removeLabel(PMID_STUB);
+				node.removeLabel(PMCENTRAL_STUB);
 				tx.success();
 			}
 			return Optional.of(work.doi.get().toLowerCase());
