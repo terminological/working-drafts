@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -67,6 +69,21 @@ public class UnpaywallClient {
 		return out;
 	}
 
+	public InputStream getPreferredContentByDoi(String doi, Path cacheDir) throws BibliographicApiException {
+		Path filepath = cacheDir.resolve(doi+".pdf");
+		try {
+			if (!Files.exists(filepath)) {
+				Files.createDirectories(filepath.getParent());
+				Files.copy(
+						this.getPreferredContentByDoi(doi),
+						filepath);
+			}
+			return Files.newInputStream(filepath);
+		} catch (IOException e) {
+			throw new BibliographicApiException("Could not get content for"+doi,e);
+		}
+	}
+	
 	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
 			WebResource wr = client.resource("https://unpaywall.org/"+encode(doi));
