@@ -441,7 +441,7 @@ public class PubMedGraphUtils {
 		return Optional.empty();
 	}
 	
-	public Set<String> lookupDoisForUnreferenced(GraphDatabaseApi graph) {
+	public static Set<String> lookupDoisForUnreferenced(GraphDatabaseApi graph) {
 		Set<String> out = new HashSet<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);

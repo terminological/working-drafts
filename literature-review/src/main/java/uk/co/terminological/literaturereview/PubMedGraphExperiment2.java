@@ -6,11 +6,6 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ART
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ORIGINAL_SEARCH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Props.PMID;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapCrossRefReferences;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapEntriesToNode;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralCitedBy;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubMedCentralReferences;
-import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapPubmedRelated;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -199,7 +194,7 @@ public class PubMedGraphExperiment2 {
 		log.info("Of which {} are not yet known in the graph", toDois.size());
 		
 		//TODO: Find out which broadSearch nodes have dois and no references (by query)
-		Set<String> pdfDois = lookupDoisForUnreferenced(); 
+		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		
 		//TODO: Look these up in unpaywall and get pdfs (can do directly)
 		//TODO: Use cermine to get references
