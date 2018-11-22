@@ -304,6 +304,30 @@ public class PubMedGraphUtils {
 		logger.debug("Adding {}:{} <-{}- {}:{}}",citedDois.size(),citedStubLabel,relType,citingDoi,citingType);
 		return out;
 	}
+	
+	public static Set<String> mapCermineReferences(String citingDoi, Set<Work> citedDois, GraphDatabaseApi graph) {
+		return citedDois.stream().flatMap(work -> {
+			return mapCermineReference("doi",citingDoi,DOI_STUB,"doi",work,DOI_STUB, HAS_REFERENCE,graph).stream();
+		}).collect(Collectors.toSet());
+	}
+	
+	public static Optional<String> mapCermineReference(String citingType, String citingDoi, Label citingStubLabel, String citedType, Work cite, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
+		updateCrossRefMetadata(cite, graph);
+		Optional<String> out = Optional.empty();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			//Node start = 
+			doMerge(ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
+			out = cite.DOI.map(citedDoi -> {
+					Relationship tmp = doMerge(ARTICLE, citingType, citingDoi.toLowerCase() ,relType, ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
+					tmp.setProperty("cermine", true);
+					return citedDoi;
+			});
+			tx.success();
+		}
+		return out;
+		
+	}
 
 	public static List<Relationship> mapPubmedRelated(List<Link> links, GraphDatabaseApi graph) {
 		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_RELATED, graph, false);
