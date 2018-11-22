@@ -270,8 +270,8 @@ public class PubMedGraphExperiment2 {
 
 		
 		log.info("finding open access pdf links for {} dois",loadedDois.size());
-		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
-		log.info("found open access pdf links for {} dois",identifyPdf.size());
+		//Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
+		//log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
 	}
 
