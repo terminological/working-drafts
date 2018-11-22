@@ -142,7 +142,7 @@ public class CrossRefClient {
 		rateLimiter.consume();
 		logger.debug("Querying crossref: "+qb.toString());
 		try {
-			ClientResponse r = qb.get(client).post(ClientResponse.class);
+			ClientResponse r = qb.get(client).get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			InputStream is = r.getEntityInputStream(); 
 			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
