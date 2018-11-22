@@ -8,6 +8,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ORI
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Props.PMID;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,10 +31,15 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pl.edu.icm.cermine.ContentExtractor;
+import pl.edu.icm.cermine.bibref.model.BibEntry;
+import pl.edu.icm.cermine.exception.AnalysisException;
+import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
+import uk.co.terminological.pubmedclient.CrossRefResult.Work;
 import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import uk.co.terminological.pubmedclient.EntrezClient.ELinksQueryBuilder;
@@ -103,7 +109,7 @@ public class PubMedGraphExperiment2 {
 		return Paths.get(prop.getProperty(name).replace("~", System.getProperty("user.home")));
 	}
 
-	public void execute() throws IOException, BibliographicApiException {
+	public void execute() throws IOException, BibliographicApiException, AnalysisException {
 
 		log.error("Starting graphDb build");
 		
@@ -196,12 +202,17 @@ public class PubMedGraphExperiment2 {
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		
 		//TODO: Look these up in unpaywall and get pdfs (can do directly)
-		try {
-			pdfDois.forEach(doi -> {
-				InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), workingDir.resolve("pdf"));
-				
-			});
-		}
+		ContentExtractor extractor = new ContentExtractor();
+		pdfDois.forEach(
+				StreamExceptions.logWarn(
+						doi -> {
+							InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), workingDir.resolve("pdf"));
+							extractor.setPDF(is);
+							List<BibEntry> refs = extractor.getReferences();
+							Set<Work> works = refs.stream().flatMap(ref -> 
+								biblioApi.getCrossref().findWorkByCitationString(ref.getText()).stream()).collect(Collectors.toSet());
+							mapCermineReferences(doi, works, graphApi);
+		}));
 		//TODO: Use cermine to get references
 		//TODO: Use xref to get a doi for citations string.
 		
