@@ -86,8 +86,8 @@ public class UnpaywallClient {
 	
 	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
-			WebResource wr = client.resource("https://unpaywall.org/"+encode(doi));
-			rateLimiter.consume();
+			Result tmp = getUnpaywallByDoi(doi);
+			WebResource wr = client.resource(tmp.pdfUrl().orElseThrow(() -> new BibliographicApiException("No paywall result for: "+doi)));
 			return wr.get(InputStream.class);		
 		} catch (Exception e) {
 			throw new BibliographicApiException("Cannot fetch content for "+doi,e);
