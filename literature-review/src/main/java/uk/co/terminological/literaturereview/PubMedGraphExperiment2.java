@@ -218,6 +218,7 @@ public class PubMedGraphExperiment2 {
 							log.info("Found {} references for {}", refs.size(), doi);
 							Set<Work> works = refs.stream().flatMap(ref ->
 								//Use xref to get a doi for citations string.
+								log.info(ref.getText());
 								biblioApi.getCrossref().findWorkByCitationString(ref.getText()).stream()).collect(Collectors.toSet());
 							log.info("Found {} xref entries for {} references", works.size(), refs.size());
 							mapCermineReferences(doi, works, graphApi);
