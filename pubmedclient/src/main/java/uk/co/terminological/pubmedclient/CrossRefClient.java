@@ -199,9 +199,11 @@ public class CrossRefClient {
 					.sortedBy(Sort.SCORE, SortOrder.DESC)
 					.limit(1)
 					.execute();
-			return lr.message.get()
+			Optional<Work> out = lr.message.get()
 					.items.stream()
 					.findFirst();
+			if (out.isPresent() && out.get().score.orElse(0F) > 0.9) return out; 
+			return Optional.empty();
 		} catch (BibliographicApiException e) {
 			return Optional.empty();
 		}
