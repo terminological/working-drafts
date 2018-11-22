@@ -56,7 +56,7 @@ public class PubMedGraphExperiment2 {
 	static Logger log = LoggerFactory.getLogger(PubMedGraphExperiment2.class);
 
 
-	public static void main(String args[]) throws IOException, BibliographicApiException {
+	public static void main(String args[]) throws IOException, BibliographicApiException, AnalysisException {
 		BasicConfigurator.configure();
 		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 
@@ -201,20 +201,23 @@ public class PubMedGraphExperiment2 {
 		// Find out which broadSearch nodes have dois and no references (by query)
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		
-		//TODO: Look these up in unpaywall and get pdfs (can do directly)
+		
 		ContentExtractor extractor = new ContentExtractor();
 		pdfDois.forEach(
 				StreamExceptions.logWarn(
 						doi -> {
+							// Look these up in unpaywall and get pdfs (can do directly)
 							InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), workingDir.resolve("pdf"));
 							extractor.setPDF(is);
+							//Use cermine to get references
 							List<BibEntry> refs = extractor.getReferences();
-							Set<Work> works = refs.stream().flatMap(ref -> 
+							Set<Work> works = refs.stream().flatMap(ref ->
+								//Use xref to get a doi for citations string.
 								biblioApi.getCrossref().findWorkByCitationString(ref.getText()).stream()).collect(Collectors.toSet());
 							mapCermineReferences(doi, works, graphApi);
 		}));
-		//TODO: Use cermine to get references
-		//TODO: Use xref to get a doi for citations string.
+		
+		
 		
 		
 		// reverse lookup unknown dois that XRef found but are not already in the graph
