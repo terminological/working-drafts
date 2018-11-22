@@ -197,7 +197,7 @@ public class CrossRefClient {
 			return this.buildQuery()
 					.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
 					.sortedBy(Sort.SCORE, SortOrder.DESC)
-					.limit(0, 1)
+					.limit(1)
 					.execute()
 					.message.get()
 					.items.stream()
