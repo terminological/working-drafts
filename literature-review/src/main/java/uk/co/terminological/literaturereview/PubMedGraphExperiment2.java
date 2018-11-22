@@ -461,10 +461,11 @@ public class PubMedGraphExperiment2 {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
 			try {
+				log.debug("finding unpaywall entry for: "+doi);
 				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
 				updatePdfLink(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));;
 			} catch (BibliographicApiException e) {
-				//e.printStackTrace();
+				log.debug(e.getMessage());
 			} 
 		}
 		return out;
