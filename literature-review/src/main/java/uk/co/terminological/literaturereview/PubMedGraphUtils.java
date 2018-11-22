@@ -442,7 +442,7 @@ public class PubMedGraphUtils {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
 				Node node = doMerge(ARTICLE, "doi", work.doi.get().toLowerCase(), graph.get());
-				work.bestOaLocation.ifPresent(url -> node.setProperty("pdfUrl", url));
+				work.pdfUrl().ifPresent(url -> node.setProperty("pdfUrl", url));
 				work.getPublishedDate().ifPresent(date -> node.setProperty("date", date));
 				work.title.ifPresent(title -> node.setProperty("title", title));
 				tx.success();
@@ -469,7 +469,7 @@ public class PubMedGraphUtils {
 		Set<String> out = new HashSet<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() AND NOT source.doi = null RETURN source.doi").columnAs("source"); 
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() AND source.doi IS NOT NULL RETURN source.doi").columnAs("source"); 
 			resultIterator.forEachRemaining(doi -> out.add(doi));
 			tx.success();
 		}
