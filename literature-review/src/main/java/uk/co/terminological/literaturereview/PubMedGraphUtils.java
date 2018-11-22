@@ -445,12 +445,8 @@ public class PubMedGraphUtils {
 		Set<String> out = new HashSet<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			ResourceIterator<Node> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() RETURN source").columnAs("source"); 
-			resultIterator.forEachRemaining(n -> {
-				if (n.hasProperty("doi")) {
-					out.add(n.getProperty("doi",null).toString());
-				}
-			});
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() AND NOT source.doi = null RETURN source.doi").columnAs("source"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
 			tx.success();
 		}
 		return out;
