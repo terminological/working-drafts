@@ -184,6 +184,8 @@ public class PubMedGraphExperiment2 {
 		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
 		Set<String> broadSearchDois = ent.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet());
 		log.info("Pubmed broad search include {} articles with a doi",broadSearchDois.size());
+		Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
+		log.info("Of which {} articles have no references yet and we can look up in Xref",xrefDois.size());
 		//TODO: could lookup those without a doi in id cross reference - maybe the same data though.
 		Set<String> loadedDois = new HashSet<>(broadSearchDois);
 		loadedDois.addAll(entries2.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet()));
@@ -193,7 +195,7 @@ public class PubMedGraphExperiment2 {
 		// fetch all doi cross references for broader search, load into graph.
 		// and find all resulting dois that we do not already know about.
 		// TODO: chance that mapping api does not know about a PMID->DOI mapping that we do already know about via pubmed - does this matter?
-		Set<String> toDois = findCrossRefReferencesFromNodes(broadSearchDois);
+		Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
 		log.info("Found {} dois, referred to by {} articles in broad search with doi", toDois.size(), broadSearchDois.size());
 		toDois.removeAll(loadedDois);
 		log.info("Of which {} are not yet known in the graph", toDois.size());
