@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
@@ -31,8 +33,15 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandler;
+import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.ClientRequest;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class UnpaywallClient {
@@ -112,7 +121,29 @@ public class UnpaywallClient {
 
 	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
 		try {
-			WebResource wr = client.resource(result.pdfUrl().orElseThrow(() -> new BibliographicApiException("No PDF found for "+result.doi.get())));
+			
+			ClientConfig config = new DefaultClientConfig();
+		    config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
+		    Client client = Client.create(config);
+		    client.setFollowRedirects(true);
+		    WebResource wr = client.resource(result.pdfUrl().orElseThrow(() -> new BibliographicApiException("No PDF found for "+result.doi.get())));
+		    wr.addFilter(new ClientFilter() {
+		    	@Override
+		        public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
+		            ClientHandler ch = getNext();
+		            ClientResponse resp = ch.handle(cr);
+
+		            if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
+		                return resp;
+		            }
+		            else {
+		                // try location
+		                String redirectTarget = resp.getHeaders().getFirst("Location");
+		                cr.setURI(UriBuilder.fromUri(redirectTarget).build());
+		                return ch.handle(cr);
+		            }
+		        }
+		    });
 			return wr.get(InputStream.class);
 		} catch (Exception e) {
 			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get());
