@@ -194,12 +194,12 @@ public class CrossRefClient {
 	
 	public Optional<Work> findWorkByCitationString(String citation) {
 		try {
-			return this.buildQuery()
+			ListResult lr = this.buildQuery()
 					.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
 					.sortedBy(Sort.SCORE, SortOrder.DESC)
 					.limit(1)
-					.execute()
-					.message.get()
+					.execute();
+			return lr.message.get()
 					.items.stream()
 					.findFirst();
 		} catch (BibliographicApiException e) {
