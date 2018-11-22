@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.cermine.ContentExtractor;
 import pl.edu.icm.cermine.bibref.model.BibEntry;
+import pl.edu.icm.cermine.bibref.model.BibEntryType;
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
@@ -216,7 +218,13 @@ public class PubMedGraphExperiment2 {
 							//Use cermine to get references
 							List<BibEntry> refs = extractor.getReferences();
 							log.info("Found {} references for {}", refs.size(), doi);
-							Set<Work> works = refs.stream().flatMap(ref -> {
+							Set<Work> works = refs.stream()
+									.filter(ref -> Arrays.asList(
+											BibEntryType.ARTICLE,
+											BibEntryType.INPROCEEDINGS,
+											BibEntryType.PROCEEDINGS
+											).contains(ref.getType()))
+									.flatMap(ref -> {
 								//Use xref to get a doi for citations string.
 								log.info(ref.getText());
 								return biblioApi.getCrossref().findWorkByCitationString(ref.getText()).stream();
