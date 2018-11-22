@@ -153,7 +153,6 @@ public class PubMedGraphExperiment2 {
 		// get all the links for the broad search using entrez history
 		// and write them into database. crating stubs if required
 		// work out what pmids we already have written in graph from the broader search and which we need to get.
-		// TODO: could use the entrez history mechanism to do this in previous step
 		List<Link> links = findPMCReferencesFromPMIDs(broadSearch.getIds().collect(Collectors.toList()));
 		
 		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
@@ -193,10 +192,16 @@ public class PubMedGraphExperiment2 {
 		toDois.removeAll(loadedDois);
 		log.info("Of which {} are not yet known in the graph", toDois.size());
 		
-		//TODO: Find out which broadSearch nodes have dois and no references (by query)
+		// Find out which broadSearch nodes have dois and no references (by query)
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		
 		//TODO: Look these up in unpaywall and get pdfs (can do directly)
+		try {
+			pdfDois.forEach(doi -> {
+				InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), workingDir.resolve("pdf"));
+				
+			});
+		}
 		//TODO: Use cermine to get references
 		//TODO: Use xref to get a doi for citations string.
 		
