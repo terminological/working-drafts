@@ -253,6 +253,11 @@ public class CrossRefClient {
 			return this;
 		}
 		
+		public QueryBuilder limit(Integer rows) {
+			params.add("rows",rows.toString());
+			return this;
+		}
+		
 		public QueryBuilder since(Date date) {
 			params.add("filter","from-index-date:"+format.format(date));
 			return this;

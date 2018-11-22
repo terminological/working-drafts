@@ -204,13 +204,14 @@ public class PubMedGraphExperiment2 {
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		log.info("Found {} articles with no references", pdfDois.size());
 		
-		ContentExtractor extractor = new ContentExtractor();
+		
 		pdfDois.forEach(
 				StreamExceptions.logWarn(
 						doi -> {
 							// Look these up in unpaywall and get pdfs (can do directly)
 							InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), workingDir.resolve("pdf"));
 							log.info("Found pdf for {}", doi);
+							ContentExtractor extractor = new ContentExtractor();
 							extractor.setPDF(is);
 							//Use cermine to get references
 							List<BibEntry> refs = extractor.getReferences();
