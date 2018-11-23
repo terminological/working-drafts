@@ -107,6 +107,11 @@ public class EntrezClient {
 			WebResource tdmCopy = searchService;
 			return tdmCopy.queryParams(searchParams);
 		}
+		
+		protected <X> X post(WebResource searchService, Class<X> output) {
+			WebResource tdmCopy = searchService;
+			return tdmCopy.post(output,searchParams);
+		}
 
 		protected ESearchQueryBuilder(MultivaluedMap<String, String> searchParams, String searchTerm, EntrezClient client) {
 			this.searchParams = searchParams;
