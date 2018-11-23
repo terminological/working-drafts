@@ -1,6 +1,16 @@
 package uk.co.terminological.pubmedclient;
 
+
+
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import uk.co.terminological.pubmedclient.CrossRefClient.Field;
+import uk.co.terminological.pubmedclient.CrossRefClient.QueryBuilder;
+import uk.co.terminological.pubmedclient.CrossRefClient.Sort;
+import uk.co.terminological.pubmedclient.CrossRefClient.SortOrder;
+import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 
 public class TestCrossRefClient {
 
@@ -11,13 +21,28 @@ public class TestCrossRefClient {
 	};
 	
 	
+	static String[] dois = {
+			"10.3115/990820.990850",
+			null,
+			null
+	};
+	
 	static String DEVELOPER = "test@example.org";
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws BibliographicApiException {
 		
 		BasicConfigurator.configure();
+		Logger.getRootLogger().setLevel(Level.ALL);
 		
 		CrossRefClient xref = CrossRefClient.create(DEVELOPER);
+		
+		QueryBuilder qb = xref.buildQuery()
+				.withSearchTerm(Field.BIBLIOGRAPHIC, articles[0])
+				.sortedBy(Sort.SCORE, SortOrder.DESC)
+				.limit(1);
+				
+		
+		
 		for (String ref: articles) {
 			System.out.println(ref);
 			xref.findWorkByCitationString(ref).ifPresent(w -> w.title.forEach(System.out::println));
