@@ -18,7 +18,7 @@ public class TestConverterApiClient {
 	public static void main(String[] args) throws BibliographicApiException {
 		
 		BasicConfigurator.configure();
-		IdConverterClient client = new IdConverterClient(APP_ID,DEVELOPER_EMAIL).debugMode();
+		IdConverterClient client = IdConverterClient.create(APP_ID,DEVELOPER_EMAIL).debugMode();
 		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
 		
 	}
