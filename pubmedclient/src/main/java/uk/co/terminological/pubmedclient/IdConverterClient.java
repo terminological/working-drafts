@@ -36,7 +36,11 @@ public class IdConverterClient {
 	private WebResource lookupService;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 	
-	public IdConverterClient(String developerEmail, String toolName) {
+	public static IdConverterClient create(String developerEmail, String toolName) {
+		return new IdConverterClient(developerEmail,toolName);
+	}
+	
+	private IdConverterClient(String developerEmail, String toolName) {
 		this.developerEmail = developerEmail;
 		this.toolName = toolName;
 		this.client = Client.create();
@@ -166,7 +170,5 @@ public class IdConverterClient {
 		@JsonProperty("release-date") public Optional<String> releaseDate = Optional.empty();
 	}
 
-	public static IdConverterClient create(String appId, String developerEmail) {
-		return new IdConverterClient(appId,developerEmail);
-	}
+	
 }
