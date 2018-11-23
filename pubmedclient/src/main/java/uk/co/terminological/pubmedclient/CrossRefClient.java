@@ -214,7 +214,7 @@ public class CrossRefClient {
 			Optional<Work> out = lr.message.get()
 					.items.stream()
 					.findFirst();
-			if (out.isPresent() && out.get().score.orElse(0F) > 80.0F) return out; 
+			if (out.isPresent() && out.get().score.orElse(0F) > 85.0F) return out; 
 			return Optional.empty();
 		} catch (BibliographicApiException e) {
 			return Optional.empty();
