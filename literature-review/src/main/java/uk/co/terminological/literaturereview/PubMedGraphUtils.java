@@ -320,7 +320,7 @@ public class PubMedGraphUtils {
 			doMerge(ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
 			out = cite.DOI.map(citedDoi -> {
 					Relationship tmp = doMerge(ARTICLE, citingType, citingDoi.toLowerCase() ,relType, ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
-					tmp.setProperty("cermine", true);
+					tmp.setProperty("pdf", true);
 					return citedDoi;
 			});
 			tx.success();
