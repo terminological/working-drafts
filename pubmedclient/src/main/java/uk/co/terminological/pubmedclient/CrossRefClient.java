@@ -52,10 +52,13 @@ public class CrossRefClient {
 	
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	
-	private static class JulFacade extends java.util.logging.Logger {
-		JulFacade() { super("Jersey", null); }
-		@Override public void info(String msg) { logger.info(msg); }
+	public CrossRefClient debugMode() {
+		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
+			@Override public void info(String msg) { logger.info(msg); }
+		}));
+		return this;
 	}
+	
 	
 	private CrossRefClient(String developerEmail) {
 		this.developerEmail = developerEmail;
@@ -63,10 +66,7 @@ public class CrossRefClient {
 		
 	}
 
-	public CrossRefClient debugMode() {
-		this.client.addFilter(new LoggingFilter(new JulFacade()));
-		return this;
-	}
+	
 	
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 	

@@ -42,6 +42,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.ClientFilter;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class UnpaywallClient {
@@ -64,6 +65,13 @@ public class UnpaywallClient {
 		}
 		return singleton.get(developerEmail);
 
+	}
+	
+	public UnpaywallClient debugMode() {
+		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
+			@Override public void info(String msg) { logger.info(msg); }
+		}));
+		return this;
 	}
 
 	private UnpaywallClient(String developerEmail) {

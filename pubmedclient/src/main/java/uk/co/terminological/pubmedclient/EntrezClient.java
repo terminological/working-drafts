@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.fluentxml.Xml;
@@ -62,6 +63,13 @@ public class EntrezClient {
 		}
 		return singleton.get(apiKey);
 
+	}
+	
+	public EntrezClient debugMode() {
+		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
+			@Override public void info(String msg) { logger.info(msg); }
+		}));
+		return this;
 	}
 
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"

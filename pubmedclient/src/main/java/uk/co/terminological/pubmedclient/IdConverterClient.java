@@ -23,6 +23,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class IdConverterClient {
@@ -40,6 +41,13 @@ public class IdConverterClient {
 		this.toolName = toolName;
 		this.client = Client.create();
 		this.lookupService = client.resource("https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/");
+	}
+	
+	public IdConverterClient debugMode() {
+		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
+			@Override public void info(String msg) { logger.info(msg); }
+		}));
+		return this;
 	}
 	
 	private MultivaluedMap<String, String> defaultApiParams() {
