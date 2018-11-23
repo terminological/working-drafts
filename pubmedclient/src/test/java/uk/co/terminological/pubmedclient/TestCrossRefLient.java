@@ -1,5 +1,7 @@
 package uk.co.terminological.pubmedclient;
 
+import org.apache.log4j.BasicConfigurator;
+
 public class TestCrossRefLient {
 
 	static String[] articles =  {
@@ -12,6 +14,8 @@ public class TestCrossRefLient {
 	static String DEVELOPER = "test@example.org";
 	
 	public static void main(String[] args) {
+		
+		BasicConfigurator.configure();
 		
 		CrossRefClient xref = CrossRefClient.create(DEVELOPER);
 		for (String ref: articles) {
