@@ -194,6 +194,7 @@ public class PubMedGraphUtils {
 				Node node = tmp;
 				
 				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
+				entry.getPMCPdfUrl().ifPresent(url -> node.setProperty("pdfUrl", url));
 				entry.getPubMedDate().ifPresent(dt -> {
 					node.setProperty("date", dt);
 					/*if (dt.isAfter(earliest) && dt.isBefore(latest)) {
