@@ -139,17 +139,20 @@ public class UnpaywallClient {
 		    	@Override
 		        public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
 		            ClientHandler ch = getNext();
-		            ClientResponse resp = ch.handle(cr);
-
-		            if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
-		                return resp;
+		            int i=10;
+		            while (i-->0) {
+			            ClientResponse resp = ch.handle(cr);
+			            if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
+			                return resp;
+			            } else {
+			                // try location
+			                String redirectTarget = resp.getHeaders().getFirst("Location");
+			                logger.debug("redirecting to :"+redirectTarget);
+			                cr.setURI(UriBuilder.fromUri(redirectTarget).build());
+			                resp = ch.handle(cr);
+			            }
 		            }
-		            else {
-		                // try location
-		                String redirectTarget = resp.getHeaders().getFirst("Location");
-		                cr.setURI(UriBuilder.fromUri(redirectTarget).build());
-		                return ch.handle(cr);
-		            }
+		            throw new ClientHandlerException("Too many redirects");
 		        }
 		    });
 			return wr.get(InputStream.class);

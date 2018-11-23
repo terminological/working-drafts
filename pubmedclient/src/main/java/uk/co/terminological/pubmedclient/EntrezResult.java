@@ -130,6 +130,14 @@ public class EntrezResult {
 				return Optional.empty();
 			}
 		}
+		
+		/**
+		 * This will perform require a redirect
+		 * @return
+		 */
+		public Optional<String> getPMCPdfUrl() {
+			return getPMCID().map(s -> "https://www.ncbi.nlm.nih.gov/pmc/articles/"+s+"/pdf");
+		}
 
 		public Optional<String> getPMID() {
 			try {
