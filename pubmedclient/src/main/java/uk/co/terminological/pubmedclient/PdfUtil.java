@@ -37,6 +37,7 @@ public class PdfUtil {
 	    	}));
 	    }
 	    client.setFollowRedirects(true);
+	    
 	    WebResource wr = client.resource(url);
 	    wr.addFilter(new ClientFilter() {
 	    	@Override
