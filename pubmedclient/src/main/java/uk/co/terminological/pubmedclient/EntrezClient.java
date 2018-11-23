@@ -283,6 +283,15 @@ public class EntrezClient {
 		return getPubMedCentralXMLByPubMedCentralId(pmcId);
 	}
 
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
+		if (pmEntry.getPMCPdfUrl().isPresent()) {
+			String pdfUrl = pmEntry.getPMCPdfUrl().get();
+			return Optional.of(PdfUtil.getPdfFromUrl(pdfUrl));
+		} else {
+			return Optional.empty();
+		}
+	}
+	
 	/**
 	 * retrieves a full entries for a list of articles from the given database 
 	 * @param list of ids
