@@ -236,7 +236,7 @@ public class CrossRefClient {
 		private WebResource get(Client client) {
 			
 			WebResource tdmCopy = client.resource(url);
-			tdmCopy.queryParams(params);
+			tdmCopy = tdmCopy.queryParams(params);
 			return tdmCopy;
 		}
 		
