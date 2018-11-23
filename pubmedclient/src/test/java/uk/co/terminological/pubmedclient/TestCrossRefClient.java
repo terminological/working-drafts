@@ -2,7 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import org.apache.log4j.BasicConfigurator;
 
-public class TestCrossRefLient {
+public class TestCrossRefClient {
 
 	static String[] articles =  {
 		"Collier,N., Nobata,C. and Tsujii,J. (2000) Extracting the names of genes and gene products with a hidden Markov model. In Proceedings of the 18th International Conference on Computational Lingustics (COLING'2003), Saarbrucken, Germany, pp. 201-207.",
