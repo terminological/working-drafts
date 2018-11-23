@@ -20,7 +20,7 @@ public class TestCrossRefClient {
 		CrossRefClient xref = CrossRefClient.create(DEVELOPER);
 		for (String ref: articles) {
 			System.out.println(ref);
-			xref.findWorkByCitationString(ref).get().title.forEach(System.out::println);
+			xref.findWorkByCitationString(ref).ifPresent(w -> w.title.forEach(System.out::println));
 			System.out.println();
 		}
 			
