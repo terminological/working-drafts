@@ -34,7 +34,7 @@ public class TestCrossRefClient {
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.ALL);
 		
-		CrossRefClient xref = CrossRefClient.create(DEVELOPER);
+		CrossRefClient xref = CrossRefClient.create(DEVELOPER).debugMode();
 		
 		QueryBuilder qb = xref.buildQuery()
 				.withSearchTerm(Field.BIBLIOGRAPHIC, articles[0])

@@ -60,9 +60,14 @@ public class CrossRefClient {
 	private CrossRefClient(String developerEmail) {
 		this.developerEmail = developerEmail;
 		this.client = Client.create();
-		this.client.addFilter(new LoggingFilter(new JulFacade()));
+		
 	}
 
+	public CrossRefClient debugMode() {
+		this.client.addFilter(new LoggingFilter(new JulFacade()));
+		return this;
+	}
+	
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 	
 	private String developerEmail;
