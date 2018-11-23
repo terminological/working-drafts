@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.InputStream;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
@@ -37,8 +38,19 @@ public class PdfUtil {
 	    	}));
 	    }
 	    client.setFollowRedirects(true);
+	    client.addFilter(new ClientFilter() { 
+            @Override 
+            public ClientResponse handle(ClientRequest request) 
+                            throws ClientHandlerException { 
+                    request.getHeaders().add( 
+                                    HttpHeaders.USER_AGENT, 
+                                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36"); 
+                    return getNext().handle(request); 
+            } 
+    }); 
 	    
 	    WebResource wr = client.resource(url);
+	    
 	    wr.addFilter(new ClientFilter() {
 	    	@Override
 	        public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
