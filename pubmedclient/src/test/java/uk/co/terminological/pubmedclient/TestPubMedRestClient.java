@@ -36,7 +36,7 @@ public class TestPubMedRestClient {
 		String pubmedApiToken = prop.getProperty("pubmed.apikey");
 		String appId = prop.getProperty("appid");
 		
-		EntrezClient restClient = EntrezClient.create(pubmedApiToken, appId, developerEmail);
+		EntrezClient restClient = EntrezClient.create(pubmedApiToken, appId, developerEmail).debugMode();
 			
 		Search result = restClient.buildSearchQuery("Doxapram")
 			.limit(0, 10)
