@@ -130,34 +130,11 @@ public class UnpaywallClient {
 	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
 		try {
 			
-			ClientConfig config = new DefaultClientConfig();
-		    config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
-		    Client client = Client.create(config);
-		    client.setFollowRedirects(true);
-		    WebResource wr = client.resource(result.pdfUrl().orElseThrow(() -> new BibliographicApiException("No PDF found for "+result.doi.get())));
-		    wr.addFilter(new ClientFilter() {
-		    	@Override
-		        public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
-		            ClientHandler ch = getNext();
-		            int i=10;
-		            while (i-->0) {
-			            ClientResponse resp = ch.handle(cr);
-			            if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
-			                return resp;
-			            } else {
-			                // try location
-			                String redirectTarget = resp.getHeaders().getFirst("Location");
-			                logger.debug("redirecting to :"+redirectTarget);
-			                cr.setURI(UriBuilder.fromUri(redirectTarget).build());
-			                resp = ch.handle(cr);
-			            }
-		            }
-		            throw new ClientHandlerException("Too many redirects");
-		        }
-		    });
-			return wr.get(InputStream.class);
+			String url = result.pdfUrl().orElseThrow(() -> new BibliographicApiException("No PDF found for "+result.doi.get()));
+			return PdfUtil.getPdfFromUrl(url);
+		    
 		} catch (Exception e) {
-			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get());
+			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get(), e);
 		}
 	}
 
