@@ -457,11 +457,11 @@ public class PubMedGraphUtils {
 	}
 	
 	public static Optional<String> updatePdfLink(Result work, GraphDatabaseApi graph) {
-		if (work.doi.isPresent() && work.pdfUrl().isPresent()) {
+		if (work.doi.isPresent()) {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
 				Node node = doMerge(ARTICLE, "doi", work.doi.get().toLowerCase(), graph.get());
-				node.setProperty("pdfUrl", work.pdfUrl().get());
+				work.pdfUrl().ifPresent(url -> node.setProperty("pdfUrl", url));
 				tx.success();
 			}
 			return Optional.of(work.doi.get().toLowerCase());
