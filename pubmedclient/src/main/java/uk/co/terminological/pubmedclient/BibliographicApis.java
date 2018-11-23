@@ -57,6 +57,14 @@ public class BibliographicApis {
 
 	}
 
+	public BibliographicApis debugMode() {
+		entrez.debugMode();
+		pmcIdConv.debugMode();
+		crossref.debugMode();
+		unpaywall.debugMode();
+		return this;
+	}
+	
 	public EntrezClient getEntrez() {
 		return entrez;
 	}
