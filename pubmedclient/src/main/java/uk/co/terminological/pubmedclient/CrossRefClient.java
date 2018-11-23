@@ -31,6 +31,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
@@ -51,9 +52,15 @@ public class CrossRefClient {
 	
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	
+	private static class JulFacade extends java.util.logging.Logger {
+		JulFacade() { super("Jersey", null); }
+		@Override public void info(String msg) { logger.info(msg); }
+	}
+	
 	private CrossRefClient(String developerEmail) {
 		this.developerEmail = developerEmail;
 		this.client = Client.create();
+		this.client.addFilter(new LoggingFilter(new JulFacade()));
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
@@ -222,6 +229,7 @@ public class CrossRefClient {
 		CrossRefClient client;
 		
 		private WebResource get(Client client) {
+			
 			WebResource tdmCopy = client.resource(url);
 			tdmCopy.queryParams(params);
 			return tdmCopy;
@@ -231,6 +239,7 @@ public class CrossRefClient {
 			this.url=url;
 			this.params=defaultParams;
 			this.client = client;
+			
 		}
 		
 		public QueryBuilder withSearchTerm(String search) {
