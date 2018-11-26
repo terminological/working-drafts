@@ -144,18 +144,22 @@ public class PubMedGraphExperiment2 {
 		// and write the result into the graph
 		// TODO: what fields actually need to be written into graph?
 		// TODO: best to cache the results of this maybe, or at least save the answer for downstream?
-		PubMedEntries ent = broadSearch.getStoredResult(biblioApi.getEntrez()).get();
+		
+		Path pubmedXmlCache = workingDir.resolve("xml");
+		/*PubMedEntries ent = broadSearch.getStoredResult(biblioApi.getEntrez()).get();
 		log.info("Pubmed broad search found to {} articles with metadata",ent.stream().count());
 		
 		mapEntriesToNode(ent.stream(), graphApi, earliest, latest, EXPAND);
-		Path pubmedXmlCache = workingDir.resolve("xml");
+		
 		tryRethrow(pubmedXmlCache, t -> Files.createDirectories(t));
 		ent.stream().forEach(
 				logWarn(entry -> {
 					Path tmp2 = pubmedXmlCache.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
 					entry.getRaw().write(Files.newOutputStream(tmp2));
-		}));
+		}));*/
 		
+		Set<PubMedEntry> ent = fetchPubMedEntries(pubmedXmlCache, broadSearch.getIds().collect(Collectors.toSet()), EXPAND);
+		log.info("Pubmed broad search found to {} articles with metadata",ent.size());
 		
 		// get narrow search result - date constrained specific search.
 		// the intersection of this set and the borader set will be tagged to make finding them easier.
