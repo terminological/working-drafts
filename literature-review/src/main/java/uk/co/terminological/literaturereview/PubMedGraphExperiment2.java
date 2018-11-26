@@ -288,8 +288,8 @@ public class PubMedGraphExperiment2 {
 
 		
 		log.info("finding open access pdf links for {} dois",loadedDois.size());
-		//Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
-		//log.info("found open access pdf links for {} dois",identifyPdf.size());
+		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
+		log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
 	}
 
@@ -507,11 +507,11 @@ public class PubMedGraphExperiment2 {
 		return outDois;
 	}
 	
-	Set<String> updateMetadataFromUnpaywall(Set<String> dois) {
+	Set<String> updateMetadataFromUnpaywall(Path unpaywallCache, Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
 			try {
-				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase(), unpaywallCache);
 				updateUnpaywallMetadata(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));
 			} catch (BibliographicApiException e) {
 				//e.printStackTrace();
@@ -520,12 +520,12 @@ public class PubMedGraphExperiment2 {
 		return out;
 	}
 	
-	Set<String> updatePdfLinksFromUnpaywall(Set<String> dois) {
+	Set<String> updatePdfLinksFromUnpaywall(Path unpaywallCache, Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
 			try {
 				
-				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase(), unpaywallCache);
 				log.debug("found unpaywall entry for: "+doi);
 				updatePdfLink(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));;
 			} catch (BibliographicApiException e) {

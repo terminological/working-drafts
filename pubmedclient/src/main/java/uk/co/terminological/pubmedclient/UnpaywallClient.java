@@ -45,6 +45,8 @@ import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import uk.co.terminological.datatypes.StreamExceptions;
+
 public class UnpaywallClient {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
@@ -56,6 +58,8 @@ public class UnpaywallClient {
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build();
+
+	private Path cache = null;
 	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
 
 	public static UnpaywallClient create(String developerEmail) {
@@ -65,6 +69,11 @@ public class UnpaywallClient {
 		}
 		return singleton.get(developerEmail);
 
+	}
+	
+	public UnpaywallClient withCache(Path cache) {
+		this.cache = cache;
+		return this;
 	}
 	
 	public UnpaywallClient debugMode() {
@@ -91,7 +100,7 @@ public class UnpaywallClient {
 			if (!Files.exists(filepath)) {
 				Files.createDirectories(filepath.getParent());
 				Files.copy(
-						this.getPreferredContentByDoi(doi),
+						this.getPreferredContentByDoi(doi, cacheDir),
 						filepath);
 			}
 			return Files.newInputStream(filepath);
@@ -102,7 +111,7 @@ public class UnpaywallClient {
 	
 	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
-			Result tmp = getUnpaywallByDoi(doi);
+			Result tmp = getUnpaywallByDoi(doi, cache);
 			WebResource wr = client.resource(tmp.pdfUrl().orElseThrow(() -> new BibliographicApiException("No paywall result for: "+doi)));
 			return wr.get(InputStream.class);		
 		} catch (Exception e) {
@@ -110,28 +119,53 @@ public class UnpaywallClient {
 		}
 	}
 
-	public Result getUnpaywallByDoi(String doi) throws BibliographicApiException {
-		return getUnpaywallByDois(Collections.singletonList(doi)).stream()
+	public Result getUnpaywallByDoi(String doi, Path unpaywallCache) throws BibliographicApiException {
+		return getUnpaywallByDois(Collections.singletonList(doi), unpaywallCache).stream()
 				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
 
-	public Set<Result> getUnpaywallByDois(Collection<String> dois) throws BibliographicApiException {
+	public Set<Result> getUnpaywallByDois(Collection<String> dois, Path unpaywallCache) throws BibliographicApiException {
 		Set<Result> out = new HashSet<>();
-		dois.forEach(i -> {
-			try {
-				out.add(doCall(i));
-			} catch (BibliographicApiException e) {
-				logger.debug("could not get unpaywall record for "+i);
-			}
-		});
+		dois.forEach(StreamExceptions.ignore(i -> {
+				InputStream is = null;
+				if (unpaywallCache != null && Files.exists(unpaywallCache.resolve(i))) {
+					is = Files.newInputStream(unpaywallCache.resolve(i));
+				} else {
+					MultivaluedMap<String, String> params = defaultApiParams();
+					logger.debug("https://api.unpaywall.org/v2/"+encode(i));
+					rateLimiter.consume();
+					WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(i)).queryParams(params);
+					is = wr.get(InputStream.class);
+				}
+				Result response = objectMapper.readValue(is, Result.class);
+				out.add(response);
+			}));
 		return out;
 	}
 
 	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
+		return getPdfByResult(result, cache );
+	}
+	
+	public InputStream getPdfByResult(Result result, Path unpaywallCache) throws BibliographicApiException {
 		try {
-			
 			String url = result.pdfUrl().orElseThrow(() -> new BibliographicApiException("No PDF found for "+result.doi.get()));
-			return PdfUtil.getPdfFromUrl(url);
+			if (unpaywallCache!=null) {
+				Path filepath = unpaywallCache.resolve(result.doi.get()+".pdf");
+				try {
+					if (!Files.exists(filepath)) {
+						Files.createDirectories(filepath.getParent());
+						Files.copy(
+								PdfUtil.getPdfFromUrl(url),
+								filepath);
+					}
+					return Files.newInputStream(filepath);
+				} catch (IOException e) {
+					throw new BibliographicApiException("Could not get content for"+result.doi.get(),e);
+				}
+			} else {
+				return PdfUtil.getPdfFromUrl(url);
+			}
 		    
 		} catch (Exception e) {
 			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get(), e);
