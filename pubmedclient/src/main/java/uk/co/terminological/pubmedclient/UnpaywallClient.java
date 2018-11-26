@@ -159,7 +159,7 @@ public class UnpaywallClient {
 	
 	public InputStream getPdfByResult(Result result, Path unpaywallCache) throws BibliographicApiException {
 		try {
-			String url = result.pdfUrl().orElseThrow(() -> new BibliographicApiException("No PDF found for "+result.doi.get()));
+			String url = result.pdfUrl().orElse(null);
 			if (unpaywallCache!=null) {
 				Path filepath = unpaywallCache.resolve(result.doi.get()+".pdf");
 				try {
@@ -182,7 +182,7 @@ public class UnpaywallClient {
 		}
 	}
 
-	private Result doCall(String doi) throws BibliographicApiException {
+	/*private Result doCall(String doi) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		logger.debug("https://api.unpaywall.org/v2/"+encode(doi));
 		rateLimiter.consume();
@@ -196,7 +196,7 @@ public class UnpaywallClient {
 		} catch (IOException | UniformInterfaceException e) {
 			throw new BibliographicApiException("Cannot connect or not found");
 		}
-	}
+	}*/
 
 
 	private static String encode(String string)  {
