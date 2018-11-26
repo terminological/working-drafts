@@ -346,38 +346,16 @@ public class PubMedGraphExperiment2 {
 
 	Set<PubMedEntry> fetchPubMedEntries(Path cacheDir, Collection<String> pmids, Label... labels) {
 		Set<PubMedEntry> entriesOut = new HashSet<>();
-		Set<String> deferred = new HashSet<>();
-		Iterator<String> pmidIt = pmids.iterator();
-		while (pmidIt.hasNext()) {
-			String toPMID = pmidIt.next();
-			Path tmp2 = cacheDir.resolve(toPMID);
-			
-			if (Files.exists(tmp2)) {
-				try {
-					PubMedEntry tmpEntry = new PubMedEntry(Xml.fromFile(tmp2.toFile()).content());
-					mapEntriesToNode(Streams.ofNullable(tmpEntry), graphApi, earliest, latest, EXPAND);
-					entriesOut.add(tmpEntry);
-				} catch (XmlException | FileNotFoundException e1) {
-					deferred.add(toPMID);
-				}
-			} else {
-				deferred.add(toPMID);	
-			}
-			if (deferred.size() > 7000 || !pmidIt.hasNext()) {
-				Set<PubMedEntry> entries;
-				try {
-					entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred);
-					mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
-					log.info("retrieved {} articles referred to in broad search",entries.stream().count());
-					entries.stream().forEach(
-						logWarn(entry -> {
-							entry.getRaw().write(Files.newOutputStream(tmp2));
-							entriesOut.add(entry);
-						}));
-				} catch (BibliographicApiException e) {
-					e.printStackTrace();
-				}
-				deferred = new HashSet<>();
+		List<String> deferred = new ArrayList<>(pmids);
+		while (!deferred.isEmpty()) {
+			try {
+				Set<PubMedEntry> entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred.subList(0, 7000),cacheDir);
+				mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
+				log.info("retrieved {} articles referred to in broad search",entries.stream().count());
+				deferred.subList(0, 7000).clear();
+				entriesOut.addAll(entries);
+			} catch (BibliographicApiException e) {
+				e.printStackTrace();
 			}
 		}
 		return entriesOut;
