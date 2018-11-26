@@ -94,6 +94,7 @@ public class UnpaywallClient {
 		return out;
 	}
 
+	@Deprecated
 	public InputStream getPreferredContentByDoi(String doi, Path cacheDir) throws BibliographicApiException {
 		Path filepath = cacheDir.resolve(doi+".pdf");
 		try {
@@ -109,6 +110,7 @@ public class UnpaywallClient {
 		}
 	}
 	
+	@Deprecated
 	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
 		try {
 			Result tmp = getUnpaywallByDoi(doi, cache);
@@ -132,9 +134,10 @@ public class UnpaywallClient {
 					Path tmp = unpaywallCache.resolve(i);
 					if (Files.exists(tmp)) {
 						is = Files.newInputStream(tmp);
+						logger.debug("fetching cached unpaywall record for {}",i);
 					} else {
 						MultivaluedMap<String, String> params = defaultApiParams();
-						logger.debug("https://api.unpaywall.org/v2/"+encode(i));
+						logger.debug("fetching unpaywall record for {}",i);
 						rateLimiter.consume();
 						WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(i)).queryParams(params);
 						Files.copy(wr.get(InputStream.class),tmp);
@@ -142,7 +145,7 @@ public class UnpaywallClient {
 					}
 				} else {
 					MultivaluedMap<String, String> params = defaultApiParams();
-					logger.debug("https://api.unpaywall.org/v2/"+encode(i));
+					logger.debug("fetching unpaywall record for {}",i);
 					rateLimiter.consume();
 					WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(i)).queryParams(params);
 					is = wr.get(InputStream.class);
@@ -165,15 +168,19 @@ public class UnpaywallClient {
 				try {
 					if (!Files.exists(filepath)) {
 						Files.createDirectories(filepath.getParent());
+						logger.debug("caching pdf for {}",result.doi.get());
 						Files.copy(
 								PdfUtil.getPdfFromUrl(url),
 								filepath);
+					} else {
+						logger.debug("fetching cached pdf for {}",result.doi.get());
 					}
 					return Files.newInputStream(filepath);
 				} catch (IOException e) {
 					throw new BibliographicApiException("Could not get content for"+result.doi.get(),e);
 				}
 			} else {
+				logger.debug("fetching pdf for {}",result.doi.get());
 				return PdfUtil.getPdfFromUrl(url);
 			}
 		    
@@ -182,6 +189,15 @@ public class UnpaywallClient {
 		}
 	}
 
+	public InputStream getPdfByDoi(String doi) throws BibliographicApiException {
+		return getPdfByDoi(doi, cache );
+	}
+	
+	public InputStream getPdfByDoi(String doi, Path unpaywallCache) throws BibliographicApiException {
+		Result result = getUnpaywallByDoi(doi,unpaywallCache);
+		return getPdfByResult(result, unpaywallCache);	
+	}
+	
 	/*private Result doCall(String doi) throws BibliographicApiException {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		logger.debug("https://api.unpaywall.org/v2/"+encode(doi));

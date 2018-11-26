@@ -229,7 +229,7 @@ public class PubMedGraphExperiment2 {
 				StreamExceptions.ignore(
 						doi -> {
 							// Look these up in unpaywall and get pdfs (can do directly)
-							InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), unpaywallCache);
+							InputStream is = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase(), unpaywallCache);
 							log.info("Found pdf for {}", doi);
 							ContentExtractor extractor = new ContentExtractor();
 							extractor.setPDF(is);
