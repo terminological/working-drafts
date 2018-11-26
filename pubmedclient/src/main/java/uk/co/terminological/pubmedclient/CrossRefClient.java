@@ -156,6 +156,7 @@ public class CrossRefClient {
 		if (cacheDir != null) {
 			Path tmp = cacheDir.resolve(doi);
 			if (!Files.exists(tmp)) {
+				StreamExceptions.tryRethrow(t -> Files.createDirectories(tmp.getParent()));
 				rateLimiter.consume();
 				logger.debug("Retrieving crossref record for:" + doi);
 				String url = baseUrl+"works/"+encode(doi);
