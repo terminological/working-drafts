@@ -145,11 +145,11 @@ public class PubMedGraphExperiment2 {
 		log.info("Pubmed broad search found to {} articles with metadata",ent.stream().count());
 		
 		mapEntriesToNode(ent.stream(), graphApi, earliest, latest, EXPAND);
-		Path tmp = workingDir.resolve("xml");
-		tryRethrow(tmp, t -> Files.createDirectories(t));
+		Path pubmedXmlCache = workingDir.resolve("xml");
+		tryRethrow(pubmedXmlCache, t -> Files.createDirectories(t));
 		ent.stream().forEach(
 				logWarn(entry -> {
-					Path tmp2 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+					Path tmp2 = pubmedXmlCache.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
 					entry.getRaw().write(Files.newOutputStream(tmp2));
 		}));
 		
@@ -189,7 +189,7 @@ public class PubMedGraphExperiment2 {
 		Set<PubMedEntry> entries2 = new HashSet<>();
 		Set<String> deferred = new HashSet<>();
 		for (String toPMID: toPMIDs) {
-			Path tmp2 = tmp.resolve(toPMID);
+			Path tmp2 = pubmedXmlCache.resolve(toPMID);
 			
 			if (Files.exists(tmp2)) {
 				try {
@@ -208,7 +208,7 @@ public class PubMedGraphExperiment2 {
 				log.info("retrieved {} articles referred to in broad search",entries3.size());
 				entries3.stream().forEach(
 						logWarn(entry -> {
-							Path tmp3 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+							Path tmp3 = pubmedXmlCache.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
 							entry.getRaw().write(Files.newOutputStream(tmp3));
 						}));
 				deferred = new HashSet<>();
@@ -220,7 +220,7 @@ public class PubMedGraphExperiment2 {
 		log.info("retrieved {} articles referred to in broad search",entries3.size());
 		entries3.stream().forEach(
 				logWarn(entry -> {
-					Path tmp3 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+					Path tmp3 = pubmedXmlCache.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
 					entry.getRaw().write(Files.newOutputStream(tmp3));
 				}));
 		deferred = new HashSet<>();
