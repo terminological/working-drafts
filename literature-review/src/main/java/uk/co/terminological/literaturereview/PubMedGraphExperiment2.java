@@ -272,6 +272,7 @@ public class PubMedGraphExperiment2 {
 									.flatMap(ref -> {
 								//Use xref to get a doi for citations string.
 								log.info(ref.getText());
+								
 								return biblioApi.getCrossref().findWorkByCitationString(ref.getText()).stream();
 							}).collect(Collectors.toSet());
 							

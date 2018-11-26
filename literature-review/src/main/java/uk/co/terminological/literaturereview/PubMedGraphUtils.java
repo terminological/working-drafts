@@ -250,14 +250,14 @@ public class PubMedGraphUtils {
 
 		Node out = null;
 
-			Node node = doMerge(AUTHOR, "identifier", identifier, graph.get());
+			Node node = graph.get().createNode();// doMerge(AUTHOR, "identifier", identifier, graph.get());
 			firstName.ifPresent(fn -> node.setProperty("firstName", fn));
 			lastName.ifPresent(fn -> node.setProperty("lastName", fn));
 			initials.ifPresent(fn -> node.setProperty("initials", fn));
-			if (!affiliations.isEmpty()) {
-				if (node.hasProperty("affiliations")) affiliations.addAll(Arrays.asList((String[]) node.getProperty("affiliations"))); 
+			// if (!affiliations.isEmpty()) {
+			//	if (node.hasProperty("affiliations")) affiliations.addAll(Arrays.asList((String[]) node.getProperty("affiliations"))); 
 				node.setProperty("affiliations", affiliations.toArray(new String[] {}));
-			}
+			// }
 			out = node;
 
 		return Optional.ofNullable(out);
