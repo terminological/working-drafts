@@ -253,7 +253,7 @@ public class PubMedGraphUtils {
 			lastName.ifPresent(fn -> node.setProperty("lastName", fn));
 			initials.ifPresent(fn -> node.setProperty("initials", fn));
 			if (!affiliations.isEmpty()) {
-				if (node.hasProperty("affiliations")) affiliations.addAll(Arrays.asList((String[]) node.getProperty("affilitations"))); 
+				if (node.hasProperty("affiliations")) affiliations.addAll(Arrays.asList((String[]) node.getProperty("affiliations"))); 
 				node.setProperty("affiliations", affiliations.toArray(new String[] {}));
 			}
 			out = node;
