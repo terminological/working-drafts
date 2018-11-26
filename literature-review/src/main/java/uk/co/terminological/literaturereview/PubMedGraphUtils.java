@@ -232,7 +232,7 @@ public class PubMedGraphUtils {
 	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getIdentifier(),
-				author.lastName(),author.firstName(), author.initials(), author.affiliations().collect(Collectors.toSett()), graph, tx);
+				author.lastName(),author.firstName(), author.initials(), author.affiliations().collect(Collectors.toSet()), graph, tx);
 	}
 		
 	public static Optional<Node> mapAuthorToNode(Contributor author, GraphDatabaseApi graph, Transaction tx) {
