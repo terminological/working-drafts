@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
+import org.neo4j.stream.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,8 @@ import pl.edu.icm.cermine.bibref.model.BibEntry;
 import pl.edu.icm.cermine.bibref.model.BibEntryType;
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.datatypes.StreamExceptions;
+import uk.co.terminological.fluentxml.Xml;
+import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
@@ -141,7 +144,7 @@ public class PubMedGraphExperiment2 {
 		PubMedEntries ent = broadSearch.getStoredResult(biblioApi.getEntrez()).get();
 		log.info("Pubmed broad search found to {} articles with metadata",ent.stream().count());
 		
-		mapEntriesToNode(ent, graphApi, earliest, latest, EXPAND);
+		mapEntriesToNode(ent.stream(), graphApi, earliest, latest, EXPAND);
 		Path tmp = workingDir.resolve("xml");
 		tryRethrow(tmp, t -> Files.createDirectories(t));
 		ent.stream().forEach(
@@ -180,13 +183,49 @@ public class PubMedGraphExperiment2 {
 		
 		// fetch all the entries that were outside broader search but pointed to by pmid citations
 		// write these in as stubs.
-		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs);
-		log.info("retrieved {} articles referred to in broad search",entries2.size());
-		entries2.stream().forEach(
+		
+		
+		
+		Set<PubMedEntry> entries2 = new HashSet<>();
+		Set<String> deferred = new HashSet<>();
+		for (String toPMID: toPMIDs) {
+			Path tmp2 = tmp.resolve(toPMID);
+			
+			if (Files.exists(tmp2)) {
+				try {
+					PubMedEntry tmpEntry = new PubMedEntry(Xml.fromFile(tmp2.toFile()).content());
+					mapEntriesToNode(Streams.ofNullable(tmpEntry), graphApi, earliest, latest, EXPAND);
+					entries2.add(tmpEntry);
+				} catch (XmlException e1) {
+					deferred.add(toPMID);
+				}
+			} else {
+				deferred.add(toPMID);	
+			}
+			
+			if (deferred.size() > 7000) {
+				Set<PubMedEntry> entries3 = fetchPubMedEntries(deferred);
+				log.info("retrieved {} articles referred to in broad search",entries3.size());
+				entries3.stream().forEach(
+						logWarn(entry -> {
+							Path tmp3 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+							entry.getRaw().write(Files.newOutputStream(tmp3));
+						}));
+				deferred = new HashSet<>();
+				entries2.addAll(entries3);
+			}
+		}
+		
+		Set<PubMedEntry> entries3 = fetchPubMedEntries(deferred);
+		log.info("retrieved {} articles referred to in broad search",entries3.size());
+		entries3.stream().forEach(
 				logWarn(entry -> {
-					Path tmp2 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
-					entry.getRaw().write(Files.newOutputStream(tmp2));
-		}));
+					Path tmp3 = tmp.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+					entry.getRaw().write(Files.newOutputStream(tmp3));
+				}));
+		deferred = new HashSet<>();
+		entries2.addAll(entries3);
+		
 		
 		// now for DOIs...
 		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
@@ -334,7 +373,7 @@ public class PubMedGraphExperiment2 {
 	Set<PubMedEntry> fetchPubMedEntries(Collection<String> pmids, Label... labels) {
 		try {
 			PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(pmids);
-			mapEntriesToNode(entries, graphApi, earliest, latest, labels);
+			mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
 			return entries.stream().collect(Collectors.toSet());
 			
 		} catch (BibliographicApiException e) {

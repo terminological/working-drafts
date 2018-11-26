@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -44,6 +45,7 @@ import uk.co.terminological.pubmedclient.EntrezResult.Author;
 import uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import uk.co.terminological.pubmedclient.UnpaywallClient.Result;
 
 public class PubMedGraphUtils {
@@ -115,14 +117,14 @@ public class PubMedGraphUtils {
 	}
 	
 	
-	public static List<Node> mapEntriesToNode(PubMedEntries entries, GraphDatabaseApi graph, LocalDate earliest, LocalDate latest, Label... additional) {
+	public static List<Node> mapEntriesToNode(Stream<PubMedEntry> entries, GraphDatabaseApi graph, LocalDate earliest, LocalDate latest, Label... additional) {
 
 		List<Node> out = new ArrayList<>();
 
 		try ( Transaction tx = graph.get().beginTx() ) {
 			tx.acquireWriteLock(lockNode);
 			
-			entries.stream().forEach(entry -> {
+			entries.forEach(entry -> {
 				Node tmp = null;
 				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
 				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get().toLowerCase()) : null;
