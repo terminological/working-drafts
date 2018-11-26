@@ -255,6 +255,7 @@ public class EntrezClient {
 					deferred.add(pmid);
 				}
 			}
+			logger.debug("fetching {} pubmed records from cache", out.size());
 		} else {
 			deferred = pmids;
 		}
@@ -264,7 +265,7 @@ public class EntrezClient {
 		deferred.forEach(id -> fetchParams.add("id",id));
 		fetchParams.add("format", "xml");
 		rateLimiter.consume();
-		logger.debug("making efetch query with params {}", fetchParams.toString());
+		logger.debug("making efetch query for {} pubmed records with params {}", deferred.size(), fetchParams.toString());
 		InputStream is = eFetchResource.post(InputStream.class,fetchParams);
 		Xml xml;
 		try {
