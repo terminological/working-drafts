@@ -259,31 +259,31 @@ public class EntrezClient {
 			deferred = pmids;
 		}
 		if (!deferred.isEmpty()) {
- 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
-		fetchParams.add("db", "pubmed");
-		deferred.forEach(id -> fetchParams.add("id",id));
-		fetchParams.add("format", "xml");
-		rateLimiter.consume();
-		logger.debug("making efetch query for {} pubmed records with params {}", deferred.size(), fetchParams.toString());
-		InputStream is = eFetchResource.post(InputStream.class,fetchParams);
-		Xml xml;
-		try {
-			xml = Xml.fromStream(is);
-			EntrezResult.PubMedEntries tmp = new EntrezResult.PubMedEntries(xml.content());
-			tmp.stream().forEach(entry -> {
-				out.add(entry);
-				if (cache != null) {
-					Path tmp2 = cache.resolve(entry.getPMID().get());
-					try {
-						entry.getRaw().write(Files.newOutputStream(tmp2));
-					} catch (XmlException | IOException e) {
-						logger.debug("could not cache: "+entry.getPMID().get());
+			MultivaluedMap<String, String> fetchParams = defaultApiParams();
+			fetchParams.add("db", "pubmed");
+			deferred.forEach(id -> fetchParams.add("id",id));
+			fetchParams.add("format", "xml");
+			rateLimiter.consume();
+			logger.debug("making efetch query for {} pubmed records with params {}", deferred.size(), fetchParams.toString());
+			InputStream is = eFetchResource.post(InputStream.class,fetchParams);
+			Xml xml;
+			try {
+				xml = Xml.fromStream(is);
+				EntrezResult.PubMedEntries tmp = new EntrezResult.PubMedEntries(xml.content());
+				tmp.stream().forEach(entry -> {
+					out.add(entry);
+					if (cache != null) {
+						Path tmp2 = cache.resolve(entry.getPMID().get());
+						try {
+							entry.getRaw().write(Files.newOutputStream(tmp2));
+						} catch (XmlException | IOException e) {
+							logger.debug("could not cache: "+entry.getPMID().get());
+						}
 					}
-				}
-			});
-		} catch (XmlException e) {
-			throw new BibliographicApiException("could not parse result",e);
-		}
+				});
+			} catch (XmlException e) {
+				throw new BibliographicApiException("could not parse result",e);
+			}
 		}
 		return out;
 	}
