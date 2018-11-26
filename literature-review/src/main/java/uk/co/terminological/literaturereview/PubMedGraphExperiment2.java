@@ -223,12 +223,13 @@ public class PubMedGraphExperiment2 {
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		log.info("Found {} articles with no references", pdfDois.size());
 		
+		Path unpaywallCache = workingDir.resolve("pdf");
 		
 		pdfDois.forEach(
 				StreamExceptions.ignore(
 						doi -> {
 							// Look these up in unpaywall and get pdfs (can do directly)
-							InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), workingDir.resolve("pdf"));
+							InputStream is = biblioApi.getUnpaywall().getPreferredContentByDoi(doi.toLowerCase(), unpaywallCache);
 							log.info("Found pdf for {}", doi);
 							ContentExtractor extractor = new ContentExtractor();
 							extractor.setPDF(is);
@@ -281,14 +282,14 @@ public class PubMedGraphExperiment2 {
 		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
 		log.info("Looking up {} dois with no metadata on Unpaywall",toDois.size());
-		Set<String> unpaywallSources = updateMetadataFromUnpaywall(toDois);
+		Set<String> unpaywallSources = updateMetadataFromUnpaywall(unpaywallCache, toDois);
 		toDois.removeAll(unpaywallSources);
 		loadedDois.addAll(unpaywallSources);
 		log.info("Leaving {} dois with no metadata",toDois.size());
 
 		
 		log.info("finding open access pdf links for {} dois",loadedDois.size());
-		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
+		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(unpaywallCache, loadedDois);
 		log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
 	}
