@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.Work;
@@ -139,7 +142,13 @@ public class CrossRefClient {
 	}
 
 	
-	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
+	public Optional<SingleResult> getByDoi(String doi, Path cacheDir) throws BibliographicApiException {
+		if (cacheDir != null) {
+			Path tmp = cacheDir.resolve(doi);
+			if (Files.exists(tmp)) {
+				InputStream is = StreamExceptions.tryRethrow(tmp, t -> Files.newInputStream(t));
+			}
+		}
 		rateLimiter.consume();
 		logger.debug("Retrieving crossref record for:" + doi);
 		String url = baseUrl+"works/"+encode(doi);

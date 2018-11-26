@@ -23,7 +23,7 @@ public class PubMedGraphSchema {
 	}
 	
 	public enum Rel implements RelationshipType {
-	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE, HAS_RELATED
+	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE, HAS_RELATED, HAS_TOKEN, TOKEN_PRECEEDED_BY
 	}
 	
 	public static class Props {
@@ -32,6 +32,7 @@ public class PubMedGraphSchema {
 		public static String PMCID = "pmcid";
 		public static String AUTHOR_ID = "identifier";
 		public static String MESH_CODE = "code";
+		public static String TOKEN_VALUE = "value";
 		
 	}
 	
@@ -46,7 +47,8 @@ public class PubMedGraphSchema {
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.PMID );
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.DOI );
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.PMCID );
-		    schema.indexFor( Labels.AUTHOR ).on( Props.AUTHOR_ID ).create();
+		    //schema.indexFor( Labels.AUTHOR ).on( Props.AUTHOR_ID ).create();
+		    schema.indexFor( Labels.TOKEN ).on( Props.TOKEN_VALUE ).create();
 		    schema.indexFor( Labels.MESH_CODE ).on( Props.MESH_CODE ).create();
 		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique( Props.MESH_CODE );
 		    tx.success();

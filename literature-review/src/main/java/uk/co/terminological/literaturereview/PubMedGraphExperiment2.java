@@ -7,6 +7,8 @@ import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXP
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ORIGINAL_SEARCH;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Props.PMID;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.*;
+
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -18,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -186,45 +189,9 @@ public class PubMedGraphExperiment2 {
 		
 		
 		
-		Set<PubMedEntry> entries2 = new HashSet<>();
-		Set<String> deferred = new HashSet<>();
-		for (String toPMID: toPMIDs) {
-			Path tmp2 = pubmedXmlCache.resolve(toPMID);
-			
-			if (Files.exists(tmp2)) {
-				try {
-					PubMedEntry tmpEntry = new PubMedEntry(Xml.fromFile(tmp2.toFile()).content());
-					mapEntriesToNode(Streams.ofNullable(tmpEntry), graphApi, earliest, latest, EXPAND);
-					entries2.add(tmpEntry);
-				} catch (XmlException e1) {
-					deferred.add(toPMID);
-				}
-			} else {
-				deferred.add(toPMID);	
-			}
-			
-			if (deferred.size() > 7000) {
-				Set<PubMedEntry> entries3 = fetchPubMedEntries(deferred);
-				log.info("retrieved {} articles referred to in broad search",entries3.size());
-				entries3.stream().forEach(
-						logWarn(entry -> {
-							Path tmp3 = pubmedXmlCache.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
-							entry.getRaw().write(Files.newOutputStream(tmp3));
-						}));
-				deferred = new HashSet<>();
-				entries2.addAll(entries3);
-			}
-		}
+		Set<PubMedEntry> entries2 = fetchPubMedEntries(pubmedXmlCache,toPMIDs);
 		
-		Set<PubMedEntry> entries3 = fetchPubMedEntries(deferred);
-		log.info("retrieved {} articles referred to in broad search",entries3.size());
-		entries3.stream().forEach(
-				logWarn(entry -> {
-					Path tmp3 = pubmedXmlCache.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
-					entry.getRaw().write(Files.newOutputStream(tmp3));
-				}));
-		deferred = new HashSet<>();
-		entries2.addAll(entries3);
+		
 		
 		
 		// now for DOIs...
@@ -289,7 +256,7 @@ public class PubMedGraphExperiment2 {
 		log.info("Mapping {} dois back to pubmed",toDois.size()); 
 		tryRethrow( t -> {
 			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
-			Set<PubMedEntry> entries4 = fetchPubMedEntries(morePMIDs);
+			Set<PubMedEntry> entries4 = fetchPubMedEntries(pubmedXmlCache,morePMIDs);
 			entries4.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
 			log.info("Found additional {} pubmed entries",entries4.size());
 		}); 
@@ -374,7 +341,9 @@ public class PubMedGraphExperiment2 {
 	Set<PubMedEntry> fetchPubMedEntries(Path cacheDir, Collection<String> pmids, Label... labels) {
 		Set<PubMedEntry> entriesOut = new HashSet<>();
 		Set<String> deferred = new HashSet<>();
-		for (String toPMID: pmids) {
+		Iterator<String> pmidIt = pmids.iterator();
+		while (pmidIt.hasNext()) {
+			String toPMID = pmidIt.next();
 			Path tmp2 = cacheDir.resolve(toPMID);
 			
 			if (Files.exists(tmp2)) {
@@ -382,23 +351,26 @@ public class PubMedGraphExperiment2 {
 					PubMedEntry tmpEntry = new PubMedEntry(Xml.fromFile(tmp2.toFile()).content());
 					mapEntriesToNode(Streams.ofNullable(tmpEntry), graphApi, earliest, latest, EXPAND);
 					entriesOut.add(tmpEntry);
-				} catch (XmlException e1) {
+				} catch (XmlException | FileNotFoundException e1) {
 					deferred.add(toPMID);
 				}
 			} else {
 				deferred.add(toPMID);	
 			}
-			if (deferred.size() > 7000) {
-				//Set<PubMedEntry> entries3 = fetchPubMedEntries(deferred);
-				PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred);
-				mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
-				log.info("retrieved {} articles referred to in broad search",entries.stream().count());
-				entries.stream().forEach(
+			if (deferred.size() > 7000 || !pmidIt.hasNext()) {
+				PubMedEntries entries;
+				try {
+					entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred);
+					mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
+					log.info("retrieved {} articles referred to in broad search",entries.stream().count());
+					entries.stream().forEach(
 						logWarn(entry -> {
-							Path tmp3 = cacheDir.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
-							entry.getRaw().write(Files.newOutputStream(tmp3));
+							entry.getRaw().write(Files.newOutputStream(tmp2));
 							entriesOut.add(entry);
 						}));
+				} catch (BibliographicApiException e) {
+					e.printStackTrace();
+				}
 				deferred = new HashSet<>();
 			}
 		}
@@ -489,8 +461,11 @@ public class PubMedGraphExperiment2 {
 	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pmc&id=212403&cmd=neighbor&linkname=pmc_pmc_citedby
 	//provides pmc articles citing this pmc article	
 
+	
+	
+	
 
-	Set<String> findCrossRefReferencesFromNodes(Set<String> dois) {
+	Set<String> findCrossRefReferencesFromNodes(Path xrefCacheDir, Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
