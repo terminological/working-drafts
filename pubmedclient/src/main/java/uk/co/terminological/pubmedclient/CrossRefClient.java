@@ -88,6 +88,7 @@ public class CrossRefClient {
 	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 	private TokenBucket rateLimiter = TokenBuckets.builder().withCapacity(50).withInitialTokens(50).withFixedIntervalRefillStrategy(50, 1, TimeUnit.SECONDS).build();
+	private Path cache = null;
 	
 	
 	public static CrossRefClient create(String developerEmail) {
@@ -101,6 +102,11 @@ public class CrossRefClient {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("mailto", developerEmail);
 		return out;
+	}
+	
+	public CrossRefClient withCacheDir( Path cache) {
+		this.cache = cache;
+		return cache;
 	}
 	
 	public static Predicate<String> ACCEPT_ANY_LICENCE = new Predicate<String>() {
@@ -141,33 +147,56 @@ public class CrossRefClient {
 		}
 	}
 
+	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
+		return getByDoi(doi,cache );
+	}
 	
 	public Optional<SingleResult> getByDoi(String doi, Path cacheDir) throws BibliographicApiException {
+		InputStream is = null;
 		if (cacheDir != null) {
 			Path tmp = cacheDir.resolve(doi);
-			if (Files.exists(tmp)) {
-				InputStream is = StreamExceptions.tryDoRethrow(tmp, t -> Files.newInputStream(t));
+			if (!Files.exists(tmp)) {
+				rateLimiter.consume();
+				logger.debug("Retrieving crossref record for:" + doi);
+				String url = baseUrl+"works/"+encode(doi);
+				WebResource wr = client.resource(url).queryParams(defaultApiParams());
+				try {
+					ClientResponse r = wr.get(ClientResponse.class);
+					updateRateLimits(r.getHeaders());
+					if (r.getClientResponseStatus().equals(Status.OK)) {
+						InputStream isTmp = r.getEntityInputStream(); 
+						Files.copy(isTmp, tmp);
+					} else {
+						return Optional.empty();
+					}
+				} catch (IOException | UniformInterfaceException e) {
+					throw new BibliographicApiException("Cannot connect to: "+url,e);
+				}	
+			}
+			is = StreamExceptions.tryDoRethrow(tmp, t -> Files.newInputStream(t));
+		} else {
+			rateLimiter.consume();
+			logger.debug("Retrieving crossref record for:" + doi);
+			String url = baseUrl+"works/"+encode(doi);
+			WebResource wr = client.resource(url).queryParams(defaultApiParams());
+			try {
+				ClientResponse r = wr.get(ClientResponse.class);
+				updateRateLimits(r.getHeaders());
+				if (r.getClientResponseStatus().equals(Status.OK)) {
+					is = r.getEntityInputStream(); 
+				} else {
+					return Optional.empty();
+				}
+			} catch (UniformInterfaceException e) {
+				throw new BibliographicApiException("Cannot connect to: "+url,e);
 			}
 		}
-		rateLimiter.consume();
-		logger.debug("Retrieving crossref record for:" + doi);
-		String url = baseUrl+"works/"+encode(doi);
-		WebResource wr = client.resource(url).queryParams(defaultApiParams());
 		try {
-			ClientResponse r = wr.get(ClientResponse.class);
-			updateRateLimits(r.getHeaders());
-			if (r.getClientResponseStatus().equals(Status.OK)) {
-				InputStream is = r.getEntityInputStream(); 
-				CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
-				return Optional.of(response);
-			} else {
-				return Optional.empty();
-			}
-		} catch (JsonParseException | JsonMappingException e) {
-			throw new BibliographicApiException("Malformed response to: "+url,e);
-		} catch (IOException | UniformInterfaceException e) {
-			throw new BibliographicApiException("Cannot connect to: "+url,e);
-		}
+			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
+			return Optional.of(response);
+		} catch (IOException e) {
+			throw new BibliographicApiException("Malformed response for: "+doi,e);
+		} 
 	}
 	
 	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
