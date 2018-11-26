@@ -155,7 +155,7 @@ public class CrossRefClient {
 		InputStream is = null;
 		if (cacheDir != null) {
 			Path tmp = cacheDir.resolve(doi);
-			if (!Files.exists(tmp)) {
+			if (!Files.exists(tmp) && !Files.isDirectory(tmp)) {
 				StreamExceptions.tryRethrow(t -> Files.createDirectories(tmp.getParent()));
 				rateLimiter.consume();
 				logger.debug("Retrieving crossref record for:" + doi);
@@ -168,6 +168,7 @@ public class CrossRefClient {
 						InputStream isTmp = r.getEntityInputStream(); 
 						Files.copy(isTmp, tmp);
 					} else {
+						logger.debug("could not fetch for doi:"+doi);
 						return Optional.empty();
 					}
 				} catch (IOException | UniformInterfaceException e) {
@@ -186,6 +187,7 @@ public class CrossRefClient {
 				if (r.getClientResponseStatus().equals(Status.OK)) {
 					is = r.getEntityInputStream(); 
 				} else {
+					logger.debug("could not fetch for doi:"+doi);
 					return Optional.empty();
 				}
 			} catch (UniformInterfaceException e) {

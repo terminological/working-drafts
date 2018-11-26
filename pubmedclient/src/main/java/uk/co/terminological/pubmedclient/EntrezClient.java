@@ -1,15 +1,20 @@
 package uk.co.terminological.pubmedclient;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -21,6 +26,7 @@ import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.oracle.tools.packager.Log;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
@@ -29,6 +35,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -53,6 +60,7 @@ public class EntrezClient {
 	private static final String ELINK = "elink.fcgi";
 	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build();
 
+	private Path cache = null;
 	public static Map<String, EntrezClient> singleton = new HashMap<>();
 
 	public static EntrezClient create(String apiKey, String appId, String developerEmail) {
@@ -72,6 +80,11 @@ public class EntrezClient {
 		return this;
 	}
 
+	public EntrezClient withCache(Path cache) {
+		this.cache=cache;
+		return this;
+	}
+	
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 	public EntrezClient(String baseUrl, String apiKey, String appId, String developerEmail) {
 		this.baseUrl = baseUrl;
@@ -212,6 +225,10 @@ public class EntrezClient {
 		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds().collect(Collectors.toList());
 	}
 	
+	public Set<EntrezResult.PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
+		return getPMEntriesByPMIds(pmids, cache);
+	}
+	
 	/**
 	 * Fetch PubMed article metadata and abstract
 	 * 
@@ -220,11 +237,31 @@ public class EntrezClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public EntrezResult.PubMedEntries getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
-		if (pmids.isEmpty()) return EntrezResult.PubMedEntries.empty(); 
+	public Set<EntrezResult.PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids, Path cache) throws BibliographicApiException {
+		Set<EntrezResult.PubMedEntry> out = new HashSet<>();
+		if (pmids.isEmpty()) return out;
+		Collection<String> deferred = new HashSet<>();
+		if (cache != null) {
+			for (String pmid: pmids) {
+				Path tmp = cache.resolve(pmid);
+				if (Files.exists(tmp)) {
+					try {
+						out.add(new PubMedEntry(Xml.fromFile(tmp.toFile()).content()));
+					} catch (XmlException | FileNotFoundException e) {
+						logger.debug("error with cached content for: "+pmid);
+						deferred.add(pmid);
+					}
+				} else {
+					deferred.add(pmid);
+				}
+			}
+		} else {
+			deferred = pmids;
+		}
+		
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
-		pmids.forEach(id -> fetchParams.add("id",id));
+		deferred.forEach(id -> fetchParams.add("id",id));
 		fetchParams.add("format", "xml");
 		rateLimiter.consume();
 		logger.debug("making efetch query with params {}", fetchParams.toString());
@@ -232,10 +269,22 @@ public class EntrezClient {
 		Xml xml;
 		try {
 			xml = Xml.fromStream(is);
+			EntrezResult.PubMedEntries tmp = new EntrezResult.PubMedEntries(xml.content());
+			tmp.stream().forEach(entry -> {
+				out.add(entry);
+				if (cache != null) {
+					Path tmp2 = cache.resolve(entry.getPMID().get());
+					try {
+						entry.getRaw().write(Files.newOutputStream(tmp2));
+					} catch (XmlException | IOException e) {
+						Log.debug("could not cache: "+entry.getPMID().get());
+					}
+				}
+			});
 		} catch (XmlException e) {
 			throw new BibliographicApiException("could not parse result",e);
 		}
-		return new EntrezResult.PubMedEntries(xml.content());
+		return out;
 	}
 	
 	public EntrezResult.PubMedEntries getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey) throws BibliographicApiException {
