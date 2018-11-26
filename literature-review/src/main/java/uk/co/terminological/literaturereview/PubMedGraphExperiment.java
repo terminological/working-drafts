@@ -304,7 +304,7 @@ public class PubMedGraphExperiment {
 
 						boolean originalSearch = event.getMetadata().name().orElse("none").equals(ORIGINAL_SEARCH);
 						 
-						mapEntriesToNode(entries, graph, earliest, latest, originalSearch ? new Label[] {EXPAND} : new Label[] {});
+						mapEntriesToNode(entries.stream(), graph, earliest, latest, originalSearch ? new Label[] {EXPAND} : new Label[] {});
 						
 						entries.stream().forEach(entry -> {
 							
