@@ -146,7 +146,7 @@ public class CrossRefClient {
 		if (cacheDir != null) {
 			Path tmp = cacheDir.resolve(doi);
 			if (Files.exists(tmp)) {
-				InputStream is = StreamExceptions.tryRethrow(tmp, t -> Files.newInputStream(t));
+				InputStream is = StreamExceptions.tryDoRethrow(tmp, t -> Files.newInputStream(t));
 			}
 		}
 		rateLimiter.consume();
