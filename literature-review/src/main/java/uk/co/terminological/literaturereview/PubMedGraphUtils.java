@@ -239,7 +239,7 @@ public class PubMedGraphUtils {
 		return mapAuthorToNode(
 				author.getIdentifier(),
 				author.family, author.given, Optional.empty(),
-				author.affiliation.stream().flatMap(af -> af.name.stream()).collect(Collectors.toList()), graph, tx
+				author.affiliation.stream().flatMap(af -> af.name.stream()).collect(Collectors.toSet()), graph, tx
 				);
 	}
 	
