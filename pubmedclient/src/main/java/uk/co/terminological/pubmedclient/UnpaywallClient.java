@@ -94,33 +94,6 @@ public class UnpaywallClient {
 		return out;
 	}
 
-	@Deprecated
-	public InputStream getPreferredContentByDoi(String doi, Path cacheDir) throws BibliographicApiException {
-		Path filepath = cacheDir.resolve(doi+".pdf");
-		try {
-			if (!Files.exists(filepath)) {
-				Files.createDirectories(filepath.getParent());
-				Files.copy(
-						this.getPreferredContentByDoi(doi, cacheDir),
-						filepath);
-			}
-			return Files.newInputStream(filepath);
-		} catch (IOException e) {
-			throw new BibliographicApiException("Could not get content for"+doi,e);
-		}
-	}
-	
-	@Deprecated
-	public InputStream getPreferredContentByDoi(String doi) throws BibliographicApiException {
-		try {
-			Result tmp = getUnpaywallByDoi(doi, cache);
-			WebResource wr = client.resource(tmp.pdfUrl().orElseThrow(() -> new BibliographicApiException("No paywall result for: "+doi)));
-			return wr.get(InputStream.class);		
-		} catch (Exception e) {
-			throw new BibliographicApiException("Cannot fetch content for "+doi,e);
-		}
-	}
-
 	public Result getUnpaywallByDoi(String doi, Path unpaywallCache) throws BibliographicApiException {
 		return getUnpaywallByDois(Collections.singletonList(doi), unpaywallCache).stream()
 				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
