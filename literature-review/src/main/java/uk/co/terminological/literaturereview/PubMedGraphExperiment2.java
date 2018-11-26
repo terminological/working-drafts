@@ -176,8 +176,8 @@ public class PubMedGraphExperiment2 {
 		List<Link> links = findPMCCitedByPMIDs(broadSearch.getIds().collect(Collectors.toList()));
 		Set<String> ancestorPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
 		
-		Set<String> broadSearchPlusAncestorPMIDs =new HashSet<>(ancestorPMIDs);
-		broadSearchPlusAncestorPMIDs.addAll(broadSearch.getIds().collect(Collectors.toSet()));
+		Set<String> broadSearchPlusAncestorPMIDs =broadSearch.getIds().collect(Collectors.toSet());
+		//TODO: broadSearchPlusAncestorPMIDs.addAll(ancestorPMIDs);
 		
 		List<Link> links2 = findPMCReferencesFromPMIDs(broadSearchPlusAncestorPMIDs);
 		
