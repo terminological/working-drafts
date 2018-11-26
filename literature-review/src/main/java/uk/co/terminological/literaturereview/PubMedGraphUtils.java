@@ -244,7 +244,7 @@ public class PubMedGraphUtils {
 	}
 	
 	
-	public static Optional<Node> mapAuthorToNode(String identifier, Optional<String> lastName, Optional<String> firstName, Optional<String> initials, List<String> affiliations, GraphDatabaseApi graph, Transaction tx) {
+	public static Optional<Node> mapAuthorToNode(String identifier, Optional<String> lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, GraphDatabaseApi graph, Transaction tx) {
 
 		Node out = null;
 
