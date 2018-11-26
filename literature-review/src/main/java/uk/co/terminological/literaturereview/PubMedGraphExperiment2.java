@@ -364,7 +364,7 @@ public class PubMedGraphExperiment2 {
 				deferred.add(toPMID);	
 			}
 			if (deferred.size() > 7000 || !pmidIt.hasNext()) {
-				PubMedEntries entries;
+				Set<PubMedEntry> entries;
 				try {
 					entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred);
 					mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
