@@ -371,16 +371,39 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	Set<PubMedEntry> fetchPubMedEntries(Collection<String> pmids, Label... labels) {
-		try {
-			PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(pmids);
-			mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
-			return entries.stream().collect(Collectors.toSet());
+	Set<PubMedEntry> fetchPubMedEntries(Path cacheDir, Collection<String> pmids, Label... labels) {
+		Set<PubMedEntry> entriesOut = new HashSet<>();
+		Set<String> deferred = new HashSet<>();
+		for (String toPMID: pmids) {
+			Path tmp2 = cacheDir.resolve(toPMID);
 			
-		} catch (BibliographicApiException e) {
-			e.printStackTrace();
+			if (Files.exists(tmp2)) {
+				try {
+					PubMedEntry tmpEntry = new PubMedEntry(Xml.fromFile(tmp2.toFile()).content());
+					mapEntriesToNode(Streams.ofNullable(tmpEntry), graphApi, earliest, latest, EXPAND);
+					entriesOut.add(tmpEntry);
+				} catch (XmlException e1) {
+					deferred.add(toPMID);
+				}
+			} else {
+				deferred.add(toPMID);	
+			}
+			if (deferred.size() > 7000) {
+				//Set<PubMedEntry> entries3 = fetchPubMedEntries(deferred);
+				PubMedEntries entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred);
+				mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
+				log.info("retrieved {} articles referred to in broad search",entries.stream().count());
+				entries.stream().forEach(
+						logWarn(entry -> {
+							Path tmp3 = cacheDir.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
+							entry.getRaw().write(Files.newOutputStream(tmp3));
+							entriesOut.add(entry);
+						}));
+				deferred = new HashSet<>();
+			}
 		}
-		return Collections.emptySet();
+		return entriesOut;
+		
 	}
 
 
