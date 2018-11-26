@@ -128,8 +128,18 @@ public class UnpaywallClient {
 		Set<Result> out = new HashSet<>();
 		dois.forEach(StreamExceptions.ignore(i -> {
 				InputStream is = null;
-				if (unpaywallCache != null && Files.exists(unpaywallCache.resolve(i))) {
-					is = Files.newInputStream(unpaywallCache.resolve(i));
+				if (unpaywallCache != null) {
+					Path tmp = unpaywallCache.resolve(i);
+					if (Files.exists(tmp)) {
+						is = Files.newInputStream(tmp);
+					} else {
+						MultivaluedMap<String, String> params = defaultApiParams();
+						logger.debug("https://api.unpaywall.org/v2/"+encode(i));
+						rateLimiter.consume();
+						WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(i)).queryParams(params);
+						Files.copy(wr.get(InputStream.class),tmp);
+						is = Files.newInputStream(tmp);
+					}
 				} else {
 					MultivaluedMap<String, String> params = defaultApiParams();
 					logger.debug("https://api.unpaywall.org/v2/"+encode(i));
