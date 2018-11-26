@@ -288,9 +288,9 @@ public class PubMedGraphExperiment2 {
 		log.info("Mapping {} dois back to pubmed",toDois.size()); 
 		tryRethrow( t -> {
 			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
-			Set<PubMedEntry> entries3 = fetchPubMedEntries(morePMIDs);
-			entries3.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
-			log.info("Found additional {} pubmed entries",entries3.size());
+			Set<PubMedEntry> entries4 = fetchPubMedEntries(morePMIDs);
+			entries4.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
+			log.info("Found additional {} pubmed entries",entries4.size());
 		}); 
 		
 		// There are some DOIs that will neither have been found by original pubmed searched or the pubmed id converter.
