@@ -209,7 +209,8 @@ public class PubMedGraphExperiment2 {
 		// fetch all doi cross references for broader search, load into graph.
 		// and find all resulting dois that we do not already know about.
 		// TODO: chance that mapping api does not know about a PMID->DOI mapping that we do already know about via pubmed - does this matter?
-		Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
+		Path xrefJsonCache = workingDir.resolve("xref");
+		Set<String> toDois = findCrossRefReferencesFromNodes(xrefJsonCache,xrefDois);
 		log.info("Found {} dois, referred to by {} articles in broad search with doi", toDois.size(), broadSearchDois.size());
 		toDois.removeAll(loadedDois);
 		log.info("Of which {} are not yet known in the graph", toDois.size());
