@@ -267,7 +267,7 @@ public class PubMedGraphExperiment2 {
 		// TODO: Cache metadata entry in case
 		toDois.removeAll(loadedDois);
 		log.info("Looking up {} dois with metadata on Xref",toDois.size());
-		Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);
+		Set<String> xrefSourced = updateMetadataFromCrossRef(xrefJsonCache, toDois);
 		loadedDois.addAll(xrefSourced);
 		toDois.removeAll(xrefSourced);
 		
@@ -470,7 +470,7 @@ public class PubMedGraphExperiment2 {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
-				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
+				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi, xrefCacheDir);
 				List<Reference> referencedDois = tmp.stream()
 						.flatMap(t -> t.work.stream())
 						.flatMap(w -> w.reference.stream())
@@ -485,11 +485,11 @@ public class PubMedGraphExperiment2 {
 		return outDois;
 	}
 
-	Set<String> updateMetadataFromCrossRef(Set<String> dois) {
+	Set<String> updateMetadataFromCrossRef(Path xrefCacheDir, Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
-				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
+				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi, xrefCacheDir);
 				tmp.ifPresent(t -> {
 					t.work.ifPresent(w -> {
 						Optional<String> out = updateCrossRefMetadata(w,graphApi);
