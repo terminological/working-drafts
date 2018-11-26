@@ -106,7 +106,7 @@ public class CrossRefClient {
 	
 	public CrossRefClient withCacheDir( Path cache) {
 		this.cache = cache;
-		return cache;
+		return this;
 	}
 	
 	public static Predicate<String> ACCEPT_ANY_LICENCE = new Predicate<String>() {
