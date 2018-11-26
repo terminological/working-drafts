@@ -349,10 +349,11 @@ public class PubMedGraphExperiment2 {
 		List<String> deferred = new ArrayList<>(pmids);
 		while (!deferred.isEmpty()) {
 			try {
-				Set<PubMedEntry> entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred.subList(0, 7000),cacheDir);
+				int size = 7000>deferred.size()? deferred.size(): 7000;
+				Set<PubMedEntry> entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred.subList(0, size),cacheDir);
 				mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
 				log.info("retrieved {} articles referred to in broad search",entries.stream().count());
-				deferred.subList(0, 7000).clear();
+				deferred.subList(0, size).clear();
 				entriesOut.addAll(entries);
 			} catch (BibliographicApiException e) {
 				e.printStackTrace();
