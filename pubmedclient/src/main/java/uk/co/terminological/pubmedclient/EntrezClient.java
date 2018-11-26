@@ -26,7 +26,6 @@ import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.oracle.tools.packager.Log;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
@@ -259,8 +258,8 @@ public class EntrezClient {
 		} else {
 			deferred = pmids;
 		}
-		
-		MultivaluedMap<String, String> fetchParams = defaultApiParams();
+		if (!deferred.isEmpty()) {
+ 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		deferred.forEach(id -> fetchParams.add("id",id));
 		fetchParams.add("format", "xml");
@@ -278,12 +277,13 @@ public class EntrezClient {
 					try {
 						entry.getRaw().write(Files.newOutputStream(tmp2));
 					} catch (XmlException | IOException e) {
-						Log.debug("could not cache: "+entry.getPMID().get());
+						logger.debug("could not cache: "+entry.getPMID().get());
 					}
 				}
 			});
 		} catch (XmlException e) {
 			throw new BibliographicApiException("could not parse result",e);
+		}
 		}
 		return out;
 	}
