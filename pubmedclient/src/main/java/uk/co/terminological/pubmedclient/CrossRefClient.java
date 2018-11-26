@@ -50,6 +50,17 @@ public class CrossRefClient {
 	// http://api.crossref.org/works/10.1038/ncomms6976/transform/application/vnd.crossref.unixsd+xml
 	// http://www.crossref.org/schemas/crossref_query_output3.0.xsd
 	
+	// https://support.crossref.org/hc/en-us/articles/214318946-Retrieving-cited-by-matches
+	// https://doi.crossref.org/servlet/getForwardLinks?usr=xxx&pwd=xxx&doi=10.5555/12345678&include_postedcontent=true
+	// https://doi.crossref.org/servlet/getForwardLinks?pid=rob@terminological.co.uk&doi=10.5555/12345678&include_postedcontent=true
+	// https://doi.crossref.org/servlet/getForwardLinks?usr=username&pwd=password&doi=doi&startDate=YYYY-MM-DD&endDate=YYYY-MM-DD
+	// https://doi.crossref.org/servlet/getForwardLinks?usr=username&pwd=password&doi=prefix&date=YYYY-MM-DD
+	
+	// https://doi.crossref.org/servlet/query?pid=rob@terminological.co.uk&id=10.1577/H02-043
+	
+	// http://support.crossref.org/hc/en-us/articles/213420726
+	
+	
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	
 	public CrossRefClient debugMode() {

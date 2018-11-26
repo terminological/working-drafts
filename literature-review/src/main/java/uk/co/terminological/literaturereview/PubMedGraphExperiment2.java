@@ -161,10 +161,16 @@ public class PubMedGraphExperiment2 {
 		// get all the links for the broad search using entrez history
 		// and write them into database. crating stubs if required
 		// work out what pmids we already have written in graph from the broader search and which we need to get.
-		List<Link> links = findPMCReferencesFromPMIDs(broadSearch.getIds().collect(Collectors.toList()));
+		List<Link> links = findPMCCitedByPMIDs(broadSearch.getIds().collect(Collectors.toList()));
+		Set<String> ancestorPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
 		
-		Set<String> toPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
-		toPMIDs.addAll(links.stream().map(l -> l.fromId).collect(Collectors.toSet()));
+		Set<String> broadSearchPlusAncestorPMIDs =new HashSet<>(ancestorPMIDs);
+		broadSearchPlusAncestorPMIDs.addAll(broadSearch.getIds().collect(Collectors.toSet()));
+		
+		List<Link> links2 = findPMCReferencesFromPMIDs(broadSearchPlusAncestorPMIDs);
+		
+		Set<String> toPMIDs = links2.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
+		//toPMIDs.addAll(links2.stream().map(l -> l.fromId).collect(Collectors.toSet()));
 		
 		log.info("Pubmed broad search refer to {} articles",toPMIDs.size());
 		Set<String> loadedPMIDs = ent.stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
@@ -359,7 +365,7 @@ public class PubMedGraphExperiment2 {
 	}
 
 	
-	List<Link> findPMCReferencesFromPMIDs(List<String> pmids) {
+	List<Link> findPMCReferencesFromPMIDs(Collection<String> pmids) {
 		return findPMCReferences(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
 	}
 
@@ -382,17 +388,6 @@ public class PubMedGraphExperiment2 {
 
 			mapPubMedCentralReferences(tmp, graphApi);
 
-			List<Link> tmp2 = elqb
-					.toDatabase(Database.PUBMED)
-					.command(Command.NEIGHBOR)
-					.withLinkname("pubmed_pubmed_citedin")
-					.execute().get().getLinks();
-
-			log.info("Entrez found "+tmp2.size()+" pubmed articles citing pubmed articles");
-
-			mapPubMedCentralCitedBy(tmp2, graphApi);
-
-			tmp.addAll(tmp2);
 			return tmp;
 
 		} catch (BibliographicApiException e) {
@@ -402,6 +397,31 @@ public class PubMedGraphExperiment2 {
 
 	}
 
+	List<Link> findPMCCitedByPMIDs(Collection<String> pmids) {
+		return findPMCCitedBy(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
+	}
+	
+	List<Link> findPMCCitedBy(ELinksQueryBuilder elqb) {
+		try {
+
+			List<Link> tmp = elqb
+					.toDatabase(Database.PUBMED)
+					.command(Command.NEIGHBOR)
+					.withLinkname("pubmed_pubmed_citedin")
+					.execute().get().getLinks();
+
+			log.info("Entrez found "+tmp.size()+" pubmed articles citing pubmed articles");
+
+			mapPubMedCentralCitedBy(tmp, graphApi);
+
+			return tmp;
+
+		} catch (BibliographicApiException e) {
+			e.printStackTrace();
+		}
+		return Collections.emptyList();
+
+	}
 
 	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pmc&id=212403&cmd=neighbor&linkname=pmc_pmc_citedby
 	//provides pmc articles citing this pmc article	
