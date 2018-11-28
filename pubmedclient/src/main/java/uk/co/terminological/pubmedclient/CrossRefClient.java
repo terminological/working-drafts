@@ -65,20 +65,16 @@ public class CrossRefClient extends CachingApiClient {
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 
 	public static CrossRefClient create(String developerEmail) {
-		return create(developerEmail, Optional.empty());
+		return create(developerEmail, null);
 	}
 
 	public static CrossRefClient create(String developerEmail, Path cacheDir) {
-		return create(developerEmail, Optional.ofNullable(cacheDir));
-	}
-	
-	public static CrossRefClient create(String developerEmail, Optional<Path> cacheDir) {
 		if (singleton.containsKey(developerEmail)) return singleton.get(developerEmail);
-		CrossRefClient tmp = new CrossRefClient(developerEmail, cacheDir);
+		CrossRefClient tmp = new CrossRefClient(developerEmail, Optional.ofNullable(cacheDir));
 		singleton.put(developerEmail, tmp);
 		return tmp;
 	}
-
+	
 	protected MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("mailto", developerEmail);
