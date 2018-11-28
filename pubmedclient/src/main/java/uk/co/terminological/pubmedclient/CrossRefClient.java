@@ -1,8 +1,6 @@
 package uk.co.terminological.pubmedclient;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -13,16 +11,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -30,7 +26,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.io.IOUtils;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
-import org.ehcache.PersistentCacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
@@ -41,19 +36,14 @@ import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.ClientResponse.Status;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-
 
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
@@ -209,11 +199,6 @@ public class CrossRefClient {
 		return out;
 	}
 	
-	public CrossRefClient withCacheDir( Path cache) {
-		this.cache = cache;
-		return this;
-	}
-	
 	public static Predicate<String> ACCEPT_ANY_LICENCE = new Predicate<String>() {
 		@Override
 		public boolean test(String t) {
@@ -226,9 +211,6 @@ public class CrossRefClient {
 			return t.startsWith("http://creativecommons.org");
 	}};
 	
-	
-	
-	
 	private static String encode(String string)  {
 		try {
 			return URLEncoder.encode(string,java.nio.charset.StandardCharsets.UTF_8.toString());
@@ -238,8 +220,6 @@ public class CrossRefClient {
 	}
 	
 	static String baseUrl ="https://api.crossref.org/";
-	
-	
 	
 	private void updateRateLimits(MultivaluedMap<String, String> headers) {
 		try {
@@ -254,6 +234,10 @@ public class CrossRefClient {
 
 	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
 		return getByDoi(doi,cache );
+	}
+	
+	private Supplier<BibliographicApiException> bibErr(String message) {
+		return () -> new BibliographicApiException(message);
 	}
 	
 	public Optional<SingleResult> getByDoi(String doi, Path cacheDir) throws BibliographicApiException {
@@ -272,7 +256,7 @@ public class CrossRefClient {
 			if (r.getClientResponseStatus().equals(Status.OK)) {
 				InputStream isTmp = r.getEntityInputStream(); 
 				BinaryData tmp;
-				tmp = BinaryData.from(isTmp).orElseThrow(() -> new BibliographicApiException("Could not read API response"));
+				tmp = BinaryData.from(isTmp).orElseThrow(bibErr("Could not read API response"));
 				this.foreverCache().put(url, tmp);
 				is = tmp.get();
 			} else {
@@ -280,7 +264,6 @@ public class CrossRefClient {
 				return Optional.empty();
 			}
 		}
-		
 		try {
 			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return Optional.of(response);
@@ -290,25 +273,31 @@ public class CrossRefClient {
 	}
 	
 	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
-		rateLimiter.consume();
-		logger.debug("Querying crossref: "+qb.toString());
-		try {
+		String key = qb.toString();
+		InputStream is;
+		if (this.weekCache().containsKey(key)) {
+			logger.debug("Cached crossref record for:" + key);
+			is = this.weekCache().get(key).get();
+		} else {
+			rateLimiter.consume();
+			logger.debug("Querying crossref: "+qb.toString());
 			ClientResponse r = qb.get(client).get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
-			InputStream is = r.getEntityInputStream(); 
+			BinaryData data = BinaryData.from(r.getEntityInputStream()).orElseThrow(bibErr("Could not read api response"));
+			is = data.get();
+		}
+		try {
 			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
 			//Check to see if the result is past the end of the set.
 			if (
-					response.message.isPresent() && 
-					response.message.get().items.size() == 0 && 
-					response.message.get().totalResults.orElse(0) > 0) {
+				response.message.isPresent() && 
+				response.message.get().items.size() == 0 && 
+				response.message.get().totalResults.orElse(0) > 0) {
 				throw new NoSuchElementException();
 			}
 			return response;
-		} catch (JsonParseException | JsonMappingException e) {
+		} catch (IOException e) {
 			throw new BibliographicApiException("Malformed response to: "+qb.get(client).getURI());
-		} catch (IOException | UniformInterfaceException e) {
-			throw new BibliographicApiException("Cannot connect to: "+qb.get(client).getURI());
 		}
 	}
 	
@@ -461,7 +450,7 @@ public class CrossRefClient {
 		}
 		
 		public String toString() {
-			return fromMultivaluedMap(url,params); 
+			return keyFromApiQuery(url,params); 
 		}
 	}
 	
@@ -569,7 +558,7 @@ public class CrossRefClient {
 		
 	}
 	
-	private static String fromMultivaluedMap(String url,MultivaluedMap<String, String> params) {
+	private static String keyFromApiQuery(String url,MultivaluedMap<String, String> params) {
 		return 
 			"{\"url\":\""+url+"\",\"params\":{"+
 			params.keySet().stream().sorted()
