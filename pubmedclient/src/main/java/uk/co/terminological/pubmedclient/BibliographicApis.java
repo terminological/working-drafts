@@ -30,18 +30,20 @@ public class BibliographicApis {
 
 		Properties prop = System.getProperties();
 		prop.load(Files.newInputStream(filePath));
-
-		String xrefToken = prop.getProperty("crossref.clickthroughtoken");
-		String developerEmail = prop.getProperty("developeremail");
-
-		String pubmedApiToken = prop.getProperty("pubmed.apikey");
-		String appId = prop.getProperty("appid");
 		
-		Optional<Path> cacheDir = Optional.ofNullable(prop.getProperty("cache-directory")).map(s -> Paths.get(s));
+		String xrefToken = prop.getProperty("crossref-clickthroughtoken");
+		String developerEmail = prop.getProperty("developer-email");
+		String pubmedApiToken = prop.getProperty("pubmed-apikey");
+		String appId = prop.getProperty("app-id");
+		
+		Optional<Path> cacheDir = Optional.ofNullable(prop.getProperty("cache-directory"))
+				.map(s -> Paths.get(s.replace("~", System.getProperty("user.home"))));
 
 		return create(appId,developerEmail,xrefToken,pubmedApiToken, cacheDir);
 
 	}
+	
+	
 
 	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
 		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, cacheDir);

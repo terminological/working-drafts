@@ -14,6 +14,9 @@ import java.util.function.Predicate;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.api.client.Client;
@@ -47,7 +50,7 @@ public class CrossRefClient extends CachingApiClient {
 	// https://doi.crossref.org/servlet/query?pid=rob@terminological.co.uk&id=10.1577/H02-043
 
 	// http://support.crossref.org/hc/en-us/articles/213420726
-
+	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	private CrossRefClient(String developerEmail, Optional<Path> optional) {

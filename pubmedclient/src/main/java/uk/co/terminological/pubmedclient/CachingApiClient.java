@@ -120,7 +120,7 @@ public class CachingApiClient {
 		}));
 	}
 
-	protected static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(CachingApiClient.class);
 	protected Client client;
 	protected TokenBucket rateLimiter = TokenBuckets.builder().withCapacity(50).withInitialTokens(50).withFixedIntervalRefillStrategy(50, 1, TimeUnit.SECONDS).build();
 
