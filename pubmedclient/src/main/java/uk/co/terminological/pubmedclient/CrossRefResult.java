@@ -17,6 +17,7 @@ v1	11th July 2016	First documented version
 v2	26th July 2017	Add abstract, authenticated-orcid, fix contributor fields
 v3	15th May 2018	Add peer review fields
  */
+// https://github.com/json-path/JsonPath
 
 public class CrossRefResult {
 	
