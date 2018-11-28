@@ -8,13 +8,17 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -287,7 +291,6 @@ public class CrossRefClient {
 		CrossRefClient client;
 		
 		private WebResource get(Client client) {
-			
 			WebResource tdmCopy = client.resource(url);
 			tdmCopy = tdmCopy.queryParams(params);
 			return tdmCopy;
@@ -376,7 +379,7 @@ public class CrossRefClient {
 		}
 		
 		public String toString() {
-			return url+": "+params.toString(); 
+			return fromMultivaluedMap(url,params); 
 		}
 	}
 	
@@ -484,6 +487,15 @@ public class CrossRefClient {
 		
 	}
 	
-	
+	private static String fromMultivaluedMap(String url,MultivaluedMap<String, String> params) {
+		return 
+			"{\"url\":\""+url+"\",\"params\":{"+
+			params.keySet().stream().sorted()
+				.map(t ->  
+					"\""+t+"\":["+params.get(t)
+					.stream().sorted().map(s -> "\""+s.replace("\"", "\\\"")+"\"")
+					.collect(Collectors.joining(","))+"]")
+			.collect(Collectors.joining(","))+"}}";
+	}
 	
 }
