@@ -40,6 +40,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import net.sf.ehcache.CacheManager;
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
@@ -69,6 +70,7 @@ public class CrossRefClient {
 	
 	
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
+	CacheManager cacheManager;
 	
 	public CrossRefClient debugMode() {
 		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
@@ -81,7 +83,11 @@ public class CrossRefClient {
 	private CrossRefClient(String developerEmail) {
 		this.developerEmail = developerEmail;
 		this.client = Client.create();
-		
+		cacheManager = CacheManagerBuilder.newCacheManagerBuilder() 
+			    .withCache("preConfigured",
+			        CacheConfigurationBuilder.newCacheConfigurationBuilder(Long.class, String.class, ResourcePoolsBuilder.heap(10))) 
+			    .build(); 
+			cacheManager.init();
 	}
 
 	
