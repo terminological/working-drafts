@@ -333,13 +333,17 @@ public class EntrezClient {
 		return getPubMedCentralXMLByPubMedCentralId(pmcId);
 	}
 
-	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry, PdfFetcher pdfFetch) throws BibliographicApiException {
 		if (pmEntry.getPMCPdfUrl().isPresent()) {
 			String pdfUrl = pmEntry.getPMCPdfUrl().get();
-			return Optional.of(PdfFetcher.getPdfFromUrl(pdfUrl));
+			return Optional.of(pdfFetch.getPdfFromUrl(pdfUrl));
 		} else {
 			return Optional.empty();
 		}
+	}
+	
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
+		return getPubMedCentralPdfByPMEntry(pmEntry, PdfFetcher.create());
 	}
 	
 	/**
