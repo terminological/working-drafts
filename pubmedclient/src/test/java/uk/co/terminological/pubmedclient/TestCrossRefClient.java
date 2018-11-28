@@ -39,9 +39,9 @@ public class TestCrossRefClient {
 		
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.ALL);
-		Path tmp = Files.createTempDirectory("test");
+		//Path tmp = Files.createTempDirectory("test");
 		
-		CrossRefClient xref = CrossRefClient.create(DEVELOPER, tmp);
+		CrossRefClient xref = CrossRefClient.create(DEVELOPER);
 		xref.debugMode();
 		
 		QueryBuilder qb = xref.buildQuery()
