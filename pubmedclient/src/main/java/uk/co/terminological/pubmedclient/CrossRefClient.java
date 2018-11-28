@@ -55,12 +55,13 @@ public class CrossRefClient extends CachingApiClient {
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
+
 	private CrossRefClient(String developerEmail, Optional<Path> optional) {
 		super(optional, 
 				TokenBuckets.builder()
-					.withCapacity(50)
-					.withInitialTokens(50)
-					.withFixedIntervalRefillStrategy(50, 1, TimeUnit.SECONDS).build());
+				.withCapacity(50)
+				.withInitialTokens(50)
+				.withFixedIntervalRefillStrategy(50, 1, TimeUnit.SECONDS).build());
 		this.developerEmail = developerEmail;
 	}
 
@@ -69,14 +70,14 @@ public class CrossRefClient extends CachingApiClient {
 
 	public static CrossRefClient create(String developerEmail) {
 		return create(developerEmail, Optional.empty());
-	};
+	}
 
 	public static CrossRefClient create(String developerEmail, Optional<Path> cacheDir) {
 		if (singleton.containsKey(developerEmail)) return singleton.get(developerEmail);
 		CrossRefClient tmp = new CrossRefClient(developerEmail, cacheDir);
 		singleton.put(developerEmail, tmp);
 		return tmp;
-	};
+	}
 
 	private MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
@@ -88,336 +89,339 @@ public class CrossRefClient extends CachingApiClient {
 		@Override
 		public boolean test(String t) {
 			return true;
-		}};
+		}
+	};
 
-		public static Predicate<String> ACCEPT_CREATIVE_COMMONS = new Predicate<String>() {
-			@Override
-			public boolean test(String t) {
-				return t.startsWith("http://creativecommons.org");
-			}};
+	public static Predicate<String> ACCEPT_CREATIVE_COMMONS = new Predicate<String>() {
+		@Override
+		public boolean test(String t) {
+			return t.startsWith("http://creativecommons.org");
+		}
+	};
 
-			static String baseUrl ="https://api.crossref.org/";
+	static String baseUrl ="https://api.crossref.org/";
 
-			public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
-				String url = baseUrl+"works/"+encode(doi);
+	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
+		String url = baseUrl+"works/"+encode(doi);
 
-				InputStream is = null;
-				if (this.foreverCache().containsKey(url)) {
-					logger.debug("Cached crossref record for:" + doi);
-					is = this.foreverCache().get(url).get();
-				} else {
-					rateLimit();
-					logger.debug("Retrieving crossref record for:" + doi);
-					WebResource wr = client.resource(url).queryParams(defaultApiParams());
-					ClientResponse r = wr.get(ClientResponse.class);
-					updateRateLimits(r.getHeaders());
-					if (r.getClientResponseStatus().equals(Status.OK)) {
-						InputStream isTmp = r.getEntityInputStream(); 
-						BinaryData tmp;
-						tmp = BinaryData.from(isTmp);
-						this.foreverCache().put(url, tmp);
-						is = tmp.get();
-					} else {
-						logger.debug("could not fetch for doi:"+doi);
-						return Optional.empty();
-					}
-				}
-				try {
-					CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
-					return Optional.of(response);
-				} catch (IOException e) {
-					this.foreverCache().remove(url);
-					throw new BibliographicApiException("Malformed response for: "+doi,e);
-				} 
+		InputStream is = null;
+		if (this.foreverCache().containsKey(url)) {
+			logger.debug("Cached crossref record for:" + doi);
+			is = this.foreverCache().get(url).get();
+		} else {
+			rateLimit();
+			logger.debug("Retrieving crossref record for:" + doi);
+			WebResource wr = client.resource(url).queryParams(defaultApiParams());
+			ClientResponse r = wr.get(ClientResponse.class);
+			updateRateLimits(r.getHeaders());
+			if (r.getClientResponseStatus().equals(Status.OK)) {
+				InputStream isTmp = r.getEntityInputStream(); 
+				BinaryData tmp;
+				tmp = BinaryData.from(isTmp);
+				this.foreverCache().put(url, tmp);
+				is = tmp.get();
+			} else {
+				logger.debug("could not fetch for doi:"+doi);
+				return Optional.empty();
+			}
+		}
+		try {
+			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
+			return Optional.of(response);
+		} catch (IOException e) {
+			this.foreverCache().remove(url);
+			throw new BibliographicApiException("Malformed response for: "+doi,e);
+		} 
+	}
+
+	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
+		String key = qb.toString();
+		InputStream is;
+		if (this.weekCache().containsKey(key)) {
+			logger.debug("Cached crossref record for:" + key);
+			is = this.weekCache().get(key).get();
+		} else {
+			rateLimit();
+			logger.debug("Querying crossref: "+qb.toString());
+			ClientResponse r = qb.get(client).get(ClientResponse.class);
+			updateRateLimits(r.getHeaders());
+			BinaryData data = BinaryData.from(r.getEntityInputStream());
+			this.weekCache().put(key, data);
+			is = data.get();
+		}
+		try {
+			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
+			//Check to see if the result is past the end of the set.
+			if (
+					response.message.isPresent() && 
+					response.message.get().items.size() == 0 && 
+					response.message.get().totalResults.orElse(0) > 0) {
+				throw new NoSuchElementException();
+			}
+			return response;
+		} catch (IOException e) {
+			this.weekCache().remove(key);
+			throw new BibliographicApiException("Malformed response to: "+qb.get(client).getURI());
+		}
+	}
+
+	public InputStream getTDM(CrossRefResult.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
+
+		logger.debug("Retrieving crossref content for:" + work.DOI+": "+work.title.get(0));
+
+		if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
+
+			Optional<URL> url = work.link.stream()
+					.filter(rl -> rl.intendedApplication.orElse("").equals("text-mining"))
+					.flatMap(rl -> rl.URL.stream())
+					.findFirst();
+			if (!url.isPresent()) throw new BibliographicApiException("no content for intended application of text-mining");
+
+			//TODO: try and find correct type for output, or specify xml. 
+			//TODO: implement caching
+
+			WebResource tdmCopy = client.resource(url.get().toString());
+			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
+			ClientResponse r = tdmCopy.get(ClientResponse.class);
+			return r.getEntityInputStream();
+
+		} else {
+			throw new BibliographicApiException("no licensed content found");
+		}
+
+	}
+
+	//TODO:
+	/*
+	 * curl -LH "Accept: application/x-bibtex" http://dx.doi.org/10.5555/12345678
+	 * gets the full doi result in bibtex
+	 */
+	
+	
+	public Optional<Work> findWorkByCitationString(String citation) {
+		try {
+			ListResult lr = this.buildQuery()
+					.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
+					.sortedBy(Sort.SCORE, SortOrder.DESC)
+					.limit(1)
+					.execute();
+			Optional<Work> out = lr.message.get()
+					.items.stream()
+					.findFirst();
+			if (out.isPresent() && out.get().score.orElse(0F) > 85.0F) return out; 
+			return Optional.empty();
+		} catch (BibliographicApiException e) {
+			return Optional.empty();
+		}
+	}
+
+	public QueryBuilder buildQuery() {
+		QueryBuilder out = new QueryBuilder(baseUrl+"works", defaultApiParams() , this);
+		return out;
+	}
+
+	public static class QueryBuilder {
+		protected String url;
+
+		MultivaluedMap<String, String> params;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		CrossRefClient client;
+
+		private WebResource get(Client client) {
+			WebResource tdmCopy = client.resource(url);
+			tdmCopy = tdmCopy.queryParams(params);
+			return tdmCopy;
+		}
+
+		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams, CrossRefClient client ) {
+			this.url=url;
+			this.params=defaultParams;
+			this.client = client;
+
+		}
+
+		public QueryBuilder withSearchTerm(String search) {
+			params.add("query", search);
+			return this;
+		}
+
+		public QueryBuilder withSearchTerm(Field field, String search) {
+			params.add("query."+field.name().toLowerCase().replace("__", ".").replace("_", "-"), search);
+			return this;
+		}
+
+		public QueryBuilder sortedBy(Sort sort, SortOrder order) {
+			params.add("sort",sort.name().toLowerCase().replace("__", ".").replace("_", "-"));
+			params.add("order",order.name().toLowerCase().replace("__", ".").replace("_", "-"));
+			return this;
+		}
+
+		public QueryBuilder limit(Integer offset, Integer rows) {
+			params.add("rows",rows.toString());
+			params.add("offset",offset.toString());
+			return this;
+		}
+
+		public QueryBuilder limit(Integer rows) {
+			params.add("rows",rows.toString());
+			return this;
+		}
+
+		public QueryBuilder since(Date date) {
+			params.add("filter","from-index-date:"+format.format(date));
+			return this;
+		}
+
+		public QueryBuilder firstPage(Integer rows) {
+			params.add("rows",rows.toString());
+			params.add("cursor", "*");
+			return this;
+		}
+
+		public Optional<QueryBuilder> nextPage(ListResult resp) {
+			if (
+					resp.message.isPresent() && 
+					resp.message.get().nextCursor.isPresent() &&
+					!(
+							resp.message.get().items.size() == 0 && 
+							resp.message.get().totalResults.orElse(0) > 0
+							)
+					) {
+				params.remove("cursor");
+				params.add("cursor", resp.message.get().nextCursor.get());
+				return Optional.of(this);
+			} else {
+				return Optional.empty();
 			}
 
-			public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
-				String key = qb.toString();
-				InputStream is;
-				if (this.weekCache().containsKey(key)) {
-					logger.debug("Cached crossref record for:" + key);
-					is = this.weekCache().get(key).get();
-				} else {
-					rateLimit();
-					logger.debug("Querying crossref: "+qb.toString());
-					ClientResponse r = qb.get(client).get(ClientResponse.class);
-					updateRateLimits(r.getHeaders());
-					BinaryData data = BinaryData.from(r.getEntityInputStream());
-					this.weekCache().put(key, data);
-					is = data.get();
-				}
-				try {
-					CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
-					//Check to see if the result is past the end of the set.
-					if (
-							response.message.isPresent() && 
-							response.message.get().items.size() == 0 && 
-							response.message.get().totalResults.orElse(0) > 0) {
-						throw new NoSuchElementException();
-					}
-					return response;
-				} catch (IOException e) {
-					this.weekCache().remove(key);
-					throw new BibliographicApiException("Malformed response to: "+qb.get(client).getURI());
-				}
-			}
+		}
 
-			public InputStream getTDM(CrossRefResult.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
+		public QueryBuilder filteredBy(BooleanFilter filter, Boolean value) {
+			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+value.toString());
+			return this;
+		}
 
-				logger.debug("Retrieving crossref content for:" + work.DOI+": "+work.title.get(0));
+		public QueryBuilder filteredBy(StringFilter filter, String value) {
+			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+value.toString());
+			return this;
+		}
 
-				if (work.license.stream().map(l -> l.URL.toString()).anyMatch(licenceFilter)) {
+		public QueryBuilder filteredBy(DateFilter filter, Date value) {
+			params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+format.format(value));
+			return this;
+		}
 
-					Optional<URL> url = work.link.stream()
-							.filter(rl -> rl.intendedApplication.orElse("").equals("text-mining"))
-							.flatMap(rl -> rl.URL.stream())
-							.findFirst();
-					if (!url.isPresent()) throw new BibliographicApiException("no content for intended application of text-mining");
+		public ListResult execute() throws BibliographicApiException {
+			return client.getByQuery(this);
+		}
 
-					//TODO: try and find correct type for output, or specify xml. 
-					//TODO: implement caching
+		public String toString() {
+			return keyFromApiQuery(url,params); 
+		}
+	}
 
-					WebResource tdmCopy = client.resource(url.get().toString());
-					tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
-					ClientResponse r = tdmCopy.get(ClientResponse.class);
-					return r.getEntityInputStream();
+	public static enum Field {
+		TITLE,
+		CONTAINER_TITLE,
+		AUTHOR,
+		EDITOR,
+		CHAIR,
+		TRANSLATOR,
+		CONTRIBUTOR,
+		BIBLIOGRAPHIC,
+		AFFIILIATION
+	}
 
-				} else {
-					throw new BibliographicApiException("no licensed content found");
-				}
+	public static enum Sort {
+		SCORE,
+		RELEVANCE,
+		UPDATED,
+		DEPOSITED,
+		INDEXED,
+		PUBLISHED,
+		PUBLISHED_PRINT,
+		PUBLISHED_ONLINE,
+		ISSUED,
+		IS_REFERENCED_BY_COUNT,
+		REFERENCES_COUNT
+	}
 
-			}
+	public static enum SortOrder { ASC,DESC }
 
-			//TODO:
-			/*
-			 * curl -LH "Accept: application/x-bibtex" http://dx.doi.org/10.5555/12345678
-			 * gets the full doi result in bibtex
-			 */
+	public static enum BooleanFilter {
+		HAS_FUNDER,
+		HAS_LICENSE,
+		HAS_FULL_TEXT,
+		HAS_REFERENCES,
+		HAS_ARCHIVE,
+		HAS_ORCHID,
+		HAS_AUTHENTICATED_ORCHID,
+		IS_UPDATE,
+		HAS_UPDATE_POLICY,
+		HAS_ASSERTION,
+		HAS_AFFILIATION,
+		HAS_ABSTRACT,
+		HAS_CLINICAL_TRIAL_NUMBER,
+		HAS_CONTENT_DOMAIN,
+		HAS_DOMAIN_RESTRICTION,
+		HAS_RELATION
 
-			public Optional<Work> findWorkByCitationString(String citation) {
-				try {
-					ListResult lr = this.buildQuery()
-							.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
-							.sortedBy(Sort.SCORE, SortOrder.DESC)
-							.limit(1)
-							.execute();
-					Optional<Work> out = lr.message.get()
-							.items.stream()
-							.findFirst();
-					if (out.isPresent() && out.get().score.orElse(0F) > 85.0F) return out; 
-					return Optional.empty();
-				} catch (BibliographicApiException e) {
-					return Optional.empty();
-				}
-			}
+	}
 
-			public QueryBuilder buildQuery() {
-				QueryBuilder out = new QueryBuilder(baseUrl+"works", defaultApiParams() , this);
-				return out;
-			}
+	public static enum DateFilter {
+		FROM_INDEX_DATE,
+		UNTIL_INDEX_DATE,
+		FROM_DEPOSIT_DATE,
+		UNTIL_DEPOSIT_DATE,
+		FROM_UPDATE_DATE,
+		UNTIL_UPDATE_DATE,
+		FROM_CREATED_DATE,
+		UNTIL_CREATED_DATE,
+		FROM_PUB_DATE,
+		UNTIL_PUB_DATE,
+		FROM_ONLINE_PUB_DATE,
+		UNTIL_ONLINE_PUB_DATE,
+		FROM_PRINT_PUB_DATE,
+		UNTIL_PRINT_PUB_DATE,
+		FROM_POSTED_DATE,
+		UNTIL_POSTED_DATE,
+		FROM_ACCEPTED_DATE,
+		UNTIL_ACCEPTED_DATE
+	}
 
-			public static class QueryBuilder {
-				protected String url;
+	public static enum StringFilter {
+		FUNDER,
+		LOCATION,
+		PREFIX,
+		MEMBER,
+		LICENSE__URL,
+		LICENSE__VERSION,
+		LICENSE__DELAY,
+		FULL_TEXT__VERSION,
+		FULL_TEXT__TYPE,
+		FULL_TEXT__APPLICATION,
+		REFERENCE_VISIBILITY,
+		ORCHID,
+		ISSN,
+		ISBN,
+		TYPE,
+		DIRECTORY,
+		DOI,
+		UPDATES,
+		CONTAINER_TITLE,
+		CATEGORY_NAME,
+		TYPE_NAME,
+		AWARD__NUMBER,
+		AWARD__FUNDER,
+		ASSERTION_GROUP,
+		ASSERTION,
+		ALTERNATIVE_ID,
+		ARTICLE_NUMBER,
+		CONTENT_DOMAIN,
+		RELATION__TYPE,
+		RELATION__OBJECT,
+		RELATION__OBJECT_TYPE
 
-				MultivaluedMap<String, String> params;
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-				CrossRefClient client;
-
-				private WebResource get(Client client) {
-					WebResource tdmCopy = client.resource(url);
-					tdmCopy = tdmCopy.queryParams(params);
-					return tdmCopy;
-				}
-
-				private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams, CrossRefClient client ) {
-					this.url=url;
-					this.params=defaultParams;
-					this.client = client;
-
-				}
-
-				public QueryBuilder withSearchTerm(String search) {
-					params.add("query", search);
-					return this;
-				}
-
-				public QueryBuilder withSearchTerm(Field field, String search) {
-					params.add("query."+field.name().toLowerCase().replace("__", ".").replace("_", "-"), search);
-					return this;
-				}
-
-				public QueryBuilder sortedBy(Sort sort, SortOrder order) {
-					params.add("sort",sort.name().toLowerCase().replace("__", ".").replace("_", "-"));
-					params.add("order",order.name().toLowerCase().replace("__", ".").replace("_", "-"));
-					return this;
-				}
-
-				public QueryBuilder limit(Integer offset, Integer rows) {
-					params.add("rows",rows.toString());
-					params.add("offset",offset.toString());
-					return this;
-				}
-
-				public QueryBuilder limit(Integer rows) {
-					params.add("rows",rows.toString());
-					return this;
-				}
-
-				public QueryBuilder since(Date date) {
-					params.add("filter","from-index-date:"+format.format(date));
-					return this;
-				}
-
-				public QueryBuilder firstPage(Integer rows) {
-					params.add("rows",rows.toString());
-					params.add("cursor", "*");
-					return this;
-				}
-
-				public Optional<QueryBuilder> nextPage(ListResult resp) {
-					if (
-							resp.message.isPresent() && 
-							resp.message.get().nextCursor.isPresent() &&
-							!(
-									resp.message.get().items.size() == 0 && 
-									resp.message.get().totalResults.orElse(0) > 0
-									)
-							) {
-						params.remove("cursor");
-						params.add("cursor", resp.message.get().nextCursor.get());
-						return Optional.of(this);
-					} else {
-						return Optional.empty();
-					}
-
-				}
-
-				public QueryBuilder filteredBy(BooleanFilter filter, Boolean value) {
-					params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+value.toString());
-					return this;
-				}
-
-				public QueryBuilder filteredBy(StringFilter filter, String value) {
-					params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+value.toString());
-					return this;
-				}
-
-				public QueryBuilder filteredBy(DateFilter filter, Date value) {
-					params.add("filter",filter.name().toLowerCase().replace("__", ".").replace("_", "-")+":"+format.format(value));
-					return this;
-				}
-
-				public ListResult execute() throws BibliographicApiException {
-					return client.getByQuery(this);
-				}
-
-				public String toString() {
-					return keyFromApiQuery(url,params); 
-				}
-			}
-
-			public static enum Field {
-				TITLE,
-				CONTAINER_TITLE,
-				AUTHOR,
-				EDITOR,
-				CHAIR,
-				TRANSLATOR,
-				CONTRIBUTOR,
-				BIBLIOGRAPHIC,
-				AFFIILIATION
-			}
-
-			public static enum Sort {
-				SCORE,
-				RELEVANCE,
-				UPDATED,
-				DEPOSITED,
-				INDEXED,
-				PUBLISHED,
-				PUBLISHED_PRINT,
-				PUBLISHED_ONLINE,
-				ISSUED,
-				IS_REFERENCED_BY_COUNT,
-				REFERENCES_COUNT
-			}
-
-			public static enum SortOrder { ASC,DESC }
-
-			public static enum BooleanFilter {
-				HAS_FUNDER,
-				HAS_LICENSE,
-				HAS_FULL_TEXT,
-				HAS_REFERENCES,
-				HAS_ARCHIVE,
-				HAS_ORCHID,
-				HAS_AUTHENTICATED_ORCHID,
-				IS_UPDATE,
-				HAS_UPDATE_POLICY,
-				HAS_ASSERTION,
-				HAS_AFFILIATION,
-				HAS_ABSTRACT,
-				HAS_CLINICAL_TRIAL_NUMBER,
-				HAS_CONTENT_DOMAIN,
-				HAS_DOMAIN_RESTRICTION,
-				HAS_RELATION
-
-			}
-
-			public static enum DateFilter {
-				FROM_INDEX_DATE,
-				UNTIL_INDEX_DATE,
-				FROM_DEPOSIT_DATE,
-				UNTIL_DEPOSIT_DATE,
-				FROM_UPDATE_DATE,
-				UNTIL_UPDATE_DATE,
-				FROM_CREATED_DATE,
-				UNTIL_CREATED_DATE,
-				FROM_PUB_DATE,
-				UNTIL_PUB_DATE,
-				FROM_ONLINE_PUB_DATE,
-				UNTIL_ONLINE_PUB_DATE,
-				FROM_PRINT_PUB_DATE,
-				UNTIL_PRINT_PUB_DATE,
-				FROM_POSTED_DATE,
-				UNTIL_POSTED_DATE,
-				FROM_ACCEPTED_DATE,
-				UNTIL_ACCEPTED_DATE
-			}
-
-			public static enum StringFilter {
-				FUNDER,
-				LOCATION,
-				PREFIX,
-				MEMBER,
-				LICENSE__URL,
-				LICENSE__VERSION,
-				LICENSE__DELAY,
-				FULL_TEXT__VERSION,
-				FULL_TEXT__TYPE,
-				FULL_TEXT__APPLICATION,
-				REFERENCE_VISIBILITY,
-				ORCHID,
-				ISSN,
-				ISBN,
-				TYPE,
-				DIRECTORY,
-				DOI,
-				UPDATES,
-				CONTAINER_TITLE,
-				CATEGORY_NAME,
-				TYPE_NAME,
-				AWARD__NUMBER,
-				AWARD__FUNDER,
-				ASSERTION_GROUP,
-				ASSERTION,
-				ALTERNATIVE_ID,
-				ARTICLE_NUMBER,
-				CONTENT_DOMAIN,
-				RELATION__TYPE,
-				RELATION__OBJECT,
-				RELATION__OBJECT_TYPE
-
-			}
+	}
 
 }
