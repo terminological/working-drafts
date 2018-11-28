@@ -107,7 +107,7 @@ public class CrossRefClient extends CachingApiClient {
 		InputStream is = null;
 		if (this.foreverCache().containsKey(url)) {
 			logger.debug("Cached crossref record for:" + doi);
-			is = this.foreverCache().get(url).get();
+			is = this.foreverCache().get(url).inputStream();
 		} else {
 			rateLimit();
 			logger.debug("Retrieving crossref record for:" + doi);
@@ -119,7 +119,7 @@ public class CrossRefClient extends CachingApiClient {
 				BinaryData tmp;
 				tmp = BinaryData.from(isTmp);
 				this.foreverCache().put(url, tmp);
-				is = tmp.get();
+				is = tmp.inputStream();
 			} else {
 				logger.debug("could not fetch for doi:"+doi);
 				return Optional.empty();
@@ -139,7 +139,7 @@ public class CrossRefClient extends CachingApiClient {
 		InputStream is;
 		if (this.weekCache().containsKey(key)) {
 			logger.debug("Cached crossref record for:" + key);
-			is = this.weekCache().get(key).get();
+			is = this.weekCache().get(key).inputStream();
 		} else {
 			rateLimit();
 			logger.debug("Querying crossref: "+qb.toString());
@@ -147,7 +147,7 @@ public class CrossRefClient extends CachingApiClient {
 			updateRateLimits(r.getHeaders());
 			BinaryData data = BinaryData.from(r.getEntityInputStream());
 			this.weekCache().put(key, data);
-			is = data.get();
+			is = data.inputStream();
 		}
 		try {
 			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
