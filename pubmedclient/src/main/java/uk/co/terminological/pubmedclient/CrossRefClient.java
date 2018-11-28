@@ -1,6 +1,5 @@
 package uk.co.terminological.pubmedclient;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
@@ -8,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -21,9 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -85,19 +81,7 @@ public class CrossRefClient extends CachingApiClient {
 		return out;
 	}
 
-	public static Predicate<String> ACCEPT_ANY_LICENCE = new Predicate<String>() {
-		@Override
-		public boolean test(String t) {
-			return true;
-		}
-	};
-
-	public static Predicate<String> ACCEPT_CREATIVE_COMMONS = new Predicate<String>() {
-		@Override
-		public boolean test(String t) {
-			return t.startsWith("http://creativecommons.org");
-		}
-	};
+	
 
 	static String baseUrl ="https://api.crossref.org/";
 
@@ -202,11 +186,11 @@ public class CrossRefClient extends CachingApiClient {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		CrossRefClient client;
 
-		private WebResource get(Client client) {
+		/*ivate WebResource get(Client client) {
 			WebResource tdmCopy = client.resource(url);
 			tdmCopy = tdmCopy.queryParams(params);
 			return tdmCopy;
-		}
+		}*/
 
 		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams, CrossRefClient client ) {
 			this.url=url;
@@ -268,7 +252,6 @@ public class CrossRefClient extends CachingApiClient {
 			} else {
 				return Optional.empty();
 			}
-
 		}
 
 		public QueryBuilder filteredBy(BooleanFilter filter, Boolean value) {
@@ -298,6 +281,21 @@ public class CrossRefClient extends CachingApiClient {
 		}
 	}
 
+	
+	public static Predicate<String> ACCEPT_ANY_LICENCE = new Predicate<String>() {
+		@Override
+		public boolean test(String t) {
+			return true;
+		}
+	};
+
+	public static Predicate<String> ACCEPT_CREATIVE_COMMONS = new Predicate<String>() {
+		@Override
+		public boolean test(String t) {
+			return t.startsWith("http://creativecommons.org");
+		}
+	};
+	
 	public static enum Field {
 		TITLE,
 		CONTAINER_TITLE,
