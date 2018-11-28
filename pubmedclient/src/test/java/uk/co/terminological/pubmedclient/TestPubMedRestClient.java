@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
@@ -56,8 +57,8 @@ public class TestPubMedRestClient {
 		
 		links2.stream().forEach(System.out::println);
 		
-		PubMedEntries entries = restClient.getPMEntriesByPMIds(result.getIds().collect(Collectors.toSet()));
-		entries.getTitles().forEach(System.out::println);
+		Set<PubMedEntry> entries = restClient.getPMEntriesByPMIds(result.getIds().collect(Collectors.toSet()));
+		entries.stream().map(e -> e.getTitle()).forEach(System.out::println);
 		
 		
 		Optional<PubMedEntry> entry = restClient.getPMEntryByPMId("11748933");
