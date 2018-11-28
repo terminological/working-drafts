@@ -77,7 +77,7 @@ public class TestEndToEnd {
 		CrossRefResult.Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().work.get();
 		//System.out.println(work.journalAbstract.get());
 		work2.reference.forEach(r -> System.out.println(r.DOI+"\t"+r.articleTitle));
-		
+		System.exit(0);
 	}
 
 }
