@@ -154,8 +154,8 @@ public class CachingApiClient {
 		}
 	}
 
-	public CachingApiClient() {
-		super();
-	}
+	
+	
+	
 
 }
