@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
 import org.ehcache.Cache;
@@ -29,13 +30,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import uk.co.terminological.datatypes.StreamExceptions;
+import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
+import uk.co.terminological.pubmedclient.CachingApiClient.BinaryData;
 
 
 
-public class CachingApiClient {
+public abstract class CachingApiClient {
 
 	protected CacheManager cacheManager;
 	
@@ -100,7 +105,7 @@ public class CachingApiClient {
 					throw new BibliographicApiException("Could not read api response",e);
 				}
 			}
-			public InputStream get() {
+			public InputStream inputStream() {
 				return new ByteArrayInputStream(byteArray);
 			}
 		}
@@ -154,7 +159,80 @@ public class CachingApiClient {
 		}
 	}
 
+	protected abstract MultivaluedMap<String, String> defaultApiParams();
 	
+	
+	protected <X> CallBuilder<X,Exception> buildCall(
+			String url, Class<X> clazz) {return new CallBuilder<X,Exception>(url, defaultApiParams(), this);}
+	
+	protected static class CallBuilder<X,E extends Exception> {
+		String url;
+		MultivaluedMap<String,String> params;
+		FunctionWithException<InputStream,X,E> operation;
+		boolean temporary = true;
+		CachingApiClient client;
+		CallBuilder(String url, MultivaluedMap<String,String> params, CachingApiClient client) {
+			this.url = url;
+			this.params = params;
+			this.client = client;
+		}
+		public CallBuilder<X,E> withParams(MultivaluedMap<String,String> params) {
+			this.params = params; 
+			return this; 
+		}
+		public CallBuilder<X,E> withOperation(FunctionWithException<InputStream,X,E> operation) {
+			this.operation = operation; 
+			return this; 
+		}
+		public CallBuilder<X,E> cacheForever() {
+			this.temporary=false; 
+			return this; 
+		}
+		public Optional<X> get() {
+			return client.call(url,params,temporary,"get",operation);
+		}
+		public Optional<X> post() {
+			return client.call(url,params,temporary,"post",operation);
+		}
+	}
+	
+	private <X,E extends Exception> Optional<X> call(String url, MultivaluedMap<String,String> params, boolean temporary, String method, FunctionWithException<InputStream,X,E> operation) {
+		
+		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
+		String key = keyFromApiQuery(url,params);
+		if (cache.containsKey(key)) {
+			logger.debug("Cached hit:" + key);
+			try {
+				X out = operation.apply(cache.get(key).inputStream());
+				return Optional.of(out);
+			} catch (Exception e) {
+				logger.debug("Could not parse cached result:" + key);
+				cache.remove(key);
+			}
+		}
+		// Not cached or operation did not succeed
+		rateLimit();
+		logger.debug("Retrieving from API: "+key);
+		try {
+			WebResource wr = client.resource(url).queryParams(params);
+			ClientResponse r = wr.method(method,ClientResponse.class);
+			updateRateLimits(r.getHeaders());
+			if (!r.getClientResponseStatus().getFamily().equals(Status.Family.SUCCESSFUL)) {
+				logger.debug("API call failed: "+key);
+				return Optional.empty();
+			}
+			BinaryData data = BinaryData.from(r.getEntityInputStream());
+			cache.put(key, data);
+			X out = operation.apply(cache.get(key).inputStream());
+			return Optional.of(out);
+		} catch (Exception e) {
+			logger.debug("Could not parse API result: "+key);
+			return Optional.empty();
+		}
+		
+		
+		
+	}
 	
 	
 

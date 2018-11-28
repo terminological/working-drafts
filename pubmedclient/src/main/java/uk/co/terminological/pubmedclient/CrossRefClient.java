@@ -79,7 +79,7 @@ public class CrossRefClient extends CachingApiClient {
 		return tmp;
 	}
 
-	private MultivaluedMap<String, String> defaultApiParams() {
+	protected MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("mailto", developerEmail);
 		return out;
@@ -102,39 +102,18 @@ public class CrossRefClient extends CachingApiClient {
 	static String baseUrl ="https://api.crossref.org/";
 
 	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
+		
 		String url = baseUrl+"works/"+encode(doi);
-
-		InputStream is = null;
-		if (this.foreverCache().containsKey(url)) {
-			logger.debug("Cached crossref record for:" + doi);
-			is = this.foreverCache().get(url).inputStream();
-		} else {
-			rateLimit();
-			logger.debug("Retrieving crossref record for:" + doi);
-			WebResource wr = client.resource(url).queryParams(defaultApiParams());
-			ClientResponse r = wr.get(ClientResponse.class);
-			updateRateLimits(r.getHeaders());
-			if (r.getClientResponseStatus().equals(Status.OK)) {
-				InputStream isTmp = r.getEntityInputStream(); 
-				BinaryData tmp;
-				tmp = BinaryData.from(isTmp);
-				this.foreverCache().put(url, tmp);
-				is = tmp.inputStream();
-			} else {
-				logger.debug("could not fetch for doi:"+doi);
-				return Optional.empty();
-			}
-		}
-		try {
-			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
-			return Optional.of(response);
-		} catch (IOException e) {
-			this.foreverCache().remove(url);
-			throw new BibliographicApiException("Malformed response for: "+doi,e);
-		} 
+		return this
+			.buildCall(url,SingleResult.class)
+			.cacheForever()
+			.withOperation(is -> objectMapper.readValue(is, SingleResult.class))
+			.get();
+		
 	}
 
-	public ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
+	/*blic ListResult getByQuery(QueryBuilder qb) throws BibliographicApiException, NoSuchElementException {
+		
 		String key = qb.toString();
 		InputStream is;
 		if (this.weekCache().containsKey(key)) {
@@ -150,7 +129,7 @@ public class CrossRefClient extends CachingApiClient {
 			is = data.inputStream();
 		}
 		try {
-			CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
+			CrossRefResult.ListResult  response = ;
 			//Check to see if the result is past the end of the set.
 			if (
 					response.message.isPresent() && 
@@ -163,7 +142,7 @@ public class CrossRefClient extends CachingApiClient {
 			this.weekCache().remove(key);
 			throw new BibliographicApiException("Malformed response to: "+qb.get(client).getURI());
 		}
-	}
+	}*/
 
 	public InputStream getTDM(CrossRefResult.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
 
@@ -199,20 +178,16 @@ public class CrossRefClient extends CachingApiClient {
 	
 	
 	public Optional<Work> findWorkByCitationString(String citation) {
-		try {
-			ListResult lr = this.buildQuery()
-					.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
-					.sortedBy(Sort.SCORE, SortOrder.DESC)
-					.limit(1)
-					.execute();
-			Optional<Work> out = lr.message.get()
-					.items.stream()
-					.findFirst();
-			if (out.isPresent() && out.get().score.orElse(0F) > 85.0F) return out; 
-			return Optional.empty();
-		} catch (BibliographicApiException e) {
-			return Optional.empty();
-		}
+		Optional<ListResult> lr = this.buildQuery()
+				.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
+				.sortedBy(Sort.SCORE, SortOrder.DESC)
+				.limit(1)
+				.execute();
+		Optional<Work> out = lr.stream().flatMap(l -> l.message.stream())
+				.flatMap(i -> i.items.stream())
+				.filter(o -> o.score.orElse(0F) > 85.0F)
+				.findFirst();
+		return out;
 	}
 
 	public QueryBuilder buildQuery() {
@@ -311,8 +286,11 @@ public class CrossRefClient extends CachingApiClient {
 			return this;
 		}
 
-		public ListResult execute() throws BibliographicApiException {
-			return client.getByQuery(this);
+		public Optional<ListResult> execute() {
+			return client.buildCall(url, ListResult.class)
+					.withParams(params)
+					.withOperation(is -> client.objectMapper.readValue(is, CrossRefResult.ListResult.class))
+					.get();
 		}
 
 		public String toString() {
