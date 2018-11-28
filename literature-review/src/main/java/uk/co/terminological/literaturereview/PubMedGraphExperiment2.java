@@ -105,7 +105,7 @@ public class PubMedGraphExperiment2 {
 		if (!Files.exists(workingDir)) Files.createDirectories(workingDir);
 		if (!Files.exists(outputDir)) Files.createDirectories(outputDir);
 
-		biblioApi = BibliographicApis.create(secretsPath);
+		biblioApi = BibliographicApis.create(secretsPath, workingDir);
 		graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
 
 		search = prop.getProperty("search");

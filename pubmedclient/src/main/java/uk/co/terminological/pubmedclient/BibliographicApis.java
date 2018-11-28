@@ -3,6 +3,8 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Properties;
 
 public class BibliographicApis {
@@ -34,25 +36,28 @@ public class BibliographicApis {
 
 		String pubmedApiToken = prop.getProperty("pubmed.apikey");
 		String appId = prop.getProperty("appid");
+		
+		Optional<Path> cacheDir = Optional.ofNullable(prop.getProperty("cache-directory")).map(s -> Paths.get(s));
+		
 
-		return create(appId,developerEmail,xrefToken,pubmedApiToken);
+		return create(appId,developerEmail,xrefToken,pubmedApiToken, cacheDir);
 
 	}
 
-	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken) {
-		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken);
+	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
+		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, cacheDir);
 	}
 
 	private EntrezClient entrez;
 	private IdConverterClient pmcIdConv;
-	private CrossRefClient crossref;
+	private CachingApiClient crossref;
 	private UnpaywallClient unpaywall;
 
-	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken) {
+	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
 
 		entrez = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		pmcIdConv = IdConverterClient.create(appId,developerEmail);
-		crossref = CrossRefClient.create(developerEmail);
+		crossref = CrossRefClient.create(developerEmail, cacheDir.map(d -> d.resolve("xref")));
 		unpaywall = UnpaywallClient.create(developerEmail);
 
 	}
@@ -73,7 +78,7 @@ public class BibliographicApis {
 		return pmcIdConv;
 	}
 
-	public CrossRefClient getCrossref() {
+	public CachingApiClient getCrossref() {
 		return crossref;
 	}
 
