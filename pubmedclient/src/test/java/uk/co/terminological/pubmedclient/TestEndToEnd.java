@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
+
 
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
@@ -33,8 +35,10 @@ public class TestEndToEnd {
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail);
 		
+		Path ehcache = Paths.get("/tmp/ehcache/test123");
+		Files.createDirectories(ehcache.getParent());
 		
-		CrossRefClient xref = CrossRefClient.create(developerEmail);
+		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache);
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
 		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
@@ -59,7 +63,7 @@ public class TestEndToEnd {
 		unpaywall.getUnpaywallByDois(dois2).stream()
 			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
 		
-		//CrossRefResult.Work work = xref.getByDoi(dois2.get(0)).work.get();
+		CrossRefResult.Work work = xref.get.getByDoi(dois2).work.get();
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
 		CrossRefResult.Work work = xref.getByDoi("10.1093/bioinformatics/btw768").get().work.get();
 		work.title.forEach(System.out::println);

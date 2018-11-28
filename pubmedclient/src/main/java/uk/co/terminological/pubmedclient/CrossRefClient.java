@@ -235,10 +235,6 @@ public class CrossRefClient {
 	}
 
 	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
-		return getByDoi(doi,cache );
-	}
-	
-	public Optional<SingleResult> getByDoi(String doi, Path cacheDir) throws BibliographicApiException {
 		String url = baseUrl+"works/"+encode(doi);
 		
 		InputStream is = null;
