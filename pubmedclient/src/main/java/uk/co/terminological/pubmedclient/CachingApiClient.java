@@ -144,7 +144,6 @@ public class CachingApiClient {
 
 	protected void updateRateLimits(MultivaluedMap<String, String> headers) {
 		try {
-	
 			Long rateLimitRequests = Long.parseLong(headers.get("X-Rate-Limit-Limit").get(0));
 			Long rateLimitInterval = Long.parseLong(headers.get("X-Rate-Limit-Interval").get(0).replace("s", ""));
 			rateLimiter = TokenBuckets.builder().withInitialTokens(rateLimiter.getNumTokens()).withCapacity(rateLimitRequests).withFixedIntervalRefillStrategy(rateLimitRequests,rateLimitInterval,TimeUnit.SECONDS).build();
