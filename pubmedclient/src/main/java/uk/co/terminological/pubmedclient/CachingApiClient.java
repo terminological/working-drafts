@@ -123,6 +123,8 @@ public class CachingApiClient {
 	protected Client client;
 	protected TokenBucket rateLimiter;
 	
+	public void rateLimit() {rateLimiter.consume();}
+	
 	protected static String encode(String string) {
 		try {
 			return URLEncoder.encode(string,java.nio.charset.StandardCharsets.UTF_8.toString());
