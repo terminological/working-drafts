@@ -238,10 +238,6 @@ public class CrossRefClient {
 		return getByDoi(doi,cache );
 	}
 	
-	private Supplier<BibliographicApiException> bibErr(String message) {
-		return () -> new BibliographicApiException(message);
-	}
-	
 	public Optional<SingleResult> getByDoi(String doi, Path cacheDir) throws BibliographicApiException {
 		String url = baseUrl+"works/"+encode(doi);
 		
