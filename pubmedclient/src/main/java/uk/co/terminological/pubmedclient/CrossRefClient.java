@@ -96,11 +96,11 @@ public class CrossRefClient {
 		private BinaryData(InputStream is) throws IOException {
 			byteArray = IOUtils.toByteArray(is);
 		}
-		public static Optional<BinaryData> from(InputStream is) {
+		public static BinaryData from(InputStream is) throws BibliographicApiException {
 			try {
-				return Optional.of(new BinaryData(is));
+				return new BinaryData(is);
 			} catch (IOException e) {
-				return Optional.empty();
+				throw new BibliographicApiException("Could not read api response",e);
 			}
 		}
 		public InputStream get() {
@@ -258,7 +258,7 @@ public class CrossRefClient {
 			if (r.getClientResponseStatus().equals(Status.OK)) {
 				InputStream isTmp = r.getEntityInputStream(); 
 				BinaryData tmp;
-				tmp = BinaryData.from(isTmp).orElseThrow(bibErr("Could not read API response"));
+				tmp = BinaryData.from(isTmp);
 				this.foreverCache().put(url, tmp);
 				is = tmp.get();
 			} else {
@@ -285,7 +285,7 @@ public class CrossRefClient {
 			logger.debug("Querying crossref: "+qb.toString());
 			ClientResponse r = qb.get(client).get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
-			BinaryData data = BinaryData.from(r.getEntityInputStream()).orElseThrow(bibErr("Could not read api response"));
+			BinaryData data = BinaryData.from(r.getEntityInputStream());
 			this.weekCache().put(key, data);
 			is = data.get();
 		}
