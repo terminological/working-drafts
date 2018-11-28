@@ -46,7 +46,7 @@ public class BibliographicApis {
 	
 
 	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
-		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, cacheDir);
+		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, cacheDir.orElse(null));
 	}
 
 	private EntrezClient entrez;
@@ -54,11 +54,11 @@ public class BibliographicApis {
 	private CrossRefClient crossref;
 	private UnpaywallClient unpaywall;
 
-	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
+	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Path cacheDir) {
 
 		entrez = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		pmcIdConv = IdConverterClient.create(appId,developerEmail);
-		crossref = CrossRefClient.create(developerEmail, cacheDir.map(d -> d.resolve("xref")));
+		crossref = CrossRefClient.create(developerEmail, cacheDir.resolve("xref"));
 		unpaywall = UnpaywallClient.create(developerEmail);
 
 	}
