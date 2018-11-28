@@ -86,6 +86,10 @@ public class UnpaywallClient {
 				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
 	}
 
+	public Set<Result> getUnpaywallByDois(Collection<String> dois) throws BibliographicApiException {
+		return getUnpaywallByDois(dois,cache);
+	}
+	
 	public Set<Result> getUnpaywallByDois(Collection<String> dois, Path unpaywallCache) throws BibliographicApiException {
 		Set<Result> out = new HashSet<>();
 		dois.forEach(StreamExceptions.ignore(i -> {
