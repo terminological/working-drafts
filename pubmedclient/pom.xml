@@ -80,98 +80,43 @@
 			<artifactId>token-bucket</artifactId>
 			<version>1.6</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.ehcache/ehcache -->
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.10.6</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- <plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
-					<execution>
-						<id>xjc-schema1</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<vmArgs>
-								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-							</vmArgs>
-							<schemas>
-								<schema>
-									<!-<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>
-									<fileset>
-										<directory>${basedir}/src/main/resources/schema</directory>
-										<includes>
-											<include>esearch.dtd</include>
-										</includes>
-									</fileset>
-								</schema>
-							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
-					<execution>
-						<id>xjc-schema2</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemas>
-								<schema>
-									<fileset>
-										<directory>${basedir}/src/main/resources/schema</directory>
-										<includes>
-											<include>pubmed_180101.dtd</include>
-										</includes>
-									</fileset>
-								</schema>
-							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
-						</configuration>
-						<- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
-							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
-					<execution>
-						<id>xjc-schema3</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemas>
-								<schema>
-									<fileset>
-										<directory>${basedir}/src/main/resources/schema</directory>
-										<includes>
-											<include>elink.dtd</include>
-										</includes>
-									</fileset>
-								</schema>
-							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/3</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.elink</generatePackage>
-						</configuration>
-						<- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
-							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> 
-					</execution>
-				</executions>
-			</plugin>-->
+			<!-- <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> <artifactId>maven-jaxb2-plugin</artifactId> 
+				<version>0.14.0</version> <executions> <execution> <id>xjc-schema1</id> <goals> 
+				<goal>generate</goal> </goals> <configuration> <vmArgs> <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg> 
+				</vmArgs> <schemas> <schema> <!-<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url> 
+				<fileset> <directory>${basedir}/src/main/resources/schema</directory> <includes> 
+				<include>esearch.dtd</include> </includes> </fileset> </schema> </schemas> 
+				<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory> 
+				<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage> 
+				</configuration> </execution> </executions> </plugin> <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> 
+				<artifactId>maven-jaxb2-plugin</artifactId> <version>0.14.0</version> <executions> 
+				<execution> <id>xjc-schema2</id> <goals> <goal>generate</goal> </goals> <configuration> 
+				<schemas> <schema> <fileset> <directory>${basedir}/src/main/resources/schema</directory> 
+				<includes> <include>pubmed_180101.dtd</include> </includes> </fileset> </schema> 
+				</schemas> <generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory> 
+				<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage> 
+				</configuration> <- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
+				nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> 
+				- </execution> </executions> </plugin> <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> 
+				<artifactId>maven-jaxb2-plugin</artifactId> <version>0.14.0</version> <executions> 
+				<execution> <id>xjc-schema3</id> <goals> <goal>generate</goal> </goals> <configuration> 
+				<schemas> <schema> <fileset> <directory>${basedir}/src/main/resources/schema</directory> 
+				<includes> <include>elink.dtd</include> </includes> </fileset> </schema> 
+				</schemas> <generateDirectory>${project.build.directory}/generated-sources/xjc/3</generateDirectory> 
+				<generatePackage>gov.nih.nlm.ncbi.eutils.generated.elink</generatePackage> 
+				</configuration> <- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
+				nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> 
+				</execution> </executions> </plugin> -->
 			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jaxb2-maven-plugin</artifactId> 
 				<version>2.4</version> <executions> <execution> <id>xjc</id> <goals> <goal>xjc</goal> 
 				</goals> </execution> </executions> <configuration> <packageName>gov.nih.nlm.ncbi.eutils.generated.elink</packageName> 
