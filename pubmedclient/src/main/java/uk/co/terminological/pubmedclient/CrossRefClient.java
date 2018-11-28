@@ -10,10 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +56,11 @@ public class CrossRefClient extends CachingApiClient {
 
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	private CrossRefClient(String developerEmail, Optional<Path> optional) {
-		super(optional);
+		super(optional, 
+				TokenBuckets.builder()
+					.withCapacity(50)
+					.withInitialTokens(50)
+					.withFixedIntervalRefillStrategy(50, 1, TimeUnit.SECONDS).build());
 		this.developerEmail = developerEmail;
 	}
 
