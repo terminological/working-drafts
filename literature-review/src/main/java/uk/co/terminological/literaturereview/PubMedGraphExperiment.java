@@ -48,6 +48,7 @@ import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.lockNode;
@@ -299,7 +300,7 @@ public class PubMedGraphExperiment {
 						
 						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 
-						PubMedEntries entries = bib.getEntrez()
+						Set<PubMedEntry> entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
 						boolean originalSearch = event.getMetadata().name().orElse("none").equals(ORIGINAL_SEARCH);
