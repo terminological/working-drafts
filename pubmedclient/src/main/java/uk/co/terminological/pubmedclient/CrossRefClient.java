@@ -161,6 +161,7 @@ public class CrossRefClient {
 				logger.debug("Retrieving crossref record for:" + doi);
 				String url = baseUrl+"works/"+encode(doi);
 				WebResource wr = client.resource(url).queryParams(defaultApiParams());
+				
 				try {
 					ClientResponse r = wr.get(ClientResponse.class);
 					updateRateLimits(r.getHeaders());
