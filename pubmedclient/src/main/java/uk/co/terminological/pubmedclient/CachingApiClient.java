@@ -121,9 +121,9 @@ public class CachingApiClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(CachingApiClient.class);
 	protected Client client;
-	protected TokenBucket rateLimiter;
+	private TokenBucket rateLimiter;
 	
-	public void rateLimit() {rateLimiter.consume();}
+	protected void rateLimit() {rateLimiter.consume();}
 	
 	protected static String encode(String string) {
 		try {
