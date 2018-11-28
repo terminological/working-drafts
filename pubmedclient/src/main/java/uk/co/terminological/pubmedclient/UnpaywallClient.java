@@ -1,6 +1,5 @@
 package uk.co.terminological.pubmedclient;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -19,8 +18,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
 
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
@@ -28,20 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandler;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -130,34 +117,14 @@ public class UnpaywallClient {
 	}
 
 	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
-		return getPdfByResult(result, cache );
+		return getPdfByResult(result, PdfFetcher.create().withCache(cache));
 	}
 	
-	public InputStream getPdfByResult(Result result, Path unpaywallCache) throws BibliographicApiException {
+	public InputStream getPdfByResult(Result result, PdfFetcher pdfFetch) throws BibliographicApiException {
 		try {
 			String url = result.pdfUrl().orElse(null);
-			if (unpaywallCache!=null) {
-				Path filepath = unpaywallCache.resolve(result.doi.get()+".pdf");
-				try {
-					if (!Files.exists(filepath)) {
-						Files.createDirectories(filepath.getParent());
-						logger.debug("caching pdf for {}",result.doi.get());
-						Files.copy(
-								PdfFetcher.getPdfFromUrl(url),
-								filepath);
-					} else {
-						logger.debug("fetching cached pdf for {}",result.doi.get());
-					}
-					return Files.newInputStream(filepath);
-				} catch (IOException e) {
-					throw new BibliographicApiException("Could not get content for"+result.doi.get(),e);
-				}
-			} else {
-				logger.debug("fetching pdf for {}",result.doi.get());
-				return PdfFetcher.getPdfFromUrl(url);
-			}
-		    
-		} catch (Exception e) {
+			return pdfFetch.getPdfFromUrl(url, cache -> cache.resolve("pdf").resolve(result.doi.get()+".pdf"));
+			} catch (Exception e) {
 			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get(), e);
 		}
 	}
@@ -168,25 +135,9 @@ public class UnpaywallClient {
 	
 	public InputStream getPdfByDoi(String doi, Path unpaywallCache) throws BibliographicApiException {
 		Result result = getUnpaywallByDoi(doi,unpaywallCache);
-		return getPdfByResult(result, unpaywallCache);	
+		
+		return getPdfByResult(result, PdfFetcher.create().withCache(unpaywallCache));	
 	}
-	
-	/*private Result doCall(String doi) throws BibliographicApiException {
-		MultivaluedMap<String, String> params = defaultApiParams();
-		logger.debug("https://api.unpaywall.org/v2/"+encode(doi));
-		rateLimiter.consume();
-		WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(doi)).queryParams(params);
-		try {
-			InputStream is = wr.get(InputStream.class); 
-			Result response = objectMapper.readValue(is, Result.class);
-			return response;
-		} catch (JsonParseException | JsonMappingException e) {
-			throw new BibliographicApiException("Malformed response");
-		} catch (IOException | UniformInterfaceException e) {
-			throw new BibliographicApiException("Cannot connect or not found");
-		}
-	}*/
-
 
 	private static String encode(String string)  {
 		try {
