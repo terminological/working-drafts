@@ -42,7 +42,7 @@ public class TestEndToEnd {
 		Path ehcache = Paths.get("/tmp/ehcache/test123");
 		Files.createDirectories(ehcache.getParent());
 		
-		CrossRefClient xref = CrossRefClient.create(developerEmail, Optional.of(ehcache));
+		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache);
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
 		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
