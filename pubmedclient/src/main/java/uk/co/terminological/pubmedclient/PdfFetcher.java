@@ -55,6 +55,8 @@ public class PdfFetcher {
 	
 	public InputStream getPdfFromUrl(String url, Function<Path,Path> resolve) {
 		Path tmp = resolve.apply(cache);
+		if (cache == null) return getPdfFromUrl(url);
+		
 		if (Files.isDirectory(tmp)) {
 			logger.error("tried to cache pdf as a directory");
 			return getPdfFromUrl(url);
