@@ -1,7 +1,11 @@
 package uk.co.terminological.pubmedclient;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -22,6 +26,13 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.commons.io.IOUtils;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.config.units.MemoryUnit;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
@@ -40,7 +51,7 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import net.sf.ehcache.CacheManager;
+
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
@@ -72,6 +83,10 @@ public class CrossRefClient {
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	CacheManager cacheManager;
 	
+	private Cache<String,BinaryData> binaryCache() {
+		return cacheManager.getCache("binary", String.class, BinaryData.class);
+	}
+	
 	public CrossRefClient debugMode() {
 		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
 			@Override public void info(String msg) { logger.info(msg); }
@@ -79,18 +94,47 @@ public class CrossRefClient {
 		return this;
 	}
 	
-	
-	private CrossRefClient(String developerEmail) {
+	private static class BinaryData implements Serializable {
+		byte[] byteArray;
+		private BinaryData(InputStream is) throws IOException {
+			byteArray = IOUtils.toByteArray(is);
+		}
+		public static BinaryData from(InputStream is) throws IOException {
+			return new BinaryData(is);
+		}
+		public InputStream get() {
+			return new ByteArrayInputStream(byteArray);
+		}
+	}
+ 	
+	private CrossRefClient(String developerEmail, Path cache) {
 		this.developerEmail = developerEmail;
 		this.client = Client.create();
-		cacheManager = CacheManagerBuilder.newCacheManagerBuilder() 
-			    .withCache("preConfigured",
-			        CacheConfigurationBuilder.newCacheConfigurationBuilder(Long.class, String.class, ResourcePoolsBuilder.heap(10))) 
+		this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
+				.with(CacheManagerBuilder.persistence(cache.toFile())) 
+				.withCache(
+						"binary",
+						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
+								ResourcePoolsBuilder
+								.heap(1000)
+								.disk(40, MemoryUnit.MB, true)))
 			    .build(); 
 			cacheManager.init();
 	}
 
-	
+	private CrossRefClient(String developerEmail) {
+		this.developerEmail = developerEmail;
+		this.client = Client.create();
+		this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
+				.withCache(
+						"binary",
+						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
+								ResourcePoolsBuilder
+								.heap(1000)
+						))
+			    .build(); 
+			cacheManager.init();
+	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 	
