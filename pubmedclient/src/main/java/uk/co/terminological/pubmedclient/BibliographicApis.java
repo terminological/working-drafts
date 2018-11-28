@@ -79,7 +79,7 @@ public class BibliographicApis {
 		return pmcIdConv;
 	}
 
-	public CachingApiClient getCrossref() {
+	public CrossRefClient getCrossref() {
 		return crossref;
 	}
 
