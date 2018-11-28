@@ -11,10 +11,11 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 
-
+import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
 public class TestEndToEnd {
@@ -63,12 +64,13 @@ public class TestEndToEnd {
 		unpaywall.getUnpaywallByDois(dois2).stream()
 			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
 		
-		CrossRefResult.Work work = xref.get.getByDoi(dois2).work.get();
+		Stream<CrossRefResult.Work> work = dois2.stream().flatMap(StreamExceptions.logWarn(doi -> xref.getByDoi(doi).stream()))
+				.flatMap(sr -> sr.work.stream());
+		work.forEach(w -> w.title.forEach(System.out::println));
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
-		CrossRefResult.Work work = xref.getByDoi("10.1093/bioinformatics/btw768").get().work.get();
-		work.title.forEach(System.out::println);
+		CrossRefResult.Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().work.get();
 		//System.out.println(work.journalAbstract.get());
-		work.reference.forEach(r -> System.out.println(r.DOI+"\t"+r.articleTitle));
+		work2.reference.forEach(r -> System.out.println(r.DOI+"\t"+r.articleTitle));
 		
 	}
 
