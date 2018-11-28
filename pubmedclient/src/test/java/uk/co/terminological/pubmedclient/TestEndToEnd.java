@@ -8,12 +8,15 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
+
+
 
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
@@ -39,7 +42,7 @@ public class TestEndToEnd {
 		Path ehcache = Paths.get("/tmp/ehcache/test123");
 		Files.createDirectories(ehcache.getParent());
 		
-		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache);
+		CrossRefClient xref = CrossRefClient.create(developerEmail, Optional.of(ehcache));
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
 		
 		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(

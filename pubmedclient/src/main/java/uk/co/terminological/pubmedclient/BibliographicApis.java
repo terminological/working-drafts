@@ -38,7 +38,6 @@ public class BibliographicApis {
 		String appId = prop.getProperty("appid");
 		
 		Optional<Path> cacheDir = Optional.ofNullable(prop.getProperty("cache-directory")).map(s -> Paths.get(s));
-		
 
 		return create(appId,developerEmail,xrefToken,pubmedApiToken, cacheDir);
 
