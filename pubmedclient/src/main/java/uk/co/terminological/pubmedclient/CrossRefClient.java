@@ -18,7 +18,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -262,6 +261,7 @@ public class CrossRefClient {
 			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return Optional.of(response);
 		} catch (IOException e) {
+			this.foreverCache().remove(url);
 			throw new BibliographicApiException("Malformed response for: "+doi,e);
 		} 
 	}
@@ -292,6 +292,7 @@ public class CrossRefClient {
 			}
 			return response;
 		} catch (IOException e) {
+			this.weekCache().remove(key);
 			throw new BibliographicApiException("Malformed response to: "+qb.get(client).getURI());
 		}
 	}

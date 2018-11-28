@@ -456,7 +456,7 @@ public class PubMedGraphExperiment2 {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
-				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi, xrefCacheDir);
+				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 				List<Reference> referencedDois = tmp.stream()
 						.flatMap(t -> t.work.stream())
 						.flatMap(w -> w.reference.stream())
@@ -475,7 +475,7 @@ public class PubMedGraphExperiment2 {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
-				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi, xrefCacheDir);
+				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 				tmp.ifPresent(t -> {
 					t.work.ifPresent(w -> {
 						Optional<String> out = updateCrossRefMetadata(w,graphApi);
