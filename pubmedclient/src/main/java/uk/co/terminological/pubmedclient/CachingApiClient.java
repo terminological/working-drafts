@@ -189,10 +189,10 @@ public abstract class CachingApiClient {
 			return this; 
 		}
 		public Optional<X> get() {
-			return client.call(url,params,temporary,"get",operation);
+			return client.call(url,params,temporary,"GET",operation);
 		}
 		public Optional<X> post() {
-			return client.call(url,params,temporary,"post",operation);
+			return client.call(url,params,temporary,"POST",operation);
 		}
 	}
 	
