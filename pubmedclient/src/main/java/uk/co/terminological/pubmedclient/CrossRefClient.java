@@ -68,6 +68,10 @@ public class CrossRefClient extends CachingApiClient {
 		return create(developerEmail, Optional.empty());
 	}
 
+	public static CrossRefClient create(String developerEmail, Path cacheDir) {
+		return create(developerEmail, Optional.ofNullable(cacheDir));
+	}
+	
 	public static CrossRefClient create(String developerEmail, Optional<Path> cacheDir) {
 		if (singleton.containsKey(developerEmail)) return singleton.get(developerEmail);
 		CrossRefClient tmp = new CrossRefClient(developerEmail, cacheDir);

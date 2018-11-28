@@ -2,6 +2,11 @@ package uk.co.terminological.pubmedclient;
 
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -30,12 +35,13 @@ public class TestCrossRefClient {
 	
 	static String DEVELOPER = "test@example.org";
 	
-	public static void main(String[] args) throws BibliographicApiException {
+	public static void main(String[] args) throws BibliographicApiException, IOException {
 		
 		BasicConfigurator.configure();
 		Logger.getRootLogger().setLevel(Level.ALL);
+		Path tmp = Files.createTempDirectory("test");
 		
-		CrossRefClient xref = CrossRefClient.create(DEVELOPER);
+		CrossRefClient xref = CrossRefClient.create(DEVELOPER, tmp);
 		xref.debugMode();
 		
 		QueryBuilder qb = xref.buildQuery()
@@ -43,7 +49,8 @@ public class TestCrossRefClient {
 				.sortedBy(Sort.SCORE, SortOrder.DESC)
 				.limit(1);
 				
-		
+		for (int i=0; i<5; i++) {
+			qb.execute();
 		
 		for (String ref: articles) {
 			System.out.println(ref);
@@ -51,7 +58,7 @@ public class TestCrossRefClient {
 			System.out.println();
 		}
 			
-
+		}
 	}
 
 }
