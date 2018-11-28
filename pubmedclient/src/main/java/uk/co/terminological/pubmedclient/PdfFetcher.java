@@ -29,17 +29,54 @@ public class PdfFetcher {
 	static Logger logger = LoggerFactory.getLogger(PdfFetcher.class);
 	
 	int maxRedirects = 10;
-	boolean debug = false;
 	Path cache = null;
+	Client client;
 	
-	private PdfFetcher() {}
+	private PdfFetcher() {
+		ClientConfig config = new DefaultClientConfig();
+	    config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
+	    client = Client.create(config);
+	    client.setFollowRedirects(true);
+	    client.addFilter(new ClientFilter() { 
+            @Override 
+            public ClientResponse handle(ClientRequest request) 
+                            throws ClientHandlerException { 
+                    request.getHeaders().add( 
+                                    HttpHeaders.USER_AGENT, 
+                                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36"); 
+                    return getNext().handle(request); 
+            } 
+	    });
+	    client.addFilter(new ClientFilter() {
+	    	@Override
+	        public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
+	            ClientHandler ch = getNext();
+	            int i=maxRedirects;
+	            while (i-->0) {
+		            ClientResponse resp = ch.handle(cr);
+		            if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
+		                return resp;
+		            } else {
+		                // try location
+		                String redirectTarget = resp.getHeaders().getFirst("Location");
+		                logger.debug("redirecting to :"+redirectTarget);
+		                cr.setURI(UriBuilder.fromUri(redirectTarget).build());
+		                resp = ch.handle(cr);
+		            }
+	            }
+	            throw new ClientHandlerException("Too many redirects");
+	        }
+	    });
+	}
 	
 	public static PdfFetcher create() {
 		return new PdfFetcher();
 	}
 	
 	public PdfFetcher debugMode() {
-		this.debug = true;
+		client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
+    		@Override public void info(String msg) { logger.info(msg); }
+    	}));
 		return this;
 	}
 	
@@ -53,7 +90,7 @@ public class PdfFetcher {
 		return this;
 	}
 	
-	public InputStream getPdfFromUrl(String url, Function<Path,Path> resolve) {
+	public InputStream getPdfFromUrl(String url, Function<Path,Path> resolve) throws BibliographicApiException {
 		Path tmp = resolve.apply(cache);
 		if (cache == null) return getPdfFromUrl(url);
 		
@@ -76,53 +113,16 @@ public class PdfFetcher {
 
 
 	
-	public InputStream getPdfFromUrl(String url, String filename) {
+	public InputStream getPdfFromUrl(String url, String filename) throws BibliographicApiException {
 		return getPdfFromUrl(url, p -> p.resolve(filename));
 	}
 	
-	public InputStream getPdfFromUrl(String url) {
-		ClientConfig config = new DefaultClientConfig();
-	    config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
-	    Client client = Client.create(config);
-	    if (debug) {
-	    	client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
-	    		@Override public void info(String msg) { logger.info(msg); }
-	    	}));
-	    }
-	    client.setFollowRedirects(true);
-	    client.addFilter(new ClientFilter() { 
-            @Override 
-            public ClientResponse handle(ClientRequest request) 
-                            throws ClientHandlerException { 
-                    request.getHeaders().add( 
-                                    HttpHeaders.USER_AGENT, 
-                                    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36"); 
-                    return getNext().handle(request); 
-            } 
-    }); 
-	    
-	    WebResource wr = client.resource(url);
-	    
-	    wr.addFilter(new ClientFilter() {
-	    	@Override
-	        public ClientResponse handle(ClientRequest cr) throws ClientHandlerException {
-	            ClientHandler ch = getNext();
-	            int i=maxRedirects;
-	            while (i-->0) {
-		            ClientResponse resp = ch.handle(cr);
-		            if (resp.getClientResponseStatus().getFamily() != Response.Status.Family.REDIRECTION) {
-		                return resp;
-		            } else {
-		                // try location
-		                String redirectTarget = resp.getHeaders().getFirst("Location");
-		                logger.debug("redirecting to :"+redirectTarget);
-		                cr.setURI(UriBuilder.fromUri(redirectTarget).build());
-		                resp = ch.handle(cr);
-		            }
-	            }
-	            throw new ClientHandlerException("Too many redirects");
-	        }
-	    });
-		return wr.get(InputStream.class);
+	public InputStream getPdfFromUrl(String url) throws BibliographicApiException {
+		try {
+			WebResource wr = client.resource(url);
+			return wr.get(InputStream.class);
+		} catch (Exception e) {
+			throw new BibliographicApiException("could not retrieve "+url,e);
+		}
 	}
 }
