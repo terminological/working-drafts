@@ -64,7 +64,13 @@ public class TestEndToEnd {
 		unpaywall.getUnpaywallByDois(dois2).stream()
 			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
 		
-		Stream<CrossRefResult.Work> work = dois2.stream().flatMap(StreamExceptions.logWarn(doi -> xref.getByDoi(doi).stream()))
+		Stream<CrossRefResult.Work> work = dois2.stream().flatMap(doi -> {
+			try {
+				return xref.getByDoi(doi).stream();
+			} catch (BiliographicApiException e) {
+				return Stream.empty();
+			}
+		})
 				.flatMap(sr -> sr.work.stream());
 		work.forEach(w -> w.title.forEach(System.out::println));
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
