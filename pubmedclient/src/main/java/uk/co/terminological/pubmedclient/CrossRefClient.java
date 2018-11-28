@@ -106,7 +106,7 @@ public class CrossRefClient extends CachingApiClient {
 					logger.debug("Cached crossref record for:" + doi);
 					is = this.foreverCache().get(url).get();
 				} else {
-					rateLimiter.consume();
+					rateLimit();
 					logger.debug("Retrieving crossref record for:" + doi);
 					WebResource wr = client.resource(url).queryParams(defaultApiParams());
 					ClientResponse r = wr.get(ClientResponse.class);
@@ -138,7 +138,7 @@ public class CrossRefClient extends CachingApiClient {
 					logger.debug("Cached crossref record for:" + key);
 					is = this.weekCache().get(key).get();
 				} else {
-					rateLimiter.consume();
+					rateLimit();
 					logger.debug("Querying crossref: "+qb.toString());
 					ClientResponse r = qb.get(client).get(ClientResponse.class);
 					updateRateLimits(r.getHeaders());
