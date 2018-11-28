@@ -12,6 +12,7 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,8 +30,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.commons.io.IOUtils;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
+import org.ehcache.PersistentCacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.units.MemoryUnit;
 import org.isomorphism.util.TokenBucket;
@@ -83,8 +86,12 @@ public class CrossRefClient {
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	CacheManager cacheManager;
 	
-	private Cache<String,BinaryData> binaryCache() {
-		return cacheManager.getCache("binary", String.class, BinaryData.class);
+	private Cache<String,BinaryData> foreverCache() {
+		return cacheManager.getCache("forever", String.class, BinaryData.class);
+	}
+	
+	private Cache<String,BinaryData> weekCache() {
+		return cacheManager.getCache("week", String.class, BinaryData.class);
 	}
 	
 	public CrossRefClient debugMode() {
@@ -99,27 +106,49 @@ public class CrossRefClient {
 		private BinaryData(InputStream is) throws IOException {
 			byteArray = IOUtils.toByteArray(is);
 		}
-		public static BinaryData from(InputStream is) throws IOException {
-			return new BinaryData(is);
+		public static Optional<BinaryData> from(InputStream is) {
+			try {
+				return Optional.of(new BinaryData(is));
+			} catch (IOException e) {
+				return Optional.empty();
+			}
 		}
 		public InputStream get() {
 			return new ByteArrayInputStream(byteArray);
 		}
 	}
  	
+	
+	
 	private CrossRefClient(String developerEmail, Path cache) {
 		this.developerEmail = developerEmail;
 		this.client = Client.create();
 		this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
 				.with(CacheManagerBuilder.persistence(cache.toFile())) 
 				.withCache(
-						"binary",
+						"forever",
 						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
 								ResourcePoolsBuilder
 								.heap(1000)
-								.disk(40, MemoryUnit.MB, true)))
+								.disk(40, MemoryUnit.MB, true))
+						.withExpiry(ExpiryPolicyBuilder.noExpiration()))
+				.withCache(
+						"week",
+						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
+								ResourcePoolsBuilder
+								.heap(1000)
+								.disk(40, MemoryUnit.MB, true))
+						.withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofDays(7)))) 
 			    .build(); 
 			cacheManager.init();
+		Runtime.getRuntime().addShutdownHook( new Thread()
+			{
+				@Override
+				public void run()
+				{
+					cacheManager.close();
+				}
+		} );
 	}
 
 	private CrossRefClient(String developerEmail) {
@@ -127,13 +156,27 @@ public class CrossRefClient {
 		this.client = Client.create();
 		this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
 				.withCache(
-						"binary",
+						"forever",
 						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
 								ResourcePoolsBuilder
-								.heap(1000)
+								.heap(10000)
+						))
+				.withCache(
+						"week",
+						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
+								ResourcePoolsBuilder
+								.heap(10000)
 						))
 			    .build(); 
 			cacheManager.init();
+		Runtime.getRuntime().addShutdownHook( new Thread()
+			{
+				@Override
+				public void run()
+				{
+					cacheManager.close();
+				}
+		} );
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
@@ -148,6 +191,14 @@ public class CrossRefClient {
 	public static CrossRefClient create(String developerEmail) {
 		if (singleton.containsKey(developerEmail)) return singleton.get(developerEmail);
 		CrossRefClient tmp = new CrossRefClient(developerEmail);
+		singleton.put(developerEmail, tmp);
+		return tmp;
+	};
+	
+	public static CrossRefClient create(String developerEmail, Path cacheDir) {
+		if (singleton.containsKey(developerEmail)) return singleton.get(developerEmail);
+		StreamExceptions.tryRethrow(t -> Files.createDirectories(cacheDir));
+		CrossRefClient tmp = new CrossRefClient(developerEmail, cacheDir.resolve("ehcache"));
 		singleton.put(developerEmail, tmp);
 		return tmp;
 	};
@@ -206,49 +257,30 @@ public class CrossRefClient {
 	}
 	
 	public Optional<SingleResult> getByDoi(String doi, Path cacheDir) throws BibliographicApiException {
+		String url = baseUrl+"works/"+encode(doi);
+		
 		InputStream is = null;
-		if (cacheDir != null) {
-			Path tmp = cacheDir.resolve(doi);
-			if (!Files.exists(tmp) && !Files.isDirectory(tmp)) {
-				StreamExceptions.tryRethrow(t -> Files.createDirectories(tmp.getParent()));
-				rateLimiter.consume();
-				logger.debug("Retrieving crossref record for:" + doi);
-				String url = baseUrl+"works/"+encode(doi);
-				WebResource wr = client.resource(url).queryParams(defaultApiParams());
-				
-				try {
-					ClientResponse r = wr.get(ClientResponse.class);
-					updateRateLimits(r.getHeaders());
-					if (r.getClientResponseStatus().equals(Status.OK)) {
-						InputStream isTmp = r.getEntityInputStream(); 
-						Files.copy(isTmp, tmp);
-					} else {
-						logger.debug("could not fetch for doi:"+doi);
-						return Optional.empty();
-					}
-				} catch (IOException | UniformInterfaceException e) {
-					throw new BibliographicApiException("Cannot connect to: "+url,e);
-				}	
-			}
-			is = StreamExceptions.tryDoRethrow(tmp, t -> Files.newInputStream(t));
+		if (this.foreverCache().containsKey(url)) {
+			logger.debug("Cached crossref record for:" + doi);
+			is = this.foreverCache().get(url).get();
 		} else {
 			rateLimiter.consume();
 			logger.debug("Retrieving crossref record for:" + doi);
-			String url = baseUrl+"works/"+encode(doi);
 			WebResource wr = client.resource(url).queryParams(defaultApiParams());
-			try {
-				ClientResponse r = wr.get(ClientResponse.class);
-				updateRateLimits(r.getHeaders());
-				if (r.getClientResponseStatus().equals(Status.OK)) {
-					is = r.getEntityInputStream(); 
-				} else {
-					logger.debug("could not fetch for doi:"+doi);
-					return Optional.empty();
-				}
-			} catch (UniformInterfaceException e) {
-				throw new BibliographicApiException("Cannot connect to: "+url,e);
+			ClientResponse r = wr.get(ClientResponse.class);
+			updateRateLimits(r.getHeaders());
+			if (r.getClientResponseStatus().equals(Status.OK)) {
+				InputStream isTmp = r.getEntityInputStream(); 
+				BinaryData tmp;
+				tmp = BinaryData.from(isTmp);
+				this.foreverCache().put(url, tmp);
+				is = tmp.get();
+			} else {
+				logger.debug("could not fetch for doi:"+doi);
+				return Optional.empty();
 			}
 		}
+		
 		try {
 			CrossRefResult.SingleResult  response = objectMapper.readValue(is, CrossRefResult.SingleResult.class);
 			return Optional.of(response);
