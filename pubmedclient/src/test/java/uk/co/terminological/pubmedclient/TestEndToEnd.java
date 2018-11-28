@@ -67,7 +67,7 @@ public class TestEndToEnd {
 		Stream<CrossRefResult.Work> work = dois2.stream().flatMap(doi -> {
 			try {
 				return xref.getByDoi(doi).stream();
-			} catch (BiliographicApiException e) {
+			} catch (BibliographicApiException e) {
 				return Stream.empty();
 			}
 		})
