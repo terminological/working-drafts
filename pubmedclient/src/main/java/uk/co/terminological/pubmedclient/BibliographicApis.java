@@ -51,7 +51,7 @@ public class BibliographicApis {
 
 	private EntrezClient entrez;
 	private IdConverterClient pmcIdConv;
-	private CachingApiClient crossref;
+	private CrossRefClient crossref;
 	private UnpaywallClient unpaywall;
 
 	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
