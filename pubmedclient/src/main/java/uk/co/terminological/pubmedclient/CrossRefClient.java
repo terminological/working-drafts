@@ -272,7 +272,7 @@ public class CrossRefClient {
 			if (r.getClientResponseStatus().equals(Status.OK)) {
 				InputStream isTmp = r.getEntityInputStream(); 
 				BinaryData tmp;
-				tmp = BinaryData.from(isTmp);
+				tmp = BinaryData.from(isTmp).orElseThrow(() -> new BibliographicApiException("Could not read API response"));
 				this.foreverCache().put(url, tmp);
 				is = tmp.get();
 			} else {
