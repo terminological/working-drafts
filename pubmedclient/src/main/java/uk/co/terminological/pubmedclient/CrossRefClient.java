@@ -3,10 +3,8 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,12 +14,6 @@ import java.util.function.Predicate;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.ehcache.config.builders.CacheConfigurationBuilder;
-import org.ehcache.config.builders.CacheManagerBuilder;
-import org.ehcache.config.builders.ExpiryPolicyBuilder;
-import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.ehcache.config.units.MemoryUnit;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.api.client.Client;
@@ -30,7 +22,6 @@ import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
 import uk.co.terminological.pubmedclient.CrossRefResult.Work;
@@ -60,58 +51,13 @@ public class CrossRefClient extends CachingApiClient {
 
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
 	private CrossRefClient(String developerEmail, Optional<Path> optional) {
+		super(optional);
 		this.developerEmail = developerEmail;
-		this.client = Client.create();
-		if (optional.isPresent()) {
-			StreamExceptions.tryRethrow(t -> Files.createDirectories(optional.get()));
-			this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
-					.with(CacheManagerBuilder.persistence(optional.get().toFile())) 
-					.withCache(
-							"forever",
-							CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
-									ResourcePoolsBuilder
-									.heap(1000)
-									.disk(40, MemoryUnit.MB, true))
-							.withExpiry(ExpiryPolicyBuilder.noExpiration()))
-					.withCache(
-							"week",
-							CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
-									ResourcePoolsBuilder
-									.heap(1000)
-									.disk(40, MemoryUnit.MB, true))
-							.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(7)))) 
-					.build(); 
-		} else {
-			this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
-					.withCache(
-							"forever",
-							CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
-									ResourcePoolsBuilder
-									.heap(10000)
-									)
-							.withExpiry(ExpiryPolicyBuilder.noExpiration())) 
-					.withCache(
-							"week",
-							CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
-									ResourcePoolsBuilder
-									.heap(10000)
-									).withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(7)))
-							)
-					.build();
-		}
-		cacheManager.init();
-		Runtime.getRuntime().addShutdownHook( new Thread()
-		{
-			@Override
-			public void run()
-			{
-				cacheManager.close();
-			}
-		} );
 	}
 
 	private String developerEmail;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
+
 	public static CrossRefClient create(String developerEmail) {
 		return create(developerEmail, Optional.empty());
 	};
