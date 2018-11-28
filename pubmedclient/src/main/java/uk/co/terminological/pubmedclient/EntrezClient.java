@@ -336,7 +336,7 @@ public class EntrezClient {
 	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
 		if (pmEntry.getPMCPdfUrl().isPresent()) {
 			String pdfUrl = pmEntry.getPMCPdfUrl().get();
-			return Optional.of(PdfUtil.getPdfFromUrl(pdfUrl));
+			return Optional.of(PdfFetcher.getPdfFromUrl(pdfUrl));
 		} else {
 			return Optional.empty();
 		}

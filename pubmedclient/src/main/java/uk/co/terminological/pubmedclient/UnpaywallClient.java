@@ -143,7 +143,7 @@ public class UnpaywallClient {
 						Files.createDirectories(filepath.getParent());
 						logger.debug("caching pdf for {}",result.doi.get());
 						Files.copy(
-								PdfUtil.getPdfFromUrl(url),
+								PdfFetcher.getPdfFromUrl(url),
 								filepath);
 					} else {
 						logger.debug("fetching cached pdf for {}",result.doi.get());
@@ -154,7 +154,7 @@ public class UnpaywallClient {
 				}
 			} else {
 				logger.debug("fetching pdf for {}",result.doi.get());
-				return PdfUtil.getPdfFromUrl(url);
+				return PdfFetcher.getPdfFromUrl(url);
 			}
 		    
 		} catch (Exception e) {

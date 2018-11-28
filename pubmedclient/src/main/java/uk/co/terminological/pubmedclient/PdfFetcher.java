@@ -20,9 +20,9 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
-public class PdfUtil {
+public class PdfFetcher {
 
-	static Logger logger = LoggerFactory.getLogger(PdfUtil.class);
+	static Logger logger = LoggerFactory.getLogger(PdfFetcher.class);
 	
 	public static InputStream getPdfFromUrl(String url) {
 		return getPdfFromUrl(url, 10, false);
