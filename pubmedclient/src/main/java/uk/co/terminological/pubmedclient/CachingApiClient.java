@@ -39,7 +39,7 @@ public class CachingApiClient {
 
 	protected CacheManager cacheManager;
 	
-	protected CachingApiClient(Optional<Path> optional) {
+	protected CachingApiClient(Optional<Path> optional, TokenBucket ratelimiter) {
 		this.client = Client.create();
 		if (optional.isPresent()) {
 			StreamExceptions.tryRethrow(t -> Files.createDirectories(optional.get()));
@@ -79,14 +79,13 @@ public class CachingApiClient {
 					.build();
 		}
 		cacheManager.init();
-		Runtime.getRuntime().addShutdownHook( new Thread()
-		{
+		Runtime.getRuntime().addShutdownHook( new Thread() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				cacheManager.close();
 			}
-		} );
+		});
+		this.rateLimiter = ratelimiter;
 	}
 
 	protected static class BinaryData implements Serializable {
@@ -122,8 +121,8 @@ public class CachingApiClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(CachingApiClient.class);
 	protected Client client;
-	protected TokenBucket rateLimiter = TokenBuckets.builder().withCapacity(50).withInitialTokens(50).withFixedIntervalRefillStrategy(50, 1, TimeUnit.SECONDS).build();
-
+	protected TokenBucket rateLimiter;
+	
 	protected static String encode(String string) {
 		try {
 			return URLEncoder.encode(string,java.nio.charset.StandardCharsets.UTF_8.toString());
