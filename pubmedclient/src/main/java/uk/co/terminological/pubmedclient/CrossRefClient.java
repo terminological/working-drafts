@@ -128,7 +128,7 @@ public class CrossRefClient {
 								ResourcePoolsBuilder
 								.heap(1000)
 								.disk(40, MemoryUnit.MB, true))
-						.withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofDays(7)))) 
+						.withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(7)))) 
 			    .build(); 
 			cacheManager.init();
 		Runtime.getRuntime().addShutdownHook( new Thread()
@@ -157,7 +157,7 @@ public class CrossRefClient {
 						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
 								ResourcePoolsBuilder
 								.heap(10000)
-						).withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofDays(7)))
+						).withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofDays(7)))
 						)
 			    .build(); 
 			cacheManager.init();
@@ -286,6 +286,7 @@ public class CrossRefClient {
 			ClientResponse r = qb.get(client).get(ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			BinaryData data = BinaryData.from(r.getEntityInputStream()).orElseThrow(bibErr("Could not read api response"));
+			this.weekCache().put(key, data);
 			is = data.get();
 		}
 		try {
@@ -316,6 +317,7 @@ public class CrossRefClient {
 			if (!url.isPresent()) throw new BibliographicApiException("no content for intended application of text-mining");
 			
 			//TODO: try and find correct type for output, or specify xml. 
+			//TODO: implement caching
 			
 			WebResource tdmCopy = client.resource(url.get().toString());
 			tdmCopy.header("CR-Clickthrough-Client-Token", clickThroughToken);
