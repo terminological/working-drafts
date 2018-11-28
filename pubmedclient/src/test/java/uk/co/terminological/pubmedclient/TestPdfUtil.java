@@ -14,17 +14,18 @@ public class TestPdfUtil {
 			"http://arxiv.org/pdf/1811.08430"
 	};
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, BibliographicApiException {
 
 		BasicConfigurator.configure();
 		Path tmp = Files.createTempDirectory("pdf_test");
 		System.out.println(tmp.toString());
 		
+		
+		
 		int i=1;
 		for (String url: urls) {
-			Files.copy(
-					PdfUtil.getPdfFromUrl(url, 10, true), 
-					tmp.resolve((i++)+".pdf"));
+			i = i+1;
+			PdfFetcher.create().getPdfFromUrl(url, t -> tmp.resolve(i+".pdf"));
 		}
 
 	}
