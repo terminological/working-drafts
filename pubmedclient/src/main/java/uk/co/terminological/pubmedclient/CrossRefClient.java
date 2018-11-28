@@ -150,13 +150,15 @@ public class CrossRefClient {
 						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
 								ResourcePoolsBuilder
 								.heap(10000)
-						))
+						)
+						.withExpiry(ExpiryPolicyBuilder.noExpiration())) 
 				.withCache(
 						"week",
 						CacheConfigurationBuilder.newCacheConfigurationBuilder(String.class, BinaryData.class, 
 								ResourcePoolsBuilder
 								.heap(10000)
-						))
+						).withExpiry(ExpiryPolicyBuilder.timeToIdleExpiration(Duration.ofDays(7)))
+						)
 			    .build(); 
 			cacheManager.init();
 		Runtime.getRuntime().addShutdownHook( new Thread()
