@@ -82,7 +82,7 @@ public class EntrezClient {
 
 	public EntrezClient withCache(Path cache) {
 		this.cache=cache;
-		StreamExceptions.tryRethrow(t -> Files.createDirectories(cache.getParent()));
+		StreamExceptions.tryRethrow(t -> Files.createDirectories(cache));
 		return this;
 	}
 	
