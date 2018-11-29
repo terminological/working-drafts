@@ -36,7 +36,6 @@ import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
-import uk.co.terminological.datatypes.StreamExceptions.SupplierWithException;
 
 
 
@@ -117,11 +116,11 @@ public abstract class CachingApiClient {
 			}
 		}
 
-	protected Cache<String,BinaryData> foreverCache() {
+	protected Cache<String,BinaryData> permanentCache() {
 		return cacheManager.getCache("forever", String.class, BinaryData.class);
 	}
 
-	protected Cache<String,BinaryData> weekCache() {
+	protected Cache<String,BinaryData> tempCache() {
 		return cacheManager.getCache("week", String.class, BinaryData.class);
 	}
 
@@ -206,7 +205,7 @@ public abstract class CachingApiClient {
 	
 	private <X,E extends Exception> Optional<X> call(String url, MultivaluedMap<String,String> params, boolean temporary, String method, FunctionWithException<InputStream,X,E> operation) {
 		if (operation == null) throw new NullPointerException("Operation must be defined");
-		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
+		Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
 		String key = keyFromApiQuery(url,params);
 		if (cache.containsKey(key)) {
 			logger.debug("Cache hit:" + key);
@@ -241,15 +240,14 @@ public abstract class CachingApiClient {
 		}
 	}
 	
-	
-	protected Optional<InputStream> cachedStream(String key, boolean temporary, SupplierWithException<InputStream,Exception> supplier) {
-		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
+	protected Optional<InputStream> cachedStream(String key, boolean temporary, FunctionWithException<String,InputStream,Exception> supplier) {
+		Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
 		if (cache.containsKey(key)) {
 			logger.debug("Cache hit:" + key);
 			return Optional.of(cache.get(key).inputStream());
 		} else {
 			try {
-				BinaryData data = BinaryData.from(supplier.get());
+				BinaryData data = BinaryData.from(supplier.apply(key));
 				return Optional.of(data.inputStream());
 			} catch (Exception e) {
 				if (debug) e.printStackTrace();
@@ -260,14 +258,14 @@ public abstract class CachingApiClient {
 	}
 
 	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
-	protected Optional<String> cachedString(String key, boolean temporary, SupplierWithException<String,Exception> supplier) {
-		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
+	protected Optional<String> cachedString(String key, boolean temporary, FunctionWithException<String,String,Exception> supplier) {
+		Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
 		if (cache.containsKey(key)) {
 			logger.debug("Cache hit:" + key);
 			return Optional.of(cache.get(key).toString());
 		} else {
 			try {
-				BinaryData data = BinaryData.from(supplier.get());
+				BinaryData data = BinaryData.from(supplier.apply(key));
 				return Optional.of(data.toString());
 			} catch (Exception e) {
 				if (debug) e.printStackTrace();
