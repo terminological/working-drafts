@@ -21,7 +21,9 @@ public class TestConverterApiClient {
 		IdConverterClient client = IdConverterClient.create(APP_ID,DEVELOPER_EMAIL);
 		client.debugMode();
 		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
-		
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
 	}
 
 }
