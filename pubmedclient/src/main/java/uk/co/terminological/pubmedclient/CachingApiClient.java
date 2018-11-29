@@ -240,6 +240,10 @@ public abstract class CachingApiClient {
 		}
 	}
 	
+	
+	protected Optional<InputStream> cached(String key, boolean temporary, SupplierWithException<InputStream,Exception> supplier) {
+		
+	}
 	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
 
 }
