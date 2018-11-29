@@ -81,7 +81,6 @@ public class IdConverterClient extends CachingApiClient {
 	private Optional<Result> doCall(Collection<String> id, IdType idType) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
-		id.forEach(i -> params.add("ids", i));
 		params.add("idtype", idType.name().toLowerCase());
 		logger.debug("calling id converter with params: "+params);
 		return this.buildCall(URL, Result.class)
