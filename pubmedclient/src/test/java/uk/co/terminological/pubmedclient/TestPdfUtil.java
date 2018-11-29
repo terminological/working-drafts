@@ -20,15 +20,11 @@ public class TestPdfUtil {
 		Path tmp = Files.createTempDirectory("pdf_test");
 		System.out.println(tmp.toString());
 		
-		
-		
-		int i=1;
-		for (String url: urls) {
-			i = i+1;
-			int k = i;
-			PdfFetcher.create().getPdfFromUrl(url, t -> tmp.resolve(k+".pdf"));
+		for (int i=0; i<5; i++) {
+			for (String url: urls) {
+				PdfFetcher.create().getPdfFromUrl(url);
+			}
 		}
-
 	}
 
 }
