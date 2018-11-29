@@ -224,39 +224,25 @@ public class PubMedGraphExperiment2 {
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		log.info("Found {} articles with no references", pdfDois.size());
 		
-		
 		pdfDois.forEach(
 			StreamExceptions.ignore(
 				doi -> {
 					// Look these up in unpaywall and get pdfs (can do directly)
-					InputStream is = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase());
-					Set<References>
-					
-					log.info("Found pdf for {}", doi);
-					ContentExtractor extractor = new ContentExtractor();
-					extractor.setPDF(is);
-					//Use cermine to get references
-					List<BibEntry> refs = extractor.getReferences();
-					log.info("Found {} references for {}", refs.size(), doi);
-					Set<Work> works = refs.stream()
-									.filter(ref -> Arrays.asList(
-											BibEntryType.ARTICLE,
-											BibEntryType.INPROCEEDINGS,
-											BibEntryType.PROCEEDINGS
-											).contains(ref.getType()))
-									.flatMap(ref -> {
-								//Use xref to get a doi for citations string.
-								log.info(ref.getText());
-								
-								return biblioApi.getCrossref().findWorkByCitationString(ref.getText()).stream();
-							}).collect(Collectors.toSet());
-							
-							log.info("Found {} xref entries for {} references", works.size(), refs.size());
-							mapCermineReferences(doi, works, graphApi);
+					Optional<InputStream> ois = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase());
+					ois.ifPresent( is -> {
+						
+						List<String> refs = biblioApi.getPdfFetcher().extractArticleRefs(doi, is);
+						log.info("Found {} references for {}", refs.size(), doi);
+						
+						Set<Work> works = refs.stream().flatMap(ref -> {
+							log.info(ref);
+							return biblioApi.getCrossref().findWorkByCitationString(ref).stream();
+						}).collect(Collectors.toSet());
+						
+						log.info("Found {} xref entries for {} references", works.size(), refs.size());
+						mapCermineReferences(doi, works, graphApi);
+					});
 		}));
-		
-		
-		
 		
 		// reverse lookup unknown dois that XRef found but are not already in the graph
 		// grab those from pubmed and update graph metadata
