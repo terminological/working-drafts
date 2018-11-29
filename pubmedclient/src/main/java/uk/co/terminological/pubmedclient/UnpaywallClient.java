@@ -90,16 +90,13 @@ public class UnpaywallClient extends CachingApiClient {
 		return dois.stream().flatMap(doi -> getUnpaywallByDoi(doi).stream()).collect(Collectors.toSet());
 	}
 	
-	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
-		return getPdfByResult(result, );
-	}
-	
-	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
+	public Optional<InputStream> getPdfByResult(Result result) {
 		try {
 			String url = result.pdfUrl().orElse(null);
-			return pdfFetch.getPdfFromUrl(url, cache -> cache.resolve("pdf").resolve(result.doi.get()+".pdf"));
+			return PdfFetcher.create(cache.resolve("pdf")).getPdfFromUrl(url);
 		} catch (Exception e) {
-			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get(), e);
+			logger.debug("Cannot fetch content for "+result.doi.get(), e);
+			return Optional.empty();
 		}
 	}
 
