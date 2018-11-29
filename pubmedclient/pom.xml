@@ -92,6 +92,13 @@
 			<version>3.6.2</version>
 		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>icm</id>
+			<name>ICM repository</name>
+			<url>http://maven.icm.edu.pl/artifactory/repo</url>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
 			<!-- <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> <artifactId>maven-jaxb2-plugin</artifactId> 
