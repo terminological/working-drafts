@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -108,15 +109,14 @@ public class PdfFetcher extends CachingApiClient {
 		return new MultivaluedMapImpl();
 	}
 	
-	public Set<String> extractArticleRefs(String doi, InputStream is) {
-		
+	public List<String> extractArticleRefs(String doi, InputStream is) {
 		String key = "cermine_refs_"+doi;
-		Optional<HashSet<String>> references = this.cachedObject(key, false, k -> {
+		Optional<ArrayList<String>> references = this.cachedObject(key, false, k -> {
 			ContentExtractor extractor = new ContentExtractor();
 			extractor.setPDF(is);
 			List<BibEntry> refs = extractor.getReferences();
 			logger.info("Found {} references for {}", refs.size(), key);
-			HashSet<String> out = new HashSet<>();
+			ArrayList<String> out = new ArrayList<>();
 			refs.stream().filter(ref -> Arrays.asList(
 						BibEntryType.ARTICLE,
 						BibEntryType.INPROCEEDINGS,
@@ -126,7 +126,7 @@ public class PdfFetcher extends CachingApiClient {
 					.forEach(s -> out.add(s));
 			return out;
 		});
-		return references.orElse(new HashSet<>());
+		return references.orElse(new ArrayList<>());
 		
 	}
 }

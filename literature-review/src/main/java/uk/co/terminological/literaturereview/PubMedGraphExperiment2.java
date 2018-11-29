@@ -226,17 +226,19 @@ public class PubMedGraphExperiment2 {
 		
 		
 		pdfDois.forEach(
-				StreamExceptions.ignore(
-						doi -> {
-							// Look these up in unpaywall and get pdfs (can do directly)
-							InputStream is = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase());
-							log.info("Found pdf for {}", doi);
-							ContentExtractor extractor = new ContentExtractor();
-							extractor.setPDF(is);
-							//Use cermine to get references
-							List<BibEntry> refs = extractor.getReferences();
-							log.info("Found {} references for {}", refs.size(), doi);
-							Set<Work> works = refs.stream()
+			StreamExceptions.ignore(
+				doi -> {
+					// Look these up in unpaywall and get pdfs (can do directly)
+					InputStream is = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase());
+					Set<References>
+					
+					log.info("Found pdf for {}", doi);
+					ContentExtractor extractor = new ContentExtractor();
+					extractor.setPDF(is);
+					//Use cermine to get references
+					List<BibEntry> refs = extractor.getReferences();
+					log.info("Found {} references for {}", refs.size(), doi);
+					Set<Work> works = refs.stream()
 									.filter(ref -> Arrays.asList(
 											BibEntryType.ARTICLE,
 											BibEntryType.INPROCEEDINGS,
