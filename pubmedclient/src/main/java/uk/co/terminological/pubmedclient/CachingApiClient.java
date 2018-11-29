@@ -231,7 +231,7 @@ public abstract class CachingApiClient {
 				return Optional.empty();
 			}
 			BinaryData data = BinaryData.from(r.getEntityInputStream());
-			X out = operation.apply(cache.get(key).inputStream());
+			X out = operation.apply(data.inputStream());
 			cache.put(key, data);
 			return Optional.of(out);
 		} catch (Exception e) {
