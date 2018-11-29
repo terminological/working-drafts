@@ -3,6 +3,8 @@ package uk.co.terminological.pubmedclient;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -109,17 +111,22 @@ public class PdfFetcher extends CachingApiClient {
 	public Set<String> extractArticleRefs(String doi, InputStream is) {
 		
 		String key = "cermine_refs_"+doi;
-		Optional<String> references = this.cachedString(key, false, k -> {
+		Optional<HashSet<String>> references = this.cachedObject(key, false, k -> {
 			ContentExtractor extractor = new ContentExtractor();
 			extractor.setPDF(is);
 			List<BibEntry> refs = extractor.getReferences();
 			logger.info("Found {} references for {}", refs.size(), key);
-			return refs.stream().filter(ref -> Arrays.asList(
+			HashSet<String> out = new HashSet<>();
+			refs.stream().filter(ref -> Arrays.asList(
 						BibEntryType.ARTICLE,
 						BibEntryType.INPROCEEDINGS,
 						BibEntryType.PROCEEDINGS
 					).contains(ref.getType()))
 					.map(bib -> bib.getText())
-					.collect(Collectors.joining("|"));
+					.forEach(s -> out.add(s));
+			return out;
 		});
+		return references.orElse(new HashSet<>());
+		
+	}
 }
