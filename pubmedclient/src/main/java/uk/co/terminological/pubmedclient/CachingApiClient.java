@@ -36,6 +36,7 @@ import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
+import uk.co.terminological.datatypes.StreamExceptions.SupplierWithException;
 
 
 
@@ -242,7 +243,20 @@ public abstract class CachingApiClient {
 	
 	
 	protected Optional<InputStream> cached(String key, boolean temporary, SupplierWithException<InputStream,Exception> supplier) {
-		
+		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
+		if (cache.containsKey(key)) {
+			logger.debug("Cache hit:" + key);
+			return Optional.of(cache.get(key).inputStream());
+		} else {
+			try {
+				BinaryData data = BinaryData.from(supplier.get());
+				return Optional.of(data.inputStream());
+			} catch (Exception e) {
+				if (debug) e.printStackTrace();
+				logger.debug("Could not open input stream: "+key);
+				return Optional.empty();
+			}
+		}
 	}
 	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
 
