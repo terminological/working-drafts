@@ -131,7 +131,7 @@ public abstract class CachingApiClient {
 				return new String(byteArray);
 			}
 			@SuppressWarnings("unchecked")
-			public <X extends Serializable> X toObject(Class<X> clazz) throws BibliographicApiException {
+			public <X extends Serializable> X toObject() throws BibliographicApiException {
 				try {
 					ObjectInputStream ois = new ObjectInputStream(this.inputStream());
 					return (X) ois.readObject();
@@ -300,5 +300,21 @@ public abstract class CachingApiClient {
 		}
 	}
 	
-	
+	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
+		protected <X extends Serializable> Optional<X> cachedObject(String key, boolean temporary, FunctionWithException<String,X,Exception> supplier) {
+			Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
+			if (cache.containsKey(key)) {
+				logger.debug("Cache hit:" + key);
+				return Optional.of(cache.get(key).toObject());
+			} else {
+				try {
+					BinaryData data = BinaryData.from(supplier.apply(key));
+					return Optional.of(data.toObject());
+				} catch (Exception e) {
+					if (debug) e.printStackTrace();
+					logger.debug("Could get input string: "+key);
+					return Optional.empty();
+				}
+			}
+		}
 }
