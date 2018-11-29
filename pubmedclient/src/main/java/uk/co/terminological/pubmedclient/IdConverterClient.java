@@ -55,7 +55,7 @@ public class IdConverterClient extends CachingApiClient {
 	
 	// Batches the calls to groups of max 50 ids
 	//TODO: Refactor this to look up cache on a id by id basis.
-	private Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
+	public Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
 		Set<Record> out = new HashSet<>();
 		List<String> id = new ArrayList<String>(id2);
 		int start = 0;

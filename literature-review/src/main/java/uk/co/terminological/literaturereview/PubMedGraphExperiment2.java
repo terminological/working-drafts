@@ -215,8 +215,7 @@ public class PubMedGraphExperiment2 {
 		// fetch all doi cross references for broader search, load into graph.
 		// and find all resulting dois that we do not already know about.
 		// TODO: chance that mapping api does not know about a PMID->DOI mapping that we do already know about via pubmed - does this matter?
-		Path xrefJsonCache = workingDir.resolve("xref");
-		Set<String> toDois = findCrossRefReferencesFromNodes(xrefJsonCache,xrefDois);
+		Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
 		log.info("Found {} dois, referred to by {} articles in broad search with doi", toDois.size(), broadSearchDois.size());
 		toDois.removeAll(loadedDois);
 		log.info("Of which {} are not yet known in the graph", toDois.size());
@@ -225,13 +224,12 @@ public class PubMedGraphExperiment2 {
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
 		log.info("Found {} articles with no references", pdfDois.size());
 		
-		Path unpaywallCache = workingDir.resolve("pdf");
 		
 		pdfDois.forEach(
 				StreamExceptions.ignore(
 						doi -> {
 							// Look these up in unpaywall and get pdfs (can do directly)
-							InputStream is = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase(), unpaywallCache);
+							InputStream is = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase());
 							log.info("Found pdf for {}", doi);
 							ContentExtractor extractor = new ContentExtractor();
 							extractor.setPDF(is);
@@ -331,9 +329,9 @@ public class PubMedGraphExperiment2 {
 		try {
 			while(ids.size() > 0) {
 				List<String> batchDois = ids.subList(0, Math.min(100, ids.size()));
-				List<Record> pmids = biblioApi.getPmcIdConv()
-						.getConverterForIdsAndType(batchDois, ofType)
-						.records
+				Set<Record> pmids = biblioApi.getPmcIdConv()
+						.getMapping(batchDois, ofType)
+						
 						;
 				log.debug("Looked up "+batchDois.size()+" "+ofType.name()+" and found "+pmids.size()+" linked records");
 				out.addAll(pmids);
@@ -452,7 +450,7 @@ public class PubMedGraphExperiment2 {
 	
 	
 
-	Set<String> findCrossRefReferencesFromNodes(Path xrefCacheDir, Set<String> dois) {
+	Set<String> findCrossRefReferencesFromNodes(Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
@@ -471,7 +469,7 @@ public class PubMedGraphExperiment2 {
 		return outDois;
 	}
 
-	Set<String> updateMetadataFromCrossRef(Path xrefCacheDir, Set<String> dois) {
+	Set<String> updateMetadataFromCrossRef(Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
@@ -489,11 +487,11 @@ public class PubMedGraphExperiment2 {
 		return outDois;
 	}
 	
-	Set<String> updateMetadataFromUnpaywall(Path unpaywallCache, Set<String> dois) {
+	Set<String> updateMetadataFromUnpaywall(Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
 			try {
-				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase(), unpaywallCache);
+				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
 				updateUnpaywallMetadata(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));
 			} catch (BibliographicApiException e) {
 				//e.printStackTrace();
@@ -502,12 +500,12 @@ public class PubMedGraphExperiment2 {
 		return out;
 	}
 	
-	Set<String> updatePdfLinksFromUnpaywall(Path unpaywallCache, Set<String> dois) {
+	Set<String> updatePdfLinksFromUnpaywall(Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
 			try {
 				
-				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase(), unpaywallCache);
+				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
 				log.debug("found unpaywall entry for: "+doi);
 				updatePdfLink(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));;
 			} catch (BibliographicApiException e) {
