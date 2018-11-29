@@ -205,6 +205,7 @@ public abstract class CachingApiClient {
 	}
 	
 	private <X,E extends Exception> Optional<X> call(String url, MultivaluedMap<String,String> params, boolean temporary, String method, FunctionWithException<InputStream,X,E> operation) {
+		if (operation == null) throw new NullPointerException("Operation must be defined");
 		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
 		String key = keyFromApiQuery(url,params);
 		if (cache.containsKey(key)) {
@@ -240,6 +241,6 @@ public abstract class CachingApiClient {
 		}
 	}
 	
-	
+	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
 
 }
