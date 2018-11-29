@@ -32,7 +32,6 @@ public class TestEndToEnd {
 		
 		//String xrefToken = prop.getProperty("crossref.clickthroughtoken");
 		String developerEmail = prop.getProperty("developer-email");
-		
 		String pubmedApiToken = prop.getProperty("pubmed-apikey");
 		String appId = prop.getProperty("app-id");
 		
