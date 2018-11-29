@@ -36,7 +36,6 @@ import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.StreamExceptions.FunctionWithException;
-import uk.co.terminological.pubmedclient.CachingApiClient.BinaryData;
 
 
 
