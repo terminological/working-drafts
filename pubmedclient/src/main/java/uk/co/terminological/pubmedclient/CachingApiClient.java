@@ -43,6 +43,7 @@ import uk.co.terminological.pubmedclient.CachingApiClient.BinaryData;
 public abstract class CachingApiClient {
 
 	protected CacheManager cacheManager;
+	protected boolean debug = false;
 	
 	protected CachingApiClient(Optional<Path> optional, TokenBucket ratelimiter) {
 		this.client = Client.create();
@@ -95,18 +96,24 @@ public abstract class CachingApiClient {
 
 	protected static class BinaryData implements Serializable {
 			byte[] byteArray;
-			private BinaryData(InputStream is) throws IOException {
-				byteArray = IOUtils.toByteArray(is);
+			private BinaryData(byte[] bytes) {
+				byteArray = bytes;
+			}
+			public static BinaryData from(String st) {
+				return new BinaryData(st.getBytes());
 			}
 			public static BinaryData from(InputStream is) throws BibliographicApiException {
 				try {
-					return new BinaryData(is);
+					return new BinaryData(IOUtils.toByteArray(is));
 				} catch (IOException e) {
 					throw new BibliographicApiException("Could not read api response",e);
 				}
 			}
 			public InputStream inputStream() {
 				return new ByteArrayInputStream(byteArray);
+			}
+			public String toString() {
+				return new String(byteArray);
 			}
 		}
 
@@ -119,6 +126,7 @@ public abstract class CachingApiClient {
 	}
 
 	public void debugMode() {
+		this.debug = true;
 		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
 			@Override public void info(String msg) { logger.info(msg); }
 		}));
@@ -197,15 +205,15 @@ public abstract class CachingApiClient {
 	}
 	
 	private <X,E extends Exception> Optional<X> call(String url, MultivaluedMap<String,String> params, boolean temporary, String method, FunctionWithException<InputStream,X,E> operation) {
-		
 		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
 		String key = keyFromApiQuery(url,params);
 		if (cache.containsKey(key)) {
-			logger.debug("Cached hit:" + key);
+			logger.debug("Cache hit:" + key);
 			try {
 				X out = operation.apply(cache.get(key).inputStream());
 				return Optional.of(out);
 			} catch (Exception e) {
+				if (debug) e.printStackTrace();
 				logger.debug("Could not parse cached result:" + key);
 				cache.remove(key);
 			}
@@ -218,7 +226,7 @@ public abstract class CachingApiClient {
 			ClientResponse r = wr.method(method,ClientResponse.class);
 			updateRateLimits(r.getHeaders());
 			if (!r.getClientResponseStatus().getFamily().equals(Status.Family.SUCCESSFUL)) {
-				logger.debug("API call failed: "+key);
+				logger.debug("API call failed with status {} : {}", r.getClientResponseStatus(), key);
 				return Optional.empty();
 			}
 			BinaryData data = BinaryData.from(r.getEntityInputStream());
@@ -226,12 +234,10 @@ public abstract class CachingApiClient {
 			X out = operation.apply(cache.get(key).inputStream());
 			return Optional.of(out);
 		} catch (Exception e) {
+			if (debug) e.printStackTrace();
 			logger.debug("Could not parse API result: "+key);
 			return Optional.empty();
 		}
-		
-		
-		
 	}
 	
 	
