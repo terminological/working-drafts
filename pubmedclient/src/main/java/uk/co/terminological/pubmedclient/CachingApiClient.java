@@ -1,8 +1,11 @@
 package uk.co.terminological.pubmedclient;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -108,11 +111,33 @@ public abstract class CachingApiClient {
 					throw new BibliographicApiException("Could not read api response",e);
 				}
 			}
+			public static BinaryData from(Serializable ser) throws BibliographicApiException {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+				ObjectOutputStream oos;
+				try {
+					oos = new ObjectOutputStream(baos);
+					oos.writeObject(ser);
+					oos.flush();
+				} catch (IOException e) {
+					throw new BibliographicApiException("could not serialize object",e);
+				}
+				
+				return new BinaryData(baos.toByteArray());
+			}
 			public InputStream inputStream() {
 				return new ByteArrayInputStream(byteArray);
 			}
 			public String toString() {
 				return new String(byteArray);
+			}
+			@SuppressWarnings("unchecked")
+			public <X extends Serializable> X toObject(Class<X> clazz) throws BibliographicApiException {
+				try {
+					ObjectInputStream ois = new ObjectInputStream(this.inputStream());
+					return (X) ois.readObject();
+				} catch (ClassNotFoundException | IOException e) {
+					throw new BibliographicApiException("could not deserialize object",e);
+				}
 			}
 		}
 

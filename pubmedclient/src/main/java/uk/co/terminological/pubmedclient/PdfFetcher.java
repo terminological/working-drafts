@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -105,20 +106,20 @@ public class PdfFetcher extends CachingApiClient {
 		return new MultivaluedMapImpl();
 	}
 	
-	public Set<String> extractRefs(InputStream is) {
-		ContentExtractor extractor = new ContentExtractor();
-	extractor.setPDF(is);
-	//Use cermine to get references
-	List<BibEntry> refs = extractor.getReferences();
-	log.info("Found {} references for {}", refs.size(), doi);
-	Set<Work> works = refs.stream()
-			.filter(ref -> Arrays.asList(
-					BibEntryType.ARTICLE,
-					BibEntryType.INPROCEEDINGS,
-					BibEntryType.PROCEEDINGS
+	public Set<String> extractArticleRefs(String doi, InputStream is) {
+		
+		String key = "cermine_refs_"+doi;
+		Optional<String> references = this.cachedString(key, false, k -> {
+			ContentExtractor extractor = new ContentExtractor();
+			extractor.setPDF(is);
+			List<BibEntry> refs = extractor.getReferences();
+			logger.info("Found {} references for {}", refs.size(), key);
+			return refs.stream().filter(ref -> Arrays.asList(
+						BibEntryType.ARTICLE,
+						BibEntryType.INPROCEEDINGS,
+						BibEntryType.PROCEEDINGS
 					).contains(ref.getType()))
-			.flatMap(ref -> {
-		//Use xref to get a doi for citations string.
-		log.info(ref.getText());
-			}
+					.map(bib -> bib.getText())
+					.collect(Collectors.joining("|"));
+		});
 }
