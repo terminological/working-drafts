@@ -87,7 +87,7 @@ public class IdConverterClient extends CachingApiClient {
 			.cacheForever()
 			.withParams(params)
 			.withOperation(is -> objectMapper.readValue(is, Result.class))
-			.post();
+			.get();
 	}
 	
 	
