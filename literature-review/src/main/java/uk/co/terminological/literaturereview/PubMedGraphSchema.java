@@ -4,8 +4,12 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.schema.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PubMedGraphSchema {
+	
+	public static Logger logger = LoggerFactory.getLogger(PubMedGraphSchema.class);
 	
 	public static class Labels {
 		public static Label ARTICLE = Label.label("Article");
@@ -52,6 +56,8 @@ public class PubMedGraphSchema {
 		    schema.indexFor( Labels.MESH_CODE ).on( Props.MESH_CODE ).create();
 		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique( Props.MESH_CODE );
 		    tx.success();
+		} catch (Exception e) {
+			logger.warn(e.getMessage());
 		}
 	}
 	
