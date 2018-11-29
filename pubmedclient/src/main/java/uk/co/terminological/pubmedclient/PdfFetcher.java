@@ -2,7 +2,10 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -23,6 +26,11 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+
+import pl.edu.icm.cermine.ContentExtractor;
+import pl.edu.icm.cermine.bibref.model.BibEntry;
+import pl.edu.icm.cermine.bibref.model.BibEntryType;
+import uk.co.terminological.pubmedclient.CrossRefResult.Work;
 
 public class PdfFetcher extends CachingApiClient {
 
@@ -97,5 +105,20 @@ public class PdfFetcher extends CachingApiClient {
 		return new MultivaluedMapImpl();
 	}
 	
-	
+	public Set<String> extractRefs(InputStream is) {
+		ContentExtractor extractor = new ContentExtractor();
+	extractor.setPDF(is);
+	//Use cermine to get references
+	List<BibEntry> refs = extractor.getReferences();
+	log.info("Found {} references for {}", refs.size(), doi);
+	Set<Work> works = refs.stream()
+			.filter(ref -> Arrays.asList(
+					BibEntryType.ARTICLE,
+					BibEntryType.INPROCEEDINGS,
+					BibEntryType.PROCEEDINGS
+					).contains(ref.getType()))
+			.flatMap(ref -> {
+		//Use xref to get a doi for citations string.
+		log.info(ref.getText());
+			}
 }
