@@ -67,8 +67,14 @@
     <artifactId>runtime-api</artifactId>
     <version>3.4.9.52</version>
 </dependency>
-		
-		
 
+
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>21.0</version>
+			<type>bundle</type>
+		</dependency>
 	</dependencies>
 </project>
