@@ -35,14 +35,15 @@ public class TestEndToEnd {
 		String pubmedApiToken = prop.getProperty("pubmed-apikey");
 		String appId = prop.getProperty("app-id");
 		
-		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
-		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail);
 		
 		Path ehcache = Paths.get("/tmp/ehcache/test123");
 		Files.createDirectories(ehcache.getParent());
 		
+		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
+		pubmed.withCache(ehcache.resolve("pubmed"));
+		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail, ehcache);
 		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache);
-		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail);
+		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail, ehcache);
 		
 		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
 				LocalDate.of(2016, 01, 1), 
