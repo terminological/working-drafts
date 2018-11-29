@@ -8,7 +8,6 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,9 +15,6 @@ import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 
-
-
-import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
 
 public class TestEndToEnd {
