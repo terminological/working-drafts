@@ -328,15 +328,15 @@ public class EntrezClient {
 		return getXMLByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
-	public Optional<InputStream> getPubMedCentralXMLByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
-		String pmcId = pmEntry.getPMCID().orElseThrow(() -> new BibliographicApiException("No PMC id for Entry"));
-		return getPubMedCentralXMLByPubMedCentralId(pmcId);
+	public Optional<InputStream> getPubMedCentralXMLByPMEntry(EntrezResult.PubMedEntry pmEntry) {
+		Optional<String> pmcId = pmEntry.getPMCID();
+		return pmcId.flatMap(p -> getPubMedCentralXMLByPubMedCentralId(p));
 	}
 
-	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry, PdfFetcher pdfFetch) throws BibliographicApiException {
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry, PdfFetcher pdfFetch) {
 		if (pmEntry.getPMCPdfUrl().isPresent()) {
 			String pdfUrl = pmEntry.getPMCPdfUrl().get();
-			return Optional.of(pdfFetch.getPdfFromUrl(pdfUrl));
+			return pdfFetch.getPdfFromUrl(pdfUrl);
 		} else {
 			return Optional.empty();
 		}
