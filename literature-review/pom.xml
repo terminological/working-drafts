@@ -60,14 +60,12 @@
     <groupId>com.graphaware.neo4j</groupId>
     <artifactId>runtime</artifactId>
     <version>3.4.9.52</version>
-    <scope>provided</scope>
 </dependency>
 		<!-- https://mvnrepository.com/artifact/com.graphaware.neo4j/runtime -->
 <dependency>
     <groupId>com.graphaware.neo4j</groupId>
     <artifactId>runtime-api</artifactId>
     <version>3.4.9.52</version>
-    <scope>provided</scope>
 </dependency>
 		
 		
