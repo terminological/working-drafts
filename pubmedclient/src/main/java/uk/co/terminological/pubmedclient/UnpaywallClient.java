@@ -34,13 +34,23 @@ public class UnpaywallClient extends CachingApiClient {
 
 	private String developerEmail;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
-	
+	private PdfFetcher pdfFetcher=null;
 
+	private PdfFetcher getPdfFetcher() {
+		if (pdfFetcher==null) pdfFetcher = PdfFetcher.create(cache.resolve("pdf"));
+		return pdfFetcher;
+	}
+	
 	private Path cache = null;
 	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
 
 	public static UnpaywallClient create(String developerEmail) {
 		return create(developerEmail,null);
+	}
+	
+	public UnpaywallClient withPdfFetcher(PdfFetcher fetcher) {
+		this.pdfFetcher = fetcher;
+		return this;
 	}
 	
 	public static UnpaywallClient create(String developerEmail, Path cachePath) {
@@ -84,7 +94,7 @@ public class UnpaywallClient extends CachingApiClient {
 	public Optional<InputStream> getPdfByResult(Result result) {
 		try {
 			String url = result.pdfUrl().orElse(null);
-			return PdfFetcher.create(cache.resolve("pdf")).getPdfFromUrl(url);
+			return getPdfFetcher().getPdfFromUrl(url);
 		} catch (Exception e) {
 			logger.debug("Cannot fetch content for "+result.doi.get(), e);
 			return Optional.empty();

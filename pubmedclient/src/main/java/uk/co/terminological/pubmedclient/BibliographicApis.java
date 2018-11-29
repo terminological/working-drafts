@@ -58,6 +58,7 @@ public class BibliographicApis {
 	private IdConverterClient pmcIdConv;
 	private CrossRefClient crossref;
 	private UnpaywallClient unpaywall;
+	private PdfFetcher pdfFetcher;
 
 	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
 
@@ -69,6 +70,9 @@ public class BibliographicApis {
 				cacheDir.map(o -> o.resolve("xref")).orElse(null));
 		unpaywall = UnpaywallClient.create(developerEmail, 
 				cacheDir.map(o -> o.resolve("unpaywall")).orElse(null));
+		pdfFetcher = PdfFetcher.create(
+				cacheDir.map(o -> o.resolve("pdf")).orElse(null));
+		
 
 	}
 
@@ -96,4 +100,7 @@ public class BibliographicApis {
 		return unpaywall;
 	}
 
+	public PdfFetcher getPdfFetcher() {
+		return pdfFetcher;
+	}
 }

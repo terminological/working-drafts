@@ -272,7 +272,7 @@ public class PubMedGraphExperiment2 {
 		// TODO: Cache metadata entry in case
 		toDois.removeAll(loadedDois);
 		log.info("Looking up {} dois with metadata on Xref",toDois.size());
-		Set<String> xrefSourced = updateMetadataFromCrossRef(xrefJsonCache, toDois);
+		Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);
 		loadedDois.addAll(xrefSourced);
 		toDois.removeAll(xrefSourced);
 		
@@ -282,14 +282,14 @@ public class PubMedGraphExperiment2 {
 		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
 		
 		log.info("Looking up {} dois with no metadata on Unpaywall",toDois.size());
-		Set<String> unpaywallSources = updateMetadataFromUnpaywall(unpaywallCache, toDois);
+		Set<String> unpaywallSources = updateMetadataFromUnpaywall(toDois);
 		toDois.removeAll(unpaywallSources);
 		loadedDois.addAll(unpaywallSources);
 		log.info("Leaving {} dois with no metadata",toDois.size());
 
 		
 		log.info("finding open access pdf links for {} dois",loadedDois.size());
-		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(unpaywallCache, loadedDois);
+		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
 		log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
 	}
@@ -330,9 +330,7 @@ public class PubMedGraphExperiment2 {
 			while(ids.size() > 0) {
 				List<String> batchDois = ids.subList(0, Math.min(100, ids.size()));
 				Set<Record> pmids = biblioApi.getPmcIdConv()
-						.getMapping(batchDois, ofType)
-						
-						;
+						.getMapping(batchDois, ofType);
 				log.debug("Looked up "+batchDois.size()+" "+ofType.name()+" and found "+pmids.size()+" linked records");
 				out.addAll(pmids);
 				ids.subList(0, Math.min(100, ids.size())).clear();
@@ -490,12 +488,11 @@ public class PubMedGraphExperiment2 {
 	Set<String> updateMetadataFromUnpaywall(Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
-			try {
-				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+			Optional<Result> res = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+			res.ifPresent(r -> {
+				log.debug("found unpaywall entry for: "+doi);
 				updateUnpaywallMetadata(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));
-			} catch (BibliographicApiException e) {
-				//e.printStackTrace();
-			} 
+			});
 		}
 		return out;
 	}
@@ -503,15 +500,11 @@ public class PubMedGraphExperiment2 {
 	Set<String> updatePdfLinksFromUnpaywall(Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
-			try {
-				
-				Result r = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+			Optional<Result> res = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+			res.ifPresent(r -> {
 				log.debug("found unpaywall entry for: "+doi);
-				updatePdfLink(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));;
-			} catch (BibliographicApiException e) {
-				log.debug("did not find unpaywall entry for: "+doi);
-				//log.debug(e.getMessage());
-			} 
+				updatePdfLink(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));
+			});
 		}
 		return out;
 	}
