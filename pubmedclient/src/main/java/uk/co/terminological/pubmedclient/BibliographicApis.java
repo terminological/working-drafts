@@ -36,17 +36,22 @@ public class BibliographicApis {
 		String pubmedApiToken = prop.getProperty("pubmed-apikey");
 		String appId = prop.getProperty("app-id");
 		
-		Optional<Path> cacheDir = Optional.ofNullable(prop.getProperty("cache-directory"))
-				.map(s -> Paths.get(s.replace("~", System.getProperty("user.home"))));
-
-		return create(appId,developerEmail,xrefToken,pubmedApiToken, cacheDir);
+		String cacheDir = prop.getProperty("cache-directory");
+		if (cacheDir != null) {		
+			return create(appId,developerEmail,xrefToken,pubmedApiToken, 
+					Paths.get(cacheDir.replace("~", System.getProperty("user.home"))));
+		} else {
+			return create(appId,developerEmail,xrefToken,pubmedApiToken);
+		}
 
 	}
 	
-	
+	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken) {
+		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, Optional.empty());
+	}
 
-	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
-		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, cacheDir.orElse(null));
+	public static BibliographicApis create(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Path cacheDir) {
+		return new BibliographicApis(appId, developerEmail, xrefToken, pubmedApiToken, Optional.ofNullable(cacheDir));
 	}
 
 	private EntrezClient entrez;
@@ -54,12 +59,16 @@ public class BibliographicApis {
 	private CrossRefClient crossref;
 	private UnpaywallClient unpaywall;
 
-	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Path cacheDir) {
+	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
 
 		entrez = EntrezClient.create(pubmedApiToken, appId, developerEmail);
-		pmcIdConv = IdConverterClient.create(appId,developerEmail);
-		crossref = CrossRefClient.create(developerEmail, cacheDir.resolve("xref"));
-		unpaywall = UnpaywallClient.create(developerEmail);
+		cacheDir.ifPresent(d -> entrez.withCache(d.resolve("entrez")));
+		pmcIdConv = IdConverterClient.create(appId,developerEmail, 
+				cacheDir.map(o -> o.resolve("idconv")).orElse(null));
+		crossref = CrossRefClient.create(developerEmail, 
+				cacheDir.map(o -> o.resolve("xref")).orElse(null));
+		unpaywall = UnpaywallClient.create(developerEmail, 
+				cacheDir.map(o -> o.resolve("unpaywall")).orElse(null));
 
 	}
 
