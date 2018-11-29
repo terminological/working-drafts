@@ -102,7 +102,7 @@ public class UnpaywallClient extends CachingApiClient {
 
 	public Optional<InputStream> getPdfByDoi(String doi) {
 		Optional<Result> result = getUnpaywallByDoi(doi);
-		return result.map(r -> getPdfByResult(r));
+		return result.flatMap(r -> getPdfByResult(r));
 	}
 	
 	public static class Result extends ExtensibleJson {
