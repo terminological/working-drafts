@@ -92,7 +92,7 @@ public class PdfFetcher extends CachingApiClient {
 			.get();
 	}
 
-@Override
+	@Override
 	protected MultivaluedMap<String, String> defaultApiParams() {
 		return new MultivaluedMapImpl();
 	}
