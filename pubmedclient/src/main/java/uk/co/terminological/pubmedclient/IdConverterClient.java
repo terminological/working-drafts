@@ -81,7 +81,7 @@ public class IdConverterClient extends CachingApiClient {
 			.get();
 	}
 	
-	
+	//TODO: Map output to this....
 	public Set<String> getDoisByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
 		Set<Record> tmp = getMapping(ids, type);
 		return tmp.stream()
