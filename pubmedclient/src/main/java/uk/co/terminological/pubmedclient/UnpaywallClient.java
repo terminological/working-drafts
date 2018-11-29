@@ -70,7 +70,7 @@ public class UnpaywallClient extends CachingApiClient {
 	}
 
 	public Optional<Result> getUnpaywallByDoi(String doi) {
-		logger.debug("fetching cached unpaywall record for: {}",doi);
+		logger.debug("fetching unpaywall record for: {}",doi);
 		return this.buildCall("https://api.unpaywall.org/v2/"+encode(doi), Result.class)
 			.cacheForever()
 			.withOperation(is -> objectMapper.readValue(is, Result.class))
