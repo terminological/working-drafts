@@ -28,6 +28,8 @@ public class PdfFetcher extends CachingApiClient {
 
 	static Logger logger = LoggerFactory.getLogger(PdfFetcher.class);
 	
+	static PdfFetcher instance = null;
+	
 	int maxRedirects = 10;
 	Path cache = null;
 	
@@ -74,7 +76,8 @@ public class PdfFetcher extends CachingApiClient {
 	}
 	
 	public static PdfFetcher create(Path cachePath) {
-		return new PdfFetcher(Optional.ofNullable(cachePath));
+		if (instance == null) instance = new PdfFetcher(Optional.ofNullable(cachePath));
+		return instance;
 	}
 	
 	public PdfFetcher maxRedirects(int redirects) {

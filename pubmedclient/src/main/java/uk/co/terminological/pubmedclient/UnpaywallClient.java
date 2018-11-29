@@ -80,7 +80,7 @@ public class UnpaywallClient extends CachingApiClient {
 
 	public Optional<Result> getUnpaywallByDoi(String doi) {
 		logger.debug("fetching cached unpaywall record for: {}",doi);
-		this.buildCall("https://api.unpaywall.org/v2/"+encode(doi), Result.class)
+		return this.buildCall("https://api.unpaywall.org/v2/"+encode(doi), Result.class)
 			.cacheForever()
 			.withOperation(is -> objectMapper.readValue(is, Result.class))
 			.get();
@@ -91,10 +91,10 @@ public class UnpaywallClient extends CachingApiClient {
 	}
 	
 	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
-		return getPdfByResult(result, PdfFetcher.create().withCache(cache));
+		return getPdfByResult(result, );
 	}
 	
-	public InputStream getPdfByResult(Result result, PdfFetcher pdfFetch) throws BibliographicApiException {
+	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
 		try {
 			String url = result.pdfUrl().orElse(null);
 			return pdfFetch.getPdfFromUrl(url, cache -> cache.resolve("pdf").resolve(result.doi.get()+".pdf"));
