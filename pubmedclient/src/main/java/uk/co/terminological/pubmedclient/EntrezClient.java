@@ -61,7 +61,7 @@ public class EntrezClient {
 	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build();
 
 	private Path cache = null;
-	public static Map<String, EntrezClient> singleton = new HashMap<>();
+	private static Map<String, EntrezClient> singleton = new HashMap<>();
 
 	public static EntrezClient create(String apiKey, String appId, String developerEmail) {
 
