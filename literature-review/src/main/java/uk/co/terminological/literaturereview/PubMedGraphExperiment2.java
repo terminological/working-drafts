@@ -188,13 +188,7 @@ public class PubMedGraphExperiment2 {
 		
 		// fetch all the entries that were outside broader search but pointed to by pmid citations
 		// write these in as stubs.
-		
-		
-		
 		Set<PubMedEntry> entries2 = fetchPubMedEntries(pubmedXmlCache,toPMIDs);
-		
-		
-		
 		
 		// now for DOIs...
 		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
@@ -202,6 +196,7 @@ public class PubMedGraphExperiment2 {
 		log.info("Pubmed broad search include {} articles with a doi",broadSearchDois.size());
 		Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
 		log.info("Of which {} articles have no references yet and we can look up in Xref",xrefDois.size());
+		
 		//TODO: could lookup those without a doi in id cross reference - maybe the same data though.
 		Set<String> loadedDois = new HashSet<>(broadSearchDois);
 		loadedDois.addAll(entries2.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet()));
