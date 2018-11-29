@@ -39,10 +39,23 @@
 			<artifactId>graph-algorithms-algo</artifactId>
 			<version>3.4.8.0</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.60</version>
-		</dependency>-->
+		<dependency>
+			<groupId>com.graphaware.neo4j</groupId>
+			<artifactId>nlp</artifactId>
+			<version>3.4.9.52.15</version>
+		</dependency>
+		<dependency>
+			<groupId>com.graphaware.neo4j</groupId>
+			<artifactId>nlp-stanfordnlp</artifactId>
+			<version>3.4.9.52.15</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.graphaware.neo4j/common -->
+		<dependency>
+			<groupId>com.graphaware.neo4j</groupId>
+			<artifactId>common</artifactId>
+			<version>3.4.9.52</version>
+		</dependency>
+
+
 	</dependencies>
 </project>
