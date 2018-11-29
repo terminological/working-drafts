@@ -279,7 +279,7 @@ public class EntrezClient {
 						try {
 							entry.getRaw().write(Files.newOutputStream(tmp2));
 						} catch (XmlException | IOException e) {
-							logger.debug("could not cache: "+entry.getPMID().get());
+							logger.debug("could not cache: "+tmp2);
 						}
 					}
 				});
