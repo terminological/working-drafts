@@ -72,7 +72,7 @@ public class BibliographicApis {
 				cacheDir.map(o -> o.resolve("unpaywall")).orElse(null));
 		pdfFetcher = PdfFetcher.create(
 				cacheDir.map(o -> o.resolve("pdf")).orElse(null));
-		
+		unpaywall.withPdfFetcher(pdfFetcher);
 
 	}
 
