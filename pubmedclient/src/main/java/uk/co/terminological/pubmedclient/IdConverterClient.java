@@ -2,16 +2,20 @@ package uk.co.terminological.pubmedclient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,35 +30,31 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-public class IdConverterClient {
+public class IdConverterClient extends CachingApiClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(IdConverterClient.class);
 	
 	private String developerEmail;
 	private Client client;
 	private String toolName;
-	private WebResource lookupService;
+	private static String URL = "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/";
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 	
 	public static IdConverterClient create(String developerEmail, String toolName) {
-		return new IdConverterClient(developerEmail,toolName);
+		return new IdConverterClient(developerEmail,toolName, Optional.empty());
 	}
 	
-	private IdConverterClient(String developerEmail, String toolName) {
+	public static IdConverterClient create(String developerEmail, String toolName, Path cacheDir) {
+		return new IdConverterClient(developerEmail,toolName, Optional.ofNullable(cacheDir));
+	}
+	
+	private IdConverterClient(String developerEmail, String toolName, Optional<Path> cacheDir) {
+		super ( cacheDir, TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build());
 		this.developerEmail = developerEmail;
 		this.toolName = toolName;
-		this.client = Client.create();
-		this.lookupService = client.resource("https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/");
 	}
 	
-	public IdConverterClient debugMode() {
-		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
-			@Override public void info(String msg) { logger.info(msg); }
-		}));
-		return this;
-	}
-	
-	private MultivaluedMap<String, String> defaultApiParams() {
+	protected MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("tool", toolName);
 		out.add("email", developerEmail);
@@ -62,73 +62,51 @@ public class IdConverterClient {
 		return out;
 	}
 	
-	public Result getMapping(String id) throws BibliographicApiException {
-		return getMapping(Collections.singletonList(id), Optional.empty());
-	}
-	
-	public Result getConverterForPMIds(Collection<String> id) throws BibliographicApiException {
-		return getMapping(id, Optional.of(IdType.PMID));
-	}
-	
-	public Result getConverterForIdsAndType(Collection<String> id, IdType type) throws BibliographicApiException {
-		return getMapping(id, Optional.of(type));
-	}
-	
 	// Batches the calls to groups of max 50 ids
-	private Result getMapping(Collection<String> id2, Optional<IdType> idType) throws BibliographicApiException {
+	//TODO: Refactor this to look up cache on a id by id basis.
+	private Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
+		Set<Record> out = new HashSet<>();
 		List<String> id = new ArrayList<String>(id2);
-		Result out = null;
 		int start = 0;
 		while (start<id.size()) {
 			int end = id.size()<start+50 ? id.size() : start+50;
 			List<String> tmp2 = id.subList(start, end);
-			Result outTmp = doCall(tmp2,idType);
-			if (out == null) out = outTmp; 
-			else {
-				out.records.addAll(outTmp.records);
-			}
+			Optional<Result> outTmp = doCall(tmp2,idType);
+			outTmp.ifPresent(o -> out.addAll(o.records));
 			start += 50;
 		}
 		return out;
 	}
 	
-	//TODO: Change to list of records
-	private Result doCall(Collection<String> id, Optional<IdType> idType) throws BibliographicApiException {
+	private Optional<Result> doCall(Collection<String> id, IdType idType) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		id.forEach(i -> params.add("ids", i));
-		if (idType.isPresent()) params.add("idtype", idType.get().name().toLowerCase());
+		params.add("idtype", idType.name().toLowerCase());
 		logger.debug("calling id converter with params: "+params);
-		//WebResource wr = lookupService.queryParams(params);
-		
-		try {
-			InputStream is = lookupService.post(InputStream.class,params); 
-			Result  response = objectMapper.readValue(is, Result.class);
-			return response;
-		} catch (JsonParseException | JsonMappingException e) {
-			e.printStackTrace();
-			throw new BibliographicApiException("Malformed response", e);
-		} catch (IOException | UniformInterfaceException e) {
-			throw new BibliographicApiException("Cannot connect", e);
-		}
+		return this.buildCall(URL, Result.class)
+			.cacheForever()
+			.withParams(params)
+			.withOperation(is -> objectMapper.readValue(is, Result.class))
+			.post();
 	}
 	
 	
 	public Set<String> getDoisByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		Result tmp = getConverterForIdsAndType(ids, type);
-		return tmp.records.stream()
+		Set<Record> tmp = getMapping(ids, type);
+		return tmp.stream()
 				.flatMap(r -> r.doi.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toSet());
 	}
 	
 	public Set<String> getPubMedCentralIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		return getConverterForIdsAndType(ids, type).records.stream()
+		return getMapping(ids, type).stream()
 				.flatMap(r -> r.pmcid.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toSet());
 	}
 	
 	public Set<String> getPMIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		return getConverterForIdsAndType(ids, type).records.stream()
+		return getMapping(ids, type).stream()
 				.flatMap(r -> r.pmid.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toSet());
 	}
