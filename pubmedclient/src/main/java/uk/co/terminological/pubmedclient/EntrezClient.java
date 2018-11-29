@@ -87,7 +87,7 @@ public class EntrezClient {
 	}
 	
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-	public EntrezClient(String baseUrl, String apiKey, String appId, String developerEmail) {
+	private EntrezClient(String baseUrl, String apiKey, String appId, String developerEmail) {
 		this.baseUrl = baseUrl;
 		client = Client.create();
 		eSearchResource = client.resource(this.baseUrl + ESEARCH);
