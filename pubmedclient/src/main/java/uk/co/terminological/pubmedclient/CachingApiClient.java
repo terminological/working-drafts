@@ -242,7 +242,7 @@ public abstract class CachingApiClient {
 	}
 	
 	
-	protected Optional<InputStream> cached(String key, boolean temporary, SupplierWithException<InputStream,Exception> supplier) {
+	protected Optional<InputStream> cachedStream(String key, boolean temporary, SupplierWithException<InputStream,Exception> supplier) {
 		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
 		if (cache.containsKey(key)) {
 			logger.debug("Cache hit:" + key);
@@ -260,4 +260,22 @@ public abstract class CachingApiClient {
 	}
 	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
 
+	protected Optional<String> cachedString(String key, boolean temporary, SupplierWithException<String,Exception> supplier) {
+		Cache<String,BinaryData> cache = temporary ? weekCache() : foreverCache();
+		if (cache.containsKey(key)) {
+			logger.debug("Cache hit:" + key);
+			return Optional.of(cache.get(key).toString());
+		} else {
+			try {
+				BinaryData data = BinaryData.from(supplier.get());
+				return Optional.of(data.toString());
+			} catch (Exception e) {
+				if (debug) e.printStackTrace();
+				logger.debug("Could get input string: "+key);
+				return Optional.empty();
+			}
+		}
+	}
+	
+	
 }
