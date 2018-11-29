@@ -111,6 +111,12 @@
 			<artifactId>exotic-datatypes</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.graphaware.neo4j/nlp -->
+<dependency>
+    <groupId>com.graphaware.neo4j</groupId>
+    <artifactId>nlp</artifactId>
+    <version>3.4.9.52.15</version>
+</dependency>
 	</dependencies>
 	<build>
 		<pluginManagement>
