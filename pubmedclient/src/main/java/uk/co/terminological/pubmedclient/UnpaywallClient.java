@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -34,7 +35,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.datatypes.StreamExceptions;
 
-public class UnpaywallClient {
+public class UnpaywallClient extends CachingApiClient {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
 	//https://unpaywall.org/YOUR_DOI
@@ -42,20 +43,22 @@ public class UnpaywallClient {
 	private static final Logger logger = LoggerFactory.getLogger(UnpaywallClient.class);
 
 	private String developerEmail;
-	private Client client;
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
-	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build();
+	
 
 	private Path cache = null;
 	private static HashMap<String, UnpaywallClient> singleton = new HashMap<>();
 
 	public static UnpaywallClient create(String developerEmail) {
+		return create(developerEmail,null);
+	}
+	
+	public static UnpaywallClient create(String developerEmail, Path cachePath) {
 		if (!singleton.containsKey(developerEmail)) {
-			UnpaywallClient tmp = new UnpaywallClient(developerEmail);
+			UnpaywallClient tmp = new UnpaywallClient(developerEmail, Optional.ofNullable(cachePath));
 			singleton.put(developerEmail, tmp);
 		}
 		return singleton.get(developerEmail);
-
 	}
 	
 	public UnpaywallClient withCache(Path cache) {
@@ -63,63 +66,30 @@ public class UnpaywallClient {
 		return this;
 	}
 	
-	public UnpaywallClient debugMode() {
-		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
-			@Override public void info(String msg) { logger.info(msg); }
-		}));
-		return this;
-	}
-
-	private UnpaywallClient(String developerEmail) {
+	private UnpaywallClient(String developerEmail, Optional<Path> cachePath) {
+		super(cachePath, TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build());
 		this.developerEmail = developerEmail;
-		this.client = Client.create();
+		
 	}
 
-	private MultivaluedMap<String, String> defaultApiParams() {
+	protected MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("email", developerEmail);
 		return out;
 	}
 
-	public Result getUnpaywallByDoi(String doi, Path unpaywallCache) throws BibliographicApiException {
-		return getUnpaywallByDois(Collections.singletonList(doi), unpaywallCache).stream()
-				.findFirst().orElseThrow(() -> new BibliographicApiException("No unpaywall result for: "+doi));
+	public Optional<Result> getUnpaywallByDoi(String doi) {
+		logger.debug("fetching cached unpaywall record for: {}",doi);
+		this.buildCall("https://api.unpaywall.org/v2/"+encode(doi), Result.class)
+			.cacheForever()
+			.withOperation(is -> objectMapper.readValue(is, Result.class))
+			.get();
 	}
 
-	public Set<Result> getUnpaywallByDois(Collection<String> dois) throws BibliographicApiException {
-		return getUnpaywallByDois(dois,cache);
+	public Set<Result> getUnpaywallByDois(Collection<String> dois) {
+		return dois.stream().flatMap(doi -> getUnpaywallByDoi(doi).stream()).collect(Collectors.toSet());
 	}
 	
-	public Set<Result> getUnpaywallByDois(Collection<String> dois, Path unpaywallCache) throws BibliographicApiException {
-		Set<Result> out = new HashSet<>();
-		dois.forEach(StreamExceptions.ignore(i -> {
-				InputStream is = null;
-				if (unpaywallCache != null) {
-					Path tmp = unpaywallCache.resolve(i);
-					if (Files.exists(tmp)) {
-						is = Files.newInputStream(tmp);
-						logger.debug("fetching cached unpaywall record for {}",i);
-					} else {
-						MultivaluedMap<String, String> params = defaultApiParams();
-						logger.debug("fetching unpaywall record for {}",i);
-						rateLimiter.consume();
-						WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(i)).queryParams(params);
-						Files.copy(wr.get(InputStream.class),tmp);
-						is = Files.newInputStream(tmp);
-					}
-				} else {
-					MultivaluedMap<String, String> params = defaultApiParams();
-					logger.debug("fetching unpaywall record for {}",i);
-					rateLimiter.consume();
-					WebResource wr = client.resource("https://api.unpaywall.org/v2/"+encode(i)).queryParams(params);
-					is = wr.get(InputStream.class);
-				}
-				Result response = objectMapper.readValue(is, Result.class);
-				out.add(response);
-			}));
-		return out;
-	}
-
 	public InputStream getPdfByResult(Result result) throws BibliographicApiException {
 		return getPdfByResult(result, PdfFetcher.create().withCache(cache));
 	}
@@ -128,29 +98,16 @@ public class UnpaywallClient {
 		try {
 			String url = result.pdfUrl().orElse(null);
 			return pdfFetch.getPdfFromUrl(url, cache -> cache.resolve("pdf").resolve(result.doi.get()+".pdf"));
-			} catch (Exception e) {
+		} catch (Exception e) {
 			throw new BibliographicApiException("Cannot fetch content for "+result.doi.get(), e);
 		}
 	}
 
-	public InputStream getPdfByDoi(String doi) throws BibliographicApiException {
-		return getPdfByDoi(doi, cache );
+	public Optional<InputStream> getPdfByDoi(String doi) {
+		Optional<Result> result = getUnpaywallByDoi(doi);
+		return result.map(r -> getPdfByResult(r));
 	}
 	
-	public InputStream getPdfByDoi(String doi, Path unpaywallCache) throws BibliographicApiException {
-		Result result = getUnpaywallByDoi(doi,unpaywallCache);
-		
-		return getPdfByResult(result, PdfFetcher.create().withCache(unpaywallCache));	
-	}
-
-	private static String encode(String string)  {
-		try {
-			return URLEncoder.encode(string,java.nio.charset.StandardCharsets.UTF_8.toString());
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public static class Result extends ExtensibleJson {
 		@JsonProperty("best_oa_location") public Optional<Location> bestOaLocation = Optional.empty(); //The best OA Location Object we could find for this DOI.
 		@JsonProperty("data_standard") public Optional<Integer> dataStandard = Optional.empty(); //Indicates the data collection approaches used for this resource.

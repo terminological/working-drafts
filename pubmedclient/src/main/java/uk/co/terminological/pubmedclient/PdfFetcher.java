@@ -1,15 +1,16 @@
 package uk.co.terminological.pubmedclient;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Function;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 
+import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,21 +19,20 @@ import com.sun.jersey.api.client.ClientHandler;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.ClientFilter;
-import com.sun.jersey.api.client.filter.LoggingFilter;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-public class PdfFetcher {
+public class PdfFetcher extends CachingApiClient {
 
 	static Logger logger = LoggerFactory.getLogger(PdfFetcher.class);
 	
 	int maxRedirects = 10;
 	Path cache = null;
-	Client client;
 	
-	private PdfFetcher() {
+	private PdfFetcher(Optional<Path> cachePath) {
+		super(cachePath, TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build());
 		ClientConfig config = new DefaultClientConfig();
 	    config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
 	    client = Client.create(config);
@@ -70,19 +70,11 @@ public class PdfFetcher {
 	}
 	
 	public static PdfFetcher create() {
-		return new PdfFetcher();
+		return new PdfFetcher(Optional.empty());
 	}
 	
-	public PdfFetcher debugMode() {
-		client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
-    		@Override public void info(String msg) { logger.info(msg); }
-    	}));
-		return this;
-	}
-	
-	public PdfFetcher withCache(Path cache) {
-		this.cache = cache;
-		return this;
+	public static PdfFetcher create(Path cachePath) {
+		return new PdfFetcher(Optional.ofNullable(cachePath));
 	}
 	
 	public PdfFetcher maxRedirects(int redirects) {
@@ -90,40 +82,16 @@ public class PdfFetcher {
 		return this;
 	}
 	
-	public InputStream getPdfFromUrl(String url, Function<Path,Path> resolve) throws BibliographicApiException {
-		Path tmp = resolve.apply(cache);
-		if (cache == null) return getPdfFromUrl(url);
-		
-		if (Files.isDirectory(tmp)) {
-			logger.error("tried to cache pdf as a directory");
-			return getPdfFromUrl(url);
-		}
-		try {
-			if (!Files.exists(tmp)) {
-				Files.createDirectories(tmp.getParent());
-				InputStream is = getPdfFromUrl(url);
-				Files.copy(is, tmp);
-			}
-			return Files.newInputStream(tmp);
-		} catch (IOException e) {
-			logger.error("failed to cache pdf: "+e.getMessage());
-			return getPdfFromUrl(url);
-		}
+	public Optional<InputStream> getPdfFromUrl(String url) {
+		return this.buildCall(url, InputStream.class)
+			.cacheForever()
+			.withOperation(is -> is)
+			.get();
 	}
 
-
-	
-	public InputStream getPdfFromUrl(String url, String filename) throws BibliographicApiException {
-		return getPdfFromUrl(url, p -> p.resolve(filename));
-	}
-	
-	public InputStream getPdfFromUrl(String url) throws BibliographicApiException {
-		try {
-			WebResource wr = client.resource(url);
-			return wr.get(InputStream.class);
-		} catch (Exception e) {
-			throw new BibliographicApiException("could not retrieve "+url,e);
-		}
+@Override
+	protected MultivaluedMap<String, String> defaultApiParams() {
+		return new MultivaluedMapImpl();
 	}
 	
 	
