@@ -41,9 +41,9 @@ public class TestEndToEnd {
 		
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		pubmed.withCache(ehcache.resolve("pubmed"));
-		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail, ehcache);
-		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache);
-		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail, ehcache);
+		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail, ehcache.resolve("idconv"));
+		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache.resolve("xref"));
+		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail, ehcache.resolve("unpaywall"));
 		
 		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
 				LocalDate.of(2016, 01, 1), 
