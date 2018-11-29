@@ -56,6 +56,7 @@ public class UnpaywallClient extends CachingApiClient {
 		return this;
 	}
 	
+	
 	private UnpaywallClient(String developerEmail, Optional<Path> cachePath) {
 		super(cachePath, TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build());
 		this.developerEmail = developerEmail;
