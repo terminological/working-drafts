@@ -31,10 +31,10 @@ public class TestEndToEnd {
 		prop.load(Files.newInputStream(Paths.get(prop.getProperty("user.home"),"Dropbox/secrets.prop")));
 		
 		//String xrefToken = prop.getProperty("crossref.clickthroughtoken");
-		String developerEmail = prop.getProperty("developeremail");
+		String developerEmail = prop.getProperty("developer-email");
 		
-		String pubmedApiToken = prop.getProperty("pubmed.apikey");
-		String appId = prop.getProperty("appid");
+		String pubmedApiToken = prop.getProperty("pubmed-apikey");
+		String appId = prop.getProperty("app-id");
 		
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail);
