@@ -3,9 +3,6 @@ package uk.co.terminological.pubmedclient;
 
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -15,7 +12,6 @@ import uk.co.terminological.pubmedclient.CrossRefClient.Field;
 import uk.co.terminological.pubmedclient.CrossRefClient.QueryBuilder;
 import uk.co.terminological.pubmedclient.CrossRefClient.Sort;
 import uk.co.terminological.pubmedclient.CrossRefClient.SortOrder;
-import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
 
 public class TestCrossRefClient {
 
