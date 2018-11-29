@@ -27,6 +27,7 @@ import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.ehcache.config.units.MemoryUnit;
+import org.ehcache.spi.loaderwriter.CacheLoadingException;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public abstract class CachingApiClient {
 
 	protected CacheManager cacheManager;
 	protected boolean debug = false;
-	
+
 	protected CachingApiClient(Optional<Path> optional, TokenBucket ratelimiter) {
 		this.client = Client.create();
 		if (optional.isPresent()) {
@@ -97,49 +98,49 @@ public abstract class CachingApiClient {
 	}
 
 	protected static class BinaryData implements Serializable {
-			byte[] byteArray;
-			private BinaryData(byte[] bytes) {
-				byteArray = bytes;
-			}
-			public static BinaryData from(String st) {
-				return new BinaryData(st.getBytes());
-			}
-			public static BinaryData from(InputStream is) throws BibliographicApiException {
-				try {
-					return new BinaryData(IOUtils.toByteArray(is));
-				} catch (IOException e) {
-					throw new BibliographicApiException("Could not read api response",e);
-				}
-			}
-			public static BinaryData from(Serializable ser) throws BibliographicApiException {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
-				ObjectOutputStream oos;
-				try {
-					oos = new ObjectOutputStream(baos);
-					oos.writeObject(ser);
-					oos.flush();
-				} catch (IOException e) {
-					throw new BibliographicApiException("could not serialize object",e);
-				}
-				
-				return new BinaryData(baos.toByteArray());
-			}
-			public InputStream inputStream() {
-				return new ByteArrayInputStream(byteArray);
-			}
-			public String toString() {
-				return new String(byteArray);
-			}
-			@SuppressWarnings("unchecked")
-			public <X extends Serializable> X toObject() throws BibliographicApiException {
-				try {
-					ObjectInputStream ois = new ObjectInputStream(this.inputStream());
-					return (X) ois.readObject();
-				} catch (ClassNotFoundException | IOException e) {
-					throw new BibliographicApiException("could not deserialize object",e);
-				}
+		byte[] byteArray;
+		private BinaryData(byte[] bytes) {
+			byteArray = bytes;
+		}
+		public static BinaryData from(String st) {
+			return new BinaryData(st.getBytes());
+		}
+		public static BinaryData from(InputStream is) throws BibliographicApiException {
+			try {
+				return new BinaryData(IOUtils.toByteArray(is));
+			} catch (IOException e) {
+				throw new BibliographicApiException("Could not read api response",e);
 			}
 		}
+		public static BinaryData from(Serializable ser) throws BibliographicApiException {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+			ObjectOutputStream oos;
+			try {
+				oos = new ObjectOutputStream(baos);
+				oos.writeObject(ser);
+				oos.flush();
+			} catch (IOException e) {
+				throw new BibliographicApiException("could not serialize object",e);
+			}
+
+			return new BinaryData(baos.toByteArray());
+		}
+		public InputStream inputStream() {
+			return new ByteArrayInputStream(byteArray);
+		}
+		public String toString() {
+			return new String(byteArray);
+		}
+		@SuppressWarnings("unchecked")
+		public <X extends Serializable> X toObject() throws BibliographicApiException {
+			try {
+				ObjectInputStream ois = new ObjectInputStream(this.inputStream());
+				return (X) ois.readObject();
+			} catch (ClassNotFoundException | IOException e) {
+				throw new BibliographicApiException("could not deserialize object",e);
+			}
+		}
+	}
 
 	protected Cache<String,BinaryData> permanentCache() {
 		return cacheManager.getCache("forever", String.class, BinaryData.class);
@@ -159,9 +160,9 @@ public abstract class CachingApiClient {
 	private static final Logger logger = LoggerFactory.getLogger(CachingApiClient.class);
 	protected Client client;
 	private TokenBucket rateLimiter;
-	
+
 	protected void rateLimit() {rateLimiter.consume();}
-	
+
 	protected static String encode(String string) {
 		try {
 			return URLEncoder.encode(string,java.nio.charset.StandardCharsets.UTF_8.toString());
@@ -192,11 +193,11 @@ public abstract class CachingApiClient {
 	}
 
 	protected abstract MultivaluedMap<String, String> defaultApiParams();
-	
-	
+
+
 	protected <X> CallBuilder<X,Exception> buildCall(
 			String url, Class<X> clazz) {return new CallBuilder<X,Exception>(url, defaultApiParams(), this);}
-	
+
 	protected static class CallBuilder<X,E extends Exception> {
 		String url;
 		MultivaluedMap<String,String> params;
@@ -227,7 +228,7 @@ public abstract class CachingApiClient {
 			return client.call(url,params,temporary,"POST",operation);
 		}
 	}
-	
+
 	private <X,E extends Exception> Optional<X> call(String url, MultivaluedMap<String,String> params, boolean temporary, String method, FunctionWithException<InputStream,X,E> operation) {
 		if (operation == null) throw new NullPointerException("Operation must be defined");
 		Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
@@ -264,22 +265,23 @@ public abstract class CachingApiClient {
 			return Optional.empty();
 		}
 	}
-	
+
 	protected Optional<InputStream> cachedStream(String key, boolean temporary, FunctionWithException<String,InputStream,Exception> supplier) {
 		Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
 		if (cache.containsKey(key)) {
 			logger.debug("Cache hit:" + key);
 			return Optional.of(cache.get(key).inputStream());
-		} else {
-			try {
-				BinaryData data = BinaryData.from(supplier.apply(key));
-				return Optional.of(data.inputStream());
-			} catch (Exception e) {
-				if (debug) e.printStackTrace();
-				logger.debug("Could not open input stream: "+key);
-				return Optional.empty();
-			}
+		} 
+		try {
+			BinaryData data = BinaryData.from(supplier.apply(key));
+			cache.put(key, data);
+			return Optional.of(data.inputStream());
+		} catch (Exception e) {
+			if (debug) e.printStackTrace();
+			logger.debug("Could not open input stream: "+key);
+			return Optional.empty();
 		}
+
 	}
 
 	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
@@ -288,33 +290,38 @@ public abstract class CachingApiClient {
 		if (cache.containsKey(key)) {
 			logger.debug("Cache hit:" + key);
 			return Optional.of(cache.get(key).toString());
-		} else {
-			try {
-				BinaryData data = BinaryData.from(supplier.apply(key));
-				return Optional.of(data.toString());
-			} catch (Exception e) {
-				if (debug) e.printStackTrace();
-				logger.debug("Could get input string: "+key);
-				return Optional.empty();
-			}
+		}
+		try {
+			BinaryData data = BinaryData.from(supplier.apply(key));
+			cache.put(key, data);
+			return Optional.of(data.toString());
+		} catch (Exception e) {
+			if (debug) e.printStackTrace();
+			logger.debug("Could get input string: "+key);
+			return Optional.empty();
 		}
 	}
-	
+
 	//TODO: A raw filesystem cache so that we can see the cache result - maybe alongside ehcache result.
-		protected <X extends Serializable> Optional<X> cachedObject(String key, boolean temporary, FunctionWithException<String,X,Exception> supplier) {
-			Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
-			if (cache.containsKey(key)) {
-				logger.debug("Cache hit:" + key);
+	protected <X extends Serializable> Optional<X> cachedObject(String key, boolean temporary, FunctionWithException<String,X,Exception> supplier) {
+		Cache<String,BinaryData> cache = temporary ? tempCache() : permanentCache();
+		if (cache.containsKey(key)) {
+			logger.debug("Cache hit:" + key);
+			try {
 				return Optional.of(cache.get(key).toObject());
-			} else {
-				try {
-					BinaryData data = BinaryData.from(supplier.apply(key));
-					return Optional.of(data.toObject());
-				} catch (Exception e) {
-					if (debug) e.printStackTrace();
-					logger.debug("Could get input string: "+key);
-					return Optional.empty();
-				}
+			} catch (BibliographicApiException e) {
+				cache.remove(key);
 			}
 		}
+		try {
+			BinaryData data = BinaryData.from(supplier.apply(key));
+			cache.put(key, data);
+			return Optional.of(data.toObject());
+		} catch (Exception e) {
+			if (debug) e.printStackTrace();
+			logger.debug("Could get input string: "+key);
+			return Optional.empty();
+		}
+
+	}
 }
