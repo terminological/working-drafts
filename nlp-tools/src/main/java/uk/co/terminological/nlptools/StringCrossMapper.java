@@ -91,8 +91,8 @@ public class StringCrossMapper {
 				break;
 			}
 		}
-		
-		if (i<2) return Optional.empty();
+		if (matching.size() == 1) return matching.stream().findFirst();
+		if (i < doc.countTermsInDocument()) return Optional.empty();
 		return matching.stream().findAny();
 		
 	}
