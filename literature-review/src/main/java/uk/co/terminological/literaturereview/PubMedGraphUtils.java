@@ -245,7 +245,7 @@ public class PubMedGraphUtils {
 			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
 			// if (!affiliations.isEmpty()) {
 			//	if (node.hasProperty(Prop.AFFILITATIONS)) affiliations.addAll(Arrays.asList((String[]) node.getProperty(Prop.AFFILITATIONS))); 
-				node.setProperty(Prop.AFFILITATIONS, affiliations.toArray(new String[] {}));
+				node.setProperty(Prop.AFFILIATIONS, affiliations.toArray(new String[] {}));
 			// }
 			out = node;
 
