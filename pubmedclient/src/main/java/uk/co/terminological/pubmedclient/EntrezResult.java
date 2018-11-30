@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -10,6 +11,8 @@ import java.util.stream.Stream;
 
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
+import uk.co.terminological.fluentxml.XmlList;
+import uk.co.terminological.fluentxml.XmlText;
 
 public class EntrezResult {
 
@@ -146,6 +149,24 @@ public class EntrezResult {
 				return Optional.empty();
 			}
 		}
+		
+		public List<String> getKeyWords() {
+			try {
+				XmlList<XmlElement> keywords = raw.doXpath(".//KeywordList/Keyword").getMany(XmlElement.class);
+				return keywords.stream().flatMap(xmlt -> xmlt.getTextContent().stream()).collect(Collectors.toList());
+			} catch (XmlException e) {
+				return Collections.emptyList();
+			}
+		}
+		
+		public List<String> getCitedPMIDs() {
+			try {
+				XmlList<XmlElement> keywords = raw.doXpath(".//CommentsCorrections[@RefType='Cites']/PMID").getMany(XmlElement.class);
+				return keywords.stream().flatMap(xmlt -> xmlt.getTextContent().stream()).collect(Collectors.toList());
+			} catch (XmlException e) {
+				return Collections.emptyList();
+			}
+		}
 
 		public Optional<LocalDate> getPubMedDate() {
 			try {
@@ -202,12 +223,19 @@ public class EntrezResult {
 			return raw.childElements("LastName").findFirst().flatMap(o -> o.getTextContent());
 		}
 		public Optional<String> firstName() {
-			return raw.childElements("FirstName").findFirst().flatMap(o -> o.getTextContent());
+			return raw.childElements("ForeName").findFirst().flatMap(o -> o.getTextContent());
 		}
 		public Optional<String> initials() {
 			return raw.childElements("Initials").findFirst().flatMap(o -> o.getTextContent());
 		}
-		public Stream<String> affiliations() {
+		public Optional<String> orcid() {
+			try {
+				return raw.doXpath("./Identifier[@Source='ORCID']").get(XmlElement.class).flatMap(o -> o.getTextContent());
+			} catch (XmlException e) {
+				return Optional.empty();
+			}
+		}
+ 		public Stream<String> affiliations() {
 			return raw.childElements("AffiliationInfo").stream()
 					.flatMap(el -> el.childElements("Affiliation").stream())
 					.flatMap(o -> o.getTextContent().stream());
