@@ -70,8 +70,8 @@ public class StringCrossMapper {
 	
 	private Optional<Entry<Document,Double>> getBestMatch(Document doc) {
 		//if (targets.containsKey(doc.normalised)) return Optional.of(targets.get(doc.normalised));
-		ArrayList<Term> orderedTerms = new ArrayList<>(doc.components);
-		orderedTerms.sort(doc.DESCENDING_TFIDF);
+		ArrayList<Term> orderedTerms = new ArrayList<>(doc.getComponents());
+		orderedTerms.sort(doc.descendingTfIdf());
 		Iterator<Term> it = orderedTerms.iterator();
 		
 		Set<Document> matching = new HashSet<>(targets.values());
@@ -189,7 +189,7 @@ public class StringCrossMapper {
 				
 		for (Document matched: this.targetCorpus.documents) {
 			if (!output.containsKey(matched)) {
-				K sim1 = similarity.apply(doc.string, matched.string);
+				K sim1 = similarity.apply(doc.getString(), matched.getString());
 				output.put(matched, sim1);
 			}
 		}
