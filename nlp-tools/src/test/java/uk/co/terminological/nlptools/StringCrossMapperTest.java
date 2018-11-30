@@ -1,5 +1,7 @@
 package uk.co.terminological.nlptools;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
 public class StringCrossMapperTest extends TestCase {
@@ -23,6 +25,9 @@ public class StringCrossMapperTest extends TestCase {
 		}
 	}
 	
-	
+	@Test
+	protected testTfIDF() {
+		
+	}
 
 }
