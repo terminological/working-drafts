@@ -55,7 +55,7 @@ public class Document {
 		return normalised;
 	}
 
-	public List<Term> getComponents() {
+	public List<Term> getTerms() {
 		return components;
 	}
 
