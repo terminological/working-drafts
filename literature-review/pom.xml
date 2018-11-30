@@ -69,5 +69,10 @@
 			<artifactId>guava</artifactId>
 			<version>21.0</version>
 		</dependency>
+		<dependency>
+			<groupId>uk.co.terminological</groupId>
+			<artifactId>nlp-tools</artifactId>
+			<version>0.01-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
