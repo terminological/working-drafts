@@ -34,12 +34,9 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.7</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.neo4j</groupId>
-			<artifactId>graph-algorithms-algo</artifactId>
-			<version>3.4.8.0</version>
-		</dependency>-->
-		<!-- <dependency>
+		<!-- <dependency> <groupId>org.neo4j</groupId> <artifactId>graph-algorithms-algo</artifactId> 
+			<version>3.4.8.0</version> </dependency> -->
+		<dependency>
 			<groupId>com.graphaware.neo4j</groupId>
 			<artifactId>nlp</artifactId>
 			<version>3.4.9.52.15</version>
@@ -54,16 +51,16 @@
 			<artifactId>common</artifactId>
 			<version>3.4.9.52</version>
 		</dependency>
-<dependency>
-    <groupId>com.graphaware.neo4j</groupId>
-    <artifactId>runtime</artifactId>
-    <version>3.4.9.52</version>
-</dependency>
-<dependency>
-    <groupId>com.graphaware.neo4j</groupId>
-    <artifactId>runtime-api</artifactId>
-    <version>3.4.9.52</version>
-</dependency>-->
+		<dependency>
+			<groupId>com.graphaware.neo4j</groupId>
+			<artifactId>runtime</artifactId>
+			<version>3.4.9.52</version>
+		</dependency>
+		<dependency>
+			<groupId>com.graphaware.neo4j</groupId>
+			<artifactId>runtime-api</artifactId>
+			<version>3.4.9.52</version>
+		</dependency>
 
 
 
