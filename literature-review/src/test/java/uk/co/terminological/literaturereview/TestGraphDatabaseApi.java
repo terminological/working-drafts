@@ -75,10 +75,10 @@ public class TestGraphDatabaseApi {
 				match.forEach((target,score) -> {
 					out.println(
 							score+"\t"+
-						src.identifier+"\t"+
-						target.identifier+"\t"+
-						src.string+"\t"+
-						target.string+"\t"
+						src.getIdentifier()+"\t"+
+						target.getIdentifier()+"\t"+
+						src.getString()+"\t"+
+						target.getString()
 				);
 			});
 		});
