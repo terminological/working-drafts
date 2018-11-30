@@ -232,6 +232,12 @@ public class StringCrossMapper {
 			return documents.stream();
 		}
 		
+		public String summaryStats() {
+			return new StringBuilder()
+					.append("Documents: "+documents.size()+", ")
+					.append("Unique terms: "+terms.size()).toString();
+		}
+		
 	}
 	
 	public static class Term {
@@ -351,6 +357,14 @@ public class StringCrossMapper {
 	
 	static interface Normaliser extends Function<String,String> {}
 	static interface Tokeniser extends Function<String,Stream<String>> {}
+
+	public String summaryStats() {
+		String out = new StringBuilder("Sources: ")
+				.append("{"+sourceComponents.summaryStats()+"}")
+				.append(",\nTargets: ")
+				.append("{"+targetComponents.summaryStats()+"}")
+		
+	}
 	
 	
 }
