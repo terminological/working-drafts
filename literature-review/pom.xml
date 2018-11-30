@@ -54,13 +54,11 @@
 			<artifactId>common</artifactId>
 			<version>3.4.9.52</version>
 		</dependency>
-		
 <dependency>
     <groupId>com.graphaware.neo4j</groupId>
     <artifactId>runtime</artifactId>
     <version>3.4.9.52</version>
 </dependency>
-		
 <dependency>
     <groupId>com.graphaware.neo4j</groupId>
     <artifactId>runtime-api</artifactId>
