@@ -22,12 +22,12 @@
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j</artifactId>
-			<version>3.4.9</version>
+			<version>3.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
 			<artifactId>neo4j-bolt</artifactId>
-			<version>3.4.9</version>
+			<version>3.4.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -39,7 +39,7 @@
 			<artifactId>graph-algorithms-algo</artifactId>
 			<version>3.4.8.0</version>
 		</dependency>-->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.graphaware.neo4j</groupId>
 			<artifactId>nlp</artifactId>
 			<version>3.4.9.52.15</version>
@@ -49,24 +49,23 @@
 			<artifactId>nlp-stanfordnlp</artifactId>
 			<version>3.4.9.52.15</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.graphaware.neo4j/common -->
 		<dependency>
 			<groupId>com.graphaware.neo4j</groupId>
 			<artifactId>common</artifactId>
 			<version>3.4.9.52</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.graphaware.neo4j/runtime -->
+		
 <dependency>
     <groupId>com.graphaware.neo4j</groupId>
     <artifactId>runtime</artifactId>
     <version>3.4.9.52</version>
 </dependency>
-		<!-- https://mvnrepository.com/artifact/com.graphaware.neo4j/runtime -->
+		
 <dependency>
     <groupId>com.graphaware.neo4j</groupId>
     <artifactId>runtime-api</artifactId>
     <version>3.4.9.52</version>
-</dependency>
+</dependency>-->
 
 
 
