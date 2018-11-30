@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.text.similarity.SimilarityScore;
+import org.apache.commons.text.similarity.CosineDistance;
 
 public class StringCrossMapper {
 
@@ -163,15 +164,27 @@ public class StringCrossMapper {
  		return match;
 	}
 	
+	public enum ScoringSystem {
+		COSINE (new CosineDistance()),
+		;
+		
+		SimilarityScore<?> sim; 
+		ScoringSystem(SimilarityScore<?> sim) {
+			this.sim = sim;
+		}
+		
+		<X> SimilarityScore<X> get() {return (SimilarityScore<X>) sim;}
+	}
+	
 	/*
-	 * Takes an input document and finds all the taget documents that match it
+	 * Takes an input document and calculates a similarity score for all the target documents based on the .
 	 * 
 	 */
-	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, SimilarityScore<K> similarity) {
+	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, ScoringSystem similarity) {
 		
 		Iterator<Term> it = doc.components.iterator();
 		Map<Document,K> output = new HashMap<>();
-		String docNorm = Document.termsToString(doc.tfidfOrder()," ");//).normalisedOrder()," ");
+		//String docNorm = Document.termsToString(doc.tfidfOrder()," ");//).normalisedOrder()," ");
 				
 		while (it.hasNext()) {
 			Term nextTerm = it.next();
@@ -179,8 +192,8 @@ public class StringCrossMapper {
 			Set<Document> tmp = outputTerm.norms.keySet();
 			for (Document matched: tmp) {
 				if (!output.containsKey(matched)) {
-					String matchedNorm = Document.termsToString(matched.tfidfOrder()," ");//.normalisedOrder()," ");
-					K sim1 = similarity.apply(docNorm, matchedNorm);
+					//String matchedNorm = Document.termsToString(matched.tfidfOrder()," ");//.normalisedOrder()," ");
+					K sim1 = similarity.apply(doc.string, matched.string);
 					output.put(matched, sim1);
 				}
 			}
@@ -191,7 +204,7 @@ public class StringCrossMapper {
          .sorted(Map.Entry.comparingByValue());
 	}
 	
-	/**************************************************
+	/**
 	 * 
 	 * @author robchallen
 	 *
