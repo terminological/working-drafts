@@ -29,7 +29,10 @@ public class StringCrossMapper {
 	Normaliser normaliser;
 	Tokeniser tokeniser;
 	
+	public static class DuplicateIdentityException extends RuntimeException {}
+	
 	public void addSource(String id, String source) {
+		if (sources.containsKey(id)) throw new DuplicateIdentityException();
 		this.sources.put(id, new Document(id, source, sourceComponents));
 	}
 	
@@ -37,6 +40,7 @@ public class StringCrossMapper {
 	public Corpus getTarget() {return targetComponents;}
 	
 	public void addTarget(String id, String target) {
+		if (targets.containsKey(id)) throw new DuplicateIdentityException();
 		this.targets.put(id, new Document(id, target, targetComponents));
 	}
 	
@@ -287,9 +291,9 @@ public class StringCrossMapper {
 			this.corpus.addDocument(this);
 		}
 		
-		public int hashCode() {return string.hashCode();}
+		public int hashCode() {return identifier.hashCode();}
 		public boolean equals(Object o) {
-			if (o instanceof Document) return ((Document) o).string.equals(string);
+			if (o instanceof Document) return ((Document) o).identifier.equals(identifier);
 			else return false;
 		}
 		public String toString() {

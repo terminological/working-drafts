@@ -5,17 +5,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Streams;
+
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 
 
@@ -41,19 +46,31 @@ public class TestGraphDatabaseApi {
 		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Informatics","Computer","Science","Medicine");
 		
 		try (Transaction tx = graphApi.get().beginTx()) {
+			
 			graphApi.get().findNodes(Labels.AUTHOR).forEachRemaining(
 				n -> {
-					mapper.addSource(Long.toString(n.getId()), 
-							n.getProperty(Props., defaultValue)+" "
-							n.getProperty(key, defaultValue)+" "
-							n.getProperty(key, defaultValue)+" "
-					);
+					String[] affils = (String[]) n.getProperty(Prop.AFFILITATIONS, new String[] {});
+					for (String affil: affils) {
+						String doc = repeat(n.getProperty(Prop.FIRST_NAME, "").toString(),5)+" "+
+								repeat(n.getProperty(Prop.LAST_NAME, "").toString(),5)+" "+
+								repeat(n.getProperty(Prop.INITIALS, "").toString(),5)+" "+
+								affil; 
+						mapper.addSource(Long.toString(n.getId()),doc); 
+						mapper.addTarget(Long.toString(n.getId()),doc);
+					}
 				}
-			);
-			
+			);			
 		}
 		
+		mapper.getAllMatchesByDistance(minValue, metric)
+		
 		graphApi.waitAndShutdown();
+	}
+	
+	static String repeat(String s, int count) {
+		StringBuilder out = new StringBuilder();
+		for (int i=0; i<count; i++) out.append(s);
+		return out.toString().trim();
 	}
 	
 	static Path fromProperty(Properties prop, String name) {
