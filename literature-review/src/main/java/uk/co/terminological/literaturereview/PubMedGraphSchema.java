@@ -12,32 +12,52 @@ public class PubMedGraphSchema {
 	public static Logger logger = LoggerFactory.getLogger(PubMedGraphSchema.class);
 	
 	public static class Labels {
-		public static Label ARTICLE = Label.label("Article");
-		public static Label DOI_STUB = Label.label("DOIStub");
-		public static Label PMID_STUB = Label.label("PMIDStub");
-		public static Label PMCENTRAL_STUB = Label.label("PMCentralStub");
-		public static Label ORIGINAL_SEARCH = Label.label("PubmedSearchResult");
-		public static Label EXPAND = Label.label("Expand");
-		public static Label AUTHOR = Label.label("Author");
-		public static Label AFFILIATION = Label.label("Affiliation");
-		public static Label MESH_CODE = Label.label("MeshCode");
-		public static Label TOKEN = Label.label("Token");
-		public static Label SEARCH_RESULT = Label.label("SearchResult");
-		public static Label PDF_AVAILABLE = Label.label("PdfAvailable");
+		public static final Label ARTICLE = Label.label("Article");
+		public static final Label DOI_STUB = Label.label("DOIStub");
+		public static final Label PMID_STUB = Label.label("PMIDStub");
+		public static final Label PMCENTRAL_STUB = Label.label("PMCentralStub");
+		public static final Label ORIGINAL_SEARCH = Label.label("PubmedSearchResult");
+		public static final Label EXPAND = Label.label("Expand");
+		public static final Label AUTHOR = Label.label("Author");
+		public static final Label AFFILIATION = Label.label("Affiliation");
+		public static final Label MESH_CODE = Label.label("MeshCode");
+		public static final Label TOKEN = Label.label("Token");
+		public static final Label SEARCH_RESULT = Label.label("SearchResult");
+		public static final Label PDF_AVAILABLE = Label.label("PdfAvailable");
+		public static final Label KEYWORD = Label.label("Keyword");
 	}
 	
 	public enum Rel implements RelationshipType {
-	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE, HAS_RELATED, HAS_TOKEN, TOKEN_PRECEEDED_BY
+	    HAS_AUTHOR,
+	    HAS_MESH, 
+	    HAS_REFERENCE, 
+	    HAS_RELATED, 
+	    HAS_TOKEN, 
+	    TOKEN_PRECEEDED_BY,
+	    HAS_KEYWORD
 	}
 	
 	public static class Prop {
-		public static String PMID = "pmid";
-		public static String DOI = "doi";
-		public static String PMCID = "pmcid";
-		public static String AUTHOR_ID = "identifier";
-		public static String MESH_CODE = "code";
-		public static String TOKEN_VALUE = "value";
-		
+		public static final String DATE = "date";
+		public static final String PDF_URL = "pdfUrl";
+		public static final String TITLE = "title";
+		public static final String CODE = "code";
+		public static final String TERM = "term";
+		public static final String CROSSREF = "crossref";
+		public static final String AFFILITATIONS = "affiliations";
+		public static final String INITIALS = "initials";
+		public static final String LAST_NAME = "lastName";
+		public static final String FIRST_NAME = "firstName";
+		public static final String HAS_PDF = "pdf";
+		public static final String RELATEDNESS = "relatedness";
+		public static final String ENTREZ = "entrez";
+		public static final String PMID = "pmid";
+		public static final String DOI = "doi";
+		public static final String PMCID = "pmcid";
+		public static final String AUTHOR_ID = "identifier";
+		public static final String MESH_CODE = "code";
+		public static final String TOKEN_VALUE = "value";
+		public static final String ABSTRACT = "abstract";
 	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {
@@ -51,8 +71,9 @@ public class PubMedGraphSchema {
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Prop.PMID );
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Prop.DOI );
 		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Prop.PMCID );
+		    schema.indexFor( Labels.KEYWORD ).on( Prop.TERM ).create();
+		    schema.constraintFor( Labels.KEYWORD ).assertPropertyIsUnique( Prop.TERM );
 		    //schema.indexFor( Labels.AUTHOR ).on( Props.AUTHOR_ID ).create();
-		    schema.indexFor( Labels.TOKEN ).on( Prop.TOKEN_VALUE ).create();
 		    schema.indexFor( Labels.MESH_CODE ).on( Prop.MESH_CODE ).create();
 		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique( Prop.MESH_CODE );
 		    tx.success();

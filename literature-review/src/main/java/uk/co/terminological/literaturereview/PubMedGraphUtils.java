@@ -1,19 +1,9 @@
 package uk.co.terminological.literaturereview;
 
 
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.AUTHOR;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.DOI_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.MESH_CODE;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ORIGINAL_SEARCH;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMCENTRAL_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.PMID_STUB;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_AUTHOR;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_MESH;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_REFERENCE;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Rel.HAS_RELATED;
-//TODO: import static uk.co.terminological.literaturereview.PubMedGraphSchema.Props.*;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -125,16 +115,16 @@ public class PubMedGraphUtils {
 			
 			entries.forEach(entry -> {
 				Node tmp = null;
-				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(ARTICLE, "pmid", entry.getPMID().get()) : null;
-				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(ARTICLE, "doi", entry.getDoi().get().toLowerCase()) : null;
-				//Node tmp3 = entry.getPMCID().isPresent() ? graph.get().findNode(ARTICLE, "pmcid", entry.getPMCID().get()) : null;
+				Node tmp1 = entry.getPMID().isPresent() ? graph.get().findNode(Labels.ARTICLE, Prop.PMID, entry.getPMID().get()) : null;
+				Node tmp2 = entry.getDoi().isPresent() ? graph.get().findNode(Labels.ARTICLE, Prop.DOI, entry.getDoi().get().toLowerCase()) : null;
+				//Node tmp3 = entry.getPMCID().isPresent() ? graph.get().findNode(ARTICLE, Prop.PMCID, entry.getPMCID().get()) : null;
 				
 				if (tmp1 == null && tmp2 == null) {// && tmp3 == null) {
 					logger.debug("Creating new article record: pmid"+entry.getPMID().orElse("none")+" doi:"+entry.getDoi().orElse("none"));
-					Node newNode = graph.get().createNode(ARTICLE);
-					entry.getPMID().ifPresent(pmid -> newNode.setProperty("pmid", pmid));
-					entry.getDoi().ifPresent(doi -> newNode.setProperty("doi", doi.toLowerCase()));
-					entry.getPMCID().ifPresent(pmcid -> newNode.setProperty("pmcid", pmcid));
+					Node newNode = graph.get().createNode(Labels.ARTICLE);
+					entry.getPMID().ifPresent(pmid -> newNode.setProperty(Prop.PMID, pmid));
+					entry.getDoi().ifPresent(doi -> newNode.setProperty(Prop.DOI, doi.toLowerCase()));
+					entry.getPMCID().ifPresent(pmcid -> newNode.setProperty(Prop.PMCID, pmcid));
 					tmp = newNode;
 				} else {
 				
@@ -142,7 +132,7 @@ public class PubMedGraphUtils {
 					if (tmp1 != null && tmp2 != null && tmp1.getId() != tmp2.getId()) {
 						logger.debug("Merging article pubmed: "+entry.getPMID().get()+" with doi: "+entry.getDoi().get());
 						//merge tmp1 and tmp2
-						entry.getPMCID().ifPresent(pmcid -> tmp1.setProperty("pmcid", pmcid));
+						entry.getPMCID().ifPresent(pmcid -> tmp1.setProperty(Prop.PMCID, pmcid));
 						tmp = mergeNodes(tmp1,tmp2,tx);
 					} 
 					
@@ -164,7 +154,7 @@ public class PubMedGraphUtils {
 							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
 							r.delete();
 						});
-						entry.getDOI().ifPresent(pmcid -> tmp1.setProperty("pmcid", pmcid));
+						entry.getDOI().ifPresent(pmcid -> tmp1.setProperty(Prop.PMCID, pmcid));
 						tmp3.getLabels().forEach(l -> tmp1.addLabel(l));
 						tmp3.delete();
 						tmp = tmp1;
@@ -174,18 +164,18 @@ public class PubMedGraphUtils {
 					if (tmp == null) {
 						if (tmp1!=null) {
 							logger.debug("Updating pubmed article: "+entry.getPMID().get());
-							entry.getDoi().ifPresent(doi -> tmp1.setProperty("doi", doi.toLowerCase()));
-							entry.getPMCID().ifPresent(pmcid -> tmp1.setProperty("pmcid", pmcid));
+							entry.getDoi().ifPresent(doi -> tmp1.setProperty(Prop.DOI, doi.toLowerCase()));
+							entry.getPMCID().ifPresent(pmcid -> tmp1.setProperty(Prop.PMCID, pmcid));
 							tmp = tmp1;
 						} else if (tmp2!=null) {
 							logger.debug("Updating doi article: "+entry.getDoi().get());
-							entry.getPMID().ifPresent(pmid -> tmp2.setProperty("pmid", pmid));
-							entry.getPMCID().ifPresent(pmcid -> tmp2.setProperty("pmcid", pmcid));
+							entry.getPMID().ifPresent(pmid -> tmp2.setProperty(Prop.PMID, pmid));
+							entry.getPMCID().ifPresent(pmcid -> tmp2.setProperty(Prop.PMCID, pmcid));
 							tmp = tmp2;
 						/*} else if (tmp3!=null) {
 							logger.debug("Updating pmc article: "+entry.getPMCID().get());
-							entry.getDoi().ifPresent(doi -> tmp3.setProperty("doi", doi));
-							entry.getPMID().ifPresent(pmid -> tmp3.setProperty("pmid", pmid));
+							entry.getDoi().ifPresent(doi -> tmp3.setProperty(Prop.DOI, doi));
+							entry.getPMID().ifPresent(pmid -> tmp3.setProperty(Prop.PMID, pmid));
 							tmp = tmp3;*/
 						} else {
 							//cannot happen because of check at beginning
@@ -194,31 +184,31 @@ public class PubMedGraphUtils {
 				}
 				Node node = tmp;
 				
-				entry.getPMCID().ifPresent(pmc -> node.setProperty("pmcid", pmc));
-				entry.getPMCPdfUrl().ifPresent(url -> node.setProperty("pdfUrl", url));
+				entry.getPMCID().ifPresent(pmc -> node.setProperty(Prop.PMCID, pmc));
+				entry.getPMCPdfUrl().ifPresent(url -> node.setProperty(Prop.PDF_URL, url));
 				entry.getPubMedDate().ifPresent(dt -> {
-					node.setProperty("date", dt);
+					node.setProperty(Prop.DATE, dt);
 					/*if (dt.isAfter(earliest) && dt.isBefore(latest)) {
 						node.addLabel(EXPAND);
 					} else {
 						logger.debug("not expanding: date="+dt.format(DateTimeFormatter.ISO_LOCAL_DATE)+" title="+entry.getTitle() );
 					}*/
 				});
-				node.setProperty("abstract", entry.getAbstract());
-				node.setProperty("title", entry.getTitle());
-				node.removeLabel(DOI_STUB);
-				node.removeLabel(PMID_STUB);
-				node.removeLabel(PMCENTRAL_STUB);
+				node.setProperty(Prop.ABSTRACT, entry.getAbstract());
+				node.setProperty(Prop.TITLE, entry.getTitle());
+				node.removeLabel(Labels.DOI_STUB);
+				node.removeLabel(Labels.PMID_STUB);
+				node.removeLabel(Labels.PMCENTRAL_STUB);
 				
 				Arrays.asList(additional).forEach(l -> node.addLabel(l));
 								
 				entry.getAuthors().forEach(au -> {
 					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);
-					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
+					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_AUTHOR));
 				});
 				entry.getMeshHeadings().forEach(mh -> {
 					Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph, tx);
-					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_MESH));
+					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_MESH));
 				});
 				out.add(node);
 			});
@@ -250,12 +240,12 @@ public class PubMedGraphUtils {
 		Node out = null;
 
 			Node node = graph.get().createNode();// doMerge(AUTHOR, "identifier", identifier, graph.get());
-			firstName.ifPresent(fn -> node.setProperty("firstName", fn));
-			lastName.ifPresent(fn -> node.setProperty("lastName", fn));
-			initials.ifPresent(fn -> node.setProperty("initials", fn));
+			firstName.ifPresent(fn -> node.setProperty(Prop.FIRST_NAME, fn));
+			lastName.ifPresent(fn -> node.setProperty(Prop.LAST_NAME, fn));
+			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
 			// if (!affiliations.isEmpty()) {
-			//	if (node.hasProperty("affiliations")) affiliations.addAll(Arrays.asList((String[]) node.getProperty("affiliations"))); 
-				node.setProperty("affiliations", affiliations.toArray(new String[] {}));
+			//	if (node.hasProperty(Prop.AFFILITATIONS)) affiliations.addAll(Arrays.asList((String[]) node.getProperty(Prop.AFFILITATIONS))); 
+				node.setProperty(Prop.AFFILITATIONS, affiliations.toArray(new String[] {}));
 			// }
 			out = node;
 
@@ -266,16 +256,16 @@ public class PubMedGraphUtils {
 	public static Optional<Node> mapMeshCodeToNode(MeshCode meshCode, GraphDatabaseApi graph, Transaction tx) {
 		Node out = null;
 
-			Node tmp = doMerge(MESH_CODE, "code", meshCode.getCode(), graph.get());
-			tmp.setProperty("code", meshCode.getCode());
-			tmp.setProperty("term", meshCode.getTerm());
+			Node tmp = doMerge(Labels.MESH_CODE, Prop.CODE, meshCode.getCode(), graph.get());
+			tmp.setProperty(Prop.CODE, meshCode.getCode());
+			tmp.setProperty(Prop.TERM, meshCode.getTerm());
 			out = tmp;
 
 		return Optional.ofNullable(out);
 	}
 	
 	public static List<Relationship> mapCrossRefReferences(String citingDoi, List<Reference> citedDois, GraphDatabaseApi graph) {
-		return mapHasReferences("doi",citingDoi,DOI_STUB,"doi",citedDois,DOI_STUB, HAS_REFERENCE,graph);
+		return mapHasReferences(Prop.DOI,citingDoi,Labels.DOI_STUB,Prop.DOI,citedDois,Labels.DOI_STUB, Rel.HAS_REFERENCE,graph);
 	}
 	
 	public static List<Relationship> mapHasReferences(String citingType, String citingDoi, Label citingStubLabel, String citedType, List<Reference> citedDois, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
@@ -284,11 +274,11 @@ public class PubMedGraphUtils {
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
 			//Node start = 
-					doMerge(ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
+					doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
 			citedDois.forEach(cite -> {
 				cite.DOI.ifPresent(citedDoi -> {
 					
-					Node end = doMerge(ARTICLE, citedType, citedDoi.toLowerCase(),graph.get(), citedStubLabel);
+					Node end = doMerge(Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get(), citedStubLabel);
 					/*Relationship tmp = null;
 					for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
 						if (r.getEndNode().equals(end)) tmp=r;
@@ -296,10 +286,10 @@ public class PubMedGraphUtils {
 					if (tmp == null) {
 						tmp = start.createRelationshipTo(end, relType);						
 					}*/
-					Relationship tmp = doMerge(ARTICLE, citingType, citingDoi.toLowerCase() ,relType, ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
-					tmp.setProperty("crossref", true);
+					Relationship tmp = doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase() ,relType, Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
+					tmp.setProperty(Prop.CROSSREF, true);
 					if (end.hasLabel(citedStubLabel)) {
-						cite.articleTitle.ifPresent(t -> end.setProperty("title", t));
+						cite.articleTitle.ifPresent(t -> end.setProperty(Prop.TITLE, t));
 					}
 					out.add(tmp);
 				});
@@ -312,7 +302,7 @@ public class PubMedGraphUtils {
 	
 	public static Set<String> mapCermineReferences(String citingDoi, Set<Work> citedDois, GraphDatabaseApi graph) {
 		return citedDois.stream().flatMap(work -> {
-			return mapCermineReference("doi",citingDoi,DOI_STUB,"doi",work,DOI_STUB, HAS_REFERENCE,graph).stream();
+			return mapCermineReference(Prop.DOI,citingDoi,Labels.DOI_STUB,Prop.DOI,work,Labels.DOI_STUB, Rel.HAS_REFERENCE,graph).stream();
 		}).collect(Collectors.toSet());
 	}
 	
@@ -322,10 +312,10 @@ public class PubMedGraphUtils {
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
 			//Node start = 
-			doMerge(ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
+			doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
 			out = cite.DOI.map(citedDoi -> {
-					Relationship tmp = doMerge(ARTICLE, citingType, citingDoi.toLowerCase() ,relType, ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
-					tmp.setProperty("pdf", true);
+					Relationship tmp = doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase() ,relType, Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
+					tmp.setProperty(Prop.HAS_PDF, true);
 					return citedDoi;
 			});
 			tx.success();
@@ -335,15 +325,15 @@ public class PubMedGraphUtils {
 	}
 
 	public static List<Relationship> mapPubmedRelated(List<Link> links, GraphDatabaseApi graph) {
-		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_RELATED, graph, false);
+		return mapEntrez(links, Prop.PMID, Labels.PMID_STUB, Prop.PMID, Labels.PMID_STUB, Rel.HAS_RELATED, graph, false);
 	}
 	
 	public static List<Relationship> mapPubMedCentralReferences(List<Link> links, GraphDatabaseApi graph) {
-		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_REFERENCE, graph, false);
+		return mapEntrez(links, Prop.PMID, Labels.PMID_STUB, Prop.PMID, Labels.PMID_STUB, Rel.HAS_REFERENCE, graph, false);
 	}
 	
 	public static List<Relationship> mapPubMedCentralCitedBy(List<Link> links, GraphDatabaseApi graph) {
-		return mapEntrez(links, "pmid", PMID_STUB, "pmid", PMID_STUB, HAS_REFERENCE, graph, true);
+		return mapEntrez(links, Prop.PMID, Labels.PMID_STUB, Prop.PMID, Labels.PMID_STUB, Rel.HAS_REFERENCE, graph, true);
 	}
 	
 	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
@@ -355,9 +345,9 @@ public class PubMedGraphUtils {
 			links.forEach(link -> { 
 				link.toId.ifPresent(toId -> {
 					//Node start = 
-							doMerge(ARTICLE, inIdType, link.fromId, graph.get(), inLabel);
+							doMerge(Labels.ARTICLE, inIdType, link.fromId, graph.get(), inLabel);
 					//Node end = 
-							doMerge(ARTICLE, outIdType, toId, graph.get(), outLabel);
+							doMerge(Labels.ARTICLE, outIdType, toId, graph.get(), outLabel);
 					Relationship tmp = null;
 					if (invert) {
 						/*
@@ -370,7 +360,7 @@ public class PubMedGraphUtils {
 						if (tmp == null) {
 							tmp = end.createRelationshipTo(start, relType);						
 						}*/
-						tmp = doMerge(ARTICLE, outIdType, toId, relType, ARTICLE, inIdType, link.fromId, graph.get());
+						tmp = doMerge(Labels.ARTICLE, outIdType, toId, relType, Labels.ARTICLE, inIdType, link.fromId, graph.get());
 					} else {
 						/*for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
 							if (r.getEndNode().equals(end)) {
@@ -381,10 +371,10 @@ public class PubMedGraphUtils {
 						if (tmp == null) {
 							tmp = start.createRelationshipTo(end, relType);						
 						}*/
-						tmp = doMerge(ARTICLE, inIdType, link.fromId, relType, ARTICLE, outIdType, toId, graph.get());
+						tmp = doMerge(Labels.ARTICLE, inIdType, link.fromId, relType, Labels.ARTICLE, outIdType, toId, graph.get());
 					}
-					if (link.score.isPresent()) tmp.setProperty("relatedness", link.score.get());
-					tmp.setProperty("entrez", true);
+					if (link.score.isPresent()) tmp.setProperty(Prop.RELATEDNESS, link.score.get());
+					tmp.setProperty(Prop.ENTREZ, true);
 				});
 			});
 			tx.success();
@@ -399,17 +389,17 @@ public class PubMedGraphUtils {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
 
-				Node node = doMerge(ARTICLE, "doi", work.DOI.get().toLowerCase(), graph.get());
-				node.setProperty("title", work.title.stream().collect(Collectors.joining("\n")));
+				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.DOI.get().toLowerCase(), graph.get());
+				node.setProperty(Prop.TITLE, work.title.stream().collect(Collectors.joining("\n")));
 				work.author.forEach(as -> {
 					Optional<Node> targetNode = mapAuthorToNode(as, graph, tx);
-					targetNode.ifPresent(target -> node.createRelationshipTo(target, HAS_AUTHOR));
+					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_AUTHOR));
 				});
-				work.journalAbstract.ifPresent(abs -> node.setProperty("abstract", abs));
+				work.journalAbstract.ifPresent(abs -> node.setProperty(Prop.ABSTRACT, abs));
 				if (work.publishedOnline.isPresent()) {
 					work.publishedOnline.ifPresent(po -> {
 					try {
-						node.setProperty("date",LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
+						node.setProperty(Prop.DATE,LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
 					} catch (Exception e) {
 						// date is not well formed
 					}
@@ -417,7 +407,7 @@ public class PubMedGraphUtils {
 				} else if (work.publishedPrint.isPresent()) {
 				work.publishedPrint.ifPresent(po -> {
 					try {
-						node.setProperty("date",LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
+						node.setProperty(Prop.DATE,LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
 					} catch (Exception e) {
 						// date is not well formed
 					}
@@ -425,15 +415,15 @@ public class PubMedGraphUtils {
 				} else if (work.issued.isPresent()) {
 					work.issued.ifPresent(po -> {
 						try {
-							node.setProperty("date",LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
+							node.setProperty(Prop.DATE,LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
 						} catch (Exception e) {
 							// date is not well formed
 						}
 					});
 				}
-				node.removeLabel(DOI_STUB);
-				node.removeLabel(PMID_STUB);
-				node.removeLabel(PMCENTRAL_STUB);
+				node.removeLabel(Labels.DOI_STUB);
+				node.removeLabel(Labels.PMID_STUB);
+				node.removeLabel(Labels.PMCENTRAL_STUB);
 				tx.success();
 			}
 
@@ -446,13 +436,13 @@ public class PubMedGraphUtils {
 		if (work.doi.isPresent()) {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
-				Node node = doMerge(ARTICLE, "doi", work.doi.get().toLowerCase(), graph.get());
-				work.pdfUrl().ifPresent(url -> node.setProperty("pdfUrl", url));
-				work.getPublishedDate().ifPresent(date -> node.setProperty("date", date));
-				work.title.ifPresent(title -> node.setProperty("title", title));
-				node.removeLabel(DOI_STUB);
-				node.removeLabel(PMID_STUB);
-				node.removeLabel(PMCENTRAL_STUB);
+				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.doi.get().toLowerCase(), graph.get());
+				work.pdfUrl().ifPresent(url -> node.setProperty(Prop.PDF_URL, url));
+				work.getPublishedDate().ifPresent(date -> node.setProperty(Prop.DATE, date));
+				work.title.ifPresent(title -> node.setProperty(Prop.TITLE, title));
+				node.removeLabel(Labels.DOI_STUB);
+				node.removeLabel(Labels.PMID_STUB);
+				node.removeLabel(Labels.PMCENTRAL_STUB);
 				tx.success();
 			}
 			return Optional.of(work.doi.get().toLowerCase());
@@ -464,8 +454,8 @@ public class PubMedGraphUtils {
 		if (work.doi.isPresent()) {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
-				Node node = doMerge(ARTICLE, "doi", work.doi.get().toLowerCase(), graph.get());
-				work.pdfUrl().ifPresent(url -> node.setProperty("pdfUrl", url));
+				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.doi.get().toLowerCase(), graph.get());
+				work.pdfUrl().ifPresent(url -> node.setProperty(Prop.PDF_URL, url));
 				tx.success();
 			}
 			return Optional.of(work.doi.get().toLowerCase());
