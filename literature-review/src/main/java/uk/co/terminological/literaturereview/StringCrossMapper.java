@@ -88,7 +88,7 @@ public class StringCrossMapper {
 		while (it.hasNext() && matching.size() != 1) {
 			Term nextTerm = it.next();
 			Term outputTerm = targetCorpus.termFrom(nextTerm.tag);
-			Set<Document> tmp = outputTerm.norms.keySet();
+			Set<Document> tmp = outputTerm.documentUsing.keySet();
 			tmp.retainAll(matching); 
 			if (tmp.size() > 0) {
 				matching = tmp;
@@ -132,25 +132,30 @@ public class StringCrossMapper {
 	 * Calculates a significance of similarity based on the tfidf
 	 * For every term in the source document
 	 * Find documents containing that term in the target corpus
-	 * Calculate the contribution that term will have on an overall score metric and multiply that to the current score
+	 * Calculate the contribution that term will have on an overall score metric and multiply that to the current score for every matching document
+	 * Move onto next term.
+	 * 
 	 */
 	private Stream<Entry<Document,Double>> getAllMatchesBySignificance(Document doc) {
 		
-		Iterator<Term> it = doc.components.iterator();
+		Iterator<Entry<Term,Double>> it = doc.tfIdfsDescending().entrySet().iterator();
 		Map<Document,Double> output = new HashMap<>();
 		
 		while (it.hasNext()) {
-			Term nextTerm = it.next();
-			
-			Term outputTerm = targetCorpus.termFrom(nextTerm.tag);
-			Set<Document> tmp = outputTerm.norms.keySet();
-			for (Document matched: tmp) {
-				Double soFar = 1D;
-				if (output.containsKey(matched)) {
-					soFar = output.get(matched);
+			Entry<Term,Double> nextTfidf = it.next();
+			Term nextTerm = nextTfidf.getKey();
+			Double docTfidfScore = nextTfidf.getValue();
+			Optional<Term> optOutputTerm = targetCorpus.getMatchingTerm(nextTerm);
+			optOutputTerm.ifPresent(outputTerm -> {
+				Set<Document> tmp = outputTerm.documentUsing.keySet();
+				for (Document matched: tmp) {
+					Double soFar = 1D;
+					if (output.containsKey(matched)) {
+						soFar = output.get(matched);
+					}
+					output.put(matched, soFar*docTfidfScore*matched.termSignificance(outputTerm));
 				}
-				output.put(matched, soFar*doc.termSignificance(nextTerm)*matched.termSignificance(outputTerm));
-			}
+			});
 		}
 		
 		return output.entrySet()
@@ -183,25 +188,15 @@ public class StringCrossMapper {
 	}
 	
 	/*
-	 * Takes an input document and calculates a similarity score for all the target documents based on the .
-	 * 
+	 * Takes an input document and calculates a similarity score for all the target documents based on the raw text of the document.
 	 */
 	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, SimilarityScore<K> similarity) {
-		
-		Iterator<Term> it = doc.components.iterator();
 		Map<Document,K> output = new HashMap<>();
-		//String docNorm = Document.termsToString(doc.tfidfOrder()," ");//).normalisedOrder()," ");
 				
-		while (it.hasNext()) {
-			Term nextTerm = it.next();
-			Term outputTerm = targetCorpus.getMatchingTerm(nextTerm);
-			Set<Document> tmp = outputTerm.norms.keySet();
-			for (Document matched: tmp) {
-				if (!output.containsKey(matched)) {
-					//String matchedNorm = Document.termsToString(matched.tfidfOrder()," ");//.normalisedOrder()," ");
-					K sim1 = similarity.apply(doc.string, matched.string);
-					output.put(matched, sim1);
-				}
+		for (Document matched: this.targetCorpus.documents) {
+			if (!output.containsKey(matched)) {
+				K sim1 = similarity.apply(doc.string, matched.string);
+				output.put(matched, sim1);
 			}
 		}
 		
@@ -267,7 +262,7 @@ public class StringCrossMapper {
 		String tag;
 		int count = 0;
 		Corpus map;
-		HashMap<Document,Integer> norms = new HashMap<>();
+		HashMap<Document,Integer> documentUsing = new HashMap<>();
 		
 		public Term(String tag, Corpus map) {
 			this.tag = tag;
@@ -275,10 +270,10 @@ public class StringCrossMapper {
 		}
 		
 		public void add(Document norm) {
-			if (norms.containsKey(norm)) {
-				norms.put(norm, norms.get(norm)+1);
+			if (documentUsing.containsKey(norm)) {
+				documentUsing.put(norm, documentUsing.get(norm)+1);
 			} else {
-				norms.put(norm,1);
+				documentUsing.put(norm,1);
 			}
 			count+=1;
 		}
@@ -366,6 +361,19 @@ public class StringCrossMapper {
 			});
 			return orderedTerms;
 		}
+		
+		
+		public Map<Term,Double> tfIdfsDescending() {
+			LinkedHashMap<Term,Double> out = new LinkedHashMap<>();
+			HashMap<Term,Double> tmp = new LinkedHashMap<>();
+			components.forEach(c -> {
+				if (!tmp.containsKey(c)) tmp.put(c, termSignificance(c));
+			});
+			tmp.entrySet().stream()
+		    	.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+		    	.forEach(kv -> out.put(kv.getKey(), kv.getValue()));
+			return out;
+ 		}
 		
 		/**
 		 * reconstructs a document from a list of terms and a separator
