@@ -84,7 +84,7 @@ public class TestGraphDatabaseApi {
 	
 	static String repeat(String s, int count) {
 		StringBuilder out = new StringBuilder();
-		for (int i=0; i<count; i++) out.append(s);
+		for (int i=0; i<count; i++) out.append(s+" ");
 		return out.toString().trim();
 	}
 	
