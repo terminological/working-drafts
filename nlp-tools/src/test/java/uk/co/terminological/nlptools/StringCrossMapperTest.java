@@ -23,7 +23,7 @@ public class StringCrossMapperTest extends TestCase {
 		this.mapper = new StringCrossMapper();
 		for (int i=0; i<strings.length; i++) {
 			this.mapper.addSource("S_"+i, strings[i]);
-			this.mapper.addSource("T_"+i, strings[i]);
+			this.mapper.addTarget("T_"+i, strings[i]);
 		}
 	}
 	
