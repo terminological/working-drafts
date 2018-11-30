@@ -27,6 +27,7 @@ public class Document {
 		corpus.tokeniser.apply(normalised)
 			.filter(t-> !corpus.stopWords.contains(t))
 			.forEach(tag -> {
+				//Create a new term
 				Term tmp = corpus.getTermFrom(tag);
 				components.add(tmp);
 				tmp.add(this);

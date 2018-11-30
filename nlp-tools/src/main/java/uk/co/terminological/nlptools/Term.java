@@ -1,28 +1,17 @@
 package uk.co.terminological.nlptools;
 
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 
 public class Term {
 	
-	
 	String tag;
 	int count = 0;
-	Corpus map;
-	HashMap<Document,Integer> documentUsing = new HashMap<>();
+	Corpus corpus;
+	HashSet<Document> documentsUsing = new HashSet<>();
 	
 	public Term(String tag, Corpus map) {
 		this.tag = tag;
-		this.map = map;
-	}
-	
-	public void add(Document norm) {
-		if (documentUsing.containsKey(norm)) {
-			documentUsing.put(norm, documentUsing.get(norm)+1);
-		} else {
-			documentUsing.put(norm,1);
-		}
-		count+=1;
+		this.corpus = map;
 	}
 	
 	public int hashCode() {return tag.hashCode();}
@@ -33,10 +22,33 @@ public class Term {
 	}
 	public String toString() {return tag+" ["+idf()+":"+count+"]";} 
 	
-	public int documentsWithTermCount() {return count;}
+	
+	/*
+	 * Add a new document to this term - called when a term is found in a document during the Document constructor
+	 */
+	protected void add(Document norm) {
+		documentsUsing.add(norm);
+	}
+	
+	
+	public int documentsWithTermCount() {
+		return documentsUsing.size();
+	}
+	
+	/**
+	 * The inverse document frequency is a measure of how much information the word provides, i.e., if it's common or rare across all documents. 
+	 * <br/>
+	 * It is the logarithmically scaled inverse fraction of the documents that contain the word 
+	 * (obtained by dividing the total number of documents by the number of documents containing the term, and then taking the logarithm of that quotient):
+	 * <br/>
+	 * https://en.wikipedia.org/wiki/Tf%E2%80%93idf#Inverse_document_frequency
+	 * <br/>
+	 * This uses the 
+	 * probabilistic inverse document frequency variant: log((N-nt)/nt)
+	 * @return
+	 */
 	public Double idf() {
-		//probabilistic idf
-		return Math.log(((double) map.corpusDocuments()-this.documentsWithTermCount())/this.documentsWithTermCount());
+		return Math.log(((double) corpus.corpusDocuments()-this.documentsWithTermCount())/this.documentsWithTermCount());
 	}
 	
 }

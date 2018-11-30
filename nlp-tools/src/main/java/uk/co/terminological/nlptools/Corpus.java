@@ -61,7 +61,7 @@ public class Corpus {
 	}
 
 	/**
-	 * create a new term or fetch an existing one from the corpus
+	 * create a new term or fetch an existing one from the corpus. 
 	 * @param tag
 	 * @return
 	 */
