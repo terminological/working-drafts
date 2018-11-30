@@ -25,8 +25,8 @@ public class StringCrossMapper {
 
 	Map<String,Document> sources = new LinkedHashMap<>();
 	Map<String,Document> targets = new HashMap<>();
-	Corpus sourceComponents;
-	Corpus targetComponents;
+	Corpus sourceCorpus;
+	Corpus targetCorpus;
 	Normaliser normaliser;
 	Tokeniser tokeniser;
 	
@@ -34,15 +34,15 @@ public class StringCrossMapper {
 	
 	public void addSource(String id, String source) {
 		if (sources.containsKey(id)) throw new DuplicateIdentityException();
-		this.sources.put(id, new Document(id, source, sourceComponents));
+		this.sources.put(id, new Document(id, source, sourceCorpus));
 	}
 	
-	public Corpus getSource() {return sourceComponents;}
-	public Corpus getTarget() {return targetComponents;}
+	public Corpus getSource() {return sourceCorpus;}
+	public Corpus getTarget() {return targetCorpus;}
 	
 	public void addTarget(String id, String target) {
 		if (targets.containsKey(id)) throw new DuplicateIdentityException();
-		this.targets.put(id, new Document(id, target, targetComponents));
+		this.targets.put(id, new Document(id, target, targetCorpus));
 	}
 	
 	public StringCrossMapper(String... stopWords) {
@@ -56,8 +56,8 @@ public class StringCrossMapper {
 	public StringCrossMapper(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
 		this.normaliser = normaliser;
 		this.tokeniser = tokeniser;
-		sourceComponents = new Corpus(normaliser, tokeniser, stopWords);
-		targetComponents = new Corpus(normaliser, tokeniser, stopWords);
+		sourceCorpus = new Corpus(normaliser, tokeniser, stopWords);
+		targetCorpus = new Corpus(normaliser, tokeniser, stopWords);
 	}
 	
 	
@@ -87,7 +87,7 @@ public class StringCrossMapper {
 		
 		while (it.hasNext() && matching.size() != 1) {
 			Term nextTerm = it.next();
-			Term outputTerm = targetComponents.termFrom(nextTerm.tag);
+			Term outputTerm = targetCorpus.termFrom(nextTerm.tag);
 			Set<Document> tmp = outputTerm.norms.keySet();
 			tmp.retainAll(matching); 
 			if (tmp.size() > 0) {
@@ -105,6 +105,11 @@ public class StringCrossMapper {
 		
 	}
 	
+	/**
+	 * 
+	 * @param minValue
+	 * @return
+	 */
 	public Map<Document,Map<Document,Double>> getAllMatchesBySignificance(Double minValue) {
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
  		for (Document doc: sources.values()) {
@@ -123,6 +128,12 @@ public class StringCrossMapper {
  		return match;
 	}
 	
+	/*
+	 * Calculates a significance of similarity based on the tfidf
+	 * For every term in the source document
+	 * Find documents containing that term in the target corpus
+	 * Calculate the contribution that term will have on an overall score metric and multiply that to the current score
+	 */
 	private Stream<Entry<Document,Double>> getAllMatchesBySignificance(Document doc) {
 		
 		Iterator<Term> it = doc.components.iterator();
@@ -130,7 +141,8 @@ public class StringCrossMapper {
 		
 		while (it.hasNext()) {
 			Term nextTerm = it.next();
-			Term outputTerm = targetComponents.termFrom(nextTerm.tag);
+			
+			Term outputTerm = targetCorpus.termFrom(nextTerm.tag);
 			Set<Document> tmp = outputTerm.norms.keySet();
 			for (Document matched: tmp) {
 				Double soFar = 1D;
@@ -146,6 +158,12 @@ public class StringCrossMapper {
          .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()));
 	}
 	
+	/**
+	 * Computes the similarity for all combinations of source and target base on the raw text of the document, excluding normalisations
+	 * @param minValue
+	 * @param metric a class from org.apache.commons.text.similarity
+	 * @return
+	 */
 	public <K extends Comparable<K>> Map<Document,Map<Document,K>> getAllMatchesByDistance(K minValue, SimilarityScore<K> metric) {
 		Map<Document,Map<Document,K>> match = new HashMap<>();
  		for (Document doc: sources.values()) {
@@ -176,7 +194,7 @@ public class StringCrossMapper {
 				
 		while (it.hasNext()) {
 			Term nextTerm = it.next();
-			Term outputTerm = targetComponents.termFrom(nextTerm.tag);
+			Term outputTerm = targetCorpus.getMatchingTerm(nextTerm);
 			Set<Document> tmp = outputTerm.norms.keySet();
 			for (Document matched: tmp) {
 				if (!output.containsKey(matched)) {
@@ -211,6 +229,10 @@ public class StringCrossMapper {
 					.collect(Collectors.toSet());
 		}
 
+		public Optional<Term> getMatchingTerm(Term nextTerm) {
+			return Optional.ofNullable(terms.get(nextTerm.tag));
+		}
+
 		public Term termFrom(String tag) {
 			if (!terms.containsKey(tag)) {
 				terms.put(tag, new Term(tag, this));
@@ -243,7 +265,7 @@ public class StringCrossMapper {
 	
 	public static class Term {
 		String tag;
-		int count;
+		int count = 0;
 		Corpus map;
 		HashMap<Document,Integer> norms = new HashMap<>();
 		
@@ -361,9 +383,9 @@ public class StringCrossMapper {
 
 	public String summaryStats() {
 		return new StringBuilder("Sources: ")
-				.append("{"+sourceComponents.summaryStats()+"}")
+				.append("{"+sourceCorpus.summaryStats()+"}")
 				.append(",\nTargets: ")
-				.append("{"+targetComponents.summaryStats()+"}").toString();
+				.append("{"+targetCorpus.summaryStats()+"}").toString();
 		
 	}
 	

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+import org.apache.commons.text.similarity.CosineDistance;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
@@ -60,16 +61,14 @@ public class TestGraphDatabaseApi {
 		
 		System.out.println(mapper.summaryStats());
 		
-		mapper.getAllMatchesBySignificance(0D).forEach(
+		mapper.getAllMatchesByDistance(0D, new CosineDistance()).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
-					
 					System.out.println(
 							src.identifier+"\t"+src.string+"\t"
-							+target.identifier+"\t"+target.string
+							+target.identifier+"\t"+target.string+"\t"
 							+score
 							);
-					
 				});
 			});
 		
