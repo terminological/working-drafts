@@ -6,7 +6,6 @@ import java.util.Set;
 public class Term {
 	
 	String tag;
-	int count = 0;
 	Corpus corpus;
 	HashSet<Document> documentsUsing = new HashSet<>();
 	
@@ -21,7 +20,7 @@ public class Term {
 			return ((Term) o).tag.equals(tag);
 		} else return false;
 	}
-	public String toString() {return tag+" ["+idf()+":"+count+"]";} 
+	public String toString() {return tag+" ["+idf()+"]";} 
 	
 	
 	/*
@@ -49,7 +48,7 @@ public class Term {
 	 * @return
 	 */
 	public Double idf() {
-		return Math.log(((double) corpus.countCorpusDocuments()-this.countDocumentsWithTerm())/this.countDocumentsWithTerm());
+		return Math.log(((double) corpus.countCorpusDocuments())/this.countDocumentsWithTerm());
 	}
 
 	public Set<Document> getDocumentsUsing() {
