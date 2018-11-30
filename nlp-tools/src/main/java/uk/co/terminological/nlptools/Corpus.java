@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import uk.co.terminological.nlptools.StringCrossMapper.Document;
 import uk.co.terminological.nlptools.StringCrossMapper.Normaliser;
-import uk.co.terminological.nlptools.StringCrossMapper.Term;
 import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
 
 /**
