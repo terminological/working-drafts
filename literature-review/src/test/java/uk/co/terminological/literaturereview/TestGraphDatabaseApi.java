@@ -11,6 +11,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.cypher.internal.frontend.v2_3.perty.recipe.Pretty.doc;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -62,7 +63,19 @@ public class TestGraphDatabaseApi {
 			);			
 		}
 		
-		mapper.getAllMatchesByDistance(minValue, metric)
+		mapper.getAllMatchesBySignificance(0D).forEach(
+			(src,match) -> {
+				match.forEach((target,score) -> {
+					
+					System.out.println(
+							src.identifier+"\t"+src.string+"\t"
+							+target.identifier+"\t"+target.string
+							+score
+							);
+					
+				});
+			});
+		
 		
 		graphApi.waitAndShutdown();
 	}
