@@ -1,6 +1,7 @@
 package uk.co.terminological.nlptools;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class Term {
 	
@@ -49,6 +50,10 @@ public class Term {
 	 */
 	public Double idf() {
 		return Math.log(((double) corpus.countCorpusDocuments()-this.countDocumentsWithTerm())/this.countDocumentsWithTerm());
+	}
+
+	public Set<Document> getDocumentsUsing() {
+		return documentsUsing;
 	}
 	
 }

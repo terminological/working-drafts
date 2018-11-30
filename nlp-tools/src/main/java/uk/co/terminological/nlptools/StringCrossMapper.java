@@ -82,7 +82,7 @@ public class StringCrossMapper {
 		while (it.hasNext() && matching.size() != 1) {
 			Term nextTerm = it.next();
 			Term outputTerm = targetCorpus.getTermFrom(nextTerm.tag);
-			Set<Document> tmp = outputTerm.documentUsing.keySet();
+			Set<Document> tmp = outputTerm.getDocumentsUsing();
 			tmp.retainAll(matching); 
 			if (tmp.size() > 0) {
 				matching = tmp;

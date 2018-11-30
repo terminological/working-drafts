@@ -88,6 +88,15 @@ public class Document {
 	
 	/**
 	 * Calculate the tfidf fromt the frequency of terms in this document / the frequency of documents containing this term in the corpus
+	 * <br/>
+	 * In the case of the term frequency tf(t,d), the simplest choice is to use the raw count of a term in a document, i.e., the number of times that term t occurs in document d.<br\> 
+	 * If we denote the raw count by ft,d, then the simplest tf scheme is tf(t,d) = ft,d. <br/>
+	 * Other possibilities include:<br/>
+	 * Boolean "frequencies": tf(t,d) = 1 if t occurs in d and 0 otherwise;<br/>
+	 * term frequency adjusted for document length : ft,d ÷ (number of words in d)<br/>
+	 * logarithmically scaled frequency: tf(t,d) = log (1 + ft,d)<br/>
+	 * augmented frequency, to prevent a bias towards longer documents, <br/>
+	 * e.g. raw frequency divided by the raw frequency of the most occurring term in the document:
 	 * @param term
 	 * @return
 	 */
