@@ -8,10 +8,13 @@ import junit.framework.TestCase;
 public class StringCrossMapperTest extends TestCase {
 
 	static final String[] strings = {
-			"one two three four",
+			"one",
 			"one two",
-			"one two three four five",
-			"three four",
+			"one two three",
+			"two three four",
+			"three four five",
+			"four five",
+			"five"
 	};
 	
 	
