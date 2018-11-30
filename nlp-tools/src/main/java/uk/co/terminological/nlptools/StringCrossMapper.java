@@ -41,7 +41,7 @@ public class StringCrossMapper {
 	public StringCrossMapper(String... stopWords) {
 		this(
 			string -> string.replaceAll("[_,\\.]"," ").replaceAll("[^a-zA-Z0-9\\s]", "-").replaceAll("\\s+", " ").toLowerCase(),
-			string -> Stream.of(string.split("\\S+")).filter(s -> !s.equals("-")),
+			string -> Stream.of(string.split("\\s+")).filter(s -> !s.equals("-")),
 			stopWords
 		);
 	}
