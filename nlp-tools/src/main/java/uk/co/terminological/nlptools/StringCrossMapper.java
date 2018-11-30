@@ -1,4 +1,4 @@
-package uk.co.terminological.literaturereview;
+package uk.co.terminological.nlptools;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;

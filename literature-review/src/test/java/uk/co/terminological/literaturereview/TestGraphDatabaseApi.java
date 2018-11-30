@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
+import uk.co.terminological.nlptools.StringCrossMapper;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 
 
