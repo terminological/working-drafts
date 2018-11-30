@@ -10,10 +10,12 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.cermine.exception.AnalysisException;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 
 
@@ -36,6 +38,16 @@ public class TestGraphDatabaseApi {
 		Path graphConfPath = fromProperty(prop,"graph-conf-file");
 		
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
+		
+		try (Transaction tx = graphApi.get().beginTx()) {
+			graphApi.get().findNodes(Labels.AUTHOR).forEachRemaining(
+				n -> {
+					
+				}
+			);
+			
+		}
+		
 		graphApi.waitAndShutdown();
 	}
 	
