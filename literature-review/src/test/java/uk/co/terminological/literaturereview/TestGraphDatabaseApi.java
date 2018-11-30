@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.Properties;
 
 import org.apache.commons.text.similarity.CosineDistance;
@@ -20,6 +21,7 @@ import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 import uk.co.terminological.nlptools.StringCrossMapper;
+import uk.co.terminological.nlptools.Term;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 
 
@@ -114,4 +116,5 @@ public class TestGraphDatabaseApi {
 		Files.deleteIfExists(tmp);
 	}
 
+	
 }

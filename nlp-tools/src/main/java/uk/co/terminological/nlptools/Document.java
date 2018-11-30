@@ -7,55 +7,98 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Document {
 	
-	String identifier;
-	String string;
-	String normalised;
-	List<Term> components = new ArrayList<>();
-	Corpus corpus;
+	private String identifier;
+	private String string;
+	private String normalised;
+	private List<Term> components = new ArrayList<>();
+	private HashMap<Term,Integer> termCounts = new HashMap<>();
+	private Corpus corpus;
 	
-	Document(String id, String string, Corpus corpus) {
+	protected Document(String id, String string, Corpus corpus) {
 		this.identifier = id;
 		this.corpus = corpus;
 		this.string = string;
 		this.normalised = corpus.normaliser.apply(string);
 		corpus.tokeniser.apply(normalised)
-		.filter(t-> !corpus.stopWords.contains(t))
-		.forEach(tag ->
-			{
+			.filter(t-> !corpus.stopWords.contains(t))
+			.forEach(tag -> {
 				Term tmp = corpus.termFrom(tag);
 				components.add(tmp);
 				tmp.add(this);
+				Optional.ofNullable(termCounts.get(tmp)).ifPresentOrElse(
+						count -> termCounts.put(tmp, count+1), 
+						() -> termCounts.put(tmp, 1));
 			});
 		this.corpus.addDocument(this);
 	}
 	
-	public int hashCode() {return identifier.hashCode();}
+	// ============ BEAN METHODS =====================
+	
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public String getString() {
+		return string;
+	}
+
+	public String getNormalised() {
+		return normalised;
+	}
+
+	public List<Term> getComponents() {
+		return components;
+	}
+
+	public Corpus getCorpus() {
+		return corpus;
+	}
+	
+	public int hashCode() {
+		return identifier.hashCode();
+	}
+	
 	public boolean equals(Object o) {
 		if (o instanceof Document) return ((Document) o).identifier.equals(identifier);
 		else return false;
 	}
+	
 	public String toString() {
 		return string+" ("+
 				components.stream()
-					.map(t -> t.tag+" ["+termSignificance(t)+"]")
+					.map(t -> t.tag+" ["+tfIdf(t)+"]")
 					.collect(Collectors.joining(","))+")";
 	}
 	
-	public int occurencesInDocument(Term term) {
-		return (int) components.stream().filter(t -> t.equals(term)).count();
-	}
-	public int termsInDocumentTotal() {return components.size();}
+	// ============ SPECIFIC METHODS =====================
 	
-	public Double termSignificance(Term term) { 
+	public int occurencesInDocument(Term term) {
+		return termCounts.get(term);
+	}
+	
+	public int termsInDocumentTotal() {
+		return components.size();
+	}
+	
+	/**
+	 * Calculate the tfidf fromt the frequency of terms in this document / the frequency of documents containing this term in the corpus
+	 * @param term
+	 * @return
+	 */
+	public Double tfIdf(Term term) { 
 		Double tf = ((double) occurencesInDocument(term));// / termsInDocumentTotal();
 		if (term.tag.length() < 3) tf=tf/10;
 		return tf*term.idf();
 	}
 	
+	/**
+	 * returns the terms of the document in string ascending order
+	 */
 	public List<Term> normalisedOrder() {
 		List<Term> tmp = new ArrayList<>(components);
 		tmp.sort((t1,t2) -> t1.tag.compareTo(t2.tag));
@@ -66,12 +109,12 @@ public class Document {
 	 * lists the terms in the document according to descending tfidf score.
 	 * @return
 	 */
-	public List<Term> tfidfOrder() {
+	public List<Term> tfIdfOrder() {
 		ArrayList<Term> orderedTerms = new ArrayList<>(components);
 		orderedTerms.sort(new Comparator<Term>() {
 			@Override
 			public int compare(Term t1, Term t2) {
-				return termSignificance(t2).compareTo(termSignificance(t1));
+				return tfIdf(t2).compareTo(tfIdf(t1));
 			}
 		});
 		return orderedTerms;
@@ -81,9 +124,7 @@ public class Document {
 	public Map<Term,Double> tfIdfsDescending() {
 		LinkedHashMap<Term,Double> out = new LinkedHashMap<>();
 		HashMap<Term,Double> tmp = new LinkedHashMap<>();
-		components.forEach(c -> {
-			if (!tmp.containsKey(c)) tmp.put(c, termSignificance(c));
-		});
+		termCounts.keySet().forEach(c -> tmp.put(c, tfIdf(c)));
 		tmp.entrySet().stream()
 	    	.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
 	    	.forEach(kv -> out.put(kv.getKey(), kv.getValue()));
@@ -96,7 +137,17 @@ public class Document {
 	 * @param sep
 	 * @return A string of the document
 	 */
+	@Deprecated
 	public static String termsToString(List<Term> terms, String sep) {
 		return terms.stream().map(t -> t.tag).collect(Collectors.joining(sep));
 	}
+	
+	public Comparator<? super Term> descendingTfIdf() {return new Comparator<Term>() {
+		@Override
+		public int compare(Term t1, Term t2) {
+			return Document.this.tfIdf(t2).compareTo(Document.this.tfIdf(t1));
+		}
+	};}
+
+	
 }

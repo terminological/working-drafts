@@ -1,8 +1,11 @@
 package uk.co.terminological.nlptools;
 
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class Term {
+	
+	
 	String tag;
 	int count = 0;
 	Corpus map;

@@ -47,7 +47,7 @@ public class StringCrossMapper {
 	public StringCrossMapper(String... stopWords) {
 		this(
 			string -> string.replaceAll("[_,\\.]"," ").replaceAll("[^a-zA-Z0-9\\s]", "-").replaceAll("\\s+", " ").toLowerCase(),
-			string -> Stream.of(string.split("\\s+")).filter(s -> !s.equals("-")),
+			string -> Stream.of(string.split("\\S+")).filter(s -> !s.equals("-")),
 			stopWords
 		);
 	}
@@ -71,12 +71,7 @@ public class StringCrossMapper {
 	private Optional<Entry<Document,Double>> getBestMatch(Document doc) {
 		//if (targets.containsKey(doc.normalised)) return Optional.of(targets.get(doc.normalised));
 		ArrayList<Term> orderedTerms = new ArrayList<>(doc.components);
-		orderedTerms.sort(new Comparator<Term>() {
-			@Override
-			public int compare(Term t1, Term t2) {
-				return doc.termSignificance(t2).compareTo(doc.termSignificance(t1));
-			}
-		});
+		orderedTerms.sort(doc.DESCENDING_TFIDF);
 		Iterator<Term> it = orderedTerms.iterator();
 		
 		Set<Document> matching = new HashSet<>(targets.values());
@@ -91,7 +86,7 @@ public class StringCrossMapper {
 			tmp.retainAll(matching); 
 			if (tmp.size() > 0) {
 				matching = tmp;
-				similarity += doc.termSignificance(nextTerm);
+				similarity += doc.tfIdf(nextTerm);
 				i++;
 			} else {
 				break;
@@ -152,7 +147,7 @@ public class StringCrossMapper {
 					if (output.containsKey(matched)) {
 						soFar = output.get(matched);
 					}
-					output.put(matched, soFar*docTfidfScore*matched.termSignificance(outputTerm));
+					output.put(matched, soFar*docTfidfScore*matched.tfIdf(outputTerm));
 				}
 			});
 		}
