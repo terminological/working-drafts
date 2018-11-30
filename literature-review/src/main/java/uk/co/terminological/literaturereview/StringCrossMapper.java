@@ -18,8 +18,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.text.similarity.SimilarityScore;
 import org.apache.commons.text.similarity.CosineDistance;
+import org.apache.commons.text.similarity.SimilarityScore;
 
 public class StringCrossMapper {
 
@@ -164,23 +164,11 @@ public class StringCrossMapper {
  		return match;
 	}
 	
-	public enum ScoringSystem {
-		COSINE (new CosineDistance()),
-		;
-		
-		SimilarityScore<?> sim; 
-		ScoringSystem(SimilarityScore<?> sim) {
-			this.sim = sim;
-		}
-		
-		<X> SimilarityScore<X> get() {return (SimilarityScore<X>) sim;}
-	}
-	
 	/*
 	 * Takes an input document and calculates a similarity score for all the target documents based on the .
 	 * 
 	 */
-	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, ScoringSystem similarity) {
+	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, SimilarityScore<K> similarity) {
 		
 		Iterator<Term> it = doc.components.iterator();
 		Map<Document,K> output = new HashMap<>();
