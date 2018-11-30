@@ -56,7 +56,11 @@ public class StringCrossMapper {
 		targetCorpus = new Corpus(normaliser, tokeniser, stopWords);
 	}
 	
-	
+	/**
+	 * looks for documents which share terms with high tfidf scores 
+	 * @param doc
+	 * @return
+	 */
 	public Map<Document,Document> getBestMatches() {
 		Map<Document,Document> match = new HashMap<>();
  		for (Entry<String,Document> source: sources.entrySet()) {
@@ -66,27 +70,25 @@ public class StringCrossMapper {
  		return match;
 	}
 	
+	/*
+	 * looks for documents which share terms with high tfidf score 
+	 */
 	private Optional<Document> getBestMatch(Document doc) {
-		//if (targets.containsKey(doc.normalised)) return Optional.of(targets.get(doc.normalised));
 		Map<Term,Double> orderedTerms = doc.tfIdfsDescending();
 		Iterator<Entry<Term, Double>> it = orderedTerms.entrySet().iterator();
 		
-		//Any target document could be best match
 		Set<Document> matching = targetCorpus.getDocuments();
 		
-		//double similarity=0D;
 		int i = 0;
 		
 		while (it.hasNext() && matching.size() != 1) {
 			Entry<Term, Double> next = it.next();
 			Term nextTerm = next.getKey();
-			//Double nextTfidf = next.getValue();
 			Term outputTerm = targetCorpus.getTermFrom(nextTerm.tag);
 			Set<Document> tmp = outputTerm.getDocumentsUsing();
 			tmp.retainAll(matching); 
 			if (tmp.size() > 0) {
 				matching = tmp;
-				//similarity += nextTfidf;
 				i++;
 			} else {
 				break;
@@ -105,25 +107,27 @@ public class StringCrossMapper {
 	 */
 	public Map<Document,Map<Document,Double>> getAllMatchesBySignificance(Double minValue) {
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
- 		for (Document doc: sources.values()) {
+ 		
+ 		sourceCorpus.getDocuments().forEach(doc -> {
  			match.put(
- 					doc, 
- 					getAllMatchesBySignificance(doc)
+ 				doc, 
+ 				getAllMatchesBySignificance(doc)
  					.filter(kv -> kv.getValue() > minValue)
  					.collect(
- 							Collectors.toMap(
- 									kv -> kv.getKey(), 
- 									kv -> kv.getValue(),
- 									(e1, e2) -> e1, 
- 					                LinkedHashMap::new
- 									))); 
-		}
+ 						Collectors.toMap(
+ 							kv -> kv.getKey(), 
+ 							kv -> kv.getValue(),
+ 							(e1, e2) -> e1, 
+ 			                LinkedHashMap::new
+ 						))); 
+ 		});
+ 		
  		return match;
 	}
 	
 	/*
 	 * Calculates a significance of similarity based on the tfidf
-	 * For every term in the source document
+	 * For every term in the source document in order of descending tfidf
 	 * Find documents containing that term in the target corpus
 	 * Calculate the contribution that term will have on an overall score metric and multiply that to the current score for every matching document
 	 * Move onto next term.
@@ -131,25 +135,21 @@ public class StringCrossMapper {
 	 */
 	private Stream<Entry<Document,Double>> getAllMatchesBySignificance(Document doc) {
 		
-		Iterator<Entry<Term,Double>> it = doc.tfIdfsDescending().entrySet().iterator();
 		Map<Document,Double> output = new HashMap<>();
 		
-		while (it.hasNext()) {
-			Entry<Term,Double> nextTfidf = it.next();
-			Term nextTerm = nextTfidf.getKey();
-			Double docTfidfScore = nextTfidf.getValue();
+		doc.tfIdfsDescending().forEach((nextTerm,docTfidfScore) -> {
+			
 			Optional<Term> optOutputTerm = targetCorpus.getMatchingTerm(nextTerm);
 			optOutputTerm.ifPresent(outputTerm -> {
-				Set<Document> tmp = outputTerm.getDocumentsUsing();
-				for (Document matched: tmp) {
-					Double soFar = 1D;
-					if (output.containsKey(matched)) {
-						soFar = output.get(matched);
-					}
-					output.put(matched, soFar*docTfidfScore*matched.tfIdf(outputTerm));
-				}
+				outputTerm.getDocumentsUsing().forEach(matchingDoc -> {
+					Optional.ofNullable(output.get(matchingDoc)).ifPresentOrElse(
+							scoreSoFar -> output.put(matchingDoc, 
+									scoreSoFar+docTfidfScore*matchingDoc.tfIdf(outputTerm)), 
+							() -> output.put(matchingDoc, 
+									docTfidfScore*matchingDoc.tfIdf(outputTerm)));
+				});
 			});
-		}
+		});
 		
 		return output.entrySet()
          .stream()
