@@ -2,6 +2,7 @@ package uk.co.terminological.nlptools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,7 +21,7 @@ import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
 public class Corpus {
 	
 	Map<String,Term> terms = new HashMap<>();
-	List<Document> documents = new ArrayList<>();
+	Set<Document> documents = new HashSet<>();
 	Normaliser normaliser;
 	Tokeniser tokeniser;
 	Set<String> stopWords;
@@ -84,6 +85,10 @@ public class Corpus {
 		return new StringBuilder()
 				.append("Documents: "+documents.size()+", ")
 				.append("Unique terms: "+terms.size()).toString();
+	}
+
+	public Set<Document> getDocuments() {
+		return this.documents;
 	}
 	
 }

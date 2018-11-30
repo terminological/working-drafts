@@ -71,7 +71,7 @@ public class StringCrossMapper {
 		orderedTerms.sort(doc.descendingTfIdf());
 		Iterator<Term> it = orderedTerms.iterator();
 		
-		Set<Document> matching = new HashSet<>(targets.values());
+		Set<Document> matching = new HashSet<>(targetCorpus.getDocuments());
 		
 		double similarity=0D;
 		int i = 0;

@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * A document is an identifiable string associated with a corpus
+ */
 public class Document {
 	
 	private String identifier;
