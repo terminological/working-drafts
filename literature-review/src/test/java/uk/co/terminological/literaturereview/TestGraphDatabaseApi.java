@@ -44,6 +44,8 @@ public class TestGraphDatabaseApi {
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
 		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Informatics","Computer","Science","Medicine");
 		
+		logger.info("loading from graph");
+		
 		try (Transaction tx = graphApi.get().beginTx()) {
 			
 			graphApi.get().findNodes(Labels.AUTHOR).forEachRemaining(
@@ -61,7 +63,7 @@ public class TestGraphDatabaseApi {
 			);			
 		}
 		
-		logger.debug(mapper.summaryStats());
+		logger.info(mapper.summaryStats());
 		
 		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
 		
@@ -69,14 +71,16 @@ public class TestGraphDatabaseApi {
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
-						src.identifier+"\t"+src.string+"\t"
-						+target.identifier+"\t"+target.string+"\t"
-						+score
+							score+"\t"+
+						src.identifier+"\t"+
+						target.identifier+"\t"+
+						src.string+"\t"+
+						target.string+"\t"
 				);
 			});
 		});
 		
-		logger.debug("file written");
+		logger.info("file written");
 		out.close();
 		
 		graphApi.waitAndShutdown();
