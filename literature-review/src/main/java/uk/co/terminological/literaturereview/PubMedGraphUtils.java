@@ -201,7 +201,11 @@ public class PubMedGraphUtils {
 				node.removeLabel(Labels.PMCENTRAL_STUB);
 				
 				Arrays.asList(additional).forEach(l -> node.addLabel(l));
-								
+					
+				entry.getKeyWords().forEach(kw -> {
+					Node target = doMerge(Labels.KEYWORD, Prop.TERM, kw, graph.get());
+					node.createRelationshipTo(target, Rel.HAS_KEYWORD);
+				});
 				entry.getAuthors().forEach(au -> {
 					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);
 					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_AUTHOR));
@@ -425,6 +429,7 @@ public class PubMedGraphUtils {
 				node.removeLabel(Labels.PMID_STUB);
 				node.removeLabel(Labels.PMCENTRAL_STUB);
 				tx.success();
+				
 			}
 
 			return Optional.of(work.DOI.get().toLowerCase());
