@@ -78,7 +78,7 @@ public class Document {
 	
 	// ============ SPECIFIC METHODS =====================
 	
-	public int occurencesInDocument(Term term) {
+	public int countOccurencesInDocument(Term term) {
 		return termCounts.get(term);
 	}
 	
@@ -92,7 +92,7 @@ public class Document {
 	 * @return
 	 */
 	public Double tfIdf(Term term) { 
-		Double tf = ((double) occurencesInDocument(term));// / termsInDocumentTotal();
+		Double tf = ((double) countOccurencesInDocument(term));// / termsInDocumentTotal();
 		if (term.tag.length() < 3) tf=tf/10;
 		return tf*term.idf();
 	}
