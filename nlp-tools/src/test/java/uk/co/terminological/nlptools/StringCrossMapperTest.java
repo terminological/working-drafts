@@ -29,7 +29,7 @@ public class StringCrossMapperTest extends TestCase {
 	
 	@Test
 	protected void testTfIDF() {
-		mapper.getBestMatches().forEach((k,v) -> System.out.println(k.getIdentifier()+"\t"+v.getIdentifier());;
+		mapper.getBestMatches().forEach((k,v) -> System.out.println(k.getIdentifier()+"\t"+v.getIdentifier()));
 	}
 
 }
