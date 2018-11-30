@@ -9,9 +9,9 @@ public class StringCrossMapperTest extends TestCase {
 
 	static final String[] strings = {
 			"one two three four",
-			"one two three",
+			"one two",
 			"one two three four five",
-			"one two three four",
+			"three four",
 	};
 	
 	
