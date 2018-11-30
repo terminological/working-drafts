@@ -63,7 +63,7 @@ public class TestGraphDatabaseApi {
 			);			
 		}
 		
-		mapper.printSummaryStats();
+		System.out.println(mapper.summaryStats());
 		
 		mapper.getAllMatchesBySignificance(0D).forEach(
 			(src,match) -> {
