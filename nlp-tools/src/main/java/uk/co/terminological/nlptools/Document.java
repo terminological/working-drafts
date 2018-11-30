@@ -27,7 +27,7 @@ public class Document {
 		corpus.tokeniser.apply(normalised)
 			.filter(t-> !corpus.stopWords.contains(t))
 			.forEach(tag -> {
-				Term tmp = corpus.termFrom(tag);
+				Term tmp = corpus.getTermFrom(tag);
 				components.add(tmp);
 				tmp.add(this);
 				Optional.ofNullable(termCounts.get(tmp)).ifPresentOrElse(
