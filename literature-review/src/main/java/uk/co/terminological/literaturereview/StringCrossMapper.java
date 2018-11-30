@@ -163,13 +163,16 @@ public class StringCrossMapper {
  		return match;
 	}
 	
+	/*
+	 * Takes an input document and finds all the taget documents that match it
+	 * 
+	 */
 	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, SimilarityScore<K> similarity) {
 		
 		Iterator<Term> it = doc.components.iterator();
 		Map<Document,K> output = new HashMap<>();
 		String docNorm = Document.termsToString(doc.tfidfOrder()," ");//).normalisedOrder()," ");
-		
-		
+				
 		while (it.hasNext()) {
 			Term nextTerm = it.next();
 			Term outputTerm = targetComponents.termFrom(nextTerm.tag);
@@ -320,6 +323,10 @@ public class StringCrossMapper {
 			return tmp; //.stream().map(t -> t.tag).collect(Collectors.joining(" "));
 		}
 		
+		/**
+		 * lists the terms in the document according to descending tfidf score.
+		 * @return
+		 */
 		public List<Term> tfidfOrder() {
 			ArrayList<Term> orderedTerms = new ArrayList<>(components);
 			orderedTerms.sort(new Comparator<Term>() {
@@ -331,6 +338,12 @@ public class StringCrossMapper {
 			return orderedTerms;
 		}
 		
+		/**
+		 * reconstructs a document from a list of terms and a separator
+		 * @param terms
+		 * @param sep
+		 * @return A string of the document
+		 */
 		public static String termsToString(List<Term> terms, String sep) {
 			return terms.stream().map(t -> t.tag).collect(Collectors.joining(sep));
 		}
