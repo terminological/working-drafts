@@ -82,7 +82,7 @@ public class Document {
 		return termCounts.get(term);
 	}
 	
-	public int termsInDocumentTotal() {
+	public int countTermsInDocument() {
 		return components.size();
 	}
 	
