@@ -18,7 +18,7 @@ public class Document {
 	private String identifier;
 	private String string;
 	private String normalised;
-	private List<Term> components = new ArrayList<>();
+	private List<Term> terms = new ArrayList<>();
 	private HashMap<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
 	
@@ -32,7 +32,7 @@ public class Document {
 			.forEach(tag -> {
 				//Create a new term
 				Term tmp = corpus.getTermFrom(tag);
-				components.add(tmp);
+				terms.add(tmp);
 				tmp.add(this);
 				Optional.ofNullable(termCounts.get(tmp)).ifPresentOrElse(
 						count -> termCounts.put(tmp, count+1), 
@@ -56,7 +56,7 @@ public class Document {
 	}
 
 	public List<Term> getTerms() {
-		return components;
+		return terms;
 	}
 
 	public Corpus getCorpus() {
@@ -74,7 +74,7 @@ public class Document {
 	
 	public String toString() {
 		return string+" ("+
-				components.stream()
+				terms.stream()
 					.map(t -> t.tag+" ["+tfIdf(t)+"]")
 					.collect(Collectors.joining(","))+")";
 	}
@@ -86,7 +86,7 @@ public class Document {
 	}
 	
 	public int countTermsInDocument() {
-		return components.size();
+		return terms.size();
 	}
 	
 	/**
@@ -113,7 +113,7 @@ public class Document {
 	 * returns the terms of the document in string ascending order
 	 */
 	public List<Term> normalisedOrder() {
-		List<Term> tmp = new ArrayList<>(components);
+		List<Term> tmp = new ArrayList<>(terms);
 		tmp.sort((t1,t2) -> t1.tag.compareTo(t2.tag));
 		return tmp; //.stream().map(t -> t.tag).collect(Collectors.joining(" "));
 	}
@@ -123,7 +123,7 @@ public class Document {
 	 * @return
 	 */
 	public List<Term> tfIdfOrder() {
-		ArrayList<Term> orderedTerms = new ArrayList<>(components);
+		ArrayList<Term> orderedTerms = new ArrayList<>(terms);
 		orderedTerms.sort(new Comparator<Term>() {
 			@Override
 			public int compare(Term t1, Term t2) {
