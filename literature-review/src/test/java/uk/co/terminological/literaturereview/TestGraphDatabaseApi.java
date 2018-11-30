@@ -1,6 +1,7 @@
 package uk.co.terminological.literaturereview;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,6 +39,7 @@ public class TestGraphDatabaseApi {
 		prop.forEach((k,v) -> prop.put(k, v.toString().replace("~", System.getProperty("user.home")))); 
 		Path graphDbPath = fromProperty(prop,"graph-db-directory");
 		Path graphConfPath = fromProperty(prop,"graph-conf-file");
+		Path outputDir = fromProperty(prop,"output-directory");
 		
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
 		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Informatics","Computer","Science","Medicine");
@@ -59,19 +61,23 @@ public class TestGraphDatabaseApi {
 			);			
 		}
 		
-		System.out.println(mapper.summaryStats());
+		logger.debug(mapper.summaryStats());
 		
-		mapper.getAllMatchesByDistance(0D, new CosineDistance()).forEach(
+		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
+		
+		mapper.getAllMatchesBySignificance(0D).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
-					System.out.println(
-							src.identifier+"\t"+src.string+"\t"
-							+target.identifier+"\t"+target.string+"\t"
-							+score
-							);
-				});
+					out.println(
+						src.identifier+"\t"+src.string+"\t"
+						+target.identifier+"\t"+target.string+"\t"
+						+score
+				);
 			});
+		});
 		
+		logger.debug("file written");
+		out.close();
 		
 		graphApi.waitAndShutdown();
 	}
