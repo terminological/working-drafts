@@ -141,7 +141,7 @@ public class StringCrossMapper {
 			Double docTfidfScore = nextTfidf.getValue();
 			Optional<Term> optOutputTerm = targetCorpus.getMatchingTerm(nextTerm);
 			optOutputTerm.ifPresent(outputTerm -> {
-				Set<Document> tmp = outputTerm.documentUsing.keySet();
+				Set<Document> tmp = outputTerm.getDocumentsUsing();
 				for (Document matched: tmp) {
 					Double soFar = 1D;
 					if (output.containsKey(matched)) {
