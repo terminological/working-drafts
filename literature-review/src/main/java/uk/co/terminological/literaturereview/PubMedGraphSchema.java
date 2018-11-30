@@ -58,6 +58,7 @@ public class PubMedGraphSchema {
 		public static final String TOKEN_VALUE = "value";
 		public static final String ABSTRACT = "abstract";
 		public static final String AFFILIATIONS = "affiliations";
+		public static final String ORCID = "orcid";
 	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {

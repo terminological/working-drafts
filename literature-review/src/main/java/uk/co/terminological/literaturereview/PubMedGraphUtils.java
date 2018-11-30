@@ -223,30 +223,30 @@ public class PubMedGraphUtils {
 	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getIdentifier(),
-				author.lastName(),author.firstName(), author.initials(), author.affiliations().collect(Collectors.toSet()), graph, tx);
+				author.lastName(),author.firstName(), author.initials(), author.affiliations().collect(Collectors.toSet()),author.orcid(), graph, tx)
+				;
 	}
 		
 	public static Optional<Node> mapAuthorToNode(Contributor author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getIdentifier(),
 				author.family, author.given, Optional.empty(),
-				author.affiliation.stream().flatMap(af -> af.name.stream()).collect(Collectors.toSet()), graph, tx
+				author.affiliation.stream().flatMap(af -> af.name.stream()).collect(Collectors.toSet()),
+				author.ORCID.map(url -> url.toString()), graph, tx
 				);
 	}
 	
 	
-	public static Optional<Node> mapAuthorToNode(String identifier, Optional<String> lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, GraphDatabaseApi graph, Transaction tx) {
+	public static Optional<Node> mapAuthorToNode(String identifier, Optional<String> lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, Optional<String> orcid, GraphDatabaseApi graph, Transaction tx) {
 
 		Node out = null;
 
-			Node node = graph.get().createNode();// doMerge(AUTHOR, "identifier", identifier, graph.get());
+			Node node = graph.get().createNode(Labels.AUTHOR);// doMerge(AUTHOR, "identifier", identifier, graph.get());
 			firstName.ifPresent(fn -> node.setProperty(Prop.FIRST_NAME, fn));
 			lastName.ifPresent(fn -> node.setProperty(Prop.LAST_NAME, fn));
 			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
-			// if (!affiliations.isEmpty()) {
-			//	if (node.hasProperty(Prop.AFFILITATIONS)) affiliations.addAll(Arrays.asList((String[]) node.getProperty(Prop.AFFILITATIONS))); 
-				node.setProperty(Prop.AFFILIATIONS, affiliations.toArray(new String[] {}));
-			// }
+			orcid.ifPresent(fn -> node.setProperty(Prop.ORCID, fn));
+			node.setProperty(Prop.AFFILIATIONS, affiliations.toArray(new String[] {}));
 			out = node;
 
 		return Optional.ofNullable(out);
