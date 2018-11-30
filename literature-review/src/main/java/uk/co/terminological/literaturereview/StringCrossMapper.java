@@ -359,10 +359,10 @@ public class StringCrossMapper {
 	static interface Tokeniser extends Function<String,Stream<String>> {}
 
 	public String summaryStats() {
-		String out = new StringBuilder("Sources: ")
+		return new StringBuilder("Sources: ")
 				.append("{"+sourceComponents.summaryStats()+"}")
 				.append(",\nTargets: ")
-				.append("{"+targetComponents.summaryStats()+"}")
+				.append("{"+targetComponents.summaryStats()+"}").toString();
 		
 	}
 	
