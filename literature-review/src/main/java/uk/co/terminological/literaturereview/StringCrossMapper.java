@@ -22,23 +22,22 @@ import org.apache.commons.text.similarity.SimilarityScore;
 
 public class StringCrossMapper {
 
-	Set<Document> sources = new LinkedHashSet<>();
+	Map<String,Document> sources = new LinkedHashMap<>();
 	Map<String,Document> targets = new HashMap<>();
 	Corpus sourceComponents;
 	Corpus targetComponents;
 	Normaliser normaliser;
 	Tokeniser tokeniser;
 	
-	public void addSource(String source) {
-		this.sources.add(new Document(source, sourceComponents));
+	public void addSource(String id, String source) {
+		this.sources.put(id, new Document(id, source, sourceComponents));
 	}
 	
 	public Corpus getSource() {return sourceComponents;}
 	public Corpus getTarget() {return targetComponents;}
 	
-	public void addTarget(String target) {
-		Document tmp = new Document(target, targetComponents);
-		this.targets.put(tmp.normalised, tmp);
+	public void addTarget(String id, String target) {
+		this.targets.put(id, new Document(id, target, targetComponents));
 	}
 	
 	public StringCrossMapper(String... stopWords) {
@@ -57,10 +56,10 @@ public class StringCrossMapper {
 	}
 	
 	
-	public Map<String,Entry<String,Double>> getBestMatches() {
-		Map<String,Entry<String,Double>> match = new HashMap<>();
- 		for (Document doc: sources) {
-			getBestMatch(doc).ifPresent(doc2 -> match.put(doc.string, new SimpleEntry<String,Double>(doc2.getKey().string, doc2.getValue()))); 
+	public Map<Document,Entry<Document,Double>> getBestMatches() {
+		Map<Document,Entry<Document,Double>> match = new HashMap<>();
+ 		for (Entry<String,Document> source: sources.entrySet()) {
+			getBestMatch(source.getValue()).ifPresent(doc2 -> match.put(source.getValue(), new SimpleEntry<Document,Double>(doc2.getKey(), doc2.getValue()))); 
 		}
  		return match;
 	}
@@ -101,16 +100,16 @@ public class StringCrossMapper {
 		
 	}
 	
-	public Map<String,Map<String,Double>> getAllMatchesBySignificance(Double minValue) {
-		Map<String,Map<String,Double>> match = new HashMap<>();
- 		for (Document doc: sources) {
+	public Map<Document,Map<Document,Double>> getAllMatchesBySignificance(Double minValue) {
+		Map<Document,Map<Document,Double>> match = new HashMap<>();
+ 		for (Document doc: sources.values()) {
  			match.put(
- 					doc.string, 
+ 					doc, 
  					getAllMatchesBySignificance(doc)
  					.filter(kv -> kv.getValue() > minValue)
  					.collect(
  							Collectors.toMap(
- 									kv -> kv.getKey().string, 
+ 									kv -> kv.getKey(), 
  									kv -> kv.getValue(),
  									(e1, e2) -> e1, 
  					                LinkedHashMap::new
@@ -142,16 +141,16 @@ public class StringCrossMapper {
          .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()));
 	}
 	
-	public <K extends Comparable<K>> Map<String,Map<String,K>> getAllMatchesByDistance(K minValue, SimilarityScore<K> metric) {
-		Map<String,Map<String,K>> match = new HashMap<>();
- 		for (Document doc: sources) {
+	public <K extends Comparable<K>> Map<Document,Map<Document,K>> getAllMatchesByDistance(K minValue, SimilarityScore<K> metric) {
+		Map<Document,Map<Document,K>> match = new HashMap<>();
+ 		for (Document doc: sources.values()) {
  			match.put(
- 					doc.string, 
+ 					doc, 
  					getAllMatchesByDistance(doc, metric)
  					.filter(kv -> kv.getValue().compareTo(minValue) >= 0)
  					.collect(
  							Collectors.toMap(
- 									kv -> kv.getKey().string, 
+ 									kv -> kv.getKey(), 
  									kv -> kv.getValue(),
  									(e1, e2) -> e1, 
  					                LinkedHashMap::new
@@ -266,12 +265,14 @@ public class StringCrossMapper {
 	
 	public static class Document {
 		
+		String identifier;
 		String string;
 		String normalised;
 		List<Term> components = new ArrayList<>();
 		Corpus corpus;
 		
-		Document(String string, Corpus corpus) {
+		Document(String id, String string, Corpus corpus) {
+			this.identifier = id;
 			this.corpus = corpus;
 			this.string = string;
 			this.normalised = corpus.normaliser.apply(string);

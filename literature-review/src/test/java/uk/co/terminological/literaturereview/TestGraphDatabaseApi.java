@@ -38,11 +38,12 @@ public class TestGraphDatabaseApi {
 		Path graphConfPath = fromProperty(prop,"graph-conf-file");
 		
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
+		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Informatics","Computer","Science","Medicine");
 		
 		try (Transaction tx = graphApi.get().beginTx()) {
 			graphApi.get().findNodes(Labels.AUTHOR).forEachRemaining(
 				n -> {
-					
+					mapper.
 				}
 			);
 			
