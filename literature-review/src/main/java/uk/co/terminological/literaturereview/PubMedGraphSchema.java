@@ -30,7 +30,7 @@ public class PubMedGraphSchema {
 	    HAS_AUTHOR, HAS_MESH, HAS_REFERENCE, HAS_RELATED, HAS_TOKEN, TOKEN_PRECEEDED_BY
 	}
 	
-	public static class Props {
+	public static class Prop {
 		public static String PMID = "pmid";
 		public static String DOI = "doi";
 		public static String PMCID = "pmcid";
@@ -45,16 +45,16 @@ public class PubMedGraphSchema {
 		try ( Transaction tx = graph.get().beginTx() )
 		{
 		    Schema schema = graph.get().schema();
-		    schema.indexFor( Labels.ARTICLE ).on( Props.PMID ).create();
-		    schema.indexFor( Labels.ARTICLE ).on( Props.DOI ).create();
-		    schema.indexFor( Labels.ARTICLE ).on( Props.PMCID ).create();
-		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.PMID );
-		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.DOI );
-		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Props.PMCID );
+		    schema.indexFor( Labels.ARTICLE ).on( Prop.PMID ).create();
+		    schema.indexFor( Labels.ARTICLE ).on( Prop.DOI ).create();
+		    schema.indexFor( Labels.ARTICLE ).on( Prop.PMCID ).create();
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Prop.PMID );
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Prop.DOI );
+		    schema.constraintFor( Labels.ARTICLE ).assertPropertyIsUnique( Prop.PMCID );
 		    //schema.indexFor( Labels.AUTHOR ).on( Props.AUTHOR_ID ).create();
-		    schema.indexFor( Labels.TOKEN ).on( Props.TOKEN_VALUE ).create();
-		    schema.indexFor( Labels.MESH_CODE ).on( Props.MESH_CODE ).create();
-		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique( Props.MESH_CODE );
+		    schema.indexFor( Labels.TOKEN ).on( Prop.TOKEN_VALUE ).create();
+		    schema.indexFor( Labels.MESH_CODE ).on( Prop.MESH_CODE ).create();
+		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique( Prop.MESH_CODE );
 		    tx.success();
 		} catch (Exception e) {
 			logger.warn(e.getMessage());
