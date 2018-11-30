@@ -31,7 +31,7 @@ public class Term {
 	}
 	
 	
-	public int documentsWithTermCount() {
+	public int countDocumentsWithTerm() {
 		return documentsUsing.size();
 	}
 	
@@ -48,7 +48,7 @@ public class Term {
 	 * @return
 	 */
 	public Double idf() {
-		return Math.log(((double) corpus.corpusDocuments()-this.documentsWithTermCount())/this.documentsWithTermCount());
+		return Math.log(((double) corpus.corpusDocuments()-this.countDocumentsWithTerm())/this.countDocumentsWithTerm());
 	}
 	
 }
