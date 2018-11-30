@@ -72,7 +72,7 @@ public class Corpus {
 		return terms.get(tag);
 	}
 	
-	public int corpusDocuments() {
+	public int countCorpusDocuments() {
 		return documents.size();
 	}
 	

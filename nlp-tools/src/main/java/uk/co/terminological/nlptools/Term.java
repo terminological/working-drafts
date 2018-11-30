@@ -48,7 +48,7 @@ public class Term {
 	 * @return
 	 */
 	public Double idf() {
-		return Math.log(((double) corpus.corpusDocuments()-this.countDocumentsWithTerm())/this.countDocumentsWithTerm());
+		return Math.log(((double) corpus.countCorpusDocuments()-this.countDocumentsWithTerm())/this.countDocumentsWithTerm());
 	}
 	
 }
