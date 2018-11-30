@@ -2,8 +2,6 @@ package uk.co.terminological.nlptools;
 
 import java.util.HashMap;
 
-import uk.co.terminological.nlptools.StringCrossMapper.Document;
-
 public class Term {
 	String tag;
 	int count = 0;
