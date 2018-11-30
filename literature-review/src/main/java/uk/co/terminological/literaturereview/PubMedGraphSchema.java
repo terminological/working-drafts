@@ -44,7 +44,6 @@ public class PubMedGraphSchema {
 		public static final String CODE = "code";
 		public static final String TERM = "term";
 		public static final String CROSSREF = "crossref";
-		public static final String AFFILITATIONS = "affiliations";
 		public static final String INITIALS = "initials";
 		public static final String LAST_NAME = "lastName";
 		public static final String FIRST_NAME = "firstName";
@@ -58,6 +57,7 @@ public class PubMedGraphSchema {
 		public static final String MESH_CODE = "code";
 		public static final String TOKEN_VALUE = "value";
 		public static final String ABSTRACT = "abstract";
+		public static final String AFFILIATIONS = "affiliations";
 	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {
