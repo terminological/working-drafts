@@ -61,11 +61,7 @@
 			<artifactId>runtime-api</artifactId>
 			<version>3.4.9.52</version>
 		</dependency>-->
-		<dependency>
-			<groupId>com.kennycason</groupId>
-			<artifactId>kumo-core</artifactId>
-			<version>1.17</version>
-		</dependency>
+		
 
 
 		<dependency>
