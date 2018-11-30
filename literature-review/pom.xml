@@ -36,7 +36,7 @@
 		</dependency>
 		<!-- <dependency> <groupId>org.neo4j</groupId> <artifactId>graph-algorithms-algo</artifactId> 
 			<version>3.4.8.0</version> </dependency> -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.graphaware.neo4j</groupId>
 			<artifactId>nlp</artifactId>
 			<version>3.4.9.52.15</version>
@@ -60,7 +60,7 @@
 			<groupId>com.graphaware.neo4j</groupId>
 			<artifactId>runtime-api</artifactId>
 			<version>3.4.9.52</version>
-		</dependency>
+		</dependency>-->
 
 
 
