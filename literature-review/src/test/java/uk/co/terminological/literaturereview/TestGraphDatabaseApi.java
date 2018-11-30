@@ -5,19 +5,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.cypher.internal.frontend.v2_3.perty.recipe.Pretty.doc;
-import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Streams;
 
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
