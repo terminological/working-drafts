@@ -18,7 +18,7 @@ public class StringCrossMapperTest extends TestCase {
 	StringCrossMapper mapper;
 	
 	@Before
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		super.setUp();
 		this.mapper = new StringCrossMapper();
 		for (int i=0; i<strings.length; i++) {
@@ -28,7 +28,7 @@ public class StringCrossMapperTest extends TestCase {
 	}
 	
 	@Test
-	protected void testTfIDF() {
+	public void testTfIDF() {
 		mapper.getBestMatches().forEach((k,v) -> System.out.println(k.getIdentifier()+"\t"+v.getIdentifier()));
 	}
 
