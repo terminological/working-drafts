@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -16,6 +17,7 @@ public class StringCrossMapperTest extends TestCase {
 	
 	StringCrossMapper mapper;
 	
+	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
 		this.mapper = new StringCrossMapper();
@@ -26,8 +28,8 @@ public class StringCrossMapperTest extends TestCase {
 	}
 	
 	@Test
-	protected testTfIDF() {
-		
+	protected void testTfIDF() {
+		mapper.getBestMatches().forEach((k,v) -> System.out.println(k.getIdentifier()+"\t"+v.getIdentifier());;
 	}
 
 }
