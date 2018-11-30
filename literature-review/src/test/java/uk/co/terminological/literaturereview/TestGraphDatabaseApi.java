@@ -43,7 +43,11 @@ public class TestGraphDatabaseApi {
 		try (Transaction tx = graphApi.get().beginTx()) {
 			graphApi.get().findNodes(Labels.AUTHOR).forEachRemaining(
 				n -> {
-					mapper.
+					mapper.addSource(Long.toString(n.getId()), 
+							n.getProperty(Props., defaultValue)+" "
+							n.getProperty(key, defaultValue)+" "
+							n.getProperty(key, defaultValue)+" "
+					);
 				}
 			);
 			
