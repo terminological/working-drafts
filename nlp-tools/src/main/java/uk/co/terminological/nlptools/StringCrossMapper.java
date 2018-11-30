@@ -57,33 +57,36 @@ public class StringCrossMapper {
 	}
 	
 	
-	public Map<Document,Entry<Document,Double>> getBestMatches() {
-		Map<Document,Entry<Document,Double>> match = new HashMap<>();
+	public Map<Document,Document> getBestMatches() {
+		Map<Document,Document> match = new HashMap<>();
  		for (Entry<String,Document> source: sources.entrySet()) {
-			getBestMatch(source.getValue()).ifPresent(doc2 -> match.put(source.getValue(), new SimpleEntry<Document,Double>(doc2.getKey(), doc2.getValue()))); 
+			getBestMatch(source.getValue()).ifPresent(
+					doc2 -> match.put(source.getValue(), doc2)); 
 		}
  		return match;
 	}
 	
-	private Optional<Entry<Document,Double>> getBestMatch(Document doc) {
+	private Optional<Document> getBestMatch(Document doc) {
 		//if (targets.containsKey(doc.normalised)) return Optional.of(targets.get(doc.normalised));
-		ArrayList<Term> orderedTerms = new ArrayList<>(doc.getComponents());
-		orderedTerms.sort(doc.descendingTfIdf());
-		Iterator<Term> it = orderedTerms.iterator();
+		Map<Term,Double> orderedTerms = doc.tfIdfsDescending();
+		Iterator<Entry<Term, Double>> it = orderedTerms.entrySet().iterator();
 		
-		Set<Document> matching = new HashSet<>(targetCorpus.getDocuments());
+		//Any target document could be best match
+		Set<Document> matching = targetCorpus.getDocuments();
 		
-		double similarity=0D;
+		//double similarity=0D;
 		int i = 0;
 		
 		while (it.hasNext() && matching.size() != 1) {
-			Term nextTerm = it.next();
+			Entry<Term, Double> next = it.next();
+			Term nextTerm = next.getKey();
+			//Double nextTfidf = next.getValue();
 			Term outputTerm = targetCorpus.getTermFrom(nextTerm.tag);
 			Set<Document> tmp = outputTerm.getDocumentsUsing();
 			tmp.retainAll(matching); 
 			if (tmp.size() > 0) {
 				matching = tmp;
-				similarity += doc.tfIdf(nextTerm);
+				//similarity += nextTfidf;
 				i++;
 			} else {
 				break;
@@ -91,8 +94,7 @@ public class StringCrossMapper {
 		}
 		
 		if (i<2) return Optional.empty();
-		final double sim = similarity;
-		return matching.stream().map(d -> (Entry<Document,Double>) new SimpleEntry<Document,Double>(d,sim)).findAny();
+		return matching.stream().findAny();
 		
 	}
 	
