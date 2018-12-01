@@ -125,18 +125,18 @@ public class StringCrossMapper {
 	}
 	
 	/**
-	 * 
+	 * A score between 0 and 1 where 1 is no difference
 	 * @param minValue
 	 * @return
 	 */
-	public Map<Document,Map<Document,Double>> getAllMatchesByDifference(Double maxValue) {
+	public Map<Document,Map<Document,Double>> getAllMatchesByDifference(Double minValue) {
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
  		
  		sourceCorpus.getDocuments().forEach(doc -> {
  			match.put(
  				doc, 
- 				getAllMatchesByDifference(doc)
- 					.filter(kv -> kv.getValue() < maxValue)
+ 				getAllMatchesBySimilarity(doc)
+ 					.filter(kv -> kv.getValue() > minValue)
  					.collect(
  						Collectors.toMap(
  							kv -> kv.getKey(), 
@@ -157,7 +157,7 @@ public class StringCrossMapper {
 	 * Move onto next term.
 	 * 
 	 */
-	private Stream<Entry<Document,Double>> getAllMatchesByDifference(Document doc) {
+	private Stream<Entry<Document,Double>> getAllMatchesBySimilarity(Document doc) {
 		
 		Map<Document,Double> output = new HashMap<>();
 		
