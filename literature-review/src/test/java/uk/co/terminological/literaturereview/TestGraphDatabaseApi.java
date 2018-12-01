@@ -70,7 +70,7 @@ public class TestGraphDatabaseApi {
 		
 		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
 		
-		mapper.getAllMatchesBySignificance(0D).forEach(
+		mapper.getAllMatchesByDifference(2D).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
