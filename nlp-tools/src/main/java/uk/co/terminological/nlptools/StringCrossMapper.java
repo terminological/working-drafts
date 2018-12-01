@@ -1,6 +1,7 @@
 package uk.co.terminological.nlptools;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.text.similarity.SimilarityScore;
+
+import com.github.davidmoten.rtree.internal.Comparators;
 
 public class StringCrossMapper {
 
@@ -167,12 +170,12 @@ public class StringCrossMapper {
 						() -> targetTerms.put(k, -v));
 			});
 			Double subSquares = targetTerms.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
-			output.put(target, Math.sqrt(subSquares));
+			output.put(target, 1/(1+Math.sqrt(subSquares)));
 		});
 		
 		return output.entrySet()
          .stream()
-         .sorted(Map.Entry.comparingByValue());
+         .sorted(Collections.reverseOrder(Entry.comparingByValue()));
 	}
 	
 	/**
