@@ -126,14 +126,14 @@ public class StringCrossMapper {
 	 * @param minValue
 	 * @return
 	 */
-	public Map<Document,Map<Document,Double>> getAllMatchesBySignificance(Double minValue) {
+	public Map<Document,Map<Document,Double>> getAllMatchesByDifference(Double maxValue) {
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
  		
  		sourceCorpus.getDocuments().forEach(doc -> {
  			match.put(
  				doc, 
  				getAllMatchesByDifference(doc)
- 					.filter(kv -> kv.getValue() > minValue)
+ 					.filter(kv -> kv.getValue() < maxValue)
  					.collect(
  						Collectors.toMap(
  							kv -> kv.getKey(), 
