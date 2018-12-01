@@ -129,7 +129,7 @@ public class StringCrossMapper {
 	 * @param minValue
 	 * @return
 	 */
-	public Map<Document,Map<Document,Double>> getAllMatchesByDifference(Double minValue) {
+	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue) {
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
  		
  		sourceCorpus.getDocuments().forEach(doc -> {
