@@ -2,6 +2,7 @@ package uk.co.terminological.nlptools;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,24 +77,49 @@ public class StringCrossMapper {
 		
 		Set<Document> matching = targetCorpus.getDocuments();
 		
-		int i = 0;
-		
-		while (it.hasNext() && matching.size() != 1) {
+		double score = 0;
+		while (it.hasNext() && matching.size() > 1) {
 			Entry<Term, Double> next = it.next();
 			Term nextTerm = next.getKey();
 			Term outputTerm = targetCorpus.getTermFrom(nextTerm.tag);
-			Set<Document> tmp = outputTerm.getDocumentsUsing();
+			Set<Document> tmp = new HashSet<>(outputTerm.getDocumentsUsing());
 			tmp.retainAll(matching); 
 			if (tmp.size() > 0) {
 				matching = tmp;
-				i++;
-			} else {
-				break;
+				score += next.getValue();
 			}
 		}
+		
 		if (matching.size() == 1) return matching.stream().findFirst();
-		if (i < doc.countTermsInDocument()) return Optional.empty();
-		return matching.stream().findAny();
+		if (score == 0) return Optional.empty();
+		Document bestMatch = null;
+		
+		Double bestScore = Double.NEGATIVE_INFINITY;
+		for (Document match: matching) {
+			
+			Map<Term, Double> found = new HashMap<>(match.tfIdfsDescending());
+			Map<Term, Double> orig = new HashMap<>(doc.tfIdfsDescending());
+			
+			Double tmpScore = 0D;
+			
+			tmpScore += orig.entrySet().stream().collect(Collectors.summingDouble(kv -> {
+				if (found.containsKey(kv.getKey())) return found.get(kv.getKey());
+				else return -found.get(kv.getKey());
+			}));
+			
+			tmpScore += found.entrySet().stream().collect(Collectors.summingDouble(kv -> {
+				if (orig.containsKey(kv.getKey())) return orig.get(kv.getKey());
+				else return -orig.get(kv.getKey());
+			}));
+			
+			if (tmpScore > bestScore) {
+				bestScore = tmpScore;
+				bestMatch = match;
+			}
+			
+		}
+		
+		return Optional.ofNullable(bestMatch);
 		
 	}
 	
