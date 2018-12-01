@@ -132,7 +132,7 @@ public class StringCrossMapper {
  		sourceCorpus.getDocuments().forEach(doc -> {
  			match.put(
  				doc, 
- 				getAllMatchesBySignificance(doc)
+ 				getAllMatchesByDifference(doc)
  					.filter(kv -> kv.getValue() > minValue)
  					.collect(
  						Collectors.toMap(
