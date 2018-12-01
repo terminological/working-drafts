@@ -32,7 +32,7 @@ public class StringCrossMapperTest extends TestCase {
 	
 	@Test
 	public void testTfIDF() {
-		mapper.getAllMatchesBySignificance(minValue).forEach((k,v) -> System.out.println(k.getIdentifier()+"\t"+v.getIdentifier()));
+		mapper.getAllMatchesByDifference(Double.POSITIVE_INFINITY).forEach((k,v) -> System.out.println(k.getIdentifier()+"\t"+v.getIdentifier()));
 	}
 
 }
