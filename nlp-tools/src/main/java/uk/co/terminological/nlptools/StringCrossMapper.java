@@ -102,15 +102,13 @@ public class StringCrossMapper {
 			
 			Double tmpScore = 0D;
 			
-			tmpScore += orig.entrySet().stream().collect(Collectors.summingDouble(kv -> {
-				if (found.containsKey(kv.getKey())) return found.get(kv.getKey());
-				else return -kv.getValue();
-			}));
+			tmpScore += orig.entrySet().stream().collect(Collectors.summingDouble(
+				kv -> Optional.ofNullable(found.get(kv.getKey())).orElse(-kv.getValue())
+			));
 			
-			tmpScore += found.entrySet().stream().collect(Collectors.summingDouble(kv -> {
-				if (orig.containsKey(kv.getKey())) return orig.get(kv.getKey());
-				else return -kv.getValue();
-			}));
+			tmpScore += found.entrySet().stream().collect(Collectors.summingDouble(
+				kv -> Optional.ofNullable(orig.get(kv.getKey())).orElse(-kv.getValue())
+			));
 			
 			if (tmpScore > bestScore) {
 				bestScore = tmpScore;
