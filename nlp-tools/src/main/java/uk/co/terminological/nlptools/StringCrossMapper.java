@@ -154,27 +154,25 @@ public class StringCrossMapper {
 	 * Move onto next term.
 	 * 
 	 */
-	private Stream<Entry<Document,Double>> getAllMatchesBySignificance(Document doc) {
+	private Stream<Entry<Document,Double>> getAllMatchesByDifference(Document doc) {
 		
 		Map<Document,Double> output = new HashMap<>();
 		
-		doc.tfIdfsDescending().forEach((nextTerm,docTfidfScore) -> {
-			
-			Optional<Term> optOutputTerm = targetCorpus.getMatchingTerm(nextTerm);
-			optOutputTerm.ifPresent(outputTerm -> {
-				outputTerm.getDocumentsUsing().forEach(matchingDoc -> {
-					Optional.ofNullable(output.get(matchingDoc)).ifPresentOrElse(
-							scoreSoFar -> output.put(matchingDoc, 
-									scoreSoFar+docTfidfScore*matchingDoc.tfIdf(outputTerm)), 
-							() -> output.put(matchingDoc, 
-									docTfidfScore*matchingDoc.tfIdf(outputTerm)));
-				});
+		targetCorpus.getDocuments().forEach(target -> {
+			HashMap<Term,Double> targetTerms = new HashMap<>(target.tfIdfsDescending());
+			HashMap<Term,Double> sourceTerms = new HashMap<>(doc.tfIdfsDescending());
+			sourceTerms.forEach((k,v) -> {
+				Optional.ofNullable(targetTerms.get(k)).ifPresentOrElse(
+						tv -> targetTerms.put(k, tv-v), 
+						() -> targetTerms.put(k, -v));
 			});
+			Double subSquares = targetTerms.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
+			output.put(target, Math.sqrt(subSquares));
 		});
 		
 		return output.entrySet()
          .stream()
-         .sorted(Map.Entry.comparingByValue(Collections.reverseOrder()));
+         .sorted(Map.Entry.comparingByValue());
 	}
 	
 	/**
