@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import org.apache.commons.text.similarity.SimilarityScore;
 
 import uk.co.terminological.datatypes.FluentMap;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 
 public class StringCrossMapper {
@@ -134,9 +135,9 @@ public class StringCrossMapper {
 	 * @param minValue
 	 * @return
 	 */
-	public Map<Tuple<Document,Document>,Double> getAllMatchesBySimilarity(Double minValue, Function<Document,Map<Term,Double>> mapper, BiFunction<Map<Term,Double>,Map<Term,Double>,Double> algorithm) {
+	public List<Triple<Document,Document,Double>> getAllMatchesBySimilarity(Double minValue, Function<Document,Map<Term,Double>> mapper, BiFunction<Map<Term,Double>,Map<Term,Double>,Double> algorithm) {
 		//<Double> scores = new ArrayList<>(); 
-		Map<Document,Map<Document,Double>> match = new HashMap<>();
+		List<Triple<Document,Document,Double>> match = new ArrayList<>();
 		Double max = 0D;
 		// int count = 0;
  		
@@ -148,9 +149,7 @@ public class StringCrossMapper {
  				if (max < distance) max = distance; 
  				// count += 1;
  				// add to or create the nested map
- 				Optional.ofNullable(match.get(doc)).ifPresentOrElse(
- 						submap -> submap.put(target, distance),
- 						() -> match.put(doc, FluentMap.with(target, distance)));
+ 				match.add(Triple.create(doc, target, distance));
  			}
  		}
  		
@@ -182,20 +181,15 @@ public class StringCrossMapper {
  				else values.put(key, (median / (median+values.get(key))));
  			}
  		}*/
- 		Map<Document,Map<Document,Double>> out = new HashMap<>();
- 		
- 		for (Map<Document,Double> values: match.values()) {
- 			for (Document key : values.keySet()) {
- 				Double norm = 1-values.get(key)/max;
- 				if (norm > minValue) {
- 					values.put(key, norm);
- 				} else {
- 					values.remove(key);
- 				}
- 			}
+ 		List<Triple<Document,Document,Double>> out = new ArrayList<>();
+ 		Iterator<Triple<Document,Document,Double>> it = match.iterator();
+ 		while (it.hasNext()) {
+ 			Triple<Document,Document,Double> next = it.next();
+ 			Double norm = 1-next.getThird()/max;
+ 			if (norm>minValue) out.add(Triple.create(next.getFirst(), next.getSecond(), norm));
  		}
  		
- 		return match;
+ 		return out;
 	}
 	
 	
