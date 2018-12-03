@@ -53,11 +53,13 @@ public class TestGraphDatabaseApi {
 			
 			graphApi.get().findNodes(Labels.AUTHOR).stream().limit(30).forEach(
 				n -> {
-					System.out.println(n.getProperty(Prop.LAST_NAME, "").toString());
+					
 					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {""});
+					System.out.println(n.getProperty(Prop.LAST_NAME, "").toString() +"\t"+ affils.length);
 					for (int i=0; i<affils.length; i++) {
-						String doc = repeat(n.getProperty(Prop.FIRST_NAME, "").toString(),10)+" "+
+						String doc = 
 								repeat(n.getProperty(Prop.LAST_NAME, "").toString(),10)+" "+
+								repeat(n.getProperty(Prop.FIRST_NAME, "").toString(),10)+" "+
 								repeat(n.getProperty(Prop.INITIALS, "").toString(),10)+" "+
 								affils[i]; 
 						System.out.println(n.getId()+"_"+i+"\t"+doc);
