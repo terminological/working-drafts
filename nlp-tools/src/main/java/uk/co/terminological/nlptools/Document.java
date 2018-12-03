@@ -110,13 +110,18 @@ public class Document {
 		return tf*term.idf();
 	}
 	
+	
+	public Double shannonEntropy() {
+		return terms.stream().collect(Collectors.summingDouble(t -> t.shannonEntropy()));
+	}
+	
 	/**
 	 * returns the terms of the document in entropy descending order.
 	 */
-	public List<Term> normalisedOrder() {
+	public List<Term> entropyOrder() {
 		List<Term> tmp = new ArrayList<>(terms);
 		tmp.sort((t1,t2) -> t2.shannonEntropy().compareTo(t1.shannonEntropy()));
-		return tmp; //.stream().map(t -> t.tag).collect(Collectors.joining(" "));
+		return tmp;
 	}
 	
 	/**
@@ -124,21 +129,26 @@ public class Document {
 	 * @return
 	 */
 	public List<Term> tfIdfOrder() {
-		ArrayList<Term> orderedTerms = new ArrayList<>(terms);
-		orderedTerms.sort(new Comparator<Term>() {
-			@Override
-			public int compare(Term t1, Term t2) {
-				return tfIdf(t2).compareTo(tfIdf(t1));
-			}
-		});
+		List<Term> orderedTerms = new ArrayList<>(terms);
+		orderedTerms.sort((t1,t2) -> tfIdf(t2).compareTo(tfIdf(t1)));
 		return orderedTerms;
 	}
 	
 	
-	public Map<Term,Double> tfIdfsDescending() {
+	public Map<Term,Double> termsByTfIdf() {
 		LinkedHashMap<Term,Double> out = new LinkedHashMap<>();
 		HashMap<Term,Double> tmp = new LinkedHashMap<>();
 		termCounts.keySet().forEach(c -> tmp.put(c, tfIdf(c)));
+		tmp.entrySet().stream()
+	    	.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+	    	.forEach(kv -> out.put(kv.getKey(), kv.getValue()));
+		return out;
+	}
+	
+	public Map<Term,Double> termsByEntropy() {
+		LinkedHashMap<Term,Double> out = new LinkedHashMap<>();
+		HashMap<Term,Double> tmp = new LinkedHashMap<>();
+		termCounts.keySet().forEach(c -> tmp.put(c, c.shannonEntropy()));
 		tmp.entrySet().stream()
 	    	.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
 	    	.forEach(kv -> out.put(kv.getKey(), kv.getValue()));
