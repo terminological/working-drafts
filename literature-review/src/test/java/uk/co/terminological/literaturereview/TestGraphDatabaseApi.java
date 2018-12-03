@@ -59,7 +59,7 @@ public class TestGraphDatabaseApi {
 								repeat(n.getProperty(Prop.LAST_NAME, "").toString(),10)+" "+
 								repeat(n.getProperty(Prop.INITIALS, "").toString(),10)+" "+
 								affils[i]; 
-						System.out.println(""+i+"\n"+doc);
+						System.out.println(n.getId()+"_"+i+"\t"+doc);
 						mapper.addSource(Long.toString(n.getId())+"_"+i,doc); 
 						mapper.addTarget(Long.toString(n.getId())+"_"+i,doc);
 					}
