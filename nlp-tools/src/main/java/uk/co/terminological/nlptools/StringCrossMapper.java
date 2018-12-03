@@ -156,6 +156,7 @@ public class StringCrossMapper {
  		} else {
  			median = (scores.get(scores.size()/2)+scores.get(scores.size()/2-1))/2;
  		}
+ 		// Use mean if median is zero
  		if (median == 0) median = total/scores.size();
  		// Double IQR = scores.get(scores.size()*3/4)-scores.get(scores.size()/4);
  		
