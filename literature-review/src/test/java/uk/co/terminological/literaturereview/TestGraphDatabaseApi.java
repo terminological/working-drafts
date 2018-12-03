@@ -94,7 +94,7 @@ public class TestGraphDatabaseApi {
 		
 		logger.info(mapper.summaryStats());
 		
-		
+		if (mapper.getSource().countCorpusDocuments() > 20) {
 		
 		mapper.getAllMatchesBySimilarity(0D).forEach(
 			(src,match) -> {
@@ -109,7 +109,10 @@ public class TestGraphDatabaseApi {
 			});
 		});
 		
+		}
+		
 		});
+		
 		
 		logger.info("file written");
 		out.close();
