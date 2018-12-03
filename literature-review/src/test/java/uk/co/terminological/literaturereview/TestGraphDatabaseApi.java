@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.apache.commons.text.similarity.CosineDistance;
@@ -18,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.cermine.exception.AnalysisException;
+
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 import uk.co.terminological.nlptools.StringCrossMapper;
@@ -45,7 +49,9 @@ public class TestGraphDatabaseApi {
 		Path outputDir = fromProperty(prop,"output-directory");
 		
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
-		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Informatics","Computer","Science","Medicine");
+		
+		
+		Map<String,StringCrossMapper> surnameMapper = new HashMap<>();
 		
 		logger.info("loading from graph");
 		
@@ -53,6 +59,13 @@ public class TestGraphDatabaseApi {
 			
 			graphApi.get().findNodes(Labels.AUTHOR).stream().forEach( //.limit(30).forEach(
 				n -> {
+					
+					String lastName = n.getProperty(Prop.LAST_NAME).toString().toLowerCase();
+					StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
+						StringCrossMapper tmp = new StringCrossMapper("University","Institute","Department","of","at","is","a","for");
+						surnameMapper.put(lastName,tmp);
+						return tmp;
+					});
 					
 					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {""});
 					if (affils.length == 0) affils = new String[] {""};
@@ -71,11 +84,13 @@ public class TestGraphDatabaseApi {
 			);			
 		}
 		
+		surnameMapper.forEach((surname,mapper)-> {
+		
 		logger.info(mapper.summaryStats());
 		
 		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
 		
-		mapper.getAllMatchesBySimilarity(0.6D).forEach(
+		mapper.getAllMatchesBySimilarity(0D).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
@@ -86,6 +101,8 @@ public class TestGraphDatabaseApi {
 						target.getString()
 				);
 			});
+		});
+		
 		});
 		
 		logger.info("file written");
