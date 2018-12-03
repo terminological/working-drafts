@@ -53,7 +53,7 @@ public class TestGraphDatabaseApi {
 		
 		
 		//Map<String,StringCrossMapper> surnameMapper = new HashMap<>();
-		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department","of","at","is","a","for", "Dept");
+		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department", "Research","of","at","is","a","for", "Dept");
 		
 		logger.info("loading from graph");
 		
@@ -83,7 +83,7 @@ public class TestGraphDatabaseApi {
 						
 						// nameAffiliation.append(" "+affils[i]);
 						// System.out.println(n.getId()+"\t"+nameAffiliation.toString());
-						String nameAffiliation = n.getProperty(Prop.FIRST_NAME, "")+" "+affils[i];
+						String nameAffiliation = lastName+" "+n.getProperty(Prop.FIRST_NAME, "")+" "+affils[i];
 						mapper.addSource(Long.toString(n.getId())+"_"+i,nameAffiliation.toString()); 
 						mapper.addTarget(Long.toString(n.getId())+"_"+i,nameAffiliation.toString());
 					}
@@ -103,7 +103,7 @@ public class TestGraphDatabaseApi {
 		
 		//if (mapper.getSource().countCorpusDocuments() > 20) {
 		
-		mapper.getAllMatchesBySimilarity(0D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
+		mapper.getAllMatchesBySimilarity(0.8D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
