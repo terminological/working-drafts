@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import org.apache.commons.text.similarity.SimilarityScore;
 
 import uk.co.terminological.datatypes.FluentMap;
+import uk.co.terminological.datatypes.Tuple;
 
 public class StringCrossMapper {
 
@@ -133,7 +134,7 @@ public class StringCrossMapper {
 	 * @param minValue
 	 * @return
 	 */
-	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue, Function<Document,Map<Term,Double>> mapper, BiFunction<Map<Term,Double>,Map<Term,Double>,Double> algorithm) {
+	public Map<Tuple<Document,Document>,Double> getAllMatchesBySimilarity(Double minValue, Function<Document,Map<Term,Double>> mapper, BiFunction<Map<Term,Double>,Map<Term,Double>,Double> algorithm) {
 		//<Double> scores = new ArrayList<>(); 
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
 		Double max = 0D;
@@ -181,6 +182,7 @@ public class StringCrossMapper {
  				else values.put(key, (median / (median+values.get(key))));
  			}
  		}*/
+ 		Map<Document,Map<Document,Double>> out = new HashMap<>();
  		
  		for (Map<Document,Double> values: match.values()) {
  			for (Document key : values.keySet()) {
