@@ -84,11 +84,13 @@ public class TestGraphDatabaseApi {
 			);			
 		}
 		
+		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
+		
 		surnameMapper.forEach((surname,mapper)-> {
 		
 		logger.info(mapper.summaryStats());
 		
-		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
+		
 		
 		mapper.getAllMatchesBySimilarity(0D).forEach(
 			(src,match) -> {
