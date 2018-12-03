@@ -172,7 +172,8 @@ public class StringCrossMapper {
  		
  		for (Map<Document,Double> values: match.values()) {
  			for (Document key : values.keySet()) {
- 				values.put(key, (median / (median+values.get(key))));
+ 				if (median == 0 && values.get(key) == 0) values.put(key, 1D);
+ 				else values.put(key, (median / (median+values.get(key))));
  			}
  		}
  		
