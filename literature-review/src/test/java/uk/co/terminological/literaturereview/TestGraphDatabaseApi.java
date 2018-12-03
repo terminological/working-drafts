@@ -56,7 +56,7 @@ public class TestGraphDatabaseApi {
 					
 					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {""});
 					if (affils.length == 0) affils = new String[] {""};
-					System.out.println(n.getProperty(Prop.LAST_NAME, "").toString() +"\t"+ affils.length);
+					// System.out.println(n.getProperty(Prop.LAST_NAME, "").toString() +"\t"+ affils.length);
 					for (int i=0; i<affils.length; i++) {
 						String doc = 
 								repeat(n.getProperty(Prop.LAST_NAME, "").toString(),10)+" "+
