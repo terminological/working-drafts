@@ -52,7 +52,8 @@ public class TestGraphDatabaseApi {
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
 		
 		
-		Map<String,StringCrossMapper> surnameMapper = new HashMap<>();
+		//Map<String,StringCrossMapper> surnameMapper = new HashMap<>();
+		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department","of","at","is","a","for", "Dept");
 		
 		logger.info("loading from graph");
 		
@@ -72,11 +73,11 @@ public class TestGraphDatabaseApi {
 					
 					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {});
 					if (affils.length > 0) {
-						StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
+						/*StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
 							StringCrossMapper tmp = new StringCrossMapper("University","Institute","Department","of","at","is","a","for");
 							surnameMapper.put(lastName,tmp);
 							return tmp;
-						});
+						});*/
 										
 					for (int i=0; i<affils.length; i++) {
 						
@@ -96,7 +97,7 @@ public class TestGraphDatabaseApi {
 		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
 		
 		
-		surnameMapper.forEach((surname,mapper)-> {
+		//surnameMapper.forEach((surname,mapper)-> {
 		
 		logger.info(mapper.summaryStats());
 		
@@ -117,7 +118,7 @@ public class TestGraphDatabaseApi {
 		
 		//}
 		
-		});
+		//});
 		
 		
 		logger.info("file written");
