@@ -35,9 +35,7 @@ public class Document {
 				Term tmp = corpus.getTermFrom(tag);
 				terms.add(tmp);
 				tmp.add(this);
-				Optional.ofNullable(termCounts.get(tmp)).ifPresentOrElse(
-						count -> termCounts.put(tmp, count+1), 
-						() -> termCounts.put(tmp, 1));
+				termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 			});
 		this.corpus.addDocument(this);
 	}

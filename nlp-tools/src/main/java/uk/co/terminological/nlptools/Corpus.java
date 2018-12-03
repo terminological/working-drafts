@@ -1,7 +1,9 @@
 package uk.co.terminological.nlptools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -24,7 +26,7 @@ public class Corpus {
 	private Tokeniser tokeniser;
 	private Set<String> stopWords;
 	private int termsInCorpus;
-	private Map<Term,Integer> termCounts = new HashMap<>();
+	private HashMap<Term,Integer> termCounts = new HashMap<>();
 	
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
 		this.normaliser = normaliser;
@@ -84,11 +86,8 @@ public class Corpus {
 			terms.put(tag, new Term(tag, this));
 		}
 		Term tmp = terms.get(tag);
-		tmp.incrementUsed();
+		termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 		termsInCorpus += 1;
-		Optional.ofNullable(termCounts.get(tmp)).ifPresentOrElse(
-				count -> termCounts.put(tmp, count+1), 
-				() -> termCounts.put(tmp, 1));
 		return tmp;
 	}
 	
@@ -115,6 +114,17 @@ public class Corpus {
 				.append("Unique terms: "+countUniqueTerms()).toString();
 	}
 
+	public int countTermsUsage(Term term) {
+		return termCounts.getOrDefault(term, 0);
+	}
 	
+	public Double totalShannonEntropy(Term term) {
+		return term.shannonEntropy()*countTermsUsage(term);
+	}
 	
+	public List<Term> getTermsByTotalEntropy() {
+		List<Term> out = new ArrayList<>(terms.values());
+		out.sort((t1,t2) -> totalShannonEntropy(t2).compareTo(totalShannonEntropy(t2)));
+		return out;
+	}
 }
