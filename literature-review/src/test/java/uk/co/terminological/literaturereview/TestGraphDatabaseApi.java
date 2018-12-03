@@ -104,17 +104,16 @@ public class TestGraphDatabaseApi {
 		//if (mapper.getSource().countCorpusDocuments() > 20) {
 		
 		mapper.getAllMatchesBySimilarity(0.8D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
-			(src,match) -> {
-				match.forEach((target,score) -> {
-					out.println(
-							score+"\t"+
-						src.getIdentifier()+"\t"+
-						target.getIdentifier()+"\t"+
-						src.getString()+"\t"+
-						target.getString()
+			t -> {
+				out.println(
+						t.getThird()+"\t"+
+						t.getFirst().getIdentifier()+"\t"+
+						t.getSecond().getIdentifier()+"\t"+
+						t.getFirst().getString()+"\t"+
+						t.getSecond().getString()
 				);
 			});
-		});
+		
 		
 		//}
 		
