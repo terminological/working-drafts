@@ -7,6 +7,7 @@ public class Term {
 	
 	String tag;
 	Corpus corpus;
+	Integer timesUsed;
 	HashSet<Document> documentsUsing = new HashSet<>();
 	
 	public Term(String tag, Corpus map) {
@@ -21,6 +22,7 @@ public class Term {
 		} else return false;
 	}
 	public String toString() {return tag+" ["+idf()+"]";} 
+	
 	
 	
 	/*

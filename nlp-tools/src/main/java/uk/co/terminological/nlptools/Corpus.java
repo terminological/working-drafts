@@ -75,14 +75,23 @@ public class Corpus {
 		return documents.size();
 	}
 	
+	public int countCorpusTerms() {
+		return documents.stream().collect(Collectors.summingInt(d -> d.countTermsInDocument()));
+	}
+	
+	public int countUniqueTerms() {
+		return terms.size();
+	}
+	
 	/**
 	 * return counts of documents and unique terms in this corpus
 	 * @return
 	 */
 	public String summaryStats() {
 		return new StringBuilder()
-				.append("Documents: "+documents.size()+", ")
-				.append("Unique terms: "+terms.size()).toString();
+				.append("Documents: "+countCorpusDocuments()+", ")
+				.append("Terms: "+countCorpusTerms()+", ")
+				.append("Unique terms: "+countUniqueTerms()).toString();
 	}
 
 	public Set<Document> getDocuments() {
