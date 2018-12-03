@@ -72,18 +72,17 @@ public class TestGraphDatabaseApi {
 						return tmp;
 					});
 					
+					StringBuilder nameAffiliation = new StringBuilder(n.getProperty(Prop.FIRST_NAME, "").toString());
+					
 					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {""});
-					if (affils.length == 0) affils = new String[] {""};
-					// System.out.println(n.getProperty(Prop.LAST_NAME, "").toString() +"\t"+ affils.length);
 					for (int i=0; i<affils.length; i++) {
-						String doc = 
-								n.getProperty(Prop.FIRST_NAME, "").toString()+" "+
-								n.getProperty(Prop.INITIALS, "").toString()+" "+
-								affils[i]; 
-						System.out.println(n.getId()+"_"+i+"\t"+doc);
-						mapper.addSource(Long.toString(n.getId())+"_"+i,doc); 
-						mapper.addTarget(Long.toString(n.getId())+"_"+i,doc);
+						nameAffiliation.append(" "+affils[i]);
 					}
+					
+					System.out.println(n.getId()+"\t"+nameAffiliation.toString());
+					mapper.addSource(Long.toString(n.getId()),nameAffiliation.toString()); 
+					mapper.addTarget(Long.toString(n.getId()),nameAffiliation.toString());
+					
 				}
 			);			
 		}
