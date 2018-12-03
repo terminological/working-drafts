@@ -133,11 +133,13 @@ public class StringCrossMapper {
 	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue) {
 		List<Double> scores = new ArrayList<>(); 
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
+		Double total = 0D;
  		
  		for (Document doc: sourceCorpus.getDocuments()) {
  			for (Document target: targetCorpus.getDocuments()) {
  				Double distance = getEuclideanDistance(doc,target);
  				scores.add(distance);
+ 				total += distance;
  				// add to or create the nested map
  				Optional.ofNullable(match.get(doc)).ifPresentOrElse(
  						submap -> submap.put(target, distance),
@@ -154,7 +156,7 @@ public class StringCrossMapper {
  		} else {
  			median = (scores.get(scores.size()/2)+scores.get(scores.size()/2-1))/2;
  		}
- 		
+ 		if (median == 0) median = total/scores.size();
  		// Double IQR = scores.get(scores.size()*3/4)-scores.get(scores.size()/4);
  		
  		
@@ -165,11 +167,11 @@ public class StringCrossMapper {
  		// Double k = -(2 * Math.log(1/3))/IQR;
  		// Function<Double,Double> normaliser = x -> 1/(1+Math.exp(-k*(x-x0)));
  		
- 		Function<Double,Double> normaliser = x -> median/(median+x);
+ 		// Function<Double,Double> normaliser = x -> median/(median+x);
  		
  		for (Map<Document,Double> values: match.values()) {
  			for (Document key : values.keySet()) {
- 				values.put(key, normaliser.apply(values.get(key)));
+ 				values.put(key, (median / (median+values.get(key))));
  			}
  		}
  		
