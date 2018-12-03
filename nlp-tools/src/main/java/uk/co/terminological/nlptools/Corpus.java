@@ -46,6 +46,19 @@ public class Corpus {
 		return documents.stream();
 	}
 	
+	public Normaliser getNormaliser() {
+		return normaliser;
+	}
+
+	public Tokeniser getTokeniser() {
+		return tokeniser;
+	}
+
+	public Set<String> getStopWords() {
+		return stopWords;
+	}
+
+	
 	// ============ SPECIFIC METHODS =====================
 	
 	
@@ -71,7 +84,7 @@ public class Corpus {
 		}
 		Term tmp = terms.get(tag);
 		tmp.incrementUsed();
-		termsInCorpus+=1;
+		termsInCorpus += 1;
 		return tmp;
 	}
 	
@@ -98,8 +111,6 @@ public class Corpus {
 				.append("Unique terms: "+countUniqueTerms()).toString();
 	}
 
-	public Set<Document> getDocuments() {
-		return this.documents;
-	}
+	
 	
 }
