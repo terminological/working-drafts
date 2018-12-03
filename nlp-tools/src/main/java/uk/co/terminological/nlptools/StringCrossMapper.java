@@ -204,20 +204,20 @@ public class StringCrossMapper {
 	 * @param metric a class from org.apache.commons.text.similarity
 	 * @return
 	 */
-	public <K extends Comparable<K>> Map<Document,Map<Document,K>> getAllMatchesByDistance(K minValue, SimilarityScore<K> metric) {
+	public <K extends Comparable<K>> Map<Document,Map<Document,K>> getAllMatchesByDistance(K maxValue, SimilarityScore<K> metric) {
 		Map<Document,Map<Document,K>> match = new HashMap<>();
+			
  		for (Document doc: sources.values()) {
- 			match.put(
- 					doc, 
- 					getAllMatchesByDistance(doc, metric)
- 					.filter(kv -> kv.getValue().compareTo(minValue) >= 0)
- 					.collect(
- 							Collectors.toMap(
- 									kv -> kv.getKey(), 
- 									kv -> kv.getValue(),
- 									(e1, e2) -> e1, 
- 					                LinkedHashMap::new
- 									))); 
+ 			Set<Document> targets = doc.getTerms().stream().flatMap(term -> targetCorpus.getMatchingTerm(term).stream()).flatMap(term -> term.getDocumentsUsing().stream()).collect(Collectors.toSet());
+ 			for (Document target: targets) {
+ 				K distance = getMatchByDistance(doc, target, metric); 
+ 				if (distance.compareTo(maxValue) < 0) {
+ 					Optional.ofNullable(match.get(doc)).ifPresentOrElse(
+ 	 						submap -> submap.put(target, distance),
+ 	 						() -> match.put(doc, FluentMap.with(target, distance)));
+ 				}
+ 			}
+ 				
 		}
  		return match;
 	}
@@ -225,19 +225,8 @@ public class StringCrossMapper {
 	/*
 	 * Takes an input document and calculates a similarity score for all the target documents based on the raw text of the document.
 	 */
-	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, SimilarityScore<K> similarity) {
-		Map<Document,K> output = new HashMap<>();
-				
-		for (Document matched: this.targetCorpus.getDocuments()) {
-			if (!output.containsKey(matched)) {
-				K sim1 = similarity.apply(doc.getString(), matched.getString());
-				output.put(matched, sim1);
-			}
-		}
-		
-		return output.entrySet()
-         .stream()
-         .sorted(Map.Entry.comparingByValue());
+	private <K extends Comparable<K>> K getMatchByDistance(Document doc,Document target, SimilarityScore<K> similarity) {
+		return similarity.apply(doc.getNormalised(), target.getNormalised());
 	}
 	
 	static interface Normaliser extends Function<String,String> {}
