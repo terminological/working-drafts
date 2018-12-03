@@ -217,8 +217,8 @@ public class StringCrossMapper {
  	 						() -> match.put(doc, FluentMap.with(target, distance)));
  				}
  			}
- 				
 		}
+ 		
  		return match;
 	}
 	
