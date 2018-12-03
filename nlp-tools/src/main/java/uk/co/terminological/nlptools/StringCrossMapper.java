@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.text.similarity.SimilarityScore;
+
+import javafx.collections.transformation.SortedList;
+import uk.co.terminological.datatypes.FluentMap;
+import uk.co.terminological.datatypes.Tuple;
 
 public class StringCrossMapper {
 
@@ -128,25 +133,29 @@ public class StringCrossMapper {
 	 * @return
 	 */
 	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue) {
+		List<Double> scores = new ArrayList<>(); 
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
  		
- 		sourceCorpus.getDocuments().forEach(doc -> {
- 			match.put(
- 				doc, 
- 				getAllEuclideanDistances(doc)
- 					.filter(kv -> kv.getValue() > minValue)
- 					.collect(
- 						Collectors.toMap(
- 							kv -> kv.getKey(), 
- 							kv -> kv.getValue(),
- 							(e1, e2) -> e1, 
- 			                LinkedHashMap::new
- 						))); 
- 		});
+ 		for (Document doc: sourceCorpus.getDocuments()) {
+ 			for (Document target: targetCorpus.getDocuments()) {
+ 				Double distance = getEuclideanDistance(doc,target);
+ 				scores.add(distance);
+ 				// add to or create the nested map
+ 				Optional.ofNullable(match.get(doc)).ifPresentOrElse(
+ 						submap -> submap.put(target, distance),
+ 						() -> match.put(doc, FluentMap.with(target, distance)));
+ 			}
+ 		}
  		
- 		List<Double> scores = match.values().stream().flatMap(kv -> kv.values().stream()).collect(Collectors.toList());
+ 		Double median;
  		Collections.sort(scores);
- 		Double median = scores.get(scores.size()/2);
+ 		if (scores.size() == 1) {
+ 			median = scores.get(0);
+ 		} else if (scores.size() % 2 == 1) {
+ 			median = scores.get(scores.size()/2);
+ 		} else {
+ 			median = (scores.get(scores.size()/2)+scores.get(scores.size()/2-1))/2;
+ 		}
  		
  		// Double IQR = scores.get(scores.size()*3/4)-scores.get(scores.size()/4);
  		
@@ -177,25 +186,19 @@ public class StringCrossMapper {
 	 * Move onto next term.
 	 * 
 	 */
-	private Stream<Entry<Document,Double>> getAllEuclideanDistances(Document doc) {
+	private Double getEuclideanDistance(Document doc, Document target) {
 		
-		Map<Document,Double> output = new HashMap<>();
-		
-		targetCorpus.getDocuments().forEach(target -> {
-			HashMap<Term,Double> targetTerms = new HashMap<>(target.tfIdfsDescending());
-			HashMap<Term,Double> sourceTerms = new HashMap<>(doc.tfIdfsDescending());
-			sourceTerms.forEach((k,v) -> {
-				Optional.ofNullable(targetTerms.get(k)).ifPresentOrElse(
-						tv -> targetTerms.put(k, tv-v), 
-						() -> targetTerms.put(k, -v));
-			});
-			Double subSquares = targetTerms.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
-			output.put(target, Math.sqrt(subSquares));
+		HashMap<Term,Double> targetTerms = new HashMap<>(target.tfIdfsDescending());
+		HashMap<Term,Double> sourceTerms = new HashMap<>(doc.tfIdfsDescending());
+		sourceTerms.forEach((k,v) -> {
+			Optional.ofNullable(targetTerms.get(k)).ifPresentOrElse(
+					tv -> targetTerms.put(k, tv-v), 
+					() -> targetTerms.put(k, -v));
 		});
+		Double subSquares = targetTerms.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
 		
-		return output.entrySet()
-         .stream()
-         .sorted(Collections.reverseOrder(Entry.comparingByValue()));
+		return Math.sqrt(subSquares);
+		
 	}
 	
 	/**
