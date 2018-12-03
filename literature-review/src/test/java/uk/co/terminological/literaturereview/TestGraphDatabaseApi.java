@@ -62,8 +62,8 @@ public class TestGraphDatabaseApi {
 					
 					String lastName = (n.getProperty(Prop.LAST_NAME, "unknown").toString()+"_"+
 							(n.getProperty(Prop.INITIALS, "").toString().isEmpty() ?
-									n.getProperty(Prop.FIRST_NAME, "").toString().substring(0,1):
-									n.getProperty(Prop.INITIALS, "").toString().substring(0,1)
+									n.getProperty(Prop.FIRST_NAME, "unknown").toString().substring(0,1):
+									n.getProperty(Prop.INITIALS, "unknown").toString().substring(0,1)
 									)
 							).toLowerCase();
 					StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
