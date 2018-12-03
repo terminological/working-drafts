@@ -133,7 +133,7 @@ public class StringCrossMapper {
  		sourceCorpus.getDocuments().forEach(doc -> {
  			match.put(
  				doc, 
- 				getAllMatchesBySimilarity(doc)
+ 				getAllEuclideanDistances(doc)
  					.filter(kv -> kv.getValue() > minValue)
  					.collect(
  						Collectors.toMap(
@@ -177,7 +177,7 @@ public class StringCrossMapper {
 	 * Move onto next term.
 	 * 
 	 */
-	private Stream<Entry<Document,Double>> getAllMatchesBySimilarity(Document doc) {
+	private Stream<Entry<Document,Double>> getAllEuclideanDistances(Document doc) {
 		
 		Map<Document,Double> output = new HashMap<>();
 		
