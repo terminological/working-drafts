@@ -51,7 +51,7 @@ public class TestGraphDatabaseApi {
 		
 		try (Transaction tx = graphApi.get().beginTx()) {
 			
-			graphApi.get().findNodes(Labels.AUTHOR).forEachRemaining(
+			graphApi.get().findNodes(Labels.AUTHOR).stream().limit(30).forEach(
 				n -> {
 					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {});
 					for (int i=0; i<affils.length; i++) {
@@ -70,7 +70,7 @@ public class TestGraphDatabaseApi {
 		
 		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
 		
-		mapper.getAllMatchesBySimilarity(0.75D).forEach(
+		mapper.getAllMatchesBySimilarity(0D).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
