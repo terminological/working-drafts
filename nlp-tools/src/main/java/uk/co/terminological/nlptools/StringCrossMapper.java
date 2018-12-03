@@ -247,7 +247,7 @@ public class StringCrossMapper {
 	public String summaryStats() {
 		return new StringBuilder("Sources: ")
 				.append("{"+sourceCorpus.summaryStats()+"}")
-				.append(",\nTargets: ")
+				.append(", Targets: ")
 				.append("{"+targetCorpus.summaryStats()+"}").toString();
 		
 	}
