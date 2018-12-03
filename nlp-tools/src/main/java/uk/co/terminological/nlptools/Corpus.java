@@ -18,11 +18,12 @@ import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
  */
 public class Corpus {
 	
-	Map<String,Term> terms = new HashMap<>();
-	Set<Document> documents = new HashSet<>();
-	Normaliser normaliser;
-	Tokeniser tokeniser;
-	Set<String> stopWords;
+	private Map<String,Term> terms = new HashMap<>();
+	private Set<Document> documents = new HashSet<>();
+	private Normaliser normaliser;
+	private Tokeniser tokeniser;
+	private Set<String> stopWords;
+	private int termsInCorpus;
 	
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
 		this.normaliser = normaliser;
@@ -68,7 +69,10 @@ public class Corpus {
 		if (!terms.containsKey(tag)) {
 			terms.put(tag, new Term(tag, this));
 		}
-		return terms.get(tag);
+		Term tmp = terms.get(tag);
+		tmp.incrementUsed();
+		termsInCorpus+=1;
+		return tmp;
 	}
 	
 	public int countCorpusDocuments() {
@@ -76,7 +80,7 @@ public class Corpus {
 	}
 	
 	public int countCorpusTerms() {
-		return documents.stream().collect(Collectors.summingInt(d -> d.countTermsInDocument()));
+		return termsInCorpus;
 	}
 	
 	public int countUniqueTerms() {

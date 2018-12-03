@@ -10,10 +10,11 @@ public class Term {
 	Corpus corpus;
 	Integer timesUsed;
 	HashSet<Document> documentsUsing = new HashSet<>();
-	
-	public Term(String tag, Corpus map) {
+		
+	protected Term(String tag, Corpus map) {
 		this.tag = tag;
 		this.corpus = map;
+		this.timesUsed = 0;
 	}
 	
 	public int hashCode() {return tag.hashCode();}
@@ -39,7 +40,7 @@ public class Term {
 	}
 	
 	public int countTotalOccurences() {
-		return documentsUsing.stream().collect(Collectors.summingInt(d -> d.countOccurencesInDocument(this)));
+		return timesUsed;
 	}
 	
 	public Double shannonEntropy() {
@@ -67,6 +68,10 @@ public class Term {
 
 	public Set<Document> getDocumentsUsing() {
 		return documentsUsing;
+	}
+
+	public void incrementUsed() {
+		timesUsed+=1;
 	}
 	
 }
