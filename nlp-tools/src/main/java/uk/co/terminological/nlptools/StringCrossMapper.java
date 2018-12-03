@@ -132,7 +132,7 @@ public class StringCrossMapper {
 	 * @param minValue
 	 * @return
 	 */
-	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue) {
+	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue, Function<Document,Map<Term,Double>> mapper) {
 		//<Double> scores = new ArrayList<>(); 
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
 		Double max = 0D;
@@ -140,7 +140,7 @@ public class StringCrossMapper {
  		
  		for (Document doc: sourceCorpus.getDocuments()) {
  			for (Document target: targetCorpus.getDocuments()) {
- 				Double distance = getEuclideanDistance(doc,target);
+ 				Double distance = getEuclideanDistance(mapper.apply(doc),mapper.apply(target));
  				// scores.add(distance);
  				if (max < distance) max = distance; 
  				// count += 1;
@@ -197,19 +197,38 @@ public class StringCrossMapper {
 	 * Move onto next term.
 	 * 
 	 */
-	private Double getEuclideanDistance(Document doc, Document target) {
+	private Double getEuclideanDistance(Map<Term,Double> source, Map<Term,Double> target) {
 		
-		HashMap<Term,Double> targetTerms = new HashMap<>(target.termsByTfIdf());
-		HashMap<Term,Double> sourceTerms = new HashMap<>(doc.termsByTfIdf());
-		sourceTerms.forEach((k,v) -> {
+		HashMap<Term,Double> targetTerms = new HashMap<>(target);
+		
+		source.forEach((k,v) -> {
 			Optional.ofNullable(targetTerms.get(k)).ifPresentOrElse(
 					tv -> targetTerms.put(k, tv-v), 
 					() -> targetTerms.put(k, -v));
 		});
+		
 		Double subSquares = targetTerms.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
-		
 		return Math.sqrt(subSquares);
+	}
+	
+	/*
+	 * Calculates a cosine similarity based on a scored 
+	 * For every term in the source document in order of descending tfidf
+	 * Find documents containing that term in the target corpus
+	 * Calculate the contribution that term will have on an overall score metric and multiply that to the current score for every matching document
+	 * Move onto next term.
+	 * 
+	 */
+	private Double getCosineSimilarity(Map<Term,Double> source, Map<Term,Double> target) {
 		
+		Double dotProd = source.entrySet().stream().collect(Collectors.summingDouble(kv -> 
+			kv.getValue()*target.getOrDefault(kv.getKey(),0D)
+		));
+		
+		Double sourceLengthSqrd = source.values().stream().collect(Collectors.summingDouble(v -> v*v)); 
+		Double targetLengthSqrd = target.values().stream().collect(Collectors.summingDouble(v -> v*v));
+		
+		return dotProd / (Math.sqrt(sourceLengthSqrd*targetLengthSqrd));
 	}
 	
 	/**
