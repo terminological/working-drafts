@@ -33,17 +33,13 @@ public class StringCrossMapperTest extends TestCase {
 	@Test
 	public void testTfIDF() {
 		mapper.getAllMatchesBySimilarity(0D, d -> d.termsByTfIdf(), Similarity::getCosineDifference).forEach(
-				(k,v) -> v.forEach(
-						(k2,v2) -> System.out.println(k.getIdentifier()+"\t"+k2.getIdentifier()+"\t"+v2.toString())
-					)
+				t -> System.out.println(t.getFirst().getIdentifier()+"\t"+t.getSecond().getIdentifier()+"\t"+t.getThird().toString())
 			);
 		
 		System.out.println("=================");
 		
 		mapper.getAllMatchesBySimilarity(0D, d -> d.termsByEntropy(), Similarity::getEuclideanDistance).forEach(
-				(k,v) -> v.forEach(
-						(k2,v2) -> System.out.println(k.getIdentifier()+"\t"+k2.getIdentifier()+"\t"+v2.toString())
-					)
+				t -> System.out.println(t.getFirst().getIdentifier()+"\t"+t.getSecond().getIdentifier()+"\t"+t.getThird().toString())
 			);
 		
 		System.out.println("=================");
