@@ -60,7 +60,7 @@ public class TestGraphDatabaseApi {
 			graphApi.get().findNodes(Labels.AUTHOR).stream().forEach( //.limit(30).forEach(
 				n -> {
 					
-					String lastName = n.getProperty(Prop.LAST_NAME).toString().toLowerCase();
+					String lastName = n.getProperty(Prop.LAST_NAME, "unknown").toString().toLowerCase();
 					StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
 						StringCrossMapper tmp = new StringCrossMapper("University","Institute","Department","of","at","is","a","for");
 						surnameMapper.put(lastName,tmp);
