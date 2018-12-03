@@ -140,7 +140,8 @@ public class StringCrossMapper {
 		// int count = 0;
  		
  		for (Document doc: sourceCorpus.getDocuments()) {
- 			for (Document target: targetCorpus.getDocuments()) {
+ 			Set<Document> targets = doc.getTerms().stream().flatMap(term -> targetCorpus.getMatchingTerm(term).stream()).flatMap(term -> term.getDocumentsUsing().stream()).collect(Collectors.toSet());
+ 			for (Document target: targets) {
  				Double distance = algorithm.apply(mapper.apply(doc),mapper.apply(target));
  				// scores.add(distance);
  				if (max < distance) max = distance; 
