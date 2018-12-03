@@ -70,7 +70,7 @@ public class TestGraphDatabaseApi {
 		
 		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
 		
-		mapper.getAllMatchesBySimilarity(0.02D).forEach(
+		mapper.getAllMatchesBySimilarity(0.75D).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
