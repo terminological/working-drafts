@@ -55,9 +55,9 @@ public class TestGraphDatabaseApi {
 				n -> {
 					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {});
 					for (int i=0; i<affils.length; i++) {
-						String doc = repeat(n.getProperty(Prop.FIRST_NAME, "").toString(),5)+" "+
-								repeat(n.getProperty(Prop.LAST_NAME, "").toString(),5)+" "+
-								repeat(n.getProperty(Prop.INITIALS, "").toString(),5)+" "+
+						String doc = n.getProperty(Prop.FIRST_NAME, "").toString()+" "+
+								n.getProperty(Prop.LAST_NAME, "").toString()+" "+
+								n.getProperty(Prop.INITIALS, "").toString()+" "+
 								affils[i]; 
 						mapper.addSource(Long.toString(n.getId())+"_"+i,doc); 
 						mapper.addTarget(Long.toString(n.getId())+"_"+i,doc);

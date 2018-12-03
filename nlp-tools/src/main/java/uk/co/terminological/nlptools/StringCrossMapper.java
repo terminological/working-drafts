@@ -1,11 +1,11 @@
 package uk.co.terminological.nlptools;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.text.similarity.SimilarityScore;
-
-import com.github.davidmoten.rtree.internal.Comparators;
 
 public class StringCrossMapper {
 
@@ -146,6 +144,28 @@ public class StringCrossMapper {
  						))); 
  		});
  		
+ 		List<Double> scores = match.values().stream().flatMap(kv -> kv.values().stream()).collect(Collectors.toList());
+ 		Collections.sort(scores);
+ 		Double median = scores.get(scores.size()/2);
+ 		
+ 		// Double IQR = scores.get(scores.size()*3/4)-scores.get(scores.size()/4);
+ 		
+ 		
+ 		
+ 		// Use a logistic sigmoid function of the form f(x) = 1/(1+exp(-k*(x-x0))) where x0 is the median and k is chosen to approximate the IQR
+ 		// i.e. f(x0+IQR/2) = 0.75 from which we get k= -2*ln(1/3)/IQR
+ 		// Double x0 = median;
+ 		// Double k = -(2 * Math.log(1/3))/IQR;
+ 		// Function<Double,Double> normaliser = x -> 1/(1+Math.exp(-k*(x-x0)));
+ 		
+ 		Function<Double,Double> normaliser = x -> median/(median+x);
+ 		
+ 		for (Map<Document,Double> values: match.values()) {
+ 			for (Document key : values.keySet()) {
+ 				values.put(key, normaliser.apply(values.get(key)));
+ 			}
+ 		}
+ 		
  		return match;
 	}
 	
@@ -170,7 +190,7 @@ public class StringCrossMapper {
 						() -> targetTerms.put(k, -v));
 			});
 			Double subSquares = targetTerms.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
-			output.put(target, 1/(1+Math.sqrt(subSquares)));
+			output.put(target, Math.sqrt(subSquares));
 		});
 		
 		return output.entrySet()
