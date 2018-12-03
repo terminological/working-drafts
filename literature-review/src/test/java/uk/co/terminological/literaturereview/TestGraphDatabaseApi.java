@@ -96,7 +96,7 @@ public class TestGraphDatabaseApi {
 		
 		if (mapper.getSource().countCorpusDocuments() > 20) {
 		
-		mapper.getAllMatchesBySimilarity(0D).forEach(
+		mapper.getAllMatchesBySimilarity(0D, d-> d.entropyOrder(), ).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
