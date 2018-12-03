@@ -24,6 +24,7 @@ public class Corpus {
 	private Tokeniser tokeniser;
 	private Set<String> stopWords;
 	private int termsInCorpus;
+	private Map<Term,Integer> termCounts = new HashMap<>();
 	
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
 		this.normaliser = normaliser;
@@ -85,6 +86,9 @@ public class Corpus {
 		Term tmp = terms.get(tag);
 		tmp.incrementUsed();
 		termsInCorpus += 1;
+		Optional.ofNullable(termCounts.get(tmp)).ifPresentOrElse(
+				count -> termCounts.put(tmp, count+1), 
+				() -> termCounts.put(tmp, 1));
 		return tmp;
 	}
 	
