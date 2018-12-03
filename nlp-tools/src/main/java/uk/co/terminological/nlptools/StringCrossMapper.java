@@ -123,7 +123,7 @@ public class StringCrossMapper {
 	}
 	
 	/**
-	 * A score between 0 and 1 where 1 is no difference
+	 * A score between 0 and 1 where 1 is no difference and 0.5 is the median similarity score in the corpus
 	 * @param minValue
 	 * @return
 	 */
