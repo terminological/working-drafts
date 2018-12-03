@@ -27,9 +27,9 @@ public class Document {
 		this.identifier = id;
 		this.corpus = corpus;
 		this.string = string;
-		this.normalised = corpus.normaliser.apply(string);
-		corpus.tokeniser.apply(normalised)
-			.filter(t-> !corpus.stopWords.contains(t))
+		this.normalised = corpus.getNormaliser().apply(string);
+		corpus.getTokeniser().apply(normalised)
+			.filter(t-> !corpus.getStopWords().contains(t))
 			.forEach(tag -> {
 				//Create a new term
 				Term tmp = corpus.getTermFrom(tag);
