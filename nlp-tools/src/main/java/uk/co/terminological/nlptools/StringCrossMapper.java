@@ -184,7 +184,12 @@ public class StringCrossMapper {
  		
  		for (Map<Document,Double> values: match.values()) {
  			for (Document key : values.keySet()) {
- 				values.put(key, 1-values.get(key)/max);
+ 				Double norm = 1-values.get(key)/max;
+ 				if (norm > minValue) {
+ 					values.put(key, norm);
+ 				} else {
+ 					values.remove(key);
+ 				}
  			}
  		}
  		
