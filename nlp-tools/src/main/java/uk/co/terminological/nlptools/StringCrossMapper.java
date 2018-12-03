@@ -17,9 +17,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.text.similarity.SimilarityScore;
 
-import javafx.collections.transformation.SortedList;
 import uk.co.terminological.datatypes.FluentMap;
-import uk.co.terminological.datatypes.Tuple;
 
 public class StringCrossMapper {
 
