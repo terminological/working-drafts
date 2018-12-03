@@ -233,7 +233,7 @@ public class StringCrossMapper {
 	private <K extends Comparable<K>> Stream<Entry<Document,K>> getAllMatchesByDistance(Document doc, SimilarityScore<K> similarity) {
 		Map<Document,K> output = new HashMap<>();
 				
-		for (Document matched: this.targetCorpus.documents) {
+		for (Document matched: this.targetCorpus.getDocuments()) {
 			if (!output.containsKey(matched)) {
 				K sim1 = similarity.apply(doc.getString(), matched.getString());
 				output.put(matched, sim1);

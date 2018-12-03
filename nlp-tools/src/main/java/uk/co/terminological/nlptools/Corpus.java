@@ -42,8 +42,8 @@ public class Corpus {
 		return terms.values().stream();
 	}
 	
-	public Stream<Document> streamDocuments() {
-		return documents.stream();
+	public Set<Document> getDocuments() {
+		return documents;
 	}
 	
 	public Normaliser getNormaliser() {
