@@ -153,6 +153,8 @@ public class Document {
 		return out;
 	}
 	
+	
+	
 	/**
 	 * reconstructs a document from a list of terms and a separator
 	 * @param terms
