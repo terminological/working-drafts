@@ -143,7 +143,7 @@ public class StringCrossMapper {
  				Double distance = getEuclideanDistance(doc,target);
  				// scores.add(distance);
  				if (max < distance) max = distance; 
- 				count += 1;
+ 				// count += 1;
  				// add to or create the nested map
  				Optional.ofNullable(match.get(doc)).ifPresentOrElse(
  						submap -> submap.put(target, distance),
