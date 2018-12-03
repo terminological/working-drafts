@@ -37,7 +37,7 @@ public class Similarity {
 	 * Move onto next term.
 	 * 
 	 */
-	public static Double getCosineSimilarity(Map<Term,Double> source, Map<Term,Double> target) {
+	public static Double getCosineDifference(Map<Term,Double> source, Map<Term,Double> target) {
 		
 		Double dotProd = source.entrySet().stream().collect(Collectors.summingDouble(kv -> 
 			kv.getValue()*target.getOrDefault(kv.getKey(),0D)
@@ -46,7 +46,7 @@ public class Similarity {
 		Double sourceLengthSqrd = source.values().stream().collect(Collectors.summingDouble(v -> v*v)); 
 		Double targetLengthSqrd = target.values().stream().collect(Collectors.summingDouble(v -> v*v));
 		
-		return dotProd / (Math.sqrt(sourceLengthSqrd*targetLengthSqrd));
+		return 1 - dotProd / (Math.sqrt(sourceLengthSqrd*targetLengthSqrd));
 	}
 	
 }
