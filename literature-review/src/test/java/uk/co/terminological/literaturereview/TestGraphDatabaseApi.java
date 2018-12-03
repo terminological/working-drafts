@@ -67,15 +67,17 @@ public class TestGraphDatabaseApi {
 									n.getProperty(Prop.INITIALS, "unknown").toString().substring(0,1)
 									)
 							).toLowerCase();
-					StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
-						StringCrossMapper tmp = new StringCrossMapper("University","Institute","Department","of","at","is","a","for");
-						surnameMapper.put(lastName,tmp);
-						return tmp;
-					});
 					
 					// StringBuilder nameAffiliation = new StringBuilder(n.getProperty(Prop.FIRST_NAME, "").toString());
 					
-					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {""});
+					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {});
+					if (affils.length > 0) {
+						StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
+							StringCrossMapper tmp = new StringCrossMapper("University","Institute","Department","of","at","is","a","for");
+							surnameMapper.put(lastName,tmp);
+							return tmp;
+						});
+										
 					for (int i=0; i<affils.length; i++) {
 						
 						// nameAffiliation.append(" "+affils[i]);
@@ -84,7 +86,7 @@ public class TestGraphDatabaseApi {
 						mapper.addSource(Long.toString(n.getId())+"_"+i,nameAffiliation.toString()); 
 						mapper.addTarget(Long.toString(n.getId())+"_"+i,nameAffiliation.toString());
 					}
-					
+					}
 					
 					
 				}
@@ -98,7 +100,7 @@ public class TestGraphDatabaseApi {
 		
 		logger.info(mapper.summaryStats());
 		
-		if (mapper.getSource().countCorpusDocuments() > 20) {
+		//if (mapper.getSource().countCorpusDocuments() > 20) {
 		
 		mapper.getAllMatchesBySimilarity(0D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
 			(src,match) -> {
@@ -113,7 +115,7 @@ public class TestGraphDatabaseApi {
 			});
 		});
 		
-		}
+		//}
 		
 		});
 		
