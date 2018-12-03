@@ -135,14 +135,14 @@ public class StringCrossMapper {
 	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue) {
 		//<Double> scores = new ArrayList<>(); 
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
-		Double total = 0D;
-		int count = 0;
+		Double max = 0D;
+		// int count = 0;
  		
  		for (Document doc: sourceCorpus.getDocuments()) {
  			for (Document target: targetCorpus.getDocuments()) {
  				Double distance = getEuclideanDistance(doc,target);
  				// scores.add(distance);
- 				total += distance;
+ 				if (max < distance) max = distance; 
  				count += 1;
  				// add to or create the nested map
  				Optional.ofNullable(match.get(doc)).ifPresentOrElse(
@@ -180,11 +180,9 @@ public class StringCrossMapper {
  			}
  		}*/
  		
- 		Double mean = total/count;
  		for (Map<Document,Double> values: match.values()) {
  			for (Document key : values.keySet()) {
- 				if (mean == 0 && values.get(key) == 0) values.put(key, 1D);
- 				else values.put(key, (mean / (mean+values.get(key))));
+ 				values.put(key, 1-values.get(key)/max);
  			}
  		}
  		
