@@ -2,6 +2,7 @@ package uk.co.terminological.nlptools;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Term {
 	
@@ -36,6 +37,17 @@ public class Term {
 	public int countDocumentsWithTerm() {
 		return documentsUsing.size();
 	}
+	
+	public int countTotalOccurences() {
+		return documentsUsing.stream().collect(Collectors.summingInt(d -> d.countOccurencesInDocument(this)));
+	}
+	
+	public Double shannonEntropy() {
+		Double p = ((double) (countTotalOccurences()) / corpus.countCorpusTerms());
+		return -p * Math.log(p) / Math.log(2D);
+	}
+	
+	
 	
 	/**
 	 * The inverse document frequency is a measure of how much information the word provides, i.e., if it's common or rare across all documents. 
