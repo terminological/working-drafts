@@ -64,7 +64,7 @@ public class Corpus {
 	
 	// ============ SPECIFIC METHODS =====================
 	
-	
+	// TODO: https://en.wikipedia.org/wiki/Okapi_BM25
 	
 	
 	/**
