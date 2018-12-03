@@ -227,7 +227,11 @@ public class PubMedGraphUtils {
 	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getIdentifier(),
-				author.lastName(),author.firstName(), author.initials(), author.affiliations().collect(Collectors.toSet()),author.orcid(), graph, tx)
+				author.lastName(),
+				author.firstName(), 
+				author.initials(), 
+				author.affiliations().collect(Collectors.toSet()),
+				author.orcid(), graph, tx)
 				;
 	}
 		
@@ -250,7 +254,7 @@ public class PubMedGraphUtils {
 			lastName.ifPresent(fn -> node.setProperty(Prop.LAST_NAME, fn));
 			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
 			orcid.ifPresent(fn -> node.setProperty(Prop.ORCID, fn));
-			node.setProperty(Prop.AFFILIATIONS, affiliations.toArray(new String[] {}));
+			if (!affiliations.isEmpty()) node.setProperty(Prop.AFFILIATIONS, affiliations.toArray(new String[] {}));
 			out = node;
 
 		return Optional.ofNullable(out);
