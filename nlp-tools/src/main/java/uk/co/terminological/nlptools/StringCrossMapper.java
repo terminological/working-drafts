@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -132,7 +133,7 @@ public class StringCrossMapper {
 	 * @param minValue
 	 * @return
 	 */
-	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue, Function<Document,Map<Term,Double>> mapper) {
+	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue, Function<Document,Map<Term,Double>> mapper, BiFunction<Map<Term,Double>,Map<Term,Double>,Double> algorithm) {
 		//<Double> scores = new ArrayList<>(); 
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
 		Double max = 0D;
@@ -140,7 +141,7 @@ public class StringCrossMapper {
  		
  		for (Document doc: sourceCorpus.getDocuments()) {
  			for (Document target: targetCorpus.getDocuments()) {
- 				Double distance = getEuclideanDistance(mapper.apply(doc),mapper.apply(target));
+ 				Double distance = algorithm.apply(mapper.apply(doc),mapper.apply(target));
  				// scores.add(distance);
  				if (max < distance) max = distance; 
  				// count += 1;
