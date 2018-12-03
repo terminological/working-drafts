@@ -85,12 +85,14 @@ public class StringCrossMapper {
 		while (it.hasNext() && matching.size() > 1) {
 			Entry<Term, Double> next = it.next();
 			Term nextTerm = next.getKey();
-			Term outputTerm = targetCorpus.getTermFrom(nextTerm.tag);
-			Set<Document> tmp = new HashSet<>(outputTerm.getDocumentsUsing());
-			tmp.retainAll(matching); 
-			if (tmp.size() > 0) {
-				matching = tmp;
-				score += next.getValue();
+			Optional<Term> outputTerm = targetCorpus.getMatchingTerm(nextTerm);
+			if (outputTerm.isPresent()) {
+				Set<Document> tmp = new HashSet<>(outputTerm.get().getDocumentsUsing());
+				tmp.retainAll(matching); 
+				if (tmp.size() > 0) {
+					matching = tmp;
+					score += next.getValue();
+				}
 			}
 		}
 		

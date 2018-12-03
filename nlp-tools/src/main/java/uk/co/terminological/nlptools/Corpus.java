@@ -81,11 +81,8 @@ public class Corpus {
 	 * @param tag
 	 * @return
 	 */
-	public Term getTermFrom(String tag) {
-		if (!terms.containsKey(tag)) {
-			terms.put(tag, new Term(tag, this));
-		}
-		Term tmp = terms.get(tag);
+	protected Term getTermFrom(String tag) {
+		Term tmp = terms.getOrDefault(tag, new Term(tag, this));
 		termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 		termsInCorpus += 1;
 		return tmp;
