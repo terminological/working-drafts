@@ -90,7 +90,8 @@ public class TestGraphDatabaseApi {
 		logger.info("file written");
 		out.close();
 		
-		graphApi.waitAndShutdown();
+		graphApi.shutdown();
+		// graphApi.waitAndShutdown();
 	}
 	
 	static String repeat(String s, int count) {
