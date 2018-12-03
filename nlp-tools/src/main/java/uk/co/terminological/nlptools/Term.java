@@ -21,7 +21,7 @@ public class Term {
 			return ((Term) o).tag.equals(tag);
 		} else return false;
 	}
-	public String toString() {return tag+" {idf:"+idf()+",entropy:"+corpus.totalShannonEntropy(this)+"}";} 
+	public String toString() {return tag+" {idf:"+idf()+",entropy:"+shannonEntropy()+"}";} 
 	
 	
 	
