@@ -32,7 +32,7 @@ public class Document {
 			.filter(t-> !corpus.getStopWords().contains(t))
 			.forEach(tag -> {
 				//Create a new term
-				Term tmp = corpus.getTermFrom(tag);
+				Term tmp = corpus.createTermFrom(tag);
 				terms.add(tmp);
 				tmp.add(this);
 				termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
