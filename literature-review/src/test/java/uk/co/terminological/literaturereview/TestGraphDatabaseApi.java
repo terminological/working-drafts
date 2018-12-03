@@ -24,6 +24,7 @@ import pl.edu.icm.cermine.exception.AnalysisException;
 
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
+import uk.co.terminological.nlptools.Similarity;
 import uk.co.terminological.nlptools.StringCrossMapper;
 import uk.co.terminological.nlptools.Term;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
@@ -96,7 +97,7 @@ public class TestGraphDatabaseApi {
 		
 		if (mapper.getSource().countCorpusDocuments() > 20) {
 		
-		mapper.getAllMatchesBySimilarity(0D, d-> d.entropyOrder(), ).forEach(
+		mapper.getAllMatchesBySimilarity(0D, d-> d.termsByEntropy(), Similarity::getEuclideanDistance).forEach(
 			(src,match) -> {
 				match.forEach((target,score) -> {
 					out.println(
