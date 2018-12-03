@@ -76,7 +76,7 @@ public class Document {
 	public String toString() {
 		return string+" ("+
 				terms.stream()
-					.map(t -> t.tag+" ["+tfIdf(t)+"]")
+					.map(t -> t.tag+"  {tfidf:"+tfIdf(t)+",entropy: "+t.shannonEntropy()+"}")
 					.collect(Collectors.joining(","))+")";
 	}
 	
@@ -111,11 +111,11 @@ public class Document {
 	}
 	
 	/**
-	 * returns the terms of the document in string ascending order
+	 * returns the terms of the document in entropy descending order.
 	 */
 	public List<Term> normalisedOrder() {
 		List<Term> tmp = new ArrayList<>(terms);
-		tmp.sort((t1,t2) -> t1.tag.compareTo(t2.tag));
+		tmp.sort((t1,t2) -> t2.shannonEntropy().compareTo(t1.shannonEntropy()));
 		return tmp; //.stream().map(t -> t.tag).collect(Collectors.joining(" "));
 	}
 	
