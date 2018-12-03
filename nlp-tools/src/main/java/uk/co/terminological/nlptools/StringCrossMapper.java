@@ -76,7 +76,7 @@ public class StringCrossMapper {
 	 * looks for documents which share terms with high tfidf score 
 	 */
 	private Optional<Document> getBestMatch(Document doc) {
-		Map<Term,Double> orderedTerms = doc.tfIdfsDescending();
+		Map<Term,Double> orderedTerms = doc.termsByTfIdf();
 		Iterator<Entry<Term, Double>> it = orderedTerms.entrySet().iterator();
 		
 		Set<Document> matching = targetCorpus.getDocuments();
@@ -101,8 +101,8 @@ public class StringCrossMapper {
 		Double bestScore = Double.NEGATIVE_INFINITY;
 		for (Document match: matching) {
 			
-			Map<Term, Double> found = new HashMap<>(match.tfIdfsDescending());
-			Map<Term, Double> orig = new HashMap<>(doc.tfIdfsDescending());
+			Map<Term, Double> found = new HashMap<>(match.termsByTfIdf());
+			Map<Term, Double> orig = new HashMap<>(doc.termsByTfIdf());
 			
 			Double tmpScore = 0D;
 			
@@ -131,15 +131,17 @@ public class StringCrossMapper {
 	 * @return
 	 */
 	public Map<Document,Map<Document,Double>> getAllMatchesBySimilarity(Double minValue) {
-		List<Double> scores = new ArrayList<>(); 
+		//<Double> scores = new ArrayList<>(); 
 		Map<Document,Map<Document,Double>> match = new HashMap<>();
 		Double total = 0D;
+		int count = 0;
  		
  		for (Document doc: sourceCorpus.getDocuments()) {
  			for (Document target: targetCorpus.getDocuments()) {
  				Double distance = getEuclideanDistance(doc,target);
- 				scores.add(distance);
+ 				// scores.add(distance);
  				total += distance;
+ 				count += 1;
  				// add to or create the nested map
  				Optional.ofNullable(match.get(doc)).ifPresentOrElse(
  						submap -> submap.put(target, distance),
@@ -147,7 +149,7 @@ public class StringCrossMapper {
  			}
  		}
  		
- 		Double median;
+ 		/*Double median;
  		Collections.sort(scores);
  		if (scores.size() == 1) {
  			median = scores.get(0);
@@ -169,11 +171,18 @@ public class StringCrossMapper {
  		// Function<Double,Double> normaliser = x -> 1/(1+Math.exp(-k*(x-x0)));
  		
  		// Function<Double,Double> normaliser = x -> median/(median+x);
- 		
  		for (Map<Document,Double> values: match.values()) {
  			for (Document key : values.keySet()) {
  				if (median == 0 && values.get(key) == 0) values.put(key, 1D);
  				else values.put(key, (median / (median+values.get(key))));
+ 			}
+ 		}*/
+ 		
+ 		Double mean = total/count;
+ 		for (Map<Document,Double> values: match.values()) {
+ 			for (Document key : values.keySet()) {
+ 				if (mean == 0 && values.get(key) == 0) values.put(key, 1D);
+ 				else values.put(key, (mean / (mean+values.get(key))));
  			}
  		}
  		
@@ -190,8 +199,8 @@ public class StringCrossMapper {
 	 */
 	private Double getEuclideanDistance(Document doc, Document target) {
 		
-		HashMap<Term,Double> targetTerms = new HashMap<>(target.tfIdfsDescending());
-		HashMap<Term,Double> sourceTerms = new HashMap<>(doc.tfIdfsDescending());
+		HashMap<Term,Double> targetTerms = new HashMap<>(target.termsByTfIdf());
+		HashMap<Term,Double> sourceTerms = new HashMap<>(doc.termsByTfIdf());
 		sourceTerms.forEach((k,v) -> {
 			Optional.ofNullable(targetTerms.get(k)).ifPresentOrElse(
 					tv -> targetTerms.put(k, tv-v), 
