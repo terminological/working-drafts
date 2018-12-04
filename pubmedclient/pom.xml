@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -12,226 +13,141 @@
 	<name>Pubmed client</name>
 
 	<dependencies>
-		<!--<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.7</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-			<version>1.17</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jaxb</groupId>
-			<artifactId>jaxb-runtime</artifactId>
-			<version>2.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>mssql-jdbc</artifactId>
-			<version>6.2.2.jre8</version>
-		</dependency>
-		<dependency>
-			<groupId>info.debatty</groupId>
-			<artifactId>java-string-similarity</artifactId>
-			<version>RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.mpkorstanje</groupId>
-			<artifactId>simmetrics</artifactId>
-			<version>4.1.1</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>uk.co.terminological</groupId>
-			<artifactId>fluentsheet</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-collections4</artifactId>
-			<version>4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.knowm.xchart</groupId>
-			<artifactId>xchart</artifactId>
-			<version>3.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>25.0-jre</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>2.3.25-incubating</version>
-		</dependency>
-		<dependency>
-			<groupId>uk.co.terminological</groupId>
-			<artifactId>fluentxml</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<type>maven-plugin</type>
-		</dependency>
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp</artifactId>
-			<version>3.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp</artifactId>
-			<version>3.9.1</version>
-			<classifier>models</classifier>
-		</dependency>
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp-eng</artifactId>
-			<version>3.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>edu.stanford.nlp</groupId>
-			<artifactId>stanford-corenlp-eng-additional</artifactId>
-			<version>3.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.ws</groupId>
-			<artifactId>jaxws-rt</artifactId>
-			<version>2.2.7</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.messaging.saaj</groupId>
-			<artifactId>saaj-impl</artifactId>
-			<version>1.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>0.9.26</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>3.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.5</version>
-			<scope>compile</scope>
-			</dependency>-->
+		<!--<dependency> <groupId>commons-io</groupId> <artifactId>commons-io</artifactId> 
+			<version>2.4</version> </dependency> <dependency> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-api</artifactId> <version>1.7.7</version> </dependency> 
+			<dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
+			<version>1.7.7</version> <scope>test</scope> </dependency> <dependency> <groupId>org.apache.commons</groupId> 
+			<artifactId>commons-compress</artifactId> <version>1.17</version> </dependency> 
+			<dependency> <groupId>javax.xml.bind</groupId> <artifactId>jaxb-api</artifactId> 
+			<version>2.3.0</version> </dependency> <dependency> <groupId>com.sun.xml.bind</groupId> 
+			<artifactId>jaxb-impl</artifactId> <version>2.3.0</version> </dependency> 
+			<dependency> <groupId>org.glassfish.jaxb</groupId> <artifactId>jaxb-runtime</artifactId> 
+			<version>2.3.0</version> </dependency> <dependency> <groupId>javax.activation</groupId> 
+			<artifactId>activation</artifactId> <version>1.1.1</version> </dependency> 
+			<dependency> <groupId>com.microsoft.sqlserver</groupId> <artifactId>mssql-jdbc</artifactId> 
+			<version>6.2.2.jre8</version> </dependency> <dependency> <groupId>info.debatty</groupId> 
+			<artifactId>java-string-similarity</artifactId> <version>RELEASE</version> 
+			</dependency> <dependency> <groupId>org.apache.commons</groupId> <artifactId>commons-text</artifactId> 
+			<version>1.2</version> </dependency> <dependency> <groupId>com.github.mpkorstanje</groupId> 
+			<artifactId>simmetrics</artifactId> <version>4.1.1</version> <type>pom</type> 
+			</dependency> <dependency> <groupId>uk.co.terminological</groupId> <artifactId>fluentsheet</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> </dependency> <dependency> <groupId>org.apache.commons</groupId> 
+			<artifactId>commons-collections4</artifactId> <version>4.1</version> </dependency> 
+			<dependency> <groupId>org.knowm.xchart</groupId> <artifactId>xchart</artifactId> 
+			<version>3.5.1</version> </dependency> <dependency> <groupId>org.apache.commons</groupId> 
+			<artifactId>commons-math3</artifactId> <version>3.6.1</version> </dependency> 
+			<dependency> <groupId>com.google.guava</groupId> <artifactId>guava</artifactId> 
+			<version>25.0-jre</version> </dependency> <dependency> <groupId>junit</groupId> 
+			<artifactId>junit</artifactId> <version>4.12</version> <scope>test</scope> 
+			</dependency> <dependency> <groupId>org.freemarker</groupId> <artifactId>freemarker</artifactId> 
+			<version>2.3.25-incubating</version> </dependency> <dependency> <groupId>uk.co.terminological</groupId> 
+			<artifactId>fluentxml</artifactId> <version>1.0-SNAPSHOT</version> <type>maven-plugin</type> 
+			</dependency> <dependency> <groupId>edu.stanford.nlp</groupId> <artifactId>stanford-corenlp</artifactId> 
+			<version>3.9.1</version> </dependency> <dependency> <groupId>edu.stanford.nlp</groupId> 
+			<artifactId>stanford-corenlp</artifactId> <version>3.9.1</version> <classifier>models</classifier> 
+			</dependency> <dependency> <groupId>edu.stanford.nlp</groupId> <artifactId>stanford-corenlp-eng</artifactId> 
+			<version>3.9.1</version> </dependency> <dependency> <groupId>edu.stanford.nlp</groupId> 
+			<artifactId>stanford-corenlp-eng-additional</artifactId> <version>3.9.1</version> 
+			</dependency> <dependency> <groupId>com.sun.xml.ws</groupId> <artifactId>jaxws-rt</artifactId> 
+			<version>2.2.7</version> </dependency> <dependency> <groupId>com.sun.xml.messaging.saaj</groupId> 
+			<artifactId>saaj-impl</artifactId> <version>1.3.1</version> </dependency> 
+			<dependency> <groupId>net.sf.opencsv</groupId> <artifactId>opencsv</artifactId> 
+			<version>2.1</version> </dependency> <dependency> <groupId>ch.qos.logback</groupId> 
+			<artifactId>logback-classic</artifactId> <version>0.9.26</version> <type>jar</type> 
+			<scope>compile</scope> </dependency> <dependency> <groupId>commons-collections</groupId> 
+			<artifactId>commons-collections</artifactId> <version>3.2.1</version> </dependency> 
+			<dependency> <groupId>commons-lang</groupId> <artifactId>commons-lang</artifactId> 
+			<version>2.5</version> <scope>compile</scope> </dependency> -->
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>1.12</version>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jdk8</artifactId>
+			<version>${jackson.version.core}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson.version.core}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.isomorphism</groupId>
+			<artifactId>token-bucket</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>pl.edu.icm.cermine</groupId>
+			<artifactId>cermine-impl</artifactId>
+			<version>1.13</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.ehcache/ehcache -->
+		<dependency>
+			<groupId>org.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>3.6.2</version>
+		</dependency>
 	</dependencies>
+	<repositories>
+		<repository>
+			<id>icm</id>
+			<name>ICM repository</name>
+			<url>http://maven.icm.edu.pl/artifactory/repo</url>
+		</repository>
+	</repositories>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
-					<execution>
-						<id>xjc-schema1</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemas>
-							<schema>
-								<!--<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url>-->
-								<fileset>
-									<directory>${basedir}/src/main/resources/schema</directory>
-									<includes><include>esearch.dtd</include></includes>
-								</fileset>
-							</schema>
-							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage>
-						</configuration>
-					</execution>
-					</executions>
-					</plugin>
-					<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.14.0</version>
-				<executions>
-					<execution>
-						<id>xjc-schema2</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<schemas>
-							<schema>
-								<fileset>
-									<directory>${basedir}/src/main/resources/schema</directory>
-									<includes><include>pubmed_180101.dtd</include></includes>
-								</fileset>
-							</schema>
-							</schemas>
-							<generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory>
-							<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage>
-						</configuration>
-						<!-- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
-							nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> -->
-					</execution>
-				</executions>
-			</plugin>
+			<!-- <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> <artifactId>maven-jaxb2-plugin</artifactId> 
+				<version>0.14.0</version> <executions> <execution> <id>xjc-schema1</id> <goals> 
+				<goal>generate</goal> </goals> <configuration> <vmArgs> <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg> 
+				</vmArgs> <schemas> <schema> <!-<url>https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20060628/esearch.dtd</url> 
+				<fileset> <directory>${basedir}/src/main/resources/schema</directory> <includes> 
+				<include>esearch.dtd</include> </includes> </fileset> </schema> </schemas> 
+				<generateDirectory>${project.build.directory}/generated-sources/xjc/1</generateDirectory> 
+				<generatePackage>gov.nih.nlm.ncbi.eutils.generated.esearch</generatePackage> 
+				</configuration> </execution> </executions> </plugin> <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> 
+				<artifactId>maven-jaxb2-plugin</artifactId> <version>0.14.0</version> <executions> 
+				<execution> <id>xjc-schema2</id> <goals> <goal>generate</goal> </goals> <configuration> 
+				<schemas> <schema> <fileset> <directory>${basedir}/src/main/resources/schema</directory> 
+				<includes> <include>pubmed_180101.dtd</include> </includes> </fileset> </schema> 
+				</schemas> <generateDirectory>${project.build.directory}/generated-sources/xjc/2</generateDirectory> 
+				<generatePackage>gov.nih.nlm.ncbi.eutils.generated.efetch</generatePackage> 
+				</configuration> <- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
+				nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> 
+				- </execution> </executions> </plugin> <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> 
+				<artifactId>maven-jaxb2-plugin</artifactId> <version>0.14.0</version> <executions> 
+				<execution> <id>xjc-schema3</id> <goals> <goal>generate</goal> </goals> <configuration> 
+				<schemas> <schema> <fileset> <directory>${basedir}/src/main/resources/schema</directory> 
+				<includes> <include>elink.dtd</include> </includes> </fileset> </schema> 
+				</schemas> <generateDirectory>${project.build.directory}/generated-sources/xjc/3</generateDirectory> 
+				<generatePackage>gov.nih.nlm.ncbi.eutils.generated.elink</generatePackage> 
+				</configuration> <- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
+				nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> 
+				</execution> </executions> </plugin> -->
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>jaxb2-maven-plugin</artifactId> 
+				<version>2.4</version> <executions> <execution> <id>xjc</id> <goals> <goal>xjc</goal> 
+				</goals> </execution> </executions> <configuration> <packageName>gov.nih.nlm.ncbi.eutils.generated.elink</packageName> 
+				<sourceType>dtd</sourceType> <sources> <source>${basedir}/src/main/resources/schema/elink.dtd</source> 
+				</sources> </configuration> <dependencies> <dependency> <groupId>javax.activation</groupId> 
+				<artifactId>activation</artifactId> <version>1.1</version> </dependency> 
+				</dependencies> </plugin> -->
+			<!-- <plugin> <groupId>org.jvnet.jaxb2.maven2</groupId> <artifactId>maven-jaxb2-plugin</artifactId> 
+				<version>0.14.0</version> <executions> <execution> <id>xjc-schema3</id> <goals> 
+				<goal>generate</goal> </goals> <configuration> <schemas> <schema> <!- need 
+				to download these and run locally, and some modification required to fix 
+				imports -> <url>https://www.crossref.org/schemas/crossref_query_output3.0.xsd</url> 
+				</schema><schema> <url>https://www.crossref.org/schemas/unixref1.1.xsd</url> 
+				</schema><schema> <url>https://www.crossref.org/schemas/fundref.xsd</url> 
+				</schema><schema> <url>https://www.crossref.org/schemas/AccessIndicators.xsd</url> 
+				</schema> </schemas> <generateDirectory>${project.build.directory}/generated-sources/xjc/3</generateDirectory> 
+				<generatePackage>org.crossref.qrschema</generatePackage> </configuration> 
+				<!- esummary gov.nih.nlm.ncbi.eutils.generated.esummary https://eutils.ncbi.nlm.nih.gov/eutils/dtd/20041029/esummary-v1.dtd 
+				nlm-articleset gov.nih.nlm.ncbi.eutils.generated.articleset http://dtd.nlm.nih.gov/ncbi/pmc/articleset/nlm-articleset-2.0.dtd</url> 
+				-> </execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -245,8 +161,9 @@
 						</goals>
 						<configuration>
 							<sources>
-								<source>${project.build.directory}/generated-sources/xjc/1</source>
-								<source>${project.build.directory}/generated-sources/xjc/2</source>
+								<!-- <source>${project.build.directory}/generated-sources/xjc/1</source> -->
+								<!-- <source>${project.build.directory}/generated-sources/xjc/2</source> -->
+								<!-- <source>${project.build.directory}/generated-sources/xjc/3</source> -->
 							</sources>
 						</configuration>
 					</execution>

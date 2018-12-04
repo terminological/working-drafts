@@ -15,7 +15,6 @@ import java.util.function.Function;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
-import uk.co.terminological.datatypes.Tuple;
 
 
 public class Writer {

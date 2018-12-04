@@ -1,52 +1,70 @@
 package uk.co.terminological.pubmedclient;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.xml.bind.JAXBException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeading;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.MeshHeadingList;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.PubmedArticle;
-import gov.nih.nlm.ncbi.eutils.generated.efetch.QualifierName;
+import uk.co.terminological.pubmedclient.EntrezClient.Command;
+import uk.co.terminological.pubmedclient.EntrezClient.Database;
+import uk.co.terminological.pubmedclient.EntrezResult.Links;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
+import uk.co.terminological.pubmedclient.EntrezResult.Search;
 
 public class TestPubMedRestClient {
 
 	public static Logger logger = LoggerFactory.getLogger(TestPubMedRestClient.class);
-	public static String APP_ID = "test_client";
-	public static String DEVELOPER_EMAIL = "rob@terminological.co.uk";
 	
-	public static void main(String[] args)  throws JAXBException {
+	public static void main(String[] args) throws BibliographicApiException, IOException  {
 		BasicConfigurator.configure();
 		
 		// Taunton[Affiliation] AND UK[Affiliation] AND NHS[Affilitation] 
 		
-		PubMedRestClient restClient = new PubMedRestClient(args[0], APP_ID, DEVELOPER_EMAIL);
-			
-		restClient.searchPubmed("Doxapram", 0, 10);
-		restClient
-				.searchPubmedByTitle("Anaesthetic influences on brain haemodynamics in the rat and their significance to biochemical, neuropharmacological and drug disposition studies.");
-		List<PubmedArticle> pubmedArticle = restClient.fetchPubmedArticle(Collections.singletonList("2764997"));
-		pubmedArticle.stream().forEach(a -> logger.info(a.getMedlineCitation().getPMID().getvalue()));
+		Properties prop = System.getProperties();
+		prop.load(Files.newInputStream(Paths.get(prop.getProperty("user.home"),"Dropbox/secrets.prop")));
 		
-		MeshHeadingList mesHeadingList = restClient.fetchMeshHeadingsForPubmedArticle(2764997L);
-			for (MeshHeading meshHeading : mesHeadingList.getMeshHeading()) {
-				for (QualifierName qualifierName : meshHeading.getQualifierName()) {
-					logger.info("{} ({})/{} ({})",
-							new Object[] { meshHeading.getDescriptorName().getvalue(),
-									meshHeading.getDescriptorName().getMajorTopicYN(), qualifierName.getvalue(),
-									qualifierName.getMajorTopicYN() });
-				}
-			}
-			restClient
-					.seachPubmedCentral("Accuracy of single progesterone test to predict early pregnancy outcome in women with pain or bleeding: meta-analysis of cohort studies");
-			restClient
-					.seachPubmedCentralByTitle("Accuracy of single progesterone test to predict early pregnancy outcome in women with pain or bleeding: meta-analysis of cohort studies");
-			//restClient.fetchFullTextArticle("3460254");
-		}
+		//String xrefToken = prop.getProperty("crossref.clickthroughtoken");
+		String developerEmail = prop.getProperty("developeremail");
+		
+		String pubmedApiToken = prop.getProperty("pubmed.apikey");
+		String appId = prop.getProperty("appid");
+		
+		EntrezClient restClient = EntrezClient.create(pubmedApiToken, appId, developerEmail).debugMode();
+			
+		Search result = restClient.buildSearchQuery("Doxapram")
+			.limit(0, 10)
+			.execute().get();
+		
+		result.getIds().forEach(System.out::println);
+		
+		Links links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
+				.command(Command.LLINKS)
+				.execute().get();
+		
+		links.stream().forEach(System.out::println);
+		
+		Links links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
+				.command(Command.NEIGHBOR_SCORE)
+				.execute().get();
+		
+		links2.stream().forEach(System.out::println);
+		
+		Set<PubMedEntry> entries = restClient.getPMEntriesByPMIds(result.getIds().collect(Collectors.toSet()));
+		entries.stream().map(e -> e.getTitle()).forEach(System.out::println);
+		
+		
+		Optional<PubMedEntry> entry = restClient.getPMEntryByPMId("11748933");
+		entry.get().getMeshHeadings().forEach(System.out::println);
+		
+		System.out.println(entry.get().getAbstract());
+		
+	}
 
 }

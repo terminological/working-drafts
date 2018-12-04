@@ -23,7 +23,7 @@ public class I2b2_2006_Format {
 		xml = Xml.fromStream(is);
 		for (XmlElement el : xml.doXpath("/ROOT/RECORD").getMany(XmlElement.class)) {
 			Record record = new Record();
-			record.id = el.getAttributeValue("ID");
+			record.id = el.getAttributeValue("ID").get();
 			record.documentText = el.getAsElement().getTextContent();
 			StringBuilder docText = new StringBuilder();
 			for (XmlNode phiEl : el.walkTree()) {
@@ -36,7 +36,7 @@ public class I2b2_2006_Format {
 						Integer end = tmp.getAsElement().getTextContent().length()+start;
 					Span span = Span.from(
 							start, end, 
-							tmp.getAttributeValue("TYPE"),
+							tmp.getAttributeValue("TYPE").get(),
 							null);
 					record.spans.add(span);
 					}
