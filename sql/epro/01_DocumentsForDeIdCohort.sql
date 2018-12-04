@@ -23,3 +23,14 @@ SELECT COUNT(*)
   LEFT JOIN t_document_html N ON D.[versionId] = N.[versionId]
   WHERE notesActive <> ''
   
+-- Drug JSON files - not many in here
+  /****** Script for SelectTopNRows command from SSMS  ******/
+SELECT TOP (1000) [patientId]
+      ,[versionId]
+      ,[currentDrugsJson]
+      ,[tagsString]
+      ,[previousDrugsJson]
+      ,[dischargeSummaryDate]
+  FROM [EproLive-Copy].[dbo].[t_patient_current_drugs]
+  where dischargeSummaryDate IS NOT NULL
+  and previousDrugsJson <> '[]'
