@@ -34,7 +34,8 @@ public class PubMedGraphSchema {
 	    HAS_RELATED, 
 	    HAS_TOKEN, 
 	    TOKEN_PRECEEDED_BY,
-	    HAS_KEYWORD
+	    HAS_KEYWORD,
+	    HAS_AFFILIATION, SIMILAR
 	}
 	
 	public static class Prop {
@@ -57,8 +58,9 @@ public class PubMedGraphSchema {
 		public static final String MESH_CODE = "code";
 		public static final String TOKEN_VALUE = "value";
 		public static final String ABSTRACT = "abstract";
-		public static final String AFFILIATIONS = "affiliations";
+		public static final String ORGANISATION_NAME = "organisationName";
 		public static final String ORCID = "orcid";
+		public static final String SCORE = "score";
 	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {

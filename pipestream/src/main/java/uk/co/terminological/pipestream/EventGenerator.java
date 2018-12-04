@@ -2,11 +2,26 @@ package uk.co.terminological.pipestream;
 
 import java.util.List;
 
+/**
+ * EventGenerators create one or more events initiated by the event bus. Their execute method is called repeatedly by the eventbus execute method
+ * until returning false;
+ * @author robchallen
+ *
+ * @param <Y> The type of output of this event generator 
+ */
 public interface EventGenerator<Y> extends EventBusAware {
 	
-	public Metadata getMetadata();
-	void send(Event<Y> event);
+	public GeneratorMetadata getMetadata();
+	public void send(Event<Y> event);
 	public boolean execute();
+	
+	public static class GeneratorMetadata extends Metadata {
+		
+		public GeneratorMetadata(String typeDescription) {
+			super(typeDescription); 
+		}
+
+	}
 	
 	public static abstract class Default<Y> implements EventGenerator<Y> {
 		
@@ -25,13 +40,13 @@ public interface EventGenerator<Y> extends EventBusAware {
 			return false;
 		}
 		
-		Metadata metadata;
+		GeneratorMetadata metadata;
 		
-		public Default(Metadata metadata) {
+		public Default(GeneratorMetadata metadata) {
 			this.metadata = metadata;
 		}
 		
-		public Metadata getMetadata() {
+		public GeneratorMetadata getMetadata() {
 			return metadata;
 		}
 		
@@ -39,16 +54,16 @@ public interface EventGenerator<Y> extends EventBusAware {
 	
 	public static abstract class Watcher<Y> implements EventGenerator<Y> {
 
-		Metadata metadata;
+		GeneratorMetadata metadata;
 		boolean interrupted = false;
 		Object watcher = null;
 		
-		public Watcher(Metadata metadata) {
+		public Watcher(GeneratorMetadata metadata) {
 			this.metadata = metadata;
 		}
 		
 		@Override
-		public Metadata getMetadata() {
+		public GeneratorMetadata getMetadata() {
 			return metadata;
 		}
 

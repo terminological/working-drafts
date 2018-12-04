@@ -1,7 +1,6 @@
 package uk.co.terminological.nlptools;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,7 +19,6 @@ import org.apache.commons.text.similarity.SimilarityScore;
 
 import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.datatypes.Triple;
-import uk.co.terminological.datatypes.Tuple;
 
 public class StringCrossMapper {
 

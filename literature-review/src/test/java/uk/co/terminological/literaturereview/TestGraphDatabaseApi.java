@@ -5,13 +5,8 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
-import org.apache.commons.text.similarity.CosineDistance;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
@@ -21,12 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.cermine.exception.AnalysisException;
-
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 import uk.co.terminological.nlptools.Similarity;
 import uk.co.terminological.nlptools.StringCrossMapper;
-import uk.co.terminological.nlptools.Term;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 
 
@@ -54,43 +47,45 @@ public class TestGraphDatabaseApi {
 		
 		//Map<String,StringCrossMapper> surnameMapper = new HashMap<>();
 		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department", "Research","of","at","is","a","for", "Dept");
+		//TODO: Cross map affiliation strings not names
+		
 		
 		logger.info("loading from graph");
 		
 		try (Transaction tx = graphApi.get().beginTx()) {
 			
-			graphApi.get().findNodes(Labels.AUTHOR).stream().forEach( //.limit(30).forEach(
+			graphApi.get().findNodes(Labels.AFFILIATION).stream().forEach( //.limit(30).forEach(
 				n -> {
 					
-					String lastName = (n.getProperty(Prop.LAST_NAME, "unknown").toString()+"_"+
+					/*String lastName = (n.getProperty(Prop.LAST_NAME, "unknown").toString()+"_"+
 							(n.getProperty(Prop.INITIALS, "").toString().isEmpty() ?
 									n.getProperty(Prop.FIRST_NAME, "unknown").toString().substring(0,1):
 									n.getProperty(Prop.INITIALS, "unknown").toString().substring(0,1)
 									)
-							).toLowerCase();
+							).toLowerCase();*/
 					
 					// StringBuilder nameAffiliation = new StringBuilder(n.getProperty(Prop.FIRST_NAME, "").toString());
 					
-					String[] affils = (String[]) n.getProperty(Prop.AFFILIATIONS, new String[] {});
-					if (affils.length > 0) {
+					String affil = n.getProperty(Prop.ORGANISATION_NAME).toString();
+					// if (affils.length > 0) {
 						/*StringCrossMapper mapper = Optional.ofNullable(surnameMapper.get(lastName)).orElseGet(() -> {
 							StringCrossMapper tmp = new StringCrossMapper("University","Institute","Department","of","at","is","a","for");
 							surnameMapper.put(lastName,tmp);
 							return tmp;
 						});*/
 										
-					for (int i=0; i<affils.length; i++) {
+					// for (int i=0; i<affils.length; i++) {
 						
 						// nameAffiliation.append(" "+affils[i]);
 						// System.out.println(n.getId()+"\t"+nameAffiliation.toString());
-						String nameAffiliation = lastName+" "+n.getProperty(Prop.FIRST_NAME, "")+" "+affils[i];
-						mapper.addSource(Long.toString(n.getId())+"_"+i,nameAffiliation.toString()); 
-						mapper.addTarget(Long.toString(n.getId())+"_"+i,nameAffiliation.toString());
-					}
+						// String nameAffiliation = lastName+" "+n.getProperty(Prop.FIRST_NAME, "")+" "+affils[i];
+						mapper.addSource(Long.toString(n.getId()),affil.toString()); 
+						mapper.addTarget(Long.toString(n.getId()),affil.toString());
+					
 					}
 					
 					
-				}
+				
 			);			
 		}
 		
@@ -103,7 +98,7 @@ public class TestGraphDatabaseApi {
 		
 		//if (mapper.getSource().countCorpusDocuments() > 20) {
 		
-		mapper.getAllMatchesBySimilarity(0.8D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
+		mapper.getAllMatchesBySimilarity(0.9D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
 			t -> {
 				out.println(
 						t.getThird()+"\t"+

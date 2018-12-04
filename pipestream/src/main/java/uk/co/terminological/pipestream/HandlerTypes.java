@@ -7,13 +7,32 @@ import java.util.function.Predicate;
 
 import uk.co.terminological.datatypes.FluentMap;
 
+/**
+ * Event handlers do a range of tasks such as:
+ * <li> {@link Adaptor}: Convert data from one type to another and resubmit to event bus
+ * <li> {@link Processor}: Generically process the body of the event (excluding metadata)
+ * <li> {@link EventProcessor}: Generically process the whole event (including metadata) 
+ * <li> {@link Terminal}: Consume data from the body of the event without returning data 
+ * <li> {@link Collector}: Collect data from many events until a set of criteria are met
+ *  
+ * @author robchallen
+ *
+ */
 public class HandlerTypes {
 
-	
+	/**
+	 * Convert data from one type to another and resubmit to event bus. 
+	 * Subclasses must implement the {@link Adaptor.convert} method, or a fluent constructor
+	 * using functional interfaces available in the {@link FluentEvents.Handlers.adaptor} methods
+	 * @author robchallen
+	 *
+	 * @param <X> input data type
+	 * @param <Y> output data type
+	 */
 	public abstract static class Adaptor<X,Y> extends EventHandler.Default<Event<X>> {
 
 		public Adaptor(String type) {
-			super(FluentEvents.Metadata.forHandler(null,type));
+			super(FluentEvents.Metadata.forHandler(type));
 		}
 		
 		@Override
@@ -22,17 +41,24 @@ public class HandlerTypes {
 		@Override
 		public void handle(Event<X> event) {
 			Event<Y> event2 = convert(event.get());
-			getEventBus().receive(event2, getMetadata());
+			this.send(event2);
 		}
 		
 		public abstract Event<Y> convert(X input);
 
 	}
 	
+	/**
+	 * Generically process the body of the event (excluding metadata). Subclasses must implement the process method, or use the
+	 * {@link FluentEvents.Handlers.process} fluent / functional interface. 
+	 * @author robchallen
+	 *
+	 * @param <X> the input type
+	 */
 	public abstract static class Processor<X> extends EventHandler.Default<Event<X>>  {
 
 		public Processor(String type) {
-			super(FluentEvents.Metadata.forHandler(null,type));
+			super(FluentEvents.Metadata.forHandler(type));
 		}
 		
 		@Override
@@ -51,7 +77,7 @@ public class HandlerTypes {
 	public abstract static class EventProcessor<X> extends EventHandler.Default<Event<X>>  {
 
 		public EventProcessor(String type) {
-			super(FluentEvents.Metadata.forHandler(null,type));
+			super(FluentEvents.Metadata.forHandler(type));
 		}
 		
 		@Override
@@ -70,7 +96,7 @@ public class HandlerTypes {
 	public abstract static class Terminal<X> extends EventHandler.Default<Event<X>>  {
 
 		public Terminal(String type) {
-			super(FluentEvents.Metadata.forHandler(null,type));
+			super(FluentEvents.Metadata.forHandler(type));
 		}
 		
 		@Override
@@ -112,6 +138,7 @@ public class HandlerTypes {
 		@Override
 		public boolean canHandle(Event<?> event) {
 			for (Map.Entry<String,Predicate<Event<?>>> test : tests.entrySet()) {
+				
 				if (test.getValue().test(event)) {
 					if (!dependencies.containsKey(test.getKey())) {
 						return true;

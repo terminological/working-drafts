@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents;
-import uk.co.terminological.pipestream.Metadata;
 
 public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 
@@ -68,13 +67,13 @@ public class GraphDatabaseWatcher<Y> extends EventGenerator.Watcher<Y> {
 		return new GraphDatabaseWatcher<Y>(FluentEvents.Metadata.forGenerator(type), afterCommit);
 	}
 
-	public GraphDatabaseWatcher(Metadata metadata, GraphDatabaseService graph, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
+	public GraphDatabaseWatcher(GeneratorMetadata metadata, GraphDatabaseService graph, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
 		super(metadata);
 		this.graph = graph;
 		this.afterCommit = afterCommit;
 	}
 
-	public GraphDatabaseWatcher(Metadata metadata, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
+	public GraphDatabaseWatcher(GeneratorMetadata metadata, BiConsumer<TransactionData, Watcher<Y>> afterCommit) {
 		super(metadata);
 		this.graph = this.getEventBus().getApi(GraphDatabaseApi.class).get().get();
 		this.afterCommit = afterCommit;

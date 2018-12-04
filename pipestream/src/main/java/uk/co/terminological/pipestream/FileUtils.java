@@ -84,12 +84,12 @@ public class FileUtils {
 	}
 	
 	
-	public static  class Reader extends EventGenerator.Default<InputStream> {
+	public static class Reader extends EventGenerator.Default<InputStream> {
 
 		InputStreamAvailableEvent out;
 		
 		public Reader(Path file, String key) {
-			super(FluentEvents.Metadata.forGenerator(file.toString(),"FILE_READER"));
+			super(FluentEvents.Metadata.forGenerator("FILE_READER"));
 			
 			out = new InputStreamAvailableEvent(
 					DeferredInputStream.create(file, path -> Files.newInputStream(file)), key);
@@ -126,7 +126,7 @@ public class FileUtils {
 		WatchKey key;
 		
 		public Watcher(Path dir) {
-			super(FluentEvents.Metadata.forGenerator(dir.toString(),"DIRECTORY_WATCHER"));
+			super(FluentEvents.Metadata.forGenerator("DIRECTORY_WATCHER"));
 			
 			try {
 				watcher = FileSystems.getDefault().newWatchService();
@@ -162,7 +162,7 @@ public class FileUtils {
 				Function<Path,String> nameGenerator,
 				Function<Path,String> typeGenerator
 				) {
-			super(FluentEvents.Metadata.forGenerator(directory.toString(), "DIRECTORY_SCANNER"));
+			super(FluentEvents.Metadata.forGenerator("DIRECTORY_SCANNER"));
 			this.path = directory;
 			this.filter = filter;
 			this.nameGenerator = (nameGenerator == null ? (path -> path.toString()): nameGenerator);
@@ -190,8 +190,8 @@ public class FileUtils {
 		EventSerializer<X> serialiser;
 		Predicate<Event<?>> acceptEvents;
 		
-		public FileWriter(String name, Predicate<Event<?>> acceptEvents, Function<Event<X>,Path> nameStrategy, EventSerializer<X> serialiser) {
-			super(FluentEvents.Metadata.forHandler(name, "FILE_WRITER"));
+		public FileWriter(Predicate<Event<?>> acceptEvents, Function<Event<X>,Path> nameStrategy, EventSerializer<X> serialiser) {
+			super(FluentEvents.Metadata.forHandler("FILE_WRITER"));
 			this.nameStrategy = nameStrategy;
 			this.serialiser = serialiser;
 			this.acceptEvents = acceptEvents;

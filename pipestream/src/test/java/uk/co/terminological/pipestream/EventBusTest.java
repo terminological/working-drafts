@@ -184,7 +184,7 @@ public class EventBusTest {
 		public EventHandler<Event<String>> createHandlerFor(Event<String> event) {
 			return new EventHandler.Default<Event<String>>(
 					FluentEvents.Metadata.forHandler(
-							event.getMetadata().name().orElseThrow(() -> new RuntimeException()), 
+							// event.getMetadata().name().orElseThrow(() -> new RuntimeException()), 
 							"AUTO_BUILD")) {
 
 				@Override
@@ -209,7 +209,7 @@ public class EventBusTest {
 	public static class TestStringCollector extends HandlerTypes.Collector {
 		
 		public TestStringCollector() {
-			super(FluentEvents.Metadata.forHandler("collector", "RANDOM_COLLECTOR"),
+			super(FluentEvents.Metadata.forHandler("RANDOM_COLLECTOR"),
 				new HandlerTypes.PredicateMap()
 				.and("ONE", e -> e instanceof TestStringEvent && e.get().equals("one"))
 				.and("TWO", e -> e.get().equals("ONE")));

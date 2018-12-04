@@ -15,9 +15,9 @@ public class Similarity {
 	 * Move onto next term.
 	 * 
 	 */
-	public static Double getEuclideanDistance(Map<Term,Double> source, Map<Term,Double> target) {
+	public static <X> Double getEuclideanDistance(Map<X,Double> source, Map<X,Double> target) {
 		
-		HashMap<Term,Double> targetTerms = new HashMap<>(target);
+		HashMap<X,Double> targetTerms = new HashMap<>(target);
 		
 		source.forEach((k,v) -> {
 			Optional.ofNullable(targetTerms.get(k)).ifPresentOrElse(
@@ -37,7 +37,7 @@ public class Similarity {
 	 * Move onto next term.
 	 * 
 	 */
-	public static Double getCosineDifference(Map<Term,Double> source, Map<Term,Double> target) {
+	public static <X> Double getCosineDifference(Map<X,Double> source, Map<X,Double> target) {
 		
 		Double dotProd = source.entrySet().stream().collect(Collectors.summingDouble(kv -> 
 			kv.getValue()*target.getOrDefault(kv.getKey(),0D)

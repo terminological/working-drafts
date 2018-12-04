@@ -254,7 +254,11 @@ public class PubMedGraphUtils {
 			lastName.ifPresent(fn -> node.setProperty(Prop.LAST_NAME, fn));
 			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
 			orcid.ifPresent(fn -> node.setProperty(Prop.ORCID, fn));
-			if (!affiliations.isEmpty()) node.setProperty(Prop.AFFILIATIONS, affiliations.toArray(new String[] {}));
+			affiliations.forEach(af -> {
+				Node node2 = graph.get().createNode(Labels.AFFILIATION);
+				node2.setProperty(Prop.ORGANISATION_NAME, af);
+				node.createRelationshipTo(node2, Rel.HAS_AFFILIATION);
+			});
 			out = node;
 
 		return Optional.ofNullable(out);

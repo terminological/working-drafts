@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import uk.co.terminological.pipestream.Event.EventMetadata;
+import uk.co.terminological.pipestream.EventGenerator.GeneratorMetadata;
 import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 import uk.co.terminological.pipestream.FileUtils.DirectoryScanner;
 import uk.co.terminological.pipestream.FileUtils.FileWriter;
@@ -81,27 +82,27 @@ public class FluentEvents {
 			return forEvent(clazz,(String) null,type);
 		}
 		
-		public static HandlerMetadata forHandler(String name, String typeDescription) {
+		/*public static HandlerMetadata forHandler(String name, String typeDescription) {
 			return new HandlerMetadata(name, typeDescription);
-		}
+		}*/
 		
 		public static HandlerMetadata forHandler(String typeDescription) {
-			return new HandlerMetadata(null, typeDescription);
+			return new HandlerMetadata(typeDescription);
 		}
 		
 		public static HandlerMetadata forHandler(EventHandler<?> instance) {
 			return forHandler(
-					defaultNameMapper().apply(instance), 
+					// defaultNameMapper().apply(instance), 
 					defaultTypeMapper().apply(instance)
 					);
 		}
 		
-		public static uk.co.terminological.pipestream.Metadata forGenerator(String name, String typeDescription) {
+		/*public static uk.co.terminological.pipestream.Metadata forGenerator(String name, String typeDescription) {
 			return new uk.co.terminological.pipestream.Metadata(name, typeDescription);
-		}
+		}*/
 		
-		public static uk.co.terminological.pipestream.Metadata forGenerator(String typeDescription) {
-			return new uk.co.terminological.pipestream.Metadata(null, typeDescription);
+		public static GeneratorMetadata forGenerator(String typeDescription) {
+			return new GeneratorMetadata(typeDescription);
 		}
 		
 		
@@ -234,7 +235,7 @@ public class FluentEvents {
 					Function<Y,String> nameMapper,
 					Function<Y,String> typeMapper
 				) {
-			return new EventGenerator.Default<Y>(Metadata.forGenerator(name,typeDescription)) {
+			return new EventGenerator.Default<Y>(Metadata.forGenerator(typeDescription)) {
 
 				@Override
 				public List<Event<Y>> generate() {
@@ -362,12 +363,11 @@ public class FluentEvents {
 		}
 		
 		public static <X> FileWriter<X> writer(
-				String name,
 				Predicate<Event<?>> acceptEvent,
 				Function<Event<X>,Path> nameStrategy, 
 				EventSerializer<X> serializer
 				) {
-			return new FileWriter<X>(name, acceptEvent, nameStrategy, serializer);
+			return new FileWriter<X>(acceptEvent, nameStrategy, serializer);
 		}
 		
 		//TODO: a freemarker based writer might be useful here?

@@ -26,6 +26,11 @@ import uk.co.terminological.pipestream.EventHandler.HandlerMetadata;
 //TODO: execution failure (exception) report. auto serialise and replay messages that trigger failures.
 //TODO: Custom logging factory: http://poth-chola.blogspot.com/2015/08/custom-slf4j-logger-adapter.html
 
+/**
+ * The event bus controls and coordinates all activity.
+ * @author robchallen
+ *
+ */
 public class EventBus {       
 
 	//Thanks to: https://stackoverflow.com/questions/16106260/thread-safe-singleton-class/16106598#16106598
@@ -33,6 +38,10 @@ public class EventBus {
        private static final EventBus INSTANCE = new EventBus();
     }
 
+    /**
+     * 
+     * @return the {@link EventBus} singleton 
+     */
     public static EventBus get() {
         return Holder.INSTANCE;
     }
@@ -52,17 +61,32 @@ public class EventBus {
 	boolean rethrowErrors = false;
 	boolean parallel = true;
 	
+	/**
+	 * Adds an API to the {@link EventBus} which can be accessed by any {@link EventHandler}s. An Api will be accessed by class so must be unique in the 
+	 * context of the event bus. The Api class is assumed to be self contained and fully initialised. Actions on the API class should be stateless. 
+	 * Api classes are assumed to handle their own caching.  
+	 * @param api - any Object
+	 * @return - the EventBus itself for fluent chaining
+	 */
 	public EventBus withApi(Object api) {
 		this.apis.put(api.getClass(),api);
 		log.info("Added api: "+api.getClass().getCanonicalName());
 		return this;
 	}
 	
+	/**
+	 * Places the {@link EventBus} into debug mode in which the log level is increased and exceptions are rethrown.
+	 * @return - the EventBus itself for fluent chaining
+	 */
 	public EventBus debugMode() {
 		rethrowErrors = true;
 		return this;
 	}
 	
+	/**
+	 * By default the bus is multithreaded which can cause. This enforces single threaded execution
+	 * @return
+	 */
 	public EventBus singleThread() {
 		parallel = false;
 		return this;
@@ -183,6 +207,10 @@ public class EventBus {
 	
 	//TODO: so this fires the whole graph execution but we would like to be able to run this as a daemon
 	//maybe use quartz for this.
+	/**
+	 * The EventBus execute method 
+	 * @return
+	 */
 	public EventBus execute() {
 		log.info("Starting eventBus generators");
 		(parallel ? generators.parallelStream() : generators.stream()).forEach(g -> {while(g.execute()) {};});

@@ -18,6 +18,7 @@ import static uk.co.terminological.literaturereview.PubMedGraphUtils.updateUnpay
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -42,6 +44,11 @@ import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.datatypes.StreamExceptions;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
+import uk.co.terminological.nlptools.Similarity;
+import uk.co.terminological.nlptools.StringCrossMapper;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 import uk.co.terminological.pubmedclient.BibliographicApis;
 import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
@@ -270,6 +277,37 @@ public class PubMedGraphExperiment2 {
 		log.info("finding open access pdf links for {} dois",loadedDois.size());
 		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
 		log.info("found open access pdf links for {} dois",identifyPdf.size());
+		
+		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department", "Research","of","at","is","a","for", "Dept");
+		log.info("loading affiliations from graph");
+		
+		try (Transaction tx = graphApi.get().beginTx()) {
+			
+			graphApi.get().findNodes(Labels.AFFILIATION).stream().forEach( //.limit(30).forEach(
+				n -> {
+					String affil = n.getProperty(Prop.ORGANISATION_NAME).toString();
+					mapper.addSource(Long.toString(n.getId()),affil.toString()); 
+					mapper.addTarget(Long.toString(n.getId()),affil.toString());
+			});
+			
+			log.info(mapper.summaryStats());
+			mapper.getAllMatchesBySimilarity(0.9D, d -> d.termsByTfIdf(), Similarity::getCosineDifference).forEach(triple -> {
+				Node in = graphApi.get().getNodeById(Long.parseLong(triple.getFirst().getIdentifier()));
+				Node out = graphApi.get().getNodeById(Long.parseLong(triple.getSecond().getIdentifier()));
+				Relationship r = in.createRelationshipTo(out, Rel.SIMILAR);
+				r.setProperty(Prop.SCORE, triple.getThird());
+			});
+			
+		}
+		
+		//TODO: Create CO-AUTHOR relationships
+		//TODO: connect authors with same lastName_foreName with SAME_AS
+		//TODO: connect authors with same lastName_firstInitial and HAS_AFFILIATION -> SIMILAR <- HAS_AFFILIATION as SAME_AS
+		//TODO: repeat: 
+		//TODO: 	connect SAME_AS -..-> SAME_AS transitive relationships
+		//TODO: 	connect authors with same lastName_firstInitial and CO-AUTHOR -> SAME_AS <- CO_AUTHOR as SAME_AS in 2 directions
+		
+		
 		
 	}
 

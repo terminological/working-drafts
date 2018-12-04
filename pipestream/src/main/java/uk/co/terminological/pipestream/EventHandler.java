@@ -10,8 +10,8 @@ public interface EventHandler<X extends Event<?>> extends EventBusAware {
 	
 	public static class HandlerMetadata extends Metadata {
 		
-		public HandlerMetadata(String name, String typeDescription) {
-			super(name,typeDescription); 
+		public HandlerMetadata(String typeDescription) {
+			super(typeDescription); 
 		}
 
 		/*public static HandlerMetadata defaultFor(EventHandler<?> instance) {
