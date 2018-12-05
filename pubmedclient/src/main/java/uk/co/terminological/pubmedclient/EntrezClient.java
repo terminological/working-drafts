@@ -1,7 +1,6 @@
 package uk.co.terminological.pubmedclient;
 
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
