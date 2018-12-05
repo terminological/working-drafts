@@ -1,5 +1,6 @@
 package uk.co.terminological.pubmedclient;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,11 +17,14 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.ehcache.Cache;
+import org.ehcache.spi.loaderwriter.CacheLoadingException;
 import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -72,14 +76,38 @@ public class IdConverterClient extends CachingApiClient {
 	public Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
 		Set<Record> out = new HashSet<>();
 		Cache<String,BinaryData> cache = permanentCache();
-		
 		List<String> id = new ArrayList<String>(id2);
+		
+		for (String nextId: id2) {
+			if (cache.containsKey(keyFrom(nextId,idType))) {
+				try {
+					Record tmp = objectMapper.readValue(
+							cache.get(keyFrom(nextId,idType)).inputStream(), 
+							Record.class);
+					out.add(tmp);
+				} catch (CacheLoadingException | IOException e) {
+					logger.debug("error parsing cached content for: {}, {}",nextId,idType);
+					cache.remove(keyFrom(nextId,idType));
+					id.add(nextId);
+				} 
+			} else {
+				id.add(nextId);
+			}
+		}
+		
 		int start = 0;
 		while (start<id.size()) {
 			int end = id.size()<start+50 ? id.size() : start+50;
 			List<String> tmp2 = id.subList(start, end);
 			Optional<Result> outTmp = doCall(tmp2,idType);
-			outTmp.ifPresent(o -> out.addAll(o.records));
+			outTmp.ifPresent(o -> {
+				out.addAll(o.records);
+				o.records.forEach(r -> {
+					BinaryData ser = BinaryData.from(objectMapper.writeValueAsBytes(r));
+					r.pmid.ifPresent(i -> cache.put(keyFrom(i,IdType.PMID), ser));
+					
+				});
+			});
 			start += 50;
 		}
 		return out;

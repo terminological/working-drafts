@@ -101,6 +101,10 @@ public abstract class CachingApiClient {
 		private BinaryData(byte[] bytes) {
 			byteArray = bytes;
 		}
+		
+		public static BinaryData from(byte[] st) {
+			return new BinaryData(st);
+		}
 		public static BinaryData from(String st) {
 			return new BinaryData(st.getBytes());
 		}
