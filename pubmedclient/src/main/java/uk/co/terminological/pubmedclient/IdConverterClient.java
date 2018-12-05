@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.ehcache.Cache;
 import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,10 +60,19 @@ public class IdConverterClient extends CachingApiClient {
 		return out;
 	}
 	
+	private String keyFrom(String id, IdType idType) {
+		MultivaluedMap<String, String> params = defaultApiParams();
+		params.add("ids", id);
+		params.add("idtype", idType.name().toLowerCase());
+		return keyFromApiQuery(URL,params);
+	}
+	
 	// Batches the calls to groups of max 50 ids
 	//TODO: Refactor this to look up cache on a id by id basis.
 	public Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
 		Set<Record> out = new HashSet<>();
+		Cache<String,BinaryData> cache = permanentCache();
+		
 		List<String> id = new ArrayList<String>(id2);
 		int start = 0;
 		while (start<id.size()) {

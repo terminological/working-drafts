@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
@@ -231,6 +232,14 @@ public class EntrezClient extends CachingApiClient {
 		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds().collect(Collectors.toList());
 	}
 	
+	private String keyFrom(String pmid) {
+		MultivaluedMap<String, String> fetchParams = defaultApiParams();
+		fetchParams.add("db", "pubmed");
+		fetchParams.add("id",pmid);
+		fetchParams.add("format", "xml");
+		return keyFromApiQuery(EFETCH,fetchParams);
+	}
+	
 	/**
 	 * Fetch PubMed article metadata and abstract
 	 * 
@@ -245,12 +254,12 @@ public class EntrezClient extends CachingApiClient {
 		Cache<String,BinaryData> cache = this.permanentCache(); 
 		Collection<String> deferred = new HashSet<>();
 		for (String pmid: pmids) {
-			if (cache.containsKey(pmid)) {
+			if (cache.containsKey(keyFrom(pmid))) {
 				try {
-					out.add(new PubMedEntry(Xml.fromStream(cache.get(pmid).inputStream()).content()));
+					out.add(new PubMedEntry(Xml.fromStream(cache.get(keyFrom(pmid)).inputStream()).content()));
 					} catch (XmlException e) {
 						logger.debug("error parsing cached content for: "+pmid);
-						cache.remove(pmid);
+						cache.remove(keyFrom(pmid));
 						deferred.add(pmid);
 					}
 			} else {
@@ -279,7 +288,7 @@ public class EntrezClient extends CachingApiClient {
 				tmp.stream().forEach(entry -> {
 					out.add(entry);
 					String pmid = entry.getPMID().get();
-					cache.put(pmid, BinaryData.from(entry.getRaw().outerXml()));
+					cache.put(keyFrom(pmid), BinaryData.from(entry.getRaw().outerXml()));
 				});
 			} catch (XmlException e) {
 				throw new BibliographicApiException("could not parse result",e);
