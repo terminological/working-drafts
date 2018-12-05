@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -103,8 +104,16 @@ public class IdConverterClient extends CachingApiClient {
 			outTmp.ifPresent(o -> {
 				out.addAll(o.records);
 				o.records.forEach(r -> {
-					BinaryData ser = BinaryData.from(objectMapper.writeValueAsBytes(r));
-					r.pmid.ifPresent(i -> cache.put(keyFrom(i,IdType.PMID), ser));
+					BinaryData ser;
+					try {
+						ser = BinaryData.from(objectMapper.writeValueAsBytes(r));
+						r.pmid.ifPresent(i -> cache.put(keyFrom(i,IdType.PMID), ser));
+						r.doi.ifPresent(i -> cache.put(keyFrom(i,IdType.DOI), ser));
+						r.pmcid.ifPresent(i -> cache.put(keyFrom(i,IdType.PMCID), ser));
+					} catch (JsonProcessingException e) {
+						logger.warn("Could not serialise id converter record to json");
+					}
+					
 					
 				});
 			});
