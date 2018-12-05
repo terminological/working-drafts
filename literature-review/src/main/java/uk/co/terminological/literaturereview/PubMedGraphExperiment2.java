@@ -377,7 +377,7 @@ public class PubMedGraphExperiment2 {
 		while (!deferred.isEmpty()) {
 			try {
 				int size = 7000>deferred.size()? deferred.size(): 7000;
-				Set<PubMedEntry> entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred.subList(0, size),cacheDir);
+				Set<PubMedEntry> entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred.subList(0, size));
 				mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
 				log.info("retrieved {} articles referred to in broad search",entries.stream().count());
 				deferred.subList(0, size).clear();
