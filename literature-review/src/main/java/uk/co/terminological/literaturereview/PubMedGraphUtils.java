@@ -226,7 +226,7 @@ public class PubMedGraphUtils {
 
 	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
-				author.getIdentifier(),
+				author.getLabel(),
 				author.lastName(),
 				author.firstName(), 
 				author.initials(), 
@@ -237,7 +237,7 @@ public class PubMedGraphUtils {
 		
 	public static Optional<Node> mapAuthorToNode(Contributor author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
-				author.getIdentifier(),
+				author.getLabel(),
 				author.family, author.given, Optional.empty(),
 				author.affiliation.stream().flatMap(af -> af.name.stream()).collect(Collectors.toSet()),
 				author.ORCID.map(url -> url.toString()), graph, tx
@@ -245,11 +245,12 @@ public class PubMedGraphUtils {
 	}
 	
 	
-	public static Optional<Node> mapAuthorToNode(String identifier, Optional<String> lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, Optional<String> orcid, GraphDatabaseApi graph, Transaction tx) {
+	public static Optional<Node> mapAuthorToNode(String label, Optional<String> lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, Optional<String> orcid, GraphDatabaseApi graph, Transaction tx) {
 
 		Node out = null;
 
 			Node node = graph.get().createNode(Labels.AUTHOR);// doMerge(AUTHOR, "identifier", identifier, graph.get());
+			node.setProperty(Prop.AUTHOR_LABEL, label);
 			firstName.ifPresent(fn -> node.setProperty(Prop.FIRST_NAME, fn));
 			lastName.ifPresent(fn -> node.setProperty(Prop.LAST_NAME, fn));
 			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));

@@ -292,13 +292,25 @@ public class PubMedGraphExperiment2 {
 			
 			log.info(mapper.summaryStats());
 			mapper.getAllMatchesBySimilarity(0.9D, d -> d.termsByTfIdf(), Similarity::getCosineDifference).forEach(triple -> {
-				Node in = graphApi.get().getNodeById(Long.parseLong(triple.getFirst().getIdentifier()));
-				Node out = graphApi.get().getNodeById(Long.parseLong(triple.getSecond().getIdentifier()));
-				Relationship r = in.createRelationshipTo(out, Rel.SIMILAR);
-				r.setProperty(Prop.SCORE, triple.getThird());
+				if (!triple.getFirst().equals(triple.getSecond())) {
+					Node in = graphApi.get().getNodeById(Long.parseLong(triple.getFirst().getIdentifier()));
+					Node out = graphApi.get().getNodeById(Long.parseLong(triple.getSecond().getIdentifier()));
+					Relationship r = in.createRelationshipTo(out, Rel.SIMILAR_TO);
+					r.setProperty(Prop.SCORE, triple.getThird());
+				}
 			});
 			
 		}
+		
+		String coauthor = "MATCH (n:Author) <-[:HAS_AUTHOR]- (m:Article) -[:HAS_AUTHOR]-> (o:Author) CREATE (n)-[r:CO_AUTHOR]->(o)";
+		String orcidMatch = "MATCH (n:Author), (o:Author) WHERE n.orcid = o.orcid MERGE (n)-[r:SAME_AS]->(o)";
+		String exactNameMatch = "MATCH (n:Author), (o:Author) WHERE n.lastName = o.lastName AND n.firstName = o.firstName MERGE (n)-[r:SAME_AS]->(o)";
+		String sharedAffiliation = "MATCH (n:Author) -[:HAS_AFFILIATION]-> () -> [:SIMILAR_TO] () <-[:HAS_AFFILIATION]- (o:Author) WHERE n.authorLabel = o.authorLabel MERGE (n)-[r:SAME_AS]->(o)";
+		String coauthorMatch = "MATCH (n:Author) -[:CO_AUTHOR]-> () -[:SAME_AS*]-> () <-[:CO_AUTHOR]- (o:Author) WHERE n.lastName = o.lastName AND left(n.firstName,1) = left(o.firstName,1) MERGE (n)-[r:SAME_AS]->(o)";
+		String collapseTransitives = "MATCH (n:Author) -[:SAME_AS*]-> (o:Author) MERGE (n)-[r:SAME_AS]->(o)";
+		
+		
+		
 		
 		//TODO: Create CO-AUTHOR relationships
 		//TODO: connect authors with same lastName_foreName with SAME_AS

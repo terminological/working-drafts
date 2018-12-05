@@ -148,8 +148,8 @@ public class CrossRefResult {
 		@JsonProperty("authenticated-orcid") public Optional<Boolean> authenticatedOrcid = Optional.empty(); // No-If true, record owner asserts that the ORCID user completed ORCID OAuth authentication
 		@JsonProperty("affiliation") public List<Affiliation> affiliation = Collections.emptyList(); // No-
 		
-		public String getIdentifier() {
-			return (family.orElse(UUID.randomUUID().toString())+"_"+given.orElse("unknown").substring(0, 1)).toLowerCase();
+		public String getLabel() {
+			return (family.orElse("Unknown")+", "+given.orElse("Unknown").substring(0, 1)).toLowerCase();
 		}
 	}
 

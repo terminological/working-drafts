@@ -35,7 +35,10 @@ public class PubMedGraphSchema {
 	    HAS_TOKEN, 
 	    TOKEN_PRECEEDED_BY,
 	    HAS_KEYWORD,
-	    HAS_AFFILIATION, SIMILAR
+	    HAS_AFFILIATION, 
+	    SIMILAR_TO,
+	    SAME_AS,
+	    CO_AUTHOR
 	}
 	
 	public static class Prop {
@@ -54,7 +57,7 @@ public class PubMedGraphSchema {
 		public static final String PMID = "pmid";
 		public static final String DOI = "doi";
 		public static final String PMCID = "pmcid";
-		public static final String AUTHOR_ID = "identifier";
+		public static final String AUTHOR_LABEL = "authorLabel";
 		public static final String MESH_CODE = "code";
 		public static final String TOKEN_VALUE = "value";
 		public static final String ABSTRACT = "abstract";

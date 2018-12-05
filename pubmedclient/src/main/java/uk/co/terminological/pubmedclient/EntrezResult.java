@@ -240,11 +240,11 @@ public class EntrezResult {
 					.flatMap(el -> el.childElements("Affiliation").stream())
 					.flatMap(o -> o.getTextContent().stream());
 		}
-		public String getIdentifier() {
-			return (lastName().orElse(UUID.randomUUID().toString())+"_"+initials().orElse("unknown").substring(0, 1)).toLowerCase();
+		public String getLabel() {
+			return (lastName().orElse("Unknown")+", "+initials().orElse("Unknown").substring(0, 1)).toLowerCase();
 		}
 		public String toString() {
-			return lastName().orElse("unknown")+", "+initials().orElse("unknown");
+			return lastName().orElse("Unknown")+", "+initials().orElse("Unknown");
 		}
 
 	}
