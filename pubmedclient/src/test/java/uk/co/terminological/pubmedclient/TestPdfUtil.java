@@ -22,7 +22,9 @@ public class TestPdfUtil {
 		
 		for (int i=0; i<5; i++) {
 			for (String url: urls) {
-				PdfFetcher.create(tmp).getPdfFromUrl(url);
+				Files.copy(
+						PdfFetcher.create(tmp).getPdfFromUrl(url).get(),
+						tmp.resolve(i+".pdf"));
 			}
 		}
 		
