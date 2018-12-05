@@ -23,9 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -73,7 +71,6 @@ public class IdConverterClient extends CachingApiClient {
 	}
 	
 	// Batches the calls to groups of max 50 ids
-	//TODO: Refactor this to look up cache on a id by id basis.
 	public Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
 		Set<Record> out = new HashSet<>();
 		Cache<String,BinaryData> cache = permanentCache();
@@ -95,7 +92,6 @@ public class IdConverterClient extends CachingApiClient {
 				id.add(nextId);
 			}
 		}
-		
 		int start = 0;
 		while (start<id.size()) {
 			int end = id.size()<start+50 ? id.size() : start+50;
@@ -104,6 +100,7 @@ public class IdConverterClient extends CachingApiClient {
 			outTmp.ifPresent(o -> {
 				out.addAll(o.records);
 				o.records.forEach(r -> {
+					//Add component to cache at individual level
 					BinaryData ser;
 					try {
 						ser = BinaryData.from(objectMapper.writeValueAsBytes(r));
@@ -113,8 +110,6 @@ public class IdConverterClient extends CachingApiClient {
 					} catch (JsonProcessingException e) {
 						logger.warn("Could not serialise id converter record to json");
 					}
-					
-					
 				});
 			});
 			start += 50;
