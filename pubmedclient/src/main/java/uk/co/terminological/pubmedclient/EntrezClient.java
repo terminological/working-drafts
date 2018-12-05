@@ -278,7 +278,8 @@ public class EntrezClient extends CachingApiClient {
 				EntrezResult.PubMedEntries tmp = new EntrezResult.PubMedEntries(xml.content());
 				tmp.stream().forEach(entry -> {
 					out.add(entry);
-					cache.put(pmid, entry.getRaw().outerXml());
+					String pmid = entry.getPMID().get();
+					cache.put(pmid, BinaryData.from(entry.getRaw().outerXml()));
 				});
 			} catch (XmlException e) {
 				throw new BibliographicApiException("could not parse result",e);
