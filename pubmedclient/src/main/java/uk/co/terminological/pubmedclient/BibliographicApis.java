@@ -62,8 +62,8 @@ public class BibliographicApis {
 
 	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
 
-		entrez = EntrezClient.create(pubmedApiToken, appId, developerEmail);
-		cacheDir.ifPresent(d -> entrez.withCache(d.resolve("entrez")));
+		entrez = EntrezClient.create(pubmedApiToken, appId, developerEmail,
+				cacheDir.map(o -> o.resolve("entrez")).orElse(null));
 		pmcIdConv = IdConverterClient.create(appId,developerEmail, 
 				cacheDir.map(o -> o.resolve("idconv")).orElse(null));
 		crossref = CrossRefClient.create(developerEmail, 
