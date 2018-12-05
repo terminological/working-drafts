@@ -11,6 +11,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
+import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 import uk.co.terminological.nlptools.Similarity;
 import uk.co.terminological.nlptools.StringCrossMapper;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
@@ -97,6 +100,17 @@ public class TestGraphDatabaseApi {
 		logger.info(mapper.summaryStats());
 		
 		//if (mapper.getSource().countCorpusDocuments() > 20) {
+		
+		try (Transaction tx = graphApi.get().beginTx()) {
+		mapper.getAllMatchesBySimilarity(0.9D, d -> d.termsByTfIdf(), Similarity::getCosineDifference).forEach(triple -> {
+			if (!triple.getFirst().equals(triple.getSecond())) {
+				Node in = graphApi.get().getNodeById(Long.parseLong(triple.getFirst().getIdentifier()));
+				Node out2 = graphApi.get().getNodeById(Long.parseLong(triple.getSecond().getIdentifier()));
+				Relationship r = in.createRelationshipTo(out2, Rel.SIMILAR_TO);
+				r.setProperty(Prop.SCORE, triple.getThird());
+			}
+		});
+		}
 		
 		mapper.getAllMatchesBySimilarity(0.9D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
 			t -> {

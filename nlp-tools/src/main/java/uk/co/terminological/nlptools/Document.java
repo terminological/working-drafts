@@ -66,7 +66,7 @@ public class Document {
 	}
 	
 	public boolean equals(Object o) {
-		if (o instanceof Document) return ((Document) o).identifier.equals(identifier);
+		if (o instanceof Document) return ((Document) o).identifier.equals(this.identifier);
 		else return false;
 	}
 	
