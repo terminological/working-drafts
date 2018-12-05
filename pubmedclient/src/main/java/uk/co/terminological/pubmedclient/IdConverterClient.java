@@ -4,8 +4,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +27,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 public class IdConverterClient extends CachingApiClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(IdConverterClient.class);
+	private static Map<String, IdConverterClient> instances = new HashMap<>();
 	
 	private String developerEmail;
 	private String toolName;
@@ -36,7 +39,10 @@ public class IdConverterClient extends CachingApiClient {
 	}
 	
 	public static IdConverterClient create(String developerEmail, String toolName, Path cacheDir) {
-		return new IdConverterClient(developerEmail,toolName, Optional.ofNullable(cacheDir));
+		if (!instances.containsKey(developerEmail)) {
+			instances.put(developerEmail, new IdConverterClient(developerEmail,toolName, Optional.ofNullable(cacheDir)));
+		}
+		return instances.get(developerEmail);	
 	}
 	
 	private IdConverterClient(String developerEmail, String toolName, Optional<Path> cacheDir) {
