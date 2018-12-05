@@ -21,10 +21,12 @@ public class TestPdfUtil {
 		System.out.println(tmp.toString());
 		
 		for (int i=0; i<5; i++) {
+			int k = 0;
 			for (String url: urls) {
 				Files.copy(
 						PdfFetcher.create(tmp).getPdfFromUrl(url).get(),
-						tmp.resolve(i+".pdf"));
+						tmp.resolve(i+"_"+k+".pdf"));
+				k++;
 			}
 		}
 		
