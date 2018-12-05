@@ -108,11 +108,15 @@ public class TestGraphDatabaseApi {
 				Node out2 = graphApi.get().getNodeById(Long.parseLong(triple.getSecond().getIdentifier()));
 				Relationship r = in.createRelationshipTo(out2, Rel.SIMILAR_TO);
 				r.setProperty(Prop.SCORE, triple.getThird());
+				System.out.print(".");
+			} else {
+				System.out.print("x");
 			}
+			
 		});
 		}
 		
-		mapper.getAllMatchesBySimilarity(0.9D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
+		/*mapper.getAllMatchesBySimilarity(0.9D, d-> d.termsByEntropy(), Similarity::getCosineDifference).forEach(
 			t -> {
 				out.println(
 						t.getThird()+"\t"+
@@ -121,7 +125,7 @@ public class TestGraphDatabaseApi {
 						t.getFirst().getString()+"\t"+
 						t.getSecond().getString()
 				);
-			});
+			});*/
 		
 		
 		//}
