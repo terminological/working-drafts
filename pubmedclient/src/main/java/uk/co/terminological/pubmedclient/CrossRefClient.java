@@ -48,6 +48,8 @@ public class CrossRefClient extends CachingApiClient {
 	// https://doi.crossref.org/servlet/query?pid=rob@terminological.co.uk&id=10.1577/H02-043
 
 	// http://support.crossref.org/hc/en-us/articles/213420726
+	// TODO: get pdf using content negotiation and a PdfFetcher...
+	
 	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
 
 	private static Map<String,CrossRefClient> singleton = new HashMap<>();
