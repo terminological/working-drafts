@@ -72,12 +72,6 @@ public class EntrezClient extends CachingApiClient {
 
 	}
 	
-	public EntrezClient withCache(Path cache) {
-		this.cache=cache;
-		StreamExceptions.tryRethrow(t -> Files.createDirectories(cache));
-		return this;
-	}
-	
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
 	private EntrezClient(String apiKey, String appId, String developerEmail, Optional<Path> cache) {
 		super(cache, 
