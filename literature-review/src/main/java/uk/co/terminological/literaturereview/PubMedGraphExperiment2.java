@@ -298,6 +298,7 @@ public class PubMedGraphExperiment2 {
 					Relationship r = in.createRelationshipTo(out, Rel.SIMILAR_TO);
 					r.setProperty(Prop.SCORE, triple.getThird());
 				}
+				tx.success();
 			});
 			
 		}

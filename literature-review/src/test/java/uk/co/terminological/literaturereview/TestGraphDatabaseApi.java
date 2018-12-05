@@ -112,7 +112,7 @@ public class TestGraphDatabaseApi {
 			} else {
 				System.out.print("x");
 			}
-			
+			tx.success();
 		});
 		}
 		
