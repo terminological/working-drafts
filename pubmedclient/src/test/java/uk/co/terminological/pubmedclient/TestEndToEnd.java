@@ -35,8 +35,7 @@ public class TestEndToEnd {
 		Path ehcache = Paths.get("/tmp/ehcache/test123");
 		Files.createDirectories(ehcache.getParent());
 		
-		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail);
-		pubmed.withCache(ehcache.resolve("pubmed"));
+		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail,ehcache.resolve("pubmed"));
 		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail, ehcache.resolve("idconv"));
 		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache.resolve("xref"));
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail, ehcache.resolve("unpaywall"));
