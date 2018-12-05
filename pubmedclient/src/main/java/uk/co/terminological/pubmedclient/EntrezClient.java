@@ -264,21 +264,21 @@ public class EntrezClient extends CachingApiClient {
 			fetchParams.add("format", "xml");
 			rateLimiter.consume();
 			logger.debug("making efetch query for {} pubmed records with params {}", deferred.size(), fetchParams.toString());
-			InputStream is = eFetchResource.post(InputStream.class,fetchParams);
+			Optional<InputStream> is = this.buildCall(EFETCH, InputStream.class)
+					.withParams(fetchParams)
+					.withOperation(is2 -> is2)
+					.post();
+			if (!is.isPresent()) {
+				logger.warn("Could not fetch content from entrez. Returning items from cache");
+				return out; //Fetch failed but there was cached content.
+			}
 			Xml xml;
 			try {
-				xml = Xml.fromStream(is);
+				xml = Xml.fromStream(is.get());
 				EntrezResult.PubMedEntries tmp = new EntrezResult.PubMedEntries(xml.content());
 				tmp.stream().forEach(entry -> {
 					out.add(entry);
-					if (cache != null) {
-						Path tmp2 = cache.resolve(entry.getPMID().get());
-						try {
-							entry.getRaw().write(Files.newOutputStream(tmp2));
-						} catch (XmlException | IOException e) {
-							logger.debug("could not cache: "+tmp2);
-						}
-					}
+					cache.put(pmid, entry.getRaw().outerXml());
 				});
 			} catch (XmlException e) {
 				throw new BibliographicApiException("could not parse result",e);
