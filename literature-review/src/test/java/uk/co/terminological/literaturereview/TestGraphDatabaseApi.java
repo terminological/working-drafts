@@ -92,7 +92,7 @@ public class TestGraphDatabaseApi {
 			);			
 		}
 		
-		PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
+		//PrintStream out = new PrintStream(Files.newOutputStream(outputDir.resolve("authorSim.tsv")));
 		
 		
 		//surnameMapper.forEach((surname,mapper)-> {
