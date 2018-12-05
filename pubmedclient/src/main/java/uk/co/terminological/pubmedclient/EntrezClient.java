@@ -56,7 +56,6 @@ public class EntrezClient extends CachingApiClient {
 	private static final String ELINK = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi";
 	private TokenBucket rateLimiter;
 
-	private Path cache = null;
 	private static Map<String, EntrezClient> singleton = new HashMap<>();
 
 	public static EntrezClient create(String apiKey, String appId, String developerEmail) {
