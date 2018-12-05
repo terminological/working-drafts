@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBException;
 
+import org.ehcache.Cache;
 import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
@@ -35,51 +36,47 @@ import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.pubmedclient.EntrezResult.Links;
+import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
  */
-public class EntrezClient {
+public class EntrezClient extends CachingApiClient {
 
 	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
 	// TODO: caching with https://hc.apache.org/httpcomponents-client-ga/tutorial/html/caching.html#storage and EHCache
 
-	private static final String DEFAULT_BASE_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-	private Client client;
 	private String apiKey;
 	private String appId;
 	private String developerEmail;
-	private WebResource eSearchResource;
-	private WebResource eFetchResource;
-	private WebResource eLinkResource;
-	private String baseUrl;
+	//private WebResource eSearchResource;
+	//private WebResource eFetchResource;
+	//private WebResource eLinkResource;
+	//private String baseUrl;
 	private static final Logger logger = LoggerFactory.getLogger(EntrezClient.class);
-	private static final String ESEARCH = "esearch.fcgi";
-	private static final String EFETCH = "efetch.fcgi";
-	private static final String ELINK = "elink.fcgi";
-	private TokenBucket rateLimiter = TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build();
+	private static final String ESEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
+	private static final String EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi";
+	private static final String ELINK = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi";
+	private TokenBucket rateLimiter;
 
 	private Path cache = null;
 	private static Map<String, EntrezClient> singleton = new HashMap<>();
 
 	public static EntrezClient create(String apiKey, String appId, String developerEmail) {
+		return create(apiKey,appId,developerEmail,null);
+	}
+	
+	public static EntrezClient create(String apiKey, String appId, String developerEmail, Path cache) {
 
 		if (!singleton.containsKey(apiKey)) {
-			EntrezClient tmp = new EntrezClient(DEFAULT_BASE_URL, apiKey, appId, developerEmail);
+			EntrezClient tmp = new EntrezClient(apiKey, appId, developerEmail, Optional.ofNullable(cache));
 			singleton.put(apiKey, tmp);
 		}
 		return singleton.get(apiKey);
 
 	}
 	
-	public EntrezClient debugMode() {
-		this.client.addFilter(new LoggingFilter(new java.util.logging.Logger("Jersey",null) {
-			@Override public void info(String msg) { logger.info(msg); }
-		}));
-		return this;
-	}
-
 	public EntrezClient withCache(Path cache) {
 		this.cache=cache;
 		StreamExceptions.tryRethrow(t -> Files.createDirectories(cache));
@@ -87,18 +84,20 @@ public class EntrezClient {
 	}
 	
 	// "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
-	private EntrezClient(String baseUrl, String apiKey, String appId, String developerEmail) {
-		this.baseUrl = baseUrl;
-		client = Client.create();
-		eSearchResource = client.resource(this.baseUrl + ESEARCH);
-		eFetchResource = client.resource(this.baseUrl + EFETCH);
-		eLinkResource = client.resource(this.baseUrl + ELINK);
+	private EntrezClient(String apiKey, String appId, String developerEmail, Optional<Path> cache) {
+		super(cache, 
+				 TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build()
+				);
+		//this.baseUrl = baseUrl;
+		//eSearchResource = client.resource(this.baseUrl + ESEARCH);
+		//eFetchResource = client.resource(this.baseUrl + EFETCH);
+		//eLinkResource = client.resource(this.baseUrl + ELINK);
 		this.apiKey = apiKey;
 		this.appId = appId;
 		this.developerEmail = developerEmail;
 	}
 
-	private MultivaluedMap<String, String> defaultApiParams() {
+	protected MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("api_key", apiKey);
 		out.add("tool", appId);
@@ -177,10 +176,16 @@ public class EntrezClient {
 		
 		public Optional<EntrezResult.Search> execute() throws BibliographicApiException {
 			if (empty) return Optional.empty();
-			return Optional.of(client.search(this));
+			return client.buildCall(ESEARCH, EntrezResult.Search.class)
+					.withParams(searchParams)
+					.withOperation(is -> {
+						Xml resp = Xml.fromStream(is);
+						return new EntrezResult.Search(resp.content());
+					}).post();
+			
 		}
 		
-		public String toString() {return searchParams.toString();}
+		public String toString() {return keyFromApiQuery(ESEARCH,searchParams); }
 	}
 
 	//public static class ELinkQueryBuilder
@@ -195,7 +200,7 @@ public class EntrezClient {
 	 * @return
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
-	 */
+	 
 	public EntrezResult.Search search(ESearchQueryBuilder builder) throws BibliographicApiException {
 		logger.debug("making esearch query with params {}", builder.toString());
 		rateLimiter.consume();
@@ -208,7 +213,7 @@ public class EntrezClient {
 			throw new BibliographicApiException("could not parse result",e1);
 		}
 		
-	}
+	}*/
 
 
 	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
@@ -226,10 +231,6 @@ public class EntrezClient {
 		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds().collect(Collectors.toList());
 	}
 	
-	public Set<EntrezResult.PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
-		return getPMEntriesByPMIds(pmids, cache);
-	}
-	
 	/**
 	 * Fetch PubMed article metadata and abstract
 	 * 
@@ -238,27 +239,23 @@ public class EntrezClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public Set<EntrezResult.PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids, Path cache) throws BibliographicApiException {
+	public Set<EntrezResult.PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
 		Set<EntrezResult.PubMedEntry> out = new HashSet<>();
 		if (pmids.isEmpty()) return out;
+		Cache<String,BinaryData> cache = this.permanentCache(); 
 		Collection<String> deferred = new HashSet<>();
-		if (cache != null) {
-			for (String pmid: pmids) {
-				Path tmp = cache.resolve(pmid);
-				if (Files.exists(tmp)) {
-					try {
-						out.add(new PubMedEntry(Xml.fromFile(tmp.toFile()).content()));
-					} catch (XmlException | FileNotFoundException e) {
-						logger.debug("error with cached content for: "+pmid);
+		for (String pmid: pmids) {
+			if (cache.containsKey(pmid)) {
+				try {
+					out.add(new PubMedEntry(Xml.fromStream(cache.get(pmid).inputStream()).content()));
+					} catch (XmlException e) {
+						logger.debug("error parsing cached content for: "+pmid);
+						cache.remove(pmid);
 						deferred.add(pmid);
 					}
-				} else {
-					deferred.add(pmid);
-				}
+			} else {
+				deferred.add(pmid);
 			}
-			logger.debug("fetching {} pubmed records from cache", out.size());
-		} else {
-			deferred = pmids;
 		}
 		if (!deferred.isEmpty()) {
 			MultivaluedMap<String, String> fetchParams = defaultApiParams();
@@ -290,22 +287,18 @@ public class EntrezClient {
 		return out;
 	}
 	
-	public EntrezResult.PubMedEntries getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey) throws BibliographicApiException {
+	public Optional<PubMedEntries> getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey) {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("format", "xml");
 		fetchParams.add("query_key", queryKey);
 		fetchParams.add("WebEnv", webEnv);
-		rateLimiter.consume();
-		logger.debug("making efetch query with params {}", fetchParams.toString());
-		InputStream is = eFetchResource.post(InputStream.class,fetchParams);
-		Xml xml;
-		try {
-			xml = Xml.fromStream(is);
-		} catch (XmlException e) {
-			throw new BibliographicApiException("could not parse result",e);
-		}
-		return new EntrezResult.PubMedEntries(xml.content());
+		return this.buildCall(EFETCH, PubMedEntries.class)
+			.withParams(fetchParams)
+			.withOperation(is -> {
+				Xml xml = Xml.fromStream(is);
+				return new EntrezResult.PubMedEntries(xml.content());
+			}).post();
 	}
 
 	public Optional<EntrezResult.PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
@@ -359,12 +352,10 @@ public class EntrezClient {
 		params.add("retmode", "xml");
 		params.add("id", ids.stream().collect(Collectors.joining(",")));
 		logger.debug("making efetch query with params {}", params.toString());
-		rateLimiter.consume();
-		try {
-			return Optional.of(eFetchResource.post(InputStream.class,params));
-		} catch (Exception e) {
-			return Optional.empty();
-		}
+		return buildCall(EFETCH,InputStream.class)
+			.withParams(params)
+			.withOperation(is -> is)
+			.post();
 	}
 
 
@@ -376,7 +367,7 @@ public class EntrezClient {
 		return new ELinksQueryBuilder(defaultApiParams(),ids, fromDb, this);
 	}
 
-	/* The history mechanism doesn't really work due to a bug in Entrez
+	/* The history mechanism doesn't really work due to a bug in Entrez which reformats the call slightly
 	 * public ELinksQueryBuilder buildLinksQueryForSearchResult(Search search, Database fromDb) {
 		return new ELinksQueryBuilder(defaultApiParams(), search.getWebEnv().get(), search.getQueryKey().get(),fromDb, this);
 	}*/
@@ -463,7 +454,12 @@ public class EntrezClient {
 
 		public Optional<Links> execute() throws BibliographicApiException {
 			if (empty) return Optional.empty();
-			return Optional.of(client.link(this));
+			return client.buildCall(ELINK, Links.class)
+				.withParams(searchParams)
+				.withOperation(is -> {
+					Xml resp = Xml.fromStream(is);
+					return new EntrezResult.Links(resp.content());
+				}).post();
 		}
 		
 		public String toString() {return searchParams.toString();}
@@ -474,7 +470,7 @@ public class EntrezClient {
 	}
 
 
-	public EntrezResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
+	/*public EntrezResult.Links link(ELinksQueryBuilder builder) throws BibliographicApiException {
 		logger.debug("making elink query with params {}", builder.toString());
 		rateLimiter.consume();
 		InputStream is = builder.post(eLinkResource, InputStream.class);
@@ -488,7 +484,7 @@ public class EntrezClient {
 			throw new BibliographicApiException("could not parse result",e1);
 		} 
 		
-	}
+	}*/
 
 	public Map<String,Long> getSimilarScoredPMIdsByPMId(String pmid) throws BibliographicApiException {
 		Map<String,Long> out = new HashMap<>();
