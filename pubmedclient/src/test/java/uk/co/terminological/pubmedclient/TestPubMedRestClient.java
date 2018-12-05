@@ -31,10 +31,9 @@ public class TestPubMedRestClient {
 		prop.load(Files.newInputStream(Paths.get(prop.getProperty("user.home"),"Dropbox/secrets.prop")));
 		
 		//String xrefToken = prop.getProperty("crossref.clickthroughtoken");
-		String developerEmail = prop.getProperty("developeremail");
-		
-		String pubmedApiToken = prop.getProperty("pubmed.apikey");
-		String appId = prop.getProperty("appid");
+		String developerEmail = prop.getProperty("developer-email");
+		String pubmedApiToken = prop.getProperty("pubmed-apikey");
+		String appId = prop.getProperty("app-id");
 		
 		EntrezClient restClient = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		restClient.debugMode();
