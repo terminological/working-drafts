@@ -134,7 +134,7 @@ public class TestGraphDatabaseApi {
 		
 		
 		logger.info("file written");
-		out.close();
+		//out.close();
 		
 		// graphApi.shutdown();
 		graphApi.waitAndShutdown();
