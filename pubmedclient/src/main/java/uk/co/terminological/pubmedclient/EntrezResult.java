@@ -61,11 +61,11 @@ public class EntrezResult {
 			}
 		}
 		
-		public Optional<PubMedEntries> getStoredResult(EntrezClient client) throws BibliographicApiException {
+		public Optional<PubMedEntries> getStoredResult(EntrezClient client) {
 			Optional<String> webEnv = getWebEnv(); 
 			Optional<String> queryKey = getQueryKey();
 			if (webEnv.isPresent() && queryKey.isPresent()) {
-				return Optional.of(client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get()));
+				return client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get());
 			}
 			return Optional.empty();
 		}
