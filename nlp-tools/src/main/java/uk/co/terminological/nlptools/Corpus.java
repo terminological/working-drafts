@@ -34,6 +34,14 @@ public class Corpus {
 		this.stopWords = Stream.of(stopWords).map(normaliser).flatMap(tokeniser)
 				.collect(Collectors.toSet());
 	}
+	
+	public static Corpus create() {
+		return new Corpus(
+			string -> string.replaceAll("[_,\\.]"," ").replaceAll("[^a-zA-Z0-9\\s]", "-").replaceAll("\\s+", " ").toLowerCase(),
+			string -> Stream.of(string.split("\\s+")).filter(s -> !s.equals("-")),
+			new String[] {}
+		);
+	}
 
 	// ============ BEAN METHODS =====================
 	

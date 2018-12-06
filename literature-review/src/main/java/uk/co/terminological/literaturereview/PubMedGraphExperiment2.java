@@ -278,6 +278,8 @@ public class PubMedGraphExperiment2 {
 		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
 		log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
+		
+		
 		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department", "Research","of","at","is","a","for", "Dept");
 		log.info("loading affiliations from graph");
 		
