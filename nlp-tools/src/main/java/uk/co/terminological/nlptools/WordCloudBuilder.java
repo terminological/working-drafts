@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.kennycason.kumo.*;
 import com.kennycason.kumo.bg.RectangleBackground;
@@ -19,10 +21,13 @@ public class WordCloudBuilder {
 	List<WordFrequency> wordFrequencies = new ArrayList<>();
 	Path output;
 	
-	public static WordCloudBuilder from(Corpus corpus) {
+	public static WordCloudBuilder from(Corpus corpus, int maxNumber) {
 		WordCloudBuilder out = new WordCloudBuilder();
-		corpus.getTermCounts().forEach((t,i) -> {
-			out.wordFrequencies.add(new WordFrequency(t.tag, i));
+		corpus.getTermCounts().entrySet().stream()
+	       .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+	       .limit(maxNumber)
+	       .forEach((ti) -> {
+			out.wordFrequencies.add(new WordFrequency(ti.getKey().tag, ti.getValue()));
 		});
 		out.rectangular(600, 600);
 		out.wordCloud.setColorPalette(new ColorPalette(Color.RED, Color.GREEN, Color.YELLOW, Color.BLUE));
