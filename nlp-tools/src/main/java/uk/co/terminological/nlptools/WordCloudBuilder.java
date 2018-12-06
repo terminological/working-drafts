@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.kennycason.kumo.*;
+import com.kennycason.kumo.bg.CircleBackground;
 import com.kennycason.kumo.bg.RectangleBackground;
 import com.kennycason.kumo.font.scale.LinearFontScalar;
 import com.kennycason.kumo.font.scale.SqrtFontScalar;
@@ -33,6 +34,7 @@ public class WordCloudBuilder {
 		out.rectangular(600, 600);
 		out.wordCloud.setColorPalette(new ColorPalette(Color.RED, Color.GREEN, Color.YELLOW, Color.BLUE));
 		out.wordCloud.setFontScalar(new SqrtFontScalar(10, 100));
+		
 		return out;
 	}
 	
