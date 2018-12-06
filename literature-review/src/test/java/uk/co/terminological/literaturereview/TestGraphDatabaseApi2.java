@@ -20,6 +20,7 @@ import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
+import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Similarity;
 import uk.co.terminological.nlptools.StringCrossMapper;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
@@ -49,14 +50,14 @@ public class TestGraphDatabaseApi2 {
 		graphApi.waitAndShutdown();
 		
 		logger.info("loading affiliations from graph");
-		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department", "Research","of","at","is","a","for", "Dept");
+		Corpus mapper = Corpus.create();
 		
 		try (Transaction tx = graphApi.get().beginTx()) {
 			
 			graphApi.get().findNodes(Labels.AFFILIATION).stream().forEach( //.limit(30).forEach(
 				n -> {
 					String affil = n.getProperty(Prop.ORGANISATION_NAME).toString();
-					mapper.addSource(Long.toString(n.getId()),affil.toString()); 
+					mapper.addDocument(doc);.addSource(Long.toString(n.getId()),affil.toString()); 
 					mapper.addTarget(Long.toString(n.getId()),affil.toString());
 			});
 			

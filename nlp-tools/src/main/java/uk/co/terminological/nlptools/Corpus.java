@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import uk.co.terminological.nlptools.StringCrossMapper.DuplicateIdentityException;
 import uk.co.terminological.nlptools.StringCrossMapper.Normaliser;
 import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
 
@@ -47,6 +49,14 @@ public class Corpus {
 	
 	public void addDocument(Document doc) {
 		this.documents.add(doc);
+	}
+	
+	public void addDocument(String id, String source) {
+		addDocument(new Document(id, source, this));
+	}
+	
+	public void addDocument(String source) {
+		addDocument(new Document(UUID.randomUUID().toString(), source, this));
 	}
 	
 	public Stream<Term> streamTerms() {
