@@ -23,6 +23,7 @@ import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Similarity;
 import uk.co.terminological.nlptools.StringCrossMapper;
+import uk.co.terminological.nlptools.WordCloudBuilder;
 import uk.co.terminological.pubmedclient.BibliographicApiException;
 
 
@@ -57,22 +58,12 @@ public class TestGraphDatabaseApi2 {
 			graphApi.get().findNodes(Labels.AFFILIATION).stream().forEach( //.limit(30).forEach(
 				n -> {
 					String affil = n.getProperty(Prop.ORGANISATION_NAME).toString();
-					mapper.addDocument(doc);.addSource(Long.toString(n.getId()),affil.toString()); 
-					mapper.addTarget(Long.toString(n.getId()),affil.toString());
-			});
-			
-			log.info(mapper.summaryStats());
-			mapper.getAllMatchesBySimilarity(0.9D, d -> d.termsByTfIdf(), Similarity::getCosineDifference).forEach(triple -> {
-				if (!triple.getFirst().equals(triple.getSecond())) {
-					Node in = graphApi.get().getNodeById(Long.parseLong(triple.getFirst().getIdentifier()));
-					Node out = graphApi.get().getNodeById(Long.parseLong(triple.getSecond().getIdentifier()));
-					Relationship r = in.createRelationshipTo(out, Rel.SIMILAR_TO);
-					r.setProperty(Prop.SCORE, triple.getThird());
-				}
-				tx.success();
+					mapper.addDocument(affil.toString()); 
 			});
 			
 		}
+		logger.info(mapper.summaryStats());
+		WordCloudBuilder.from(mapper).withOutputPath(outputDir.resolve("affils.png")).execute();
 	}
 	
 	static Path fromProperty(Properties prop, String name) {
