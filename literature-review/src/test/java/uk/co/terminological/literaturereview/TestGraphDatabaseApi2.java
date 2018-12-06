@@ -63,6 +63,7 @@ public class TestGraphDatabaseApi2 {
 			
 		}
 		logger.info(mapper.summaryStats());
+		logger.info("Output to: "+outputDir.resolve("affils.png"));
 		WordCloudBuilder.from(mapper).withOutputPath(outputDir.resolve("affils.png")).execute();
 	}
 	
