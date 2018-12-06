@@ -48,7 +48,7 @@ public class TestGraphDatabaseApi2 {
 		
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
 		
-		graphApi.waitAndShutdown();
+		
 		
 		logger.info("loading affiliations from graph");
 		Corpus mapper = Corpus.create();
@@ -65,6 +65,7 @@ public class TestGraphDatabaseApi2 {
 		logger.info(mapper.summaryStats());
 		logger.info("Output to: "+outputDir.resolve("affils.png"));
 		WordCloudBuilder.from(mapper).withOutputPath(outputDir.resolve("affils.png")).execute();
+		graphApi.waitAndShutdown();
 	}
 	
 	static Path fromProperty(Properties prop, String name) {
