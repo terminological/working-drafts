@@ -65,7 +65,7 @@ public class TestGraphDatabaseApi2 {
 		}
 		logger.info(mapper.summaryStats());
 		logger.info("Output to: "+outputDir.resolve("affils.png"));
-		WordCloudBuilder.from(mapper,200).withOutputPath(outputDir.resolve("affils.png")).execute();
+		WordCloudBuilder.from(mapper,500).withOutputPath(outputDir.resolve("affils.png")).execute();
 		graphApi.waitAndShutdown();
 	}
 	
