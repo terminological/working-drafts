@@ -26,7 +26,7 @@ public class Corpus {
 	private Tokeniser tokeniser;
 	private Set<String> stopWords;
 	private int termsInCorpus;
-	private HashMap<Term,Integer> termCounts = new HashMap<>();
+	private Map<Term,Integer> termCounts = new HashMap<>();
 	
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
 		this.normaliser = normaliser;
@@ -112,6 +112,10 @@ public class Corpus {
 				.append("Unique terms: "+countUniqueTerms()).toString();
 	}
 
+	public Map<Term,Integer> getTermCounts() {
+		return termCounts;
+	}
+	
 	public int countTermsUsage(Term term) {
 		return termCounts.getOrDefault(term, 0);
 	}

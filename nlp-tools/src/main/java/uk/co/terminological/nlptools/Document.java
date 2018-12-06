@@ -19,7 +19,7 @@ public class Document {
 	private String string;
 	private String normalised;
 	private List<Term> terms = new ArrayList<>();
-	private HashMap<Term,Integer> termCounts = new HashMap<>();
+	private Map<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
 	
 	protected Document(String id, String string, Corpus corpus) {
