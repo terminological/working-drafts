@@ -45,6 +45,7 @@ public class TestGraphDatabaseApi2 {
 		Path graphDbPath = fromProperty(prop,"graph-db-directory");
 		Path graphConfPath = fromProperty(prop,"graph-conf-file");
 		Path outputDir = fromProperty(prop,"output-directory");
+		Files.createDirectories(outputDir);
 		
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphDbPath, graphConfPath);
 		
