@@ -11,6 +11,7 @@ import java.util.Map;
 import com.kennycason.kumo.*;
 import com.kennycason.kumo.bg.RectangleBackground;
 import com.kennycason.kumo.font.scale.LinearFontScalar;
+import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.palette.ColorPalette;
 
 public class WordCloudBuilder {
@@ -31,7 +32,7 @@ public class WordCloudBuilder {
 		});
 		out.rectangular(600, 600);
 		out.wordCloud.setColorPalette(new ColorPalette(Color.RED, Color.GREEN, Color.YELLOW, Color.BLUE));
-		out.wordCloud.setFontScalar(new LinearFontScalar(10, 40));
+		out.wordCloud.setFontScalar(new SqrtFontScalar(10, 100));
 		return out;
 	}
 	
@@ -42,7 +43,7 @@ public class WordCloudBuilder {
 	
 	public WordCloudBuilder rectangular(int x, int y) {
 		Dimension dimension = new Dimension(x, y);
-		wordCloud = new WordCloud(dimension, CollisionMode.RECTANGLE);
+		wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
 		wordCloud.setPadding(0);
 		wordCloud.setBackground(new RectangleBackground(dimension));
 		return this;
