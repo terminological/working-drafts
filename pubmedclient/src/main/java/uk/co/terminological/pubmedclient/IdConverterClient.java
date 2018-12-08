@@ -28,6 +28,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import uk.co.terminological.pubmedclient.record.IdType;
+
 public class IdConverterClient extends CachingApiClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(IdConverterClient.class);

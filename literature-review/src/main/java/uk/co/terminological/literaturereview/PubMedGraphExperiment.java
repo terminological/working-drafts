@@ -49,7 +49,7 @@ import uk.co.terminological.pubmedclient.EntrezClient.Command;
 import uk.co.terminological.pubmedclient.EntrezClient.Database;
 import  uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-import uk.co.terminological.pubmedclient.IdType;
+import uk.co.terminological.pubmedclient.record.IdType;
 
 public class PubMedGraphExperiment {
 

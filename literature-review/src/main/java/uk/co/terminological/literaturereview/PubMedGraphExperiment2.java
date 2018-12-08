@@ -61,8 +61,8 @@ import uk.co.terminological.pubmedclient.EntrezResult.Link;
 import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 import uk.co.terminological.pubmedclient.EntrezResult.Search;
 import uk.co.terminological.pubmedclient.IdConverterClient.Record;
-import uk.co.terminological.pubmedclient.IdType;
 import uk.co.terminological.pubmedclient.UnpaywallClient.Result;
+import uk.co.terminological.pubmedclient.record.IdType;
 
 public class PubMedGraphExperiment2 {
 
