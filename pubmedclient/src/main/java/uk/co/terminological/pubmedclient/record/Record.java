@@ -1,5 +1,5 @@
 package uk.co.terminological.pubmedclient.record;
 
-public interface Article {
+public interface Record {
 
 }
