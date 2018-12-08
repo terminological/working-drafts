@@ -1,7 +1,7 @@
 package uk.co.terminological.pubmedclient.record;
 
-public interface IdentifiedRecord {
+public interface RecordIdentifier {
 
 	public String identifier();
-	public IdType identifierType()
+	public IdType identifierType();
 }
