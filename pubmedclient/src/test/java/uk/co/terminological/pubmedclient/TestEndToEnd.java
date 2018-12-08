@@ -15,8 +15,6 @@ import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 
-import uk.co.terminological.pubmedclient.IdConverterClient.IdType;
-
 public class TestEndToEnd {
 
 	public static void main(String[] args) throws IOException, BibliographicApiException, ParseException {

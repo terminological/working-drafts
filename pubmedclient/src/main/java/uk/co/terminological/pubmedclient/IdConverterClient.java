@@ -149,14 +149,6 @@ public class IdConverterClient extends CachingApiClient {
 				.collect(Collectors.toSet());
 	}
 	
-	public static enum IdType {
-		PMCID,
-		PMID,
-		DOI,
-		MID
-	}
-	
-	
 	//https://github.com/FasterXML/jackson-modules-java8
 	public static class Result extends ExtensibleJson {
 		@JsonProperty("status") public Optional<String> status = Optional.empty();
