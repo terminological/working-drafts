@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public interface Author {
 
-	Optional<RecordReference> getOrcid();
+	Optional<String> getOrcid();
 	Optional<String> getFirstName();
 	String getLastName();
 	Optional<String> getInitials();
