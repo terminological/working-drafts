@@ -23,7 +23,8 @@ RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
    
 with driver.session() as session:
     result = session.run(duplicateTitlesQry)
-    session.detach(result)
+    result.detach()
 
 #%%
-result.data()
+for item in result:
+    print(item["n.pmid"])
