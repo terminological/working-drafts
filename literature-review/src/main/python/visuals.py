@@ -4,7 +4,8 @@ Spyder Editor
 
 This is a temporary script file.
 """
-quit()
+def main():
+    quit()
 
 #%%
 from neo4j import GraphDatabase
