@@ -11,6 +11,7 @@ import freemarker.template.TemplateException;
 import static uk.co.terminological.simplechart.Chart.Dimension.*;
 import static uk.co.terminological.simplechart.OutputTarget.*;
 import uk.co.terminological.datatypes.FluentList;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 
 public class TestSimpleNetwork {
@@ -19,16 +20,24 @@ public class TestSimpleNetwork {
 		
 		BasicConfigurator.configure();
 		
-		List<Tuple<Double,Double>> example = FluentList.create(
-				Tuple.create(1D, 3D),
-				Tuple.create(2D, 4D),
-				Tuple.create(3D, 3D),
-				Tuple.create(4D, 2D),
-				Tuple.create(5D, 3D)
+		List<Tuple<Integer,String>> nodes = FluentList.create(
+				Tuple.create(1, "one"),
+				Tuple.create(2, "two"),
+				Tuple.create(3, "three"),
+				Tuple.create(4, "four"),
+				Tuple.create(5, "five")
+				);
+		
+		List<Triple<Integer,Double,Integer>> links = FluentList.create(
+				Triple.create(1, 1.0, 2),
+				Triple.create(2, 2.0, 3),
+				Triple.create(3, 1.0, 4),
+				Triple.create(4, 2.0, 5),
+				Triple.create(5, 1.0, 1)
 				);
 		
 		Chart<?> tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
-			.withDefaultData(example)
+			.withDefaultData(Tuple.create(nodes,links))
 			.withNewChart("Hello", ChartType.XY_LINE)
 			.bind(X, t -> t.getFirst())
 			.bind(Y, t -> t.getSecond()+Math.random()-0.5D)

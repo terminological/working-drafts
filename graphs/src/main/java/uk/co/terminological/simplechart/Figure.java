@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -79,6 +80,10 @@ public class Figure {
 		return new Figure("No title",directory);
 	}
 
+	public <X> Data<X> withDefaultData(X data) {
+		return withDefaultData(Collections.singletonList(data));
+	}
+	
 	public <X> Data<X> withDefaultData(List<X> data) {
 		Data<X> out = new Data<X>(title, workingDirectory);
 		out.cfg = this.cfg;
