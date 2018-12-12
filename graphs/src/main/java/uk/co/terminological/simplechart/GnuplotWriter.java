@@ -23,13 +23,7 @@ public class GnuplotWriter<X> extends Writer<X> {
 	}
 	
 	public GnuplotWriter(Chart<X> chart) {
-		this.chart = chart;
-		this.template = chart.template;
-		root.put("data", extractData());
-		root.put("config", chart.config());
-		for (Entry<String,String> custom: this.chart.customField.entrySet()) {
-			root.put(custom.getKey(), custom.getValue());
-		}
+		
 	}
 		
 	@Override
