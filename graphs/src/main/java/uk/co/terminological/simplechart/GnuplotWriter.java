@@ -5,11 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
