@@ -1,7 +1,5 @@
 package uk.co.terminological.simplechart;
 
-import java.io.File;
-
 public enum ChartType {
 	XY_LINE("xyplot.ftl", GnuplotWriter.class),
 	XY_MULTI_LINE("xymultiplot.ftl",GnuplotWriter.class), 
@@ -10,8 +8,10 @@ public enum ChartType {
 
 	String templateFilename;
 	
-	ChartType(String templateFilename, Class<? extends Writer<?>> writer) {
+	@SuppressWarnings("unchecked")
+	ChartType(String templateFilename, @SuppressWarnings("rawtypes") Class<? extends Writer> writer) {
 		this.templateFilename = templateFilename;
+		this.writer = (Class<? extends Writer<?>>) writer;
 	};
 	
 	public String getTemplateFilename() {
@@ -21,8 +21,9 @@ public enum ChartType {
 	Class<? extends Writer<?>> writer;
 	
 	
-	public Class<? extends Writer<?>> getWriter() {
-		return writer;
+	@SuppressWarnings("unchecked")
+	public <X> Class<? extends Writer<X>> getWriter() {
+		return (Class<? extends Writer<X>>) writer;
 	}
 
 }
