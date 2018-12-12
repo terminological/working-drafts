@@ -34,6 +34,13 @@ public class Series<X> {
 	
 	// ======= Freemarker accessories ======
 	
+	public Function<X,Object> functionFor(Dimension dim, String name) {
+		return bindings.stream()
+			.filter(trip -> trip.firstEquals(dim) && trip.thirdEquals(name))
+			.map(trip -> trip.getSecond())
+			.findFirst().get();
+	}
+	
 	public List<Integer> indexesOf(String dim) {
 		List<Integer> out = new ArrayList<>();
 		int i=1;
