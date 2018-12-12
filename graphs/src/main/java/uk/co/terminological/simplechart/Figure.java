@@ -118,7 +118,7 @@ public class Figure {
 		return out;
 	}
 
-	public <X> Chart<X> withNewChart(List<X> data, String title, String resourceName) {
+	/*public <X> Chart<X> withNewChart(List<X> data, String title, String resourceName, ) {
 		Chart<X> out = new Chart<X>(data,title, getTemplate(resourceName),workingDirectory, this);
 		this.charts.add(out);
 		return out;
@@ -128,7 +128,7 @@ public class Figure {
 		Chart<X> out = new Chart<X>(data,title, getTemplate(templateFile),workingDirectory, this);
 		this.charts.add(out);
 		return out;
-	}
+	}*/
 
 	public void render() {
 		throw new NotImplementedException("Will render the mulitplot");

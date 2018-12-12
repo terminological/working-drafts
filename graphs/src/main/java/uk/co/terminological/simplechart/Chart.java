@@ -2,6 +2,7 @@ package uk.co.terminological.simplechart;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,14 +27,16 @@ public class Chart<X> {
 	List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
 	String filename;
+	Class<? extends Writer<X>> writerCls;
 	
 	public static Logger log = LoggerFactory.getLogger(Chart.class);
 	
-	protected Chart(List<X> data, String title, Template template, File workingDirectory, Figure figure) {
+	protected Chart(List<X> data, String title, Template template, Class<? extends Writer<X>> class1, File workingDirectory, Figure figure) {
 		this.data = data;
 		this.template = template;
 		this.figure = figure;
 		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
+		this.writerCls = class1;
 		this.config = Config.create(this, title);
 		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
 	}
@@ -68,9 +71,9 @@ public class Chart<X> {
 	
 	public Config config() {return config;}
 	
-	public void render() throws IOException, TemplateException {
-		this.config.
-		GnuplotWriter.write(this);
+	public void render() throws IOException, TemplateException, ReflectiveOperationException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Writer<X> writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
+		writer.process();
 	}
 	
 	public enum Dimension {
