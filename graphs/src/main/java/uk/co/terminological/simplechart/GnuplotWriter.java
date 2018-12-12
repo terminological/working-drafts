@@ -11,34 +11,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 
 
-public class GnuplotWriter {
+public class GnuplotWriter<X> {
 
-	private Chart<?> chart;
+	private Chart<X> chart;
 	private Template template;
 	private Map<String,Object> root = new HashMap<String,Object>();
 	
 	public static <X> void write(Chart<X> chart) throws IOException, TemplateException {
-		GnuplotWriter out = new GnuplotWriter(chart);
-		out.template = chart.template;
+		GnuplotWriter<X> out = new GnuplotWriter<X>(chart);
 		out.process();
 	}
 	
-	public GnuplotWriter(Chart<?> chart) {
+	public GnuplotWriter(Chart<X> chart) {
 		this.chart = chart;
-		root.put("data", extractData(chart));
+		this.template = chart.template;
+		root.put("data", extractData());
 		root.put("config", chart.config());
 		for (Entry<String,String> custom: this.chart.customField.entrySet()) {
 			root.put(custom.getKey(), custom.getValue());
 		}
 	}
 		
-	private static <X> List<String> extractData(Chart<X> chart) {
+	protected String extractData() {
 		List<String> out = new ArrayList<>();
 		
 		StringBuilder tmp = new StringBuilder();
@@ -57,10 +58,10 @@ public class GnuplotWriter {
 			out.add(tmp.toString().trim());
 		}
 		
-		return out;
+		return out.stream().collect(Collectors.joining("\n"));
 	}
 
-	private void process() throws IOException, TemplateException {
+	protected void process() throws IOException, TemplateException {
 		File f = chart.getFile("gplot");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		template.process(root, out);
