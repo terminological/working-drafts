@@ -1,8 +1,6 @@
 #!/usr/bin/gnuplot -p
 $data << EOD
-<#list data as line>
-${line}
-</#list>
+${data}
 EOD
 set title "${config.getTitle()}";
 set xlabel "${config.getXLabel()}"; 
