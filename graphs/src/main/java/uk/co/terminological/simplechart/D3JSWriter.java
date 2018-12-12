@@ -31,8 +31,14 @@ public abstract class D3JSWriter extends Writer {
 	public class Matrix extends D3JSWriter {
 
 		@Override
+		// expecting some form of labelled triple plus some form of ordering for
+		// each individual x and y label 
 		protected String extractData() {
-			//getChart().
+			
+			//TODO find out x labels and x label order.
+			//find out y labels and y label order.
+			//find out value for x and y and put them in an ordered grid. 
+			//EavMap class....
 		}
 
 	}
@@ -47,7 +53,16 @@ public abstract class D3JSWriter extends Writer {
 
 		@Override
 		protected String extractData() {
-			Series<?> nodes = this.getChart().series//getChart().
+			
+			//TODO more robust method for determining nodes and edges than order
+			Series<?> nodes = this.getChart().getSeries().get(0);
+			Series<?> edges = this.getChart().getSeries().get(1);
+			
+			
+			StringBuilder builder = new StringBuilder();
+			
+			labelGenerator = nodes
+			
 		}
 
 	}
