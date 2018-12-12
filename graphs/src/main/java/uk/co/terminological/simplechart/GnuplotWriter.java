@@ -17,19 +17,19 @@ import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 
 
-public class Writer {
+public class GnuplotWriter {
 
 	private Chart<?> chart;
 	private Template template;
 	private Map<String,Object> root = new HashMap<String,Object>();
 	
 	public static <X> void write(Chart<X> chart) throws IOException, TemplateException {
-		Writer out = new Writer(chart);
+		GnuplotWriter out = new GnuplotWriter(chart);
 		out.template = chart.template;
 		out.process();
 	}
 	
-	public Writer(Chart<?> chart) {
+	public GnuplotWriter(Chart<?> chart) {
 		this.chart = chart;
 		root.put("data", extractData(chart));
 		root.put("config", chart.config());

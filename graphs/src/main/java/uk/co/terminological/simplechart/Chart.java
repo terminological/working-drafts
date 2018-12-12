@@ -69,7 +69,7 @@ public class Chart<X> {
 	public Config config() {return config;}
 	
 	public void render() throws IOException, TemplateException {
-		Writer.write(this);
+		GnuplotWriter.write(this);
 	}
 	
 	public enum Dimension {
