@@ -8,13 +8,13 @@ import java.util.Map.Entry;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-public abstract class Writer<X> {
+public abstract class Writer {
 
-	private Chart<X> chart;
+	private Chart chart;
 	private Template template;
 	private Map<String,Object> root = new HashMap<String,Object>();
 
-	public Writer(Chart<X> chart) {
+	public Writer(Chart chart) {
 		this.chart = chart;
 		this.template = chart.template;
 		root.put("data", extractData());
@@ -24,7 +24,7 @@ public abstract class Writer<X> {
 		}
 	}
 
-	public Chart<X> getChart() {
+	public Chart getChart() {
 		return chart;
 	}
 

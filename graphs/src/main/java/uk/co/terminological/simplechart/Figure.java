@@ -40,7 +40,7 @@ public class Figure {
 		}
 	}
 
-	List<Chart<?>> charts = new ArrayList<>();
+	List<Chart> charts = new ArrayList<>();
 	File workingDirectory;
 	String title;
 	String filename;
@@ -113,8 +113,8 @@ public class Figure {
 		}
 	}
 
-	public <X> Chart<X> withNewChart(List<X> data, String title, ChartType chartType) {
-		Chart<X> out = new Chart<X>(data,title, getTemplate(chartType), chartType.getWriter(),workingDirectory, this);
+	public Chart withNewChart(String title, ChartType chartType) {
+		Chart out = new Chart(title, getTemplate(chartType), chartType.getWriter(),workingDirectory, this);
 		this.charts.add(out);
 		return out;
 	}

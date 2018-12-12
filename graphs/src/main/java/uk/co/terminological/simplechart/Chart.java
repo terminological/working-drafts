@@ -30,7 +30,7 @@ public class Chart {
 	
 	public static Logger log = LoggerFactory.getLogger(Chart.class);
 	
-	protected Chart(String title, Template template, Class<? extends Writer<X>> class1, File workingDirectory, Figure figure) {
+	protected Chart(String title, Template template, Class<? extends Writer> class1, File workingDirectory, Figure figure) {
 		this.template = template;
 		this.figure = figure;
 		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
