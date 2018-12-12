@@ -12,7 +12,7 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class Config {
 
-	Chart<?> chart;
+	Chart chart;
 	String title;
 	String xLabel;
 	String yLabel;
@@ -92,14 +92,14 @@ public class Config {
 	private Config() {
 	}
 
-	public static Config create(Chart<?> chart, String title) {
+	public static Config create(Chart chart, String title) {
 		Config out = new Config();
 		out.chart = chart;
 		out.title = title;
 		return out;
 	}
 
-	public Config withChart(Chart<?> chart) {
+	public Config withChart(Chart chart) {
 		this.chart = chart;
 		this.chart.config = this;
 		return this;
@@ -140,7 +140,7 @@ public class Config {
 		return this;
 	}
 	
-	public Chart<?> done() {
+	public Chart done() {
 		return chart;
 	}
 	
