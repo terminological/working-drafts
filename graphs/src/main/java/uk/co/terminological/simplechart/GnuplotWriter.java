@@ -15,38 +15,44 @@ import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 
 
-public class GnuplotWriter<X> extends Writer<X> {
+public class GnuplotWriter extends Writer {
 
-	public static <X> void write(Chart<X> chart) throws IOException, TemplateException {
-		GnuplotWriter<X> out = new GnuplotWriter<X>(chart);
+	public static  void write(Chart chart) throws IOException, TemplateException {
+		GnuplotWriter out = new GnuplotWriter(chart);
 		out.process();
 	}
 	
-	public GnuplotWriter(Chart<X> chart) {
+	public GnuplotWriter(Chart chart) {
 		super(chart);
 	}
 		
 	@Override
 	protected String extractData() {
-		List<String> out = new ArrayList<>();
+		//TODO: Multiple series support
+		return extractData( getChart().series.get(0) );
+		
+	}
+	
+	private <X> String extractData(Series<X> series) {
 		
 		StringBuilder tmp = new StringBuilder();
-		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: getChart().bindings) {
+		tmp.append("# ");
+		
+		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.bindings) {
 			tmp.append(binding.getFirst().toString()+
 					binding.getThird() == null ? "" : " ("+binding.getThird()+")"
 					+"\t");
 		}
-		out.add("# "+tmp.toString().trim());
 		
-		for (X item: getChart().data) {
-			tmp = new StringBuilder();
-			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: getChart().bindings) {
+		for (X item: series.data) {
+			tmp.append("\n");
+			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.bindings) {
 				tmp.append(binding.getSecond().apply(item).toString()+"\t");
 			}
-			out.add(tmp.toString().trim());
+			
 		}
 		
-		return out.stream().collect(Collectors.joining("\n"));
+		return tmp.toString();
 	}
 
 	@Override
