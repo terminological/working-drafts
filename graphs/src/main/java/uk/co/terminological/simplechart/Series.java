@@ -31,4 +31,34 @@ public class Series<X> {
 	public Chart done() {
 		return chart;
 	};
+	
+	// ======= Freemarker accessories ======
+	
+		public List<Integer> indexesOf(String dim) {
+			List<Integer> out = new ArrayList<>();
+			int i=1;
+			for (Triple<Dimension, ?, String> binding: bindings) {
+				if (binding.getFirst().equals(Chart.Dimension.valueOf(dim))) out.add(i);
+				i++;
+			}
+			return out;
+		}
+		
+		public int indexOf(String dim) {
+			int i=1;
+			for (Triple<Dimension, ?, String> binding: bindings) {
+				if (binding.getFirst().equals(Chart.Dimension.valueOf(dim))) return i;
+				i++;
+			}
+			return -1;
+		}
+		
+		public boolean hasDimension(String dim) {
+			return indexOf(dim) != -1;
+		}
+		
+		//i is one based as based on GNUplot
+		public String getLabelFor(int i) {
+			return bindings.get(i-1).getThird();
+		}
 }
