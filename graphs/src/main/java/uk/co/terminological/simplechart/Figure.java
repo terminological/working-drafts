@@ -80,12 +80,8 @@ public class Figure {
 		return new Figure("No title",directory);
 	}
 
-	public <X> Data<X> withDefaultData(X data) {
-		return withDefaultData(Collections.singletonList(data));
-	}
-	
-	public <X> Data<X> withDefaultData(List<X> data) {
-		Data<X> out = new Data<X>(title, workingDirectory);
+	public Data withDefaultData(List<?>... data) {
+		Data out = new Data<X>(title, workingDirectory);
 		out.cfg = this.cfg;
 		out.charts = this.charts;
 		out.defaultData = data;
@@ -139,16 +135,16 @@ public class Figure {
 		throw new NotImplementedException("Will render the mulitplot");
 	}
 	
-	public static class Data<X> extends Figure {
+	public static class Data extends Figure {
 
 		private Data(String title, File directory) {
 			super(title, directory);
 		}
 
-		List<X> defaultData;
+		List<?>[] defaultData;
 
-		public Chart<X> withNewChart(String title, ChartType chartType) {
-			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(chartType),chartType.getWriter(),workingDirectory, this);
+		public Chart withNewChart(String title, ChartType chartType) {
+			Chart out = new Chart(defaultData,title, getTemplate(chartType),chartType.getWriter(),workingDirectory, this);
 			this.charts.add(out);
 			return out;
 		}

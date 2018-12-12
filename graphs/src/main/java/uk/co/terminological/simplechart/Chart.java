@@ -20,7 +20,7 @@ import uk.co.terminological.datatypes.Tuple;
 
 public class Chart<X> {
 
-	List<X> data;
+	List<X>[] data;
 	Template template;
 	Figure figure;
 	Config config;
@@ -31,7 +31,7 @@ public class Chart<X> {
 	
 	public static Logger log = LoggerFactory.getLogger(Chart.class);
 	
-	protected Chart(List<X> data, String title, Template template, Class<? extends Writer<X>> class1, File workingDirectory, Figure figure) {
+	protected Chart(List<X>[] data, String title, Template template, Class<? extends Writer<X>> class1, File workingDirectory, Figure figure) {
 		this.data = data;
 		this.template = template;
 		this.figure = figure;
@@ -41,15 +41,7 @@ public class Chart<X> {
 		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
 	}
 	
-	public Chart<X> bind(Dimension dimension, Function<X,Object> binding) {
-		bindings.add(Triple.create(dimension, binding,""));
-		return this;
-	};
 	
-	public Chart<X> bind(Dimension dimension, Function<X,Object> binding, String label) {
-		bindings.add(Triple.create(dimension, binding,label));
-		return this;
-	};
 	
 	public Chart<X> withConfig(Config config) {
 		this.config = config;

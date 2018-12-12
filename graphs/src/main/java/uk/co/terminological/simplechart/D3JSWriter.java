@@ -32,7 +32,7 @@ public abstract class D3JSWriter<X> extends Writer<X> {
 
 		@Override
 		protected String extractData() {
-			getChart().
+			//getChart().
 		}
 
 	}
@@ -47,7 +47,7 @@ public abstract class D3JSWriter<X> extends Writer<X> {
 
 		@Override
 		protected String extractData() {
-			getChart().
+			//getChart().
 		}
 
 	}
