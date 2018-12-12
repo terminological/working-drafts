@@ -6,24 +6,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 
 
-public class GnuplotWriter<X> {
+public class GnuplotWriter<X> extends Writer<X> {
 
-	private Chart<X> chart;
-	private Template template;
-	private Map<String,Object> root = new HashMap<String,Object>();
-	
 	public static <X> void write(Chart<X> chart) throws IOException, TemplateException {
 		GnuplotWriter<X> out = new GnuplotWriter<X>(chart);
 		out.process();
@@ -39,6 +32,7 @@ public class GnuplotWriter<X> {
 		}
 	}
 		
+	@Override
 	protected String extractData() {
 		List<String> out = new ArrayList<>();
 		
@@ -61,6 +55,7 @@ public class GnuplotWriter<X> {
 		return out.stream().collect(Collectors.joining("\n"));
 	}
 
+	@Override
 	protected void process() throws IOException, TemplateException {
 		File f = chart.getFile("gplot");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
