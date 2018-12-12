@@ -23,7 +23,7 @@ public class GnuplotWriter<X> extends Writer<X> {
 	}
 	
 	public GnuplotWriter(Chart<X> chart) {
-		
+		super(chart);
 	}
 		
 	@Override

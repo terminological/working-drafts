@@ -69,6 +69,7 @@ public class Chart<X> {
 	public Config config() {return config;}
 	
 	public void render() throws IOException, TemplateException {
+		this.config.
 		GnuplotWriter.write(this);
 	}
 	

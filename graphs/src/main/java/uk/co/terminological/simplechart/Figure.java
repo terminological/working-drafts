@@ -113,7 +113,7 @@ public class Figure {
 	}
 
 	public <X> Chart<X> withNewChart(List<X> data, String title, ChartType chartType) {
-		Chart<X> out = new Chart<X>(data,title, getTemplate(chartType),workingDirectory, this);
+		Chart<X> out = new Chart<X>(data,title, getTemplate(chartType), chartType.getWriter(),workingDirectory, this);
 		this.charts.add(out);
 		return out;
 	}
