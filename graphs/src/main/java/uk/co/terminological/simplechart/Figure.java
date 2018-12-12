@@ -80,15 +80,6 @@ public class Figure {
 		return new Figure("No title",directory);
 	}
 
-	public Data withDefaultData(List<?>... data) {
-		Data out = new Data<X>(title, workingDirectory);
-		out.cfg = this.cfg;
-		out.charts = this.charts;
-		out.defaultData = data;
-		out.workingDirectory = this.workingDirectory;
-		return out;
-	}
-
 	protected Template getTemplate(ChartType chartType) {
 		try {
 			return cfg.getTemplate(chartType.getTemplateFilename());
@@ -141,10 +132,8 @@ public class Figure {
 			super(title, directory);
 		}
 
-		List<?>[] defaultData;
-
 		public Chart withNewChart(String title, ChartType chartType) {
-			Chart out = new Chart(defaultData,title, getTemplate(chartType),chartType.getWriter(),workingDirectory, this);
+			Chart out = new Chart(title, getTemplate(chartType),chartType.getWriter(),workingDirectory, this);
 			this.charts.add(out);
 			return out;
 		}
