@@ -10,9 +10,9 @@ import freemarker.template.TemplateException;
 
 public abstract class Writer<X> {
 
-	protected Chart<X> chart;
-	protected Template template;
-	protected Map<String,Object> root = new HashMap<String,Object>();
+	private Chart<X> chart;
+	private Template template;
+	private Map<String,Object> root = new HashMap<String,Object>();
 
 	public Writer(Chart<X> chart) {
 		this.chart = chart;
@@ -24,6 +24,18 @@ public abstract class Writer<X> {
 		}
 	}
 
+	public Chart<X> getChart() {
+		return chart;
+	}
+
+	public Template getTemplate() {
+		return template;
+	}
+
+	public Map<String, Object> getRoot() {
+		return root;
+	}
+	
 	protected abstract void process() throws IOException, TemplateException;
 
 	protected abstract String extractData();
