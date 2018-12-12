@@ -91,4 +91,52 @@ public class Chart {
 		this.series.add(tmp);
 		return tmp;
 	}
+
+	//================ Getters generated
+
+	protected List<Series<?>> getSeries() {
+		return series;
+	}
+
+
+
+	protected Template getTemplate() {
+		return template;
+	}
+
+
+
+	protected Figure getFigure() {
+		return figure;
+	}
+
+
+
+	protected Config getConfig() {
+		return config;
+	}
+
+
+
+	protected Map<String, String> getCustomField() {
+		return customField;
+	}
+
+
+
+	protected String getFilename() {
+		return filename;
+	}
+
+
+
+	protected Class<? extends Writer> getWriterCls() {
+		return writerCls;
+	}
+
+
+
+	protected static Logger getLog() {
+		return log;
+	}
 }

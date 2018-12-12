@@ -47,7 +47,7 @@ public abstract class D3JSWriter extends Writer {
 
 		@Override
 		protected String extractData() {
-			//getChart().
+			Series<?> nodes = this.getChart().series//getChart().
 		}
 
 	}
