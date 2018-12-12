@@ -41,6 +41,13 @@ public class Series<X> {
 			.findFirst().get();
 	}
 	
+	public Function<X,Object> functionFor(Dimension dim) {
+		return bindings.stream()
+			.filter(trip -> trip.firstEquals(dim))
+			.map(trip -> trip.getSecond())
+			.findFirst().get();
+	}
+	
 	public List<Integer> indexesOf(String dim) {
 		List<Integer> out = new ArrayList<>();
 		int i=1;
