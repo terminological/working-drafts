@@ -38,7 +38,7 @@ public class TestSimpleNetwork {
 		
 		Chart<?> tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
 			.withDefaultData(Tuple.create(nodes,links))
-			.withNewChart("Hello", ChartType.XY_LINE)
+			.withNewChart("Hello", ChartType.NETWORK)
 			.bind(X, t -> t.getFirst())
 			.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
 			.bind(Y_FIT, t -> t.getSecond())

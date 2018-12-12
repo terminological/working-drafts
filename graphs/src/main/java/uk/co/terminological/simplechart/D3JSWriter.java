@@ -37,4 +37,19 @@ public abstract class D3JSWriter<X> extends Writer<X> {
 
 	}
 
+	/**
+	 * Processes an data input that can be bound to a weighted edge. 
+	 * @author rc538
+	 *
+	 * @param <Y>
+	 */
+	public class Nodes<Y> extends D3JSWriter<Y> {
+
+		@Override
+		protected String extractData() {
+			getChart().
+		}
+
+	}
+	
 }
