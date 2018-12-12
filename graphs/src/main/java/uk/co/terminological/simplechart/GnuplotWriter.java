@@ -31,16 +31,16 @@ public class GnuplotWriter<X> extends Writer<X> {
 		List<String> out = new ArrayList<>();
 		
 		StringBuilder tmp = new StringBuilder();
-		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: chart.bindings) {
+		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: getChart().bindings) {
 			tmp.append(binding.getFirst().toString()+
 					binding.getThird() == null ? "" : " ("+binding.getThird()+")"
 					+"\t");
 		}
 		out.add("# "+tmp.toString().trim());
 		
-		for (X item: chart.data) {
+		for (X item: getChart().data) {
 			tmp = new StringBuilder();
-			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: chart.bindings) {
+			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: getChart().bindings) {
 				tmp.append(binding.getSecond().apply(item).toString()+"\t");
 			}
 			out.add(tmp.toString().trim());
@@ -51,9 +51,9 @@ public class GnuplotWriter<X> extends Writer<X> {
 
 	@Override
 	protected void process() throws IOException, TemplateException {
-		File f = chart.getFile("gplot");
+		File f = getChart().getFile("gplot");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
-		template.process(root, out);
+		getTemplate().process(getRoot(), out);
 		out.close();
 		Chart.log.info("Starting GNUPlot...");
 		
