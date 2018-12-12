@@ -9,8 +9,7 @@ public enum ChartType {
 
 	String templateFilename;
 	
-	@SuppressWarnings("unchecked")
-	ChartType(String templateFilename, @SuppressWarnings("rawtypes") Class<? extends Writer> writer) {
+	ChartType(String templateFilename, Class<? extends Writer> writer) {
 		this.templateFilename = templateFilename;
 		this.writer = (Class<? extends Writer>) writer;
 	};
@@ -21,8 +20,7 @@ public enum ChartType {
 
 	Class<? extends Writer> writer;
 	
-	
-	@SuppressWarnings("unchecked")
+
 	public <X> Class<? extends Writer> getWriter() {
 		return (Class<? extends Writer>) writer;
 	}
