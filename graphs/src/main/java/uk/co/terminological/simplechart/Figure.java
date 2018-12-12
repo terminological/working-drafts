@@ -143,12 +143,12 @@ public class Figure {
 		List<X> defaultData;
 
 		public Chart<X> withNewChart(String title, ChartType chartType) {
-			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(chartType),workingDirectory, this);
+			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(chartType),chartType.getWriter(),workingDirectory, this);
 			this.charts.add(out);
 			return out;
 		}
 
-		public Chart<X> withNewChart(String title, String resourceName) {
+		/*public Chart<X> withNewChart(String title, String resourceName) {
 			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(resourceName),workingDirectory, this);
 			this.charts.add(out);
 			return out;
@@ -158,7 +158,7 @@ public class Figure {
 			Chart<X> out = new Chart<X>(defaultData,title, getTemplate(templateFile),workingDirectory, this);
 			this.charts.add(out);
 			return out;
-		}
+		}*/
 	}
 
 }
