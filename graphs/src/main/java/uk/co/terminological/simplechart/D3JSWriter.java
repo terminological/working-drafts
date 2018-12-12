@@ -9,6 +9,7 @@ import freemarker.template.TemplateException;
 
 public abstract class D3JSWriter<X> extends Writer<X> {
 
+	
 	@Override
 	protected void process() throws IOException, TemplateException {
 		File f = getChart().getFile("html");
@@ -21,7 +22,19 @@ public abstract class D3JSWriter<X> extends Writer<X> {
 		// or just get user to open file in chrome
 	}
 
-	@Override
-	protected abstract String extractData();
+	/**
+	 * Processes an data input that can be bound to a weighted edge. 
+	 * @author rc538
+	 *
+	 * @param <Y>
+	 */
+	public class Matrix<Y> extends D3JSWriter<Y> {
+
+		@Override
+		protected String extractData() {
+			getChart().
+		}
+
+	}
 
 }
