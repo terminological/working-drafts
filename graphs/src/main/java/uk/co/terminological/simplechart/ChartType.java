@@ -12,19 +12,19 @@ public enum ChartType {
 	@SuppressWarnings("unchecked")
 	ChartType(String templateFilename, @SuppressWarnings("rawtypes") Class<? extends Writer> writer) {
 		this.templateFilename = templateFilename;
-		this.writer = (Class<? extends Writer<?>>) writer;
+		this.writer = (Class<? extends Writer>) writer;
 	};
 	
 	public String getTemplateFilename() {
 		return templateFilename;
 	}
 
-	Class<? extends Writer<?>> writer;
+	Class<? extends Writer> writer;
 	
 	
 	@SuppressWarnings("unchecked")
-	public <X> Class<? extends Writer<X>> getWriter() {
-		return (Class<? extends Writer<X>>) writer;
+	public <X> Class<? extends Writer> getWriter() {
+		return (Class<? extends Writer>) writer;
 	}
 
 }

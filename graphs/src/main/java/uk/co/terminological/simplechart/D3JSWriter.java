@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 
 import freemarker.template.TemplateException;
 
-public abstract class D3JSWriter<X> extends Writer<X> {
+public abstract class D3JSWriter extends Writer {
 
 	
 	@Override
@@ -28,7 +28,7 @@ public abstract class D3JSWriter<X> extends Writer<X> {
 	 *
 	 * @param <Y>
 	 */
-	public class Matrix<Y> extends D3JSWriter<Y> {
+	public class Matrix extends D3JSWriter {
 
 		@Override
 		protected String extractData() {
@@ -43,7 +43,7 @@ public abstract class D3JSWriter<X> extends Writer<X> {
 	 *
 	 * @param <Y>
 	 */
-	public class Nodes<Y> extends D3JSWriter<Y> {
+	public class Nodes extends D3JSWriter {
 
 		@Override
 		protected String extractData() {
