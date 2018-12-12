@@ -18,21 +18,19 @@ import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 
-public class Chart<X> {
+public class Chart {
 
-	List<X>[] data;
+	List<Series<?>> series = new ArrayList<>();
 	Template template;
 	Figure figure;
 	Config config;
-	List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
 	Map<String,String> customField = new HashMap<>();
 	String filename;
-	Class<? extends Writer<X>> writerCls;
+	Class<? extends Writer> writerCls;
 	
 	public static Logger log = LoggerFactory.getLogger(Chart.class);
 	
-	protected Chart(List<X>[] data, String title, Template template, Class<? extends Writer<X>> class1, File workingDirectory, Figure figure) {
-		this.data = data;
+	protected Chart(String title, Template template, Class<? extends Writer<X>> class1, File workingDirectory, Figure figure) {
 		this.template = template;
 		this.figure = figure;
 		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
@@ -43,19 +41,19 @@ public class Chart<X> {
 	
 	
 	
-	public Chart<X> withConfig(Config config) {
+	public Chart withConfig(Config config) {
 		this.config = config;
 		this.config.chart = this;
 		return this;
 	}
 	
-	public Chart<X> withAxes(String x,String y) {
+	public Chart withAxes(String x,String y) {
 		this.config().withXLabel(x);
 		this.config().withYLabel(y);
 		return this;
 	}
 	
-	public Chart<X> withCustomField(String key, Object value) {
+	public Chart withCustomField(String key, Object value) {
 		if (Arrays.asList("data","config").contains(key)) throw new RuntimeException("Cannot use the custom key: "+key);
 		this.customField.put(key, value.toString());
 		return this;
@@ -64,7 +62,7 @@ public class Chart<X> {
 	public Config config() {return config;}
 	
 	public void render() throws IOException, TemplateException {
-		Writer<X> writer;
+		Writer writer;
 		try {
 			writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
 			writer.process();
@@ -85,4 +83,12 @@ public class Chart<X> {
 	}
 	
 	public File getFile(String extension) {return new File(getWorkingDirectory(),filename+"."+extension);}
+
+
+
+	public <X> Series<X> withSeries(List<X> nodes) {
+		Series<X> tmp = new Series<X>(nodes, this);
+		this.series.add(tmp);
+		return tmp;
+	}
 }

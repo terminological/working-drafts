@@ -36,12 +36,13 @@ public class TestSimpleNetwork {
 				Triple.create(5, 1.0, 1)
 				);
 		
-		Chart<?> tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
+		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
 			.withDefaultData(nodes,links)
 			.withNewChart("Hello", ChartType.NETWORK)
-			.bind(X, t -> t.getFirst())
-			.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
-			.bind(Y_FIT, t -> t.getSecond())
+			.withSeries(nodes)
+				.bind(LABEL, t -> t.getFirst())
+				.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
+				.bind(Y_FIT, t -> t.getSecond())
 			.config()
 				.withXLabel("x-axis")
 				.withYLabel("y-axis")

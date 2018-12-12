@@ -11,9 +11,11 @@ public class Series<X> {
 
 	List<X> data;
 	List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
+	Chart chart;
 	
-	public Series(List<X> data) {
+	public Series(List<X> data, Chart chart) {
 		this.data = data;
+		this.chart = chart;
 	}
 	
 	public Series<X> bind(Dimension dimension, Function<X,Object> binding) {
@@ -24,5 +26,9 @@ public class Series<X> {
 	public Series<X> bind(Dimension dimension, Function<X,Object> binding, String label) {
 		bindings.add(Triple.create(dimension, binding, label));
 		return this;
+	};
+	
+	public Chart done() {
+		return chart;
 	};
 }
