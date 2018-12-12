@@ -71,9 +71,16 @@ public class Chart<X> {
 	
 	public Config config() {return config;}
 	
-	public void render() throws IOException, TemplateException, ReflectiveOperationException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		Writer<X> writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
-		writer.process();
+	public void render() throws IOException, TemplateException {
+		Writer<X> writer;
+		try {
+			writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
+			writer.process();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 	
 	public enum Dimension {
