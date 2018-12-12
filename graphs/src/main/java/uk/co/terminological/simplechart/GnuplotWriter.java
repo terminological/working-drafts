@@ -25,6 +25,10 @@ public class GnuplotWriter extends Writer {
 	@Override
 	protected String extractData() {
 		//TODO: Multiple series support
+		// https://stackoverflow.com/questions/8534030/plotting-multiple-series-from-file-using-gnuplot
+		// 2 blank lines
+		// index 1
+		
 		return extractData( getChart().series.get(0) );
 		
 	}
