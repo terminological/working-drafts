@@ -75,6 +75,7 @@ public abstract class D3JSWriter extends Writer {
 			Function<Y, Object> weightGenerator = edges.functionFor(Dimension.WEIGHT);
 			
 			//TODO: Could probably have an optional<function<x,y>> accessor here... would it be useful though
+			//for elements such as size, or fill or other node or relationship properties
 			
 			builder.append("const graph = { 'nodes': [");
 			
