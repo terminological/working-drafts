@@ -13,7 +13,8 @@
 
 </style>
 <body>
-<script src="//d3js.org/d3.v3.min.js"></script>
+<!-- D3.js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 <script>
 
 ${data}
