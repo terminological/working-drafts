@@ -36,7 +36,7 @@ public class TestSimpleNetwork {
 				Triple.create(5, 1.0, 1)
 				);
 		
-		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
+		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/network"))
 			.withNewChart("Hello", ChartType.NETWORK)
 			.withSeries(nodes)
 				.bind(ID, t -> t.getFirst())
