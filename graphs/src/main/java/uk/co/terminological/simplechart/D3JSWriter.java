@@ -58,7 +58,7 @@ public abstract class D3JSWriter extends Writer {
 			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.WEIGHT);
 			
 			EavMap<Object,Object,Object> tmp = new EavMap<>();
-			edges.data.forEach(y -> {
+			edges.getData().forEach(y -> {
 				tmp.add(xGenerator.apply(y), 
 						yGenerator.apply(y),
 						valueGenerator.apply(y));
@@ -68,7 +68,12 @@ public abstract class D3JSWriter extends Writer {
 			List<Object> xLabels = new ArrayList<>(tmp.getEntitySet());
 			List<Object> yLabels = new ArrayList<>(tmp.getAttributeSet());
 			//TODO: A sorting function - should be part of the value
-			Collections.sort(xLabel, c);
+			Collections.sort(xLabels, edges.getSorters().getOrDefault(Dimension.SOURCE_ID, 
+					(o1,o2) -> o1.toString().compareTo(o2.toString())));
+			
+			Collections.sort(xLabels, edges.getSorters().getOrDefault(Dimension.TARGET_ID, 
+					(o1,o2) -> o1.toString().compareTo(o2.toString())));
+			
 			
 			xLabels.forEach(x -> {
 				yLabels.forEach(y -> {
@@ -115,7 +120,7 @@ public abstract class D3JSWriter extends Writer {
 			
 			builder.append("const graph = { 'nodes': [");
 			
-			String tmp = nodes.data.stream().map(x -> {
+			String tmp = nodes.getData().stream().map(x -> {
 				String label = labelGenerator.apply(x).toString();
 				String id = idGenerator.apply(x).toString();
 				return "{'id':'"+id+"','label':'"+label+"'}";
@@ -124,7 +129,7 @@ public abstract class D3JSWriter extends Writer {
 			builder.append(tmp);
 			builder.append("],'links': [");
 			
-			String tmp2 = edges.data.stream().map(y -> {
+			String tmp2 = edges.getData().stream().map(y -> {
 				String sourceId = sourceIdGenerator.apply(y).toString();
 				String targetId = targetIdGenerator.apply(y).toString();
 				String weight = weightGenerator.apply(y).toString();
