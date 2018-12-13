@@ -60,7 +60,7 @@ public abstract class D3JSWriter extends Writer {
 		}
 		
 		protected <X,Y> String extractData(Series<Y> edges) {
-			Function<Y, Object> xGenerator = edges.functionFor(Dimension.SOURCE_ID);
+			Function<Y, Object> xGenerator = edges.functionFor(Dimension.SOURCE);
 			Function<Y, Object> yGenerator = edges.functionFor(Dimension.TARGET_ID);
 			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.WEIGHT);
 			
@@ -79,7 +79,7 @@ public abstract class D3JSWriter extends Writer {
 			
 			
 			
-			Comparator<Object> sorter = edges.getSorters().getOrDefault(Dimension.SOURCE_ID, 
+			Comparator<Object> sorter = edges.getSorters().getOrDefault(Dimension.SOURCE, 
 					(o1,o2) -> o1.toString().compareTo(o2.toString()));
 			
 			SortedSet<Object> union = new TreeSet<>(sorter);
@@ -121,7 +121,7 @@ public abstract class D3JSWriter extends Writer {
 			Function<X, Object> labelGenerator = nodes.functionFor(Dimension.LABEL);
 			Function<X, Object> idGenerator = nodes.functionFor(Dimension.ID);
 			
-			Function<Y, Object> sourceIdGenerator = edges.functionFor(Dimension.SOURCE_ID);
+			Function<Y, Object> sourceIdGenerator = edges.functionFor(Dimension.SOURCE);
 			Function<Y, Object> targetIdGenerator = edges.functionFor(Dimension.TARGET_ID);
 			Function<Y, Object> weightGenerator = edges.functionFor(Dimension.WEIGHT);
 			

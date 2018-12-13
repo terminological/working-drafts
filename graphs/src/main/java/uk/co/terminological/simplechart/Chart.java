@@ -75,7 +75,7 @@ public class Chart {
 	
 	public enum Dimension {
 		X,Y,Z,COLOUR,SIZE,LABEL,Y_LOW,Y_HIGH,Y_FIT,
-		ID,WEIGHT,SOURCE_ID,TARGET_ID
+		ID,WEIGHT,SOURCE,TARGET_ID
 	}
 	
 	public File getWorkingDirectory() {
