@@ -24,6 +24,10 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 public abstract class D3JSWriter extends Writer {
 
 	
+	public D3JSWriter(Chart chart) {
+		super(chart);
+	}
+	
 	@Override
 	protected void process() throws IOException, TemplateException {
 		File f = getChart().getFile("html");
@@ -44,6 +48,10 @@ public abstract class D3JSWriter extends Writer {
 	 * @param <Y>
 	 */
 	public class Matrix extends D3JSWriter {
+
+		public Matrix(Chart chart) {
+			super(chart);
+		}
 
 		@Override
 		// expecting some form of labelled triple plus some form of ordering for
@@ -111,6 +119,10 @@ public abstract class D3JSWriter extends Writer {
 	 * @param <Y>
 	 */
 	public class Nodes extends D3JSWriter {
+
+		public Nodes(Chart chart) {
+			super(chart);
+		}
 
 		@Override
 		protected String extractData() {
