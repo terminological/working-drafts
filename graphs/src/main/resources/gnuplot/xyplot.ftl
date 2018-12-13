@@ -13,12 +13,13 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
+<#assign series = config.getSeries()?first>
 plot \
-<#if config.hasDimension("Y_FIT")>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y_FIT")} with lines, \
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with points;
+<#if series.hasDimension("Y_FIT")>
+"$data" using ${series.indexOf("X")}:${series.indexOf("Y_FIT")} with lines, \
+"$data" using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
 <#else>
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with lines;
+"$data" using ${series.indexOf("X")}:${series.indexOf("Y")} with lines;
 </#if>
 
 <#-- 

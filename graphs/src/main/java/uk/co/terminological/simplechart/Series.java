@@ -13,6 +13,8 @@ public class Series<X> {
 	List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
 	Chart chart;
 	
+	// ========= Fluent contructors ==========
+	
 	public Series(List<X> data, Chart chart) {
 		this.data = data;
 		this.chart = chart;

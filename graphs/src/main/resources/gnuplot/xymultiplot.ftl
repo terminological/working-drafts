@@ -12,9 +12,11 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
+<#list config.getSeries() as series>
 plot \
-<#list config.indexesOf("Y") as yIndex>
-"$data" using ${config.indexOf("X")}:${yIndex} title '${config.labelFor(yIndex)}' with lines, \
+	<#list series.indexesOf("Y") as yIndex>
+"$data" index ${series?index} using ${series.indexOf("X")}:${yIndex} title '${series.labelFor(yIndex)}' with lines, \
+	</#list>
 </#list>
 
 <#-- 

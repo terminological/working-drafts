@@ -52,12 +52,15 @@ public class Config {
 		return yScale;
 	}
 
-	
 	public List<String> getCustomCommands() {
 		return customCommands;
 	}
 
+	// ====== Specific extension points for supporting freemarker templates
 	
+	public List<Series<?>> getSeries() {
+		return chart.getSeries();
+	}
 	
 	// ====== Fluent Builders =======
 	
