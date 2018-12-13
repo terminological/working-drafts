@@ -5,7 +5,8 @@ public enum ChartType {
 	XY_MULTI_LINE("xymultiplot.ftl",GnuplotWriter.class), 
 	XY_SCATTER("xyscatter.ftl",GnuplotWriter.class),
 	XYZ_CONTOUR("xyzcontour.ftl",GnuplotWriter.class), 
-	NETWORK("d3Network.ftl",D3JSWriter.Nodes.class);
+	NETWORK("d3Network.ftl",D3JSWriter.Nodes.class), 
+	CHORD("d3Chord.ftl",D3JSWriter.Matrix.class);
 
 	String templateFilename;
 	

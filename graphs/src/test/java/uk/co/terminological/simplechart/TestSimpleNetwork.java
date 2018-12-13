@@ -37,7 +37,7 @@ public class TestSimpleNetwork {
 				);
 		
 		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
-			.withNewChart("Hello", ChartType.NETWORK)
+			.withNewChart("Hello", ChartType.CHORD)
 			.withSeries(nodes)
 				.bind(ID, t -> t.getFirst())
 				.bind(LABEL, t -> t.getSecond())
