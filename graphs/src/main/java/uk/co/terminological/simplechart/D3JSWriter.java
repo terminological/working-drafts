@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -31,7 +35,8 @@ public abstract class D3JSWriter extends Writer {
 	}
 
 	/**
-	 * Processes an data input that can be bound to a weighted edge. 
+	 * Processes an data input that can be bound to a weighted edge into a square matrix containing 
+	 * sources and targets on both axes and . 
 	 * @author rc538
 	 *
 	 * @param <Y>
@@ -67,17 +72,17 @@ public abstract class D3JSWriter extends Writer {
 			
 			List<Object> xLabels = new ArrayList<>(tmp.getEntitySet());
 			List<Object> yLabels = new ArrayList<>(tmp.getAttributeSet());
-			//TODO: A sorting function - should be part of the value
-			Collections.sort(xLabels, edges.getSorters().getOrDefault(Dimension.SOURCE_ID, 
-					(o1,o2) -> o1.toString().compareTo(o2.toString())));
 			
-			Collections.sort(xLabels, edges.getSorters().getOrDefault(Dimension.TARGET_ID, 
-					(o1,o2) -> o1.toString().compareTo(o2.toString())));
+			LinkedHashSet<Object> union = new LinkedHashSet<>(tmp.getEntitySet());
+			union.addAll(tmp.getAttributeSet());
+			Comparator<Object> sorter = edges.getSorters().getOrDefault(Dimension.SOURCE_ID, 
+					(o1,o2) -> o1.toString().compareTo(o2.toString()));
 			
+			Collections.sort(union, sorter);
 			
-			xLabels.forEach(x -> {
-				yLabels.forEach(y -> {
-					Object value = tmp.get(x,y);
+			union.forEach(x -> {
+				union.forEach(y -> {
+					Object value = tmp.getOrElse(x,y,0);
 					
 					//TODO - write this with missing values...
 				});
