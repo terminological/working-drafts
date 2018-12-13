@@ -45,7 +45,7 @@ public class TestSimpleNetwork {
 			.withSeries(links)
 				.bind(SOURCE, t -> t.getFirst())
 				.bind(WEIGHT, t -> t.getSecond())
-				.bind(SOURCE, t -> t.getThird())
+				.bind(TARGET, t -> t.getThird())
 			.done()
 			.config()
 				.withXLabel("x-axis")

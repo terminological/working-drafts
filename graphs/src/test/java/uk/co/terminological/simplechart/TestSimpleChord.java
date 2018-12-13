@@ -20,37 +20,22 @@ public class TestSimpleChord {
 		
 		BasicConfigurator.configure();
 		
-		List<Tuple<Integer,String>> nodes = FluentList.create(
-				Tuple.create(1, "one"),
-				Tuple.create(2, "two"),
-				Tuple.create(3, "three"),
-				Tuple.create(4, "four"),
-				Tuple.create(5, "five")
-				);
-		
-		List<Triple<Integer,Double,Integer>> links = FluentList.create(
-				Triple.create(1, 1.0, 2),
-				Triple.create(2, 2.0, 3),
-				Triple.create(3, 1.0, 4),
-				Triple.create(4, 2.0, 5),
-				Triple.create(5, 1.0, 1)
+		List<Triple<String,Double,String>> links = FluentList.create(
+				Triple.create("one", 1.0, "two"),
+				Triple.create("two", 2.0, "three"),
+				Triple.create("three", 1.0, "four"),
+				Triple.create("four", 2.0, "five"),
+				Triple.create("five", 1.0, "one")
 				);
 		
 		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
 			.withNewChart("Hello", ChartType.NETWORK)
-			.withSeries(nodes)
-				.bind(ID, t -> t.getFirst())
-				.bind(LABEL, t -> t.getSecond())
-			.done()
 			.withSeries(links)
 				.bind(SOURCE, t -> t.getFirst())
 				.bind(WEIGHT, t -> t.getSecond())
-				.bind(SOURCE, t -> t.getThird())
-			.done()
-			.config()
-				.withXLabel("x-axis")
-				.withYLabel("y-axis")
+				.bind(TARGET, t -> t.getThird())
 			.done();
+			
 		tmp.render();
 		;
 	}
