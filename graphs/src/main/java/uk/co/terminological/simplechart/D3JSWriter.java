@@ -47,7 +47,7 @@ public abstract class D3JSWriter extends Writer {
 	 *
 	 * @param <Y>
 	 */
-	public class Matrix extends D3JSWriter {
+	public static class Matrix extends D3JSWriter {
 
 		public Matrix(Chart chart) {
 			super(chart);
@@ -118,7 +118,7 @@ public abstract class D3JSWriter extends Writer {
 	 *
 	 * @param <Y>
 	 */
-	public class Nodes extends D3JSWriter {
+	public static class Nodes extends D3JSWriter {
 
 		public Nodes(Chart chart) {
 			super(chart);
