@@ -141,23 +141,23 @@ public abstract class D3JSWriter extends Writer {
 			//TODO: Could probably have an optional<function<x,y>> accessor here... would it be useful though
 			//for elements such as size, or fill or other node or relationship properties
 			
-			builder.append("const graph = { 'nodes': [");
+			builder.append("const graph = { \n'nodes': [");
 			
 			String tmp = nodes.getData().stream().map(x -> {
 				String label = labelGenerator.apply(x).toString();
 				String id = idGenerator.apply(x).toString();
 				return "{'id':'"+id+"','label':'"+label+"'}";
-			}).collect(Collectors.joining(","));
+			}).collect(Collectors.joining(",\n"));
 			
 			builder.append(tmp);
-			builder.append("],'links': [");
+			builder.append("],\n'links': [");
 			
 			String tmp2 = edges.getData().stream().map(y -> {
 				String sourceId = sourceIdGenerator.apply(y).toString();
 				String targetId = targetIdGenerator.apply(y).toString();
 				String weight = weightGenerator.apply(y).toString();
 				return "{'source':'"+sourceId+"','target':'"+targetId+"','weight':'"+weight+"'}";
-			}).collect(Collectors.joining(","));
+			}).collect(Collectors.joining(",\n"));
 			
 			builder.append(tmp2);
 			builder.append("]};");
