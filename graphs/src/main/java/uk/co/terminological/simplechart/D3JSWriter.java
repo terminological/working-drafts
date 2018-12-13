@@ -12,6 +12,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -36,7 +38,7 @@ public abstract class D3JSWriter extends Writer {
 
 	/**
 	 * Processes an data input that can be bound to a weighted edge into a square matrix containing 
-	 * sources and targets on both axes and . 
+	 * sources and targets on both axes and a sorter. 
 	 * @author rc538
 	 *
 	 * @param <Y>
@@ -45,7 +47,7 @@ public abstract class D3JSWriter extends Writer {
 
 		@Override
 		// expecting some form of labelled triple plus some form of ordering for
-		// each individual x and y label 
+		// union of x and y label 
 		protected String extractData() {
 			
 			return extractData(this.getChart().getSeries().get(0));
@@ -70,25 +72,28 @@ public abstract class D3JSWriter extends Writer {
 						
 			});
 			
-			List<Object> xLabels = new ArrayList<>(tmp.getEntitySet());
-			List<Object> yLabels = new ArrayList<>(tmp.getAttributeSet());
+			// List<Object> xLabels = new ArrayList<>(tmp.getEntitySet());
+			// List<Object> yLabels = new ArrayList<>(tmp.getAttributeSet());
 			
-			LinkedHashSet<Object> union = new LinkedHashSet<>(tmp.getEntitySet());
-			union.addAll(tmp.getAttributeSet());
+			
+			
+			
+			
 			Comparator<Object> sorter = edges.getSorters().getOrDefault(Dimension.SOURCE_ID, 
 					(o1,o2) -> o1.toString().compareTo(o2.toString()));
 			
-			Collections.sort(union, sorter);
+			SortedSet<Object> union = new TreeSet<>(sorter);
+			union.addAll(tmp.getEntitySet()); 
+			union.addAll(tmp.getAttributeSet());
 			
-			union.forEach(x -> {
-				union.forEach(y -> {
-					Object value = tmp.getOrElse(x,y,0);
+			return "var matrix = [\n"+union.stream().map(x -> {
 					
-					//TODO - write this with missing values...
-				});
-			});
+				return "["+union.stream()
+					.map(y -> tmp.getOrElse(x,y,0).toString())
+					.collect(Collectors.joining(", "))+"]";
+					
+			}).collect(Collectors.joining(",\n"))+"\n]\n";
 			
-			throw new RuntimeException("not yet implemented");
 		}
 
 	}
