@@ -61,7 +61,7 @@ public abstract class D3JSWriter extends Writer {
 		
 		protected <X,Y> String extractData(Series<Y> edges) {
 			Function<Y, Object> xGenerator = edges.functionFor(Dimension.SOURCE);
-			Function<Y, Object> yGenerator = edges.functionFor(Dimension.TARGET_ID);
+			Function<Y, Object> yGenerator = edges.functionFor(Dimension.TARGET);
 			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.WEIGHT);
 			
 			EavMap<Object,Object,Object> tmp = new EavMap<>();
@@ -122,7 +122,7 @@ public abstract class D3JSWriter extends Writer {
 			Function<X, Object> idGenerator = nodes.functionFor(Dimension.ID);
 			
 			Function<Y, Object> sourceIdGenerator = edges.functionFor(Dimension.SOURCE);
-			Function<Y, Object> targetIdGenerator = edges.functionFor(Dimension.TARGET_ID);
+			Function<Y, Object> targetIdGenerator = edges.functionFor(Dimension.TARGET);
 			Function<Y, Object> weightGenerator = edges.functionFor(Dimension.WEIGHT);
 			
 			//TODO: Could probably have an optional<function<x,y>> accessor here... would it be useful though
