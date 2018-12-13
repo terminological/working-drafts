@@ -33,11 +33,8 @@ var force = d3.layout.force()
     .charge(-100)
     .size([width, height]);
 
-d3.json("graph.json", function(error, json) {
-  if (error) throw error;
-
-  force
-      .nodes(graph.nodes)
+force
+     .nodes(graph.nodes)
       .links(graph.links)
       .start();
 
@@ -71,7 +68,7 @@ d3.json("graph.json", function(error, json) {
 
     node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
   });
-});
+
 
 </script>
 
