@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,13 +65,15 @@ public abstract class D3JSWriter extends Writer {
 						
 			});
 			
-			Set<Object> xLabels = tmp.getEntitySet();
-			Set<Object> yLabels = tmp.getAttributeSet();
+			List<Object> xLabels = new ArrayList<>(tmp.getEntitySet());
+			List<Object> yLabels = new ArrayList<>(tmp.getAttributeSet());
 			//TODO: A sorting function - should be part of the value
+			Collections.sort(xLabel, c);
 			
 			xLabels.forEach(x -> {
 				yLabels.forEach(y -> {
 					Object value = tmp.get(x,y);
+					
 					//TODO - write this with missing values...
 				});
 			});

@@ -1,7 +1,10 @@
 package uk.co.terminological.simplechart;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import uk.co.terminological.datatypes.Triple;
@@ -9,9 +12,10 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class Series<X> {
 
-	List<X> data;
-	List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
-	Chart chart;
+	private List<X> data;
+	private List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
+	private Map<Dimension,Comparator<Object>> sorters = new HashMap<>();
+	private Chart chart;
 	
 	// ========= Fluent contructors ==========
 	
@@ -30,12 +34,37 @@ public class Series<X> {
 		return this;
 	};
 	
+	public Series<X> sorting(Dimension dimension, Comparator<Object> sorter) {
+		sorters.put(dimension, sorter);
+		return this;
+	};
+	
 	public Chart done() {
 		return chart;
 	};
 	
-	// ======= Freemarker accessories ======
+	// ======= Pojo methods ====
 	
+	
+	protected List<X> getData() {
+		return data;
+	}
+
+	protected List<Triple<Dimension, Function<X, Object>, String>> getBindings() {
+		return bindings;
+	}
+
+	protected Map<Dimension, Comparator<Object>> getSorters() {
+		return sorters;
+	}
+
+	protected Chart getChart() {
+		return chart;
+	}
+	
+	// ======= Freemarker accessories ======
+
+
 	public Function<X,Object> functionFor(Dimension dim, String name) {
 		return bindings.stream()
 			.filter(trip -> trip.firstEquals(dim) && trip.thirdEquals(name))
