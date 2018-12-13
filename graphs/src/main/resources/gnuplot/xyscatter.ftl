@@ -13,8 +13,9 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
+<#assign series = config.getSeries()?first>
 plot \
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")} with points;
+"$data" using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
 
 
 <#-- 
