@@ -42,7 +42,7 @@ public abstract class D3JSWriter extends Writer {
 
 	/**
 	 * Processes an data input that can be bound to a weighted edge into a square matrix containing 
-	 * sources and targets on both axes and a sorter. 
+	 * sources and targets on both axes. Values are sorted according to and a sorter. 
 	 * @author rc538
 	 *
 	 * @param <Y>
@@ -59,11 +59,6 @@ public abstract class D3JSWriter extends Writer {
 		protected String extractData() {
 			
 			return extractData(this.getChart().getSeries().get(0));
-			
-			//TODO find out x labels and x label order.
-			//find out y labels and y label order.
-			//find out value for x and y and put them in an ordered grid. 
-			//EavMap class....
 			
 		}
 		
