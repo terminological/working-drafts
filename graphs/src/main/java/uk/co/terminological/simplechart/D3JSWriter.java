@@ -4,10 +4,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import freemarker.template.TemplateException;
+import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.simplechart.Chart.Dimension;
 
 public abstract class D3JSWriter extends Writer {
@@ -38,11 +40,32 @@ public abstract class D3JSWriter extends Writer {
 		// each individual x and y label 
 		protected String extractData() {
 			
+			return extractData(this.getChart().getSeries().get(0));
+			
 			//TODO find out x labels and x label order.
 			//find out y labels and y label order.
 			//find out value for x and y and put them in an ordered grid. 
 			//EavMap class....
-			throw new RuntimeException("not implemented");
+			
+		}
+		
+		protected <X,Y> String extractData(Series<Y> edges) {
+			Function<Y, Object> xGenerator = edges.functionFor(Dimension.SOURCE_ID);
+			Function<Y, Object> yGenerator = edges.functionFor(Dimension.TARGET_ID);
+			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.WEIGHT);
+			
+			EavMap<Object,Object,Object> tmp = new EavMap<>();
+			edges.data.forEach(y -> {
+				tmp.add(xGenerator.apply(y), 
+						yGenerator.apply(y),
+						valueGenerator.apply(y));
+						
+			});
+			
+			Set<Object> xLabels = tmp.getEntitySet();
+			
+			//TODO: A sorting function - shuld be part of the 
+			throw new RuntimeException("not yet implemented");
 		}
 
 	}
