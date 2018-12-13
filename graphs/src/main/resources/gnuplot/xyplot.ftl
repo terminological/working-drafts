@@ -16,10 +16,10 @@ ${command};
 <#assign series = config.getSeries()?first>
 plot \
 <#if series.hasDimension("Y_FIT")>
-"$data" using ${series.indexOf("X")}:${series.indexOf("Y_FIT")} with lines, \
-"$data" using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y_FIT")} with lines, \
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
 <#else>
-"$data" using ${series.indexOf("X")}:${series.indexOf("Y")} with lines;
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with lines;
 </#if>
 
 <#-- 

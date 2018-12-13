@@ -19,8 +19,9 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
+<#assign series = config.getSeries()?first>
 splot \
-"$data" using ${config.indexOf("X")}:${config.indexOf("Y")}:${config.indexOf("Z")} with lines ;
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")}:${series.indexOf("Z")} with lines ;
 
 <#-- 
 

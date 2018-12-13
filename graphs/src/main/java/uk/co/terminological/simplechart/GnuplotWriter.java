@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
@@ -26,10 +27,12 @@ public class GnuplotWriter extends Writer {
 	protected String extractData() {
 		//TODO: Multiple series support
 		// https://stackoverflow.com/questions/8534030/plotting-multiple-series-from-file-using-gnuplot
-		// 2 blank lines
-		// index 1
+		// 2 blank lines - i.e. 3 newlines
+		// referenced using index 0,1,2
 		
-		return extractData( getChart().series.get(0) );
+		return getChart().getSeries().stream()
+				.map(s -> extractData(s)).collect(Collectors.joining("\n\n\n"));
+		
 		
 	}
 	

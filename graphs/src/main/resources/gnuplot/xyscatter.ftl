@@ -15,7 +15,7 @@ ${command};
 </#list>
 <#assign series = config.getSeries()?first>
 plot \
-"$data" using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
 
 
 <#-- 
