@@ -86,13 +86,19 @@ public abstract class D3JSWriter extends Writer {
 			union.addAll(tmp.getEntitySet()); 
 			union.addAll(tmp.getAttributeSet());
 			
-			return "var matrix = [\n"+union.stream().map(x -> {
+			String out = "var matrix = [\n"+union.stream().map(x -> {
 					
 				return "["+union.stream()
 					.map(y -> tmp.getOrElse(x,y,0).toString())
 					.collect(Collectors.joining(", "))+"]";
 					
-			}).collect(Collectors.joining(",\n"))+"\n]\n";
+			}).collect(Collectors.joining(",\n"))+"\n];\n";
+			
+			String names = "var Names = ["
+					+union.stream().map(u -> "'"+u.toString()+"'").collect(Collectors.joining(","))
+					+"];\n"; 
+						
+			return names+out;
 			
 		}
 
