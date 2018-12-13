@@ -27,12 +27,14 @@ public class TestSimpleChart {
 				Tuple.create(5D, 3D)
 				);
 		
-		Chart<?> tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
-			.withDefaultData(example)
+		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
+			
 			.withNewChart("Hello", ChartType.XY_LINE)
-			.bind(X, t -> t.getFirst())
-			.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
-			.bind(Y_FIT, t -> t.getSecond())
+			.withSeries(example)
+				.bind(X, t -> t.getFirst())
+				.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
+				.bind(Y_FIT, t -> t.getSecond())
+			.done()
 			.config()
 				.withXLabel("x-axis")
 				.withYLabel("y-axis")
