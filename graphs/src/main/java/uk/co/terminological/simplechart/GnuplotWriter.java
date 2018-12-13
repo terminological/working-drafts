@@ -49,8 +49,7 @@ public class GnuplotWriter extends Writer {
 			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.bindings) {
 				tmp.append(binding.getSecond().apply(item).toString()+"\t");
 			}
-			
-		
+		}
 		
 		return tmp.toString();
 	}
