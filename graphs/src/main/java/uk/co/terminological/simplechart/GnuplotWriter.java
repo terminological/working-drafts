@@ -50,7 +50,7 @@ public class GnuplotWriter extends Writer {
 				tmp.append(binding.getSecond().apply(item).toString()+"\t");
 			}
 			
-		}
+		
 		
 		return tmp.toString();
 	}

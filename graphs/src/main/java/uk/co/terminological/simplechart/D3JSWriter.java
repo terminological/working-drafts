@@ -63,8 +63,16 @@ public abstract class D3JSWriter extends Writer {
 			});
 			
 			Set<Object> xLabels = tmp.getEntitySet();
+			Set<Object> yLabels = tmp.getAttributeSet();
+			//TODO: A sorting function - should be part of the value
 			
-			//TODO: A sorting function - shuld be part of the 
+			xLabels.forEach(x -> {
+				yLabels.forEach(y -> {
+					Object value = tmp.get(x,y);
+					//TODO - write this with missing values...
+				});
+			});
+			
 			throw new RuntimeException("not yet implemented");
 		}
 
