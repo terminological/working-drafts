@@ -28,7 +28,7 @@ public class TestSimpleChord {
 				Triple.create("five", 1.0, "one")
 				);
 		
-		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
+		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/chord"))
 			.withNewChart("Hello", ChartType.NETWORK)
 			.withSeries(links)
 				.bind(SOURCE, t -> t.getFirst())
