@@ -29,7 +29,7 @@ public class TestSimpleChord {
 				);
 		
 		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/chord"))
-			.withNewChart("Hello", ChartType.NETWORK)
+			.withNewChart("Hello", ChartType.CHORD)
 			.withSeries(links)
 				.bind(SOURCE, t -> t.getFirst())
 				.bind(WEIGHT, t -> t.getSecond())
