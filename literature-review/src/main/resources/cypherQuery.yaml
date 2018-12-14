@@ -1,20 +1,16 @@
-	
 matchingTitles: |
 	# matching titles - sometimes this is not a duplicate
 	match (n:Article), (m:Article) WHERE n.title <> "" AND n.title = m.title AND n<>m RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
-	
 matchingDois: |
 	# matching dois case insensitive - this is always a duplicate
 	match (n:Article), (m:Article) WHERE toUpper(n.doi) = toUpper(m.doi) AND n<>m RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
-	
 articlesWithNoRefs: |
 	# articles with no references
 	MATCH (source:Article) WHERE NOT (source)-[:HAS_REFERENCE]-()
 	RETURN source
 
-	
 articlePageRank: |
 	CALL algo.pageRank.stream('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85})
 	YIELD nodeId, score
@@ -28,8 +24,6 @@ articlePageRank: |
 	score
 	ORDER BY score DESC
 
-	
-	
 # AUTHORS
 mergeAuthorsWithSameOrcid: |
 	# orchid matches
@@ -40,7 +34,6 @@ mergeAuthorsWithSameOrcid: |
 	CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
 	YIELD node RETURN *
 
-	
 mergeAuthorsWithExactFullname: |
 	# Exact fullname match
 	MATCH (n:Author), (o:Author) 
@@ -50,7 +43,6 @@ mergeAuthorsWithExactFullname: |
 	CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
 	YIELD node RETURN *
 
-	
 mergeAuthorsWithSimilarNameAndAffiliation: |
 	# Short name match plus similar affiliation
 	MATCH (n:Author) -[:HAS_AFFILIATION]-> () -[:SIMILAR_TO]-> () <-[:HAS_AFFILIATION]- (o:Author) 
@@ -60,14 +52,12 @@ mergeAuthorsWithSimilarNameAndAffiliation: |
 	CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
 	YIELD node RETURN *
 
-	
 createAuthorCoauthor: |
 	# Create coauthor network
 	MATCH (n:Author) <-[:HAS_AUTHOR]- (m:Article) -[:HAS_AUTHOR]-> (o:Author) 
 	WHERE NOT (n)-[:SAME_AS]-(o) 
 	CREATE (n)-[r:CO_AUTHOR]->(o)
 
-	
 mergeAuthorsWithSimilarNameAndCoauthors: |
 	# Merge co-authors with same name
 	MATCH (n:Author) -[:CO_AUTHOR]-> () <-[:CO_AUTHOR]- (o:Author) 
@@ -77,17 +67,14 @@ mergeAuthorsWithSimilarNameAndCoauthors: |
 	CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
 	YIELD node RETURN *
 
-	
 deleteCircularCoauthor: |
 	# Delete any that have been merged together
 	MATCH (n:Author) -[r:CO_AUTHOR]-> (n:Author) DELETE r
 
-	
 deleteNullAuthors: |
 	# Tidy up null authors
 	MATCH (n:Author)-[r]-() WHERE n.lastName IS NULL DELETE r,n
 
-	
 getAuthorCoauthorConnectedness: |
 	# AUTHORS
 	# Graph connectedness
@@ -97,7 +84,6 @@ getAuthorCoauthorConnectedness: |
 	ORDER BY size_of_component DESC
 	# generally shows that the graph is disconnected
 
-	
 getAuthorCoauthorCommunity: |
 	# Community
 	CALL algo.louvain.stream('Author', 'CO_AUTHOR', {direction:'out'}) 
@@ -110,7 +96,6 @@ getAuthorCoauthorCommunity: |
 	community 
 	ORDER BY community
 
-	
 getAuthorCoauthorBetweennessCentrality: |
 	# centrality
 	# betweenness
@@ -120,7 +105,6 @@ getAuthorCoauthorBetweennessCentrality: |
 	RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
 	ORDER BY centrality DESC;
 
-	
 getAuthorCoauthorHarmonicCentrality: |
 	# closeness
 	CALL algo.closeness.harmonic.stream('Author','CO_AUTHOR',{direction:'out'})
@@ -129,13 +113,11 @@ getAuthorCoauthorHarmonicCentrality: |
 	RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
 	ORDER BY centrality DESC;
 
-	
 createAuthorCites: |
 	# The CO_AUTHOR graph is disconnected. The CITES graph however is not
 	# create the graph
 	MATCH (n:Author) <-[:HAS_AUTHOR]- () -[:HAS_REFERENCE]-> () -[:HAS_AUTHOR]-> (o:Author) CREATE (n)-[r:CITES]->(o)
 
-	
 getAuthorCitesClosenessCentrality: |
 	# closeness algorithm
 	CALL algo.closeness.stream('Author','CITES',{direction:'out'})
@@ -144,9 +126,7 @@ getAuthorCitesClosenessCentrality: |
 	RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
 	ORDER BY centrality DESC;
 
-	
-	
-	<!-- PAPERS -->
+# PAPERS
 getArticlePageRank: |
 	# PageRank
 	CALL algo.pageRank.stream('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85})
@@ -161,14 +141,10 @@ getArticlePageRank: |
 	score*365/(duration.inDays(a.date,date()).days) AS timeWeightedScore
 	ORDER BY score DESC
 
-	
-	
-	
 deleteMeshCooccur: |
 	# MESH terms
 	MATCH (:MeshCode)-[u:CO_OCCUR]->(:MeshCode) DELETE u
 
-	
 createMeshCodeCooccur: |
 	# Create single CO-OCCUR relationships with count - quite slow - 370 secs
 	MATCH (n:MeshCode) <-[:HAS_MESH]- (m:Article) -[:HAS_MESH]-> (o:MeshCode)
@@ -179,7 +155,6 @@ createMeshCodeCooccur: |
 	SET r.cooccurrences = cooccurrences
 	RETURN count(r)
 
-	
 getCooccurConnectedness: |
 	# Check connectedness
 	CALL algo.unionFind.stream('MeshCode', 'CO_OCCUR', {})
@@ -188,7 +163,6 @@ getCooccurConnectedness: |
 	ORDER BY size_of_component DESC
 	# Connected graph
 
-	
 createMeshCodeOccurencesCount: |
 	# set up counts
 	MATCH (n:Article)-[u:HAS_MESH]->(m:MeshCode) 
@@ -196,7 +170,6 @@ createMeshCodeOccurencesCount: |
 	MATCH (m:MeshCode) 
 	SET m.occurrences=total
 
-	
 createMeshCodeCooccurMutualInformation: |
 	# create pmi on relationship
 	MATCH (x:MeshCode) 
@@ -208,19 +181,16 @@ createMeshCodeCooccurMutualInformation: |
 	r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total ),
 	r.total = total
 
-	
 getMeshCodeCooccurMutualInformation: |
 	# export for further visualisation
 	MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
 	RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
 	ORDER BY r.cooccurrences DESC
 
-	
 getMeshCodeMutualInformation: |
 	# Mutual information
 	MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) RETURN sum(r.pmi*r.probability) as mutualInformation
 
-	
 mergeKeywordsIgnoreCase: |
 	MATCH (n:Keyword), (o:Keyword) 
 	WHERE lower(n.term) = lower(o.term) 
@@ -228,12 +198,10 @@ mergeKeywordsIgnoreCase: |
 	CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
 	YIELD node RETURN *
 
-	
 deleteKeywordCooccur: |
 	# Keywords
 	MATCH (:Keyword)-[u:CO_OCCUR]->(:Keyword) DELETE u
 
-	
 createKeywordCooccur: |
 	# Create single CO-OCCUR relationships with count - quite slow - 370 secs
 	MATCH (n:Keyword) <-[:HAS_KEYWORD]- (m:Article) -[:HAS_KEYWORD]-> (o:Keyword)
@@ -244,7 +212,6 @@ createKeywordCooccur: |
 	SET r.cooccurrences = cooccurrences
 	RETURN count(r)
 
-	
 getKeywordCooccurConnectedness: |
 	# Check connectedness
 	CALL algo.unionFind.stream('Keyword', 'CO_OCCUR', {})
@@ -253,7 +220,6 @@ getKeywordCooccurConnectedness: |
 	ORDER BY size_of_component DESC
 	# Connected graph
 
-	
 getKeywordCooccurCommunities: |
 	# Community
 	CALL algo.louvain.stream('Keyword', 'HAS_KEYWORD', {direction:'out'}) 
@@ -262,14 +228,12 @@ getKeywordCooccurCommunities: |
 	RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, community 
 	ORDER BY community
 
-	
 createKeywordOccurencesCount: |
 	# set up counts
 	MATCH (n:Article)-[u:HAS_KEYWORD]->(m:Keyword) 
 	WITH m,count(n) as total 
 	MATCH (m) SET m.occurrences=total
 
-	
 createKeywordCooccurMutualInformation: |
 	# create pmi on relationship
 	MATCH (x:Keyword) WITH sum(x.occurrences) as total
@@ -280,16 +244,12 @@ createKeywordCooccurMutualInformation: |
 	r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total ),
 	r.total = total
 
-	
 getKeywordCooccurMutualInformation: |
 	# export for further visualisation
 	MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
 	RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
 	ORDER BY r.cooccurrences DESC
 
-	
 getKeywordMutualInformation: |
 	# Mutual information
 	MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) RETURN sum(r.pmi*r.probability) as mutualInformation
-
-	
