@@ -1,14 +1,22 @@
 matchingTitles: |
 	# matching titles - sometimes this is not a duplicate
-	match (n:Article), (m:Article) WHERE n.title <> "" AND n.title = m.title AND n<>m RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
+	match (n:Article), (m:Article) 
+	WHERE n.title <> "" 
+	AND n.title = m.title 
+	AND n<>m 
+	RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
 matchingDois: |
 	# matching dois case insensitive - this is always a duplicate
-	match (n:Article), (m:Article) WHERE toUpper(n.doi) = toUpper(m.doi) AND n<>m RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
+	match (n:Article), (m:Article) 
+	WHERE toUpper(n.doi) = toUpper(m.doi) 
+	AND n<>m 
+	RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
 articlesWithNoRefs: |
 	# articles with no references
-	MATCH (source:Article) WHERE NOT (source)-[:HAS_REFERENCE]-()
+	MATCH (source:Article) 
+	WHERE NOT (source)-[:HAS_REFERENCE]-()
 	RETURN source
 
 articlePageRank: |
