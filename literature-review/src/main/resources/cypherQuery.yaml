@@ -1,3 +1,4 @@
+queries:
 - matchingTitles: | # matching titles - sometimes this is not a duplicate
     MATCH (n:Article), (m:Article) 
     WHERE n.title <> "" 
