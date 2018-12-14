@@ -4,14 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -63,9 +57,9 @@ public abstract class D3JSWriter extends Writer {
 		}
 		
 		protected <X,Y> String extractData(Series<Y> edges) {
-			Function<Y, Object> xGenerator = edges.functionFor(Dimension.SOURCE);
-			Function<Y, Object> yGenerator = edges.functionFor(Dimension.TARGET);
-			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.WEIGHT);
+			Function<Y, Object> xGenerator = edges.functionFor(Dimension.ID, "source");
+			Function<Y, Object> yGenerator = edges.functionFor(Dimension.ID, "target");
+			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.STRENGTH);
 			
 			EavMap<Object,Object,Object> tmp = new EavMap<>();
 			edges.getData().forEach(y -> {
@@ -79,15 +73,8 @@ public abstract class D3JSWriter extends Writer {
 			// List<Object> yLabels = new ArrayList<>(tmp.getAttributeSet());
 			
 			
+			List<Object> union = edges.distinctValuesForDimension(Dimension.ID);
 			
-			
-			
-			Comparator<Object> sorter = edges.getSorters().getOrDefault(Dimension.SOURCE, 
-					(o1,o2) -> o1.toString().compareTo(o2.toString()));
-			
-			SortedSet<Object> union = new TreeSet<>(sorter);
-			union.addAll(tmp.getEntitySet()); 
-			union.addAll(tmp.getAttributeSet());
 			
 			String out = "var matrix = [\n"+union.stream().map(x -> {
 					
@@ -97,11 +84,14 @@ public abstract class D3JSWriter extends Writer {
 					
 			}).collect(Collectors.joining(",\n"))+"\n];\n";
 			
-			String names = "var Names = ["
+			String names = "var names = ["
 					+union.stream().map(u -> "'"+u.toString()+"'").collect(Collectors.joining(","))
 					+"];\n"; 
-						
-			return names+out;
+			
+			String colours = "var colors = ["
+					+edges.getScheme().values(union.size()).stream().map(col -> "'"+col.toHex()+"'").collect(Collectors.joining(","))
+					+"];\n";
+			return names+colours+out;
 			
 		}
 
@@ -134,33 +124,35 @@ public abstract class D3JSWriter extends Writer {
 			Function<X, Object> labelGenerator = nodes.functionFor(Dimension.LABEL);
 			Function<X, Object> idGenerator = nodes.functionFor(Dimension.ID);
 			
-			Function<Y, Object> sourceIdGenerator = edges.functionFor(Dimension.SOURCE);
-			Function<Y, Object> targetIdGenerator = edges.functionFor(Dimension.TARGET);
-			Function<Y, Object> weightGenerator = edges.functionFor(Dimension.WEIGHT);
+			Function<Y, Object> sourceIdGenerator = edges.functionFor(Dimension.ID, "source");
+			Function<Y, Object> targetIdGenerator = edges.functionFor(Dimension.ID, "target");
+			Function<Y, Object> weightGenerator = edges.functionFor(Dimension.STRENGTH);
 			
 			//TODO: Could probably have an optional<function<x,y>> accessor here... would it be useful though
 			//for elements such as size, or fill or other node or relationship properties
 			
-			builder.append("const graph = { \n'nodes': [\n");
+			builder.append("var nodes = [\n");
 			
 			String tmp = nodes.getData().stream().map(x -> {
 				String label = labelGenerator.apply(x).toString();
 				String id = idGenerator.apply(x).toString();
-				return "{'id':'"+id+"','label':'"+label+"'}";
+				return "{'id':'"+id+"','name':'"+label+"'}";
 			}).collect(Collectors.joining(",\n"));
 			
 			builder.append(tmp);
-			builder.append("\n],\n'links': [\n");
+			builder.append("\n];\n");
+			
+			builder.append("var links = [\n");
 			
 			String tmp2 = edges.getData().stream().map(y -> {
 				String sourceId = sourceIdGenerator.apply(y).toString();
 				String targetId = targetIdGenerator.apply(y).toString();
 				String weight = weightGenerator.apply(y).toString();
-				return "{'source':'"+sourceId+"','target':'"+targetId+"','weight':'"+weight+"'}";
+				return "{'source':'"+sourceId+"','target':'"+targetId+"','weight':"+weight+"}";
 			}).collect(Collectors.joining(",\n"));
 			
 			builder.append(tmp2);
-			builder.append("\n]};");
+			builder.append("\n];");
 			return builder.toString();
 		}
 	}

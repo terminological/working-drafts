@@ -1,4 +1,7 @@
 #!/usr/bin/gnuplot -p
+
+<#include "palettes/rdbu.pal" parse=false>
+
 $data << EOD
 ${data}
 EOD

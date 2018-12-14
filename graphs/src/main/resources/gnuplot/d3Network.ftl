@@ -1,74 +1,102 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
+<head>
+  <title>Force layout (with links)</title>
+</head>
 
-.link {
+<style>
+circle {
+  fill: cadetblue;
+}
+line {
   stroke: #ccc;
 }
-
-.node text {
-  pointer-events: none;
-  font: 10px sans-serif;
+text {
+  text-anchor: middle;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  fill: #666;
+  font-size: 16px;
 }
-
 </style>
+
 <body>
-<!-- D3.js -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
-<script>
+  <div id="content">
+    <svg width="400" height="300">
+      <g class="links"></g>
+      <g class="nodes"></g>
+    </svg>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+
+  <script>
+var width = 400, height = 300
 
 ${data}
 
-var width = 960,
-    height = 500
+var simulation = d3.forceSimulation(nodes)
+  .force('charge', d3.forceManyBody().strength(-100))
+  .force('center', d3.forceCenter(width / 2, height / 2))
+  .force('link', d3.forceLink()
+  		.links(links)
+  		.id(function(d) {return d.id;})
+  		.strength(function(link) {return link.weight;})
+  )
+  .on('tick', ticked);
 
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+function updateLinks() {
+  var u = d3.select('.links')
+    .selectAll('line')
+    .data(links)
 
-var force = d3.layout.force()
-    .gravity(0.05)
-    .linkStrength(function(d) {return d.weight;})
-    .distance(100)
-    .charge(-100)
-    .size([width, height]);
+  u.enter()
+    .append('line')
+    .merge(u)
+    .attr('x1', function(d) {
+      return d.source.x
+    })
+    .attr('y1', function(d) {
+      return d.source.y
+    })
+    .attr('x2', function(d) {
+      return d.target.x
+    })
+    .attr('y2', function(d) {
+      return d.target.y
+    })
 
-force
-     .nodes(graph.nodes)
-      .links(graph.links)
-      .start();
+  u.exit().remove()
+}
 
-  var link = svg.selectAll(".link")
-      .data(graph.links)
-    .enter().append("line")
-      .attr("class", "link");
+function updateNodes() {
+  u = d3.select('.nodes')
+    .selectAll('text')
+    .data(nodes)
 
-  var node = svg.selectAll(".node")
-      .data(graph.nodes)
-      .enter().append("svg:circle")
-      .attr("class", "node")
-    	.attr("cx", function(d) { return d.x; }) //x
-    	.attr("cy", function(d) { return d.y; }) //y
-    	.attr("r", 8)
-  	    .style("fill", function(d, i) {
-		      return fill[parseInt((d.in+1)/3)];
-    	})
-      .call(force.drag);
-      
-  node.append("text")
-      .attr("dx", 12)
-      .attr("dy", ".35em")
-      .text(function(d) { return d.label });
+  u.enter()
+    .append('text')
+    .text(function(d) {
+      return d.name
+    })
+    .merge(u)
+    .attr('x', function(d) {
+      return d.x
+    })
+    .attr('y', function(d) {
+      return d.y
+    })
+    .attr('dy', function(d) {
+      return 5
+    })
 
-  force.on("tick", function() {
-    link.attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
+  u.exit().remove()
+}
 
-    node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-  });
+function ticked() {
+  updateLinks()
+  updateNodes()
+}
 
-
-</script>
-
+  </script>
+</body>
+</html>

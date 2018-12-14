@@ -50,7 +50,7 @@ ${data}
 ////////////////////////////////////////////////////////////
 
 var colors = d3.scale.ordinal()
-    .domain(d3.range(Names.length))
+    .domain(d3.range(names.length))
 	.range(colors);
 
 var chord = d3.layout.chord()
@@ -91,7 +91,7 @@ outerArcs.append("path")
 	.attr("d", arc);
 	
 ////////////////////////////////////////////////////////////
-////////////////////// Append Names ////////////////////////
+////////////////////// Append names ////////////////////////
 ////////////////////////////////////////////////////////////
 
 //Append the label names on the outside
@@ -105,7 +105,7 @@ outerArcs.append("text")
 		+ "translate(" + (outerRadius + 10) + ")"
 		+ (d.angle > Math.PI ? "rotate(180)" : "");
   })
-  .text(function(d,i) { return Names[i]; });
+  .text(function(d,i) { return names[i]; });
 	
 ////////////////////////////////////////////////////////////
 ////////////////// Draw inner chords ///////////////////////

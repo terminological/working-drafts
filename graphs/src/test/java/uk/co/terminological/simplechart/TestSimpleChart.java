@@ -27,7 +27,7 @@ public class TestSimpleChart {
 				Tuple.create(5D, 3D)
 				);
 		
-		Chart tmp = Figure.outputTo(new File("/home/terminological/tmp/gnuplot"))
+		Chart tmp = Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/gnuplot"))
 			
 			.withNewChart("Hello", ChartType.XY_LINE)
 			.withSeries(example)
