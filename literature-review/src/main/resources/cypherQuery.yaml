@@ -6,7 +6,7 @@ queries:
     AND n<>m 
     RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
-- | # matching dois case insensitive - this is always a duplicate
+- matchingDois: | # matching dois case insensitive - this is always a duplicate
     MATCH (n:Article), (m:Article) 
     WHERE toUpper(n.doi) = toUpper(m.doi) 
     AND n<>m 
