@@ -33,7 +33,7 @@ articlePageRank: |
 # AUTHORS
 mergeAuthorsWithSameOrcid: |
 	# orchid matches
-	#combine clause here causes error
+	# combine clause here causes error
 	MATCH (n:Author), (o:Author) 
 	WHERE n.orcid = o.orcid 
 	AND n<>o 
