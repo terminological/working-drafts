@@ -1,0 +1,304 @@
+<queries>
+
+<query name="matchingTitles">
+# matching titles - sometimes this is not a duplicate
+match (n:Article), (m:Article) WHERE n.title <> "" AND n.title = m.title AND n<>m RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
+</query>
+
+<query name="matchingDois">
+# matching dois case insensitive - this is always a duplicate
+match (n:Article), (m:Article) WHERE toUpper(n.doi) = toUpper(m.doi) AND n<>m RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
+</query>
+
+<query name="articlesWithNoRefs">
+# articles with no references
+MATCH (source:Article) WHERE NOT (source)-[:HAS_REFERENCE]-()
+RETURN source
+</query>
+
+<query name="articlePageRank">
+CALL algo.pageRank.stream('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85})
+YIELD nodeId, score
+MATCH (n) WHERE id(n)=nodeId
+RETURN 
+nodeId,
+n.pmid AS pmid,
+n.doi AS doi, 
+n.title AS page,
+duration.inDays(n.date,date()) AS age,
+score
+ORDER BY score DESC
+</query>
+
+<!--<query name="articleCites">
+# time weighted citations
+</query>-->
+
+
+
+<!-- AUTHORS -->
+<query name="mergeAuthorsWithSameOrcid">
+# orchid matches
+#combine clause here causes error
+MATCH (n:Author), (o:Author) 
+WHERE n.orcid = o.orcid 
+AND n<>o 
+CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
+YIELD node RETURN *
+</query>
+
+<query name="mergeAuthorsWithExactFullname">
+# Exact fullname match
+MATCH (n:Author), (o:Author) 
+WHERE n.lastName = o.lastName 
+AND n.firstName = o.firstName 
+AND n<>o 
+CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
+YIELD node RETURN *
+</query>
+
+<query name="mergeAuthorsWithSimilarNameAndAffiliation">
+# Short name match plus similar affiliation
+MATCH (n:Author) -[:HAS_AFFILIATION]-> () -[:SIMILAR_TO]-> () <-[:HAS_AFFILIATION]- (o:Author) 
+WHERE NOT (n)-[:SAME_AS]-(o) 
+AND n.authorLabel = o.authorLabel 
+AND n<>o 
+CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
+YIELD node RETURN *
+</query>
+
+<query name="createAuthorCoauthor">
+# Create coauthor network
+MATCH (n:Author) <-[:HAS_AUTHOR]- (m:Article) -[:HAS_AUTHOR]-> (o:Author) 
+WHERE NOT (n)-[:SAME_AS]-(o) 
+CREATE (n)-[r:CO_AUTHOR]->(o)
+</query>
+
+<query name="mergeAuthorsWithSimilarNameAndCoauthors">
+# Merge co-authors with same name
+MATCH (n:Author) -[:CO_AUTHOR]-> () <-[:CO_AUTHOR]- (o:Author) 
+WHERE NOT (n)-[:SAME_AS]-(o) 
+AND n.authorLabel = o.authorLabel 
+AND n<>o 
+CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
+YIELD node RETURN *
+</query>
+
+<query name="deleteCircularCoauthor">
+# Delete any that have been merged together
+MATCH (n:Author) -[r:CO_AUTHOR]-> (n:Author) DELETE r
+</query>
+
+<query name="deleteNullAuthors">
+# Tidy up null authors
+MATCH (n:Author)-[r]-() WHERE n.lastName IS NULL DELETE r,n
+</query>
+
+<query name="getAuthorCoauthorConnectedness">
+# AUTHORS
+# Graph connectedness
+CALL algo.unionFind.stream('Author', 'CO_AUTHOR', {})
+YIELD nodeId,setId
+RETURN setId,count(*) as size_of_component
+ORDER BY size_of_component DESC
+# generally shows that the graph is disconnected
+</query>
+
+<query name="getAuthorCoauthorCommunity">
+# Community
+CALL algo.louvain.stream('Author', 'CO_AUTHOR', {direction:'out'}) 
+YIELD nodeId, community 
+MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
+RETURN 
+a.authorLabel, 
+a.lastName, 
+collect(b.organisationName) AS affiliations, 
+community 
+ORDER BY community
+</query>
+
+<query name="getAuthorCoauthorBetweennessCentrality">
+# centrality
+# betweenness
+CALL algo.betweenness.stream('Author','CO_AUTHOR',{direction:'out'})
+YIELD nodeId, centrality
+MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
+RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
+ORDER BY centrality DESC;
+</query>
+
+<query name="getAuthorCoauthorHarmonicCentrality">
+# closeness
+CALL algo.closeness.harmonic.stream('Author','CO_AUTHOR',{direction:'out'})
+YIELD nodeId, centrality
+MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
+RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
+ORDER BY centrality DESC;
+</query>
+
+<query name="createAuthorCites">
+# The CO_AUTHOR graph is disconnected. The CITES graph however is not
+# create the graph
+MATCH (n:Author) <-[:HAS_AUTHOR]- () -[:HAS_REFERENCE]-> () -[:HAS_AUTHOR]-> (o:Author) CREATE (n)-[r:CITES]->(o)
+</query>
+
+<query name="getAuthorCitesClosenessCentrality">
+# closeness algorithm
+CALL algo.closeness.stream('Author','CITES',{direction:'out'})
+YIELD nodeId, centrality
+MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
+RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
+ORDER BY centrality DESC;
+</query>
+
+
+<!-- PAPERS -->
+<query name="getArticlePageRank">
+# PageRank
+CALL algo.pageRank.stream('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85})
+YIELD nodeId, score
+MATCH (a:Article) WHERE id(a) = nodeId
+RETURN nodeId,
+a.pmid AS pmid,
+a.doi AS doi,
+duration.inDays(a.date,date()).days AS age,
+a.title,
+score,
+score*365/(duration.inDays(a.date,date()).days) AS timeWeightedScore
+ORDER BY score DESC
+</query>
+
+
+
+<query name="deleteMeshCooccur">
+# MESH terms
+MATCH (:MeshCode)-[u:CO_OCCUR]->(:MeshCode) DELETE u
+</query>
+
+<query name="createMeshCodeCooccur">
+# Create single CO-OCCUR relationships with count - quite slow - 370 secs
+MATCH (n:MeshCode) <-[:HAS_MESH]- (m:Article) -[:HAS_MESH]-> (o:MeshCode)
+WHERE n<>o
+WITH n, o, count(distinct(m)) AS cooccurrences
+MATCH (n),(o)
+CREATE (n)-[r:CO_OCCUR]->(o)
+SET r.cooccurrences = cooccurrences
+RETURN count(r)
+</query>
+
+<query name="getCooccurConnectedness">
+# Check connectedness
+CALL algo.unionFind.stream('MeshCode', 'CO_OCCUR', {})
+YIELD nodeId,setId
+RETURN setId,count(*) as size_of_component
+ORDER BY size_of_component DESC
+# Connected graph
+</query>
+
+<query name="createMeshCodeOccurencesCount">
+# set up counts
+MATCH (n:Article)-[u:HAS_MESH]->(m:MeshCode) 
+WITH m,count(n) as total 
+MATCH (m:MeshCode) 
+SET m.occurrences=total
+</query>
+
+<query name="createMeshCodeCooccurMutualInformation">
+# create pmi on relationship
+MATCH (x:MeshCode) 
+WITH sum(x.occurrences) as total
+MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
+SET 
+r.pmi = log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ),
+r.probability = toFloat(r.cooccurrences)/total,
+r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total ),
+r.total = total
+</query>
+
+<query name="getMeshCodeCooccurMutualInformation">
+# export for further visualisation
+MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
+RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
+ORDER BY r.cooccurrences DESC
+</query>
+
+<query name="getMeshCodeMutualInformation">
+# Mutual information
+MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) RETURN sum(r.pmi*r.probability) as mutualInformation
+</query>
+
+<query name="mergeKeywordsIgnoreCase">
+MATCH (n:Keyword), (o:Keyword) 
+WHERE lower(n.term) = lower(o.term) 
+AND n<>o 
+CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
+YIELD node RETURN *
+</query>
+
+<query name="deleteKeywordCooccur">
+# Keywords
+MATCH (:Keyword)-[u:CO_OCCUR]->(:Keyword) DELETE u
+</query>
+
+<query name="createKeywordCooccur">
+# Create single CO-OCCUR relationships with count - quite slow - 370 secs
+MATCH (n:Keyword) <-[:HAS_KEYWORD]- (m:Article) -[:HAS_KEYWORD]-> (o:Keyword)
+WHERE n<>o
+WITH n, o, count(distinct(m)) AS cooccurrences
+MATCH (n),(o)
+CREATE (n)-[r:CO_OCCUR]->(o)
+SET r.cooccurrences = cooccurrences
+RETURN count(r)
+</query>
+
+<query name="getKeywordCooccurConnectedness">
+# Check connectedness
+CALL algo.unionFind.stream('Keyword', 'CO_OCCUR', {})
+YIELD nodeId,setId
+RETURN setId,count(*) as size_of_component
+ORDER BY size_of_component DESC
+# Connected graph
+</query>
+
+<query name="getKeywordCooccurCommunities">
+# Community
+CALL algo.louvain.stream('Keyword', 'HAS_KEYWORD', {direction:'out'}) 
+YIELD nodeId, community 
+MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
+RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, community 
+ORDER BY community
+</query>
+
+<query name="createKeywordOccurencesCount">
+# set up counts
+MATCH (n:Article)-[u:HAS_KEYWORD]->(m:Keyword) 
+WITH m,count(n) as total 
+MATCH (m) SET m.occurrences=total
+</query>
+
+<query name="createKeywordCooccurMutualInformation">
+# create pmi on relationship
+MATCH (x:Keyword) WITH sum(x.occurrences) as total
+MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
+SET 
+r.pmi = log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ),
+r.probability = toFloat(r.cooccurrences)/total,
+r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total ),
+r.total = total
+</query>
+
+<query name="getKeywordCooccurMutualInformation">
+# export for further visualisation
+MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
+RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
+ORDER BY r.cooccurrences DESC
+</query>
+
+<query name="getKeywordMutualInformation">
+# Mutual information
+MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) RETURN sum(r.pmi*r.probability) as mutualInformation
+</query>
+
+</queries>
+
+
