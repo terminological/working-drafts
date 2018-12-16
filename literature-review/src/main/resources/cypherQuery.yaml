@@ -1,24 +1,8 @@
-queries:
-- matchingTitles: | # matching titles - sometimes this is not a duplicate
-    MATCH (n:Article), (m:Article) 
-    WHERE n.title <> "" 
-    AND n.title = m.title 
-    AND n<>m 
-    RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
+build:
 
-- matchingDois: | # matching dois case insensitive - this is always a duplicate
-    MATCH (n:Article), (m:Article) 
-    WHERE toUpper(n.doi) = toUpper(m.doi) 
-    AND n<>m 
-    RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
-
-- articlesWithNoRefs: |    # articles with no references
-    MATCH (source:Article) 
-    WHERE NOT (source)-[:HAS_REFERENCE]-()
-    RETURN source
-
+# ARTICLES
 - articlePageRank: |
-    CALL algo.pageRank.stream('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85})
+    CALL algo.pageRank('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85, write:true, writeProperty:"pagerank"})
     YIELD nodeId, score
     MATCH (n) WHERE id(n)=nodeId
     RETURN 
@@ -81,7 +65,7 @@ queries:
     ORDER BY size_of_component DESC
 
 - getAuthorCoauthorCommunity: | # Community
-    CALL algo.louvain.stream('Author', 'CO_AUTHOR', {direction:'out'}) 
+    CALL algo.louvain('Author', 'CO_AUTHOR', {direction:'out', write:true, writeProperty:"community"}}) 
     YIELD nodeId, community 
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
     RETURN 
@@ -92,14 +76,14 @@ queries:
     ORDER BY community
 
 - getAuthorCoauthorBetweennessCentrality: | # centrality betweenness
-    CALL algo.betweenness.stream('Author','CO_AUTHOR',{direction:'out'})
+    CALL algo.betweenness('Author','CO_AUTHOR',{direction:'out', write:true, writeProperty:"betweenness"}})
     YIELD nodeId, centrality
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
     ORDER BY centrality DESC;
 
 - getAuthorCoauthorHarmonicCentrality: | # closeness
-    CALL algo.closeness.harmonic.stream('Author','CO_AUTHOR',{direction:'out'})
+    CALL algo.closeness.harmonic('Author','CO_AUTHOR',{direction:'out', write:true, writeProperty:"harmonic"}})
     YIELD nodeId, centrality
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
@@ -117,17 +101,13 @@ queries:
 
 # PAPERS
 - getArticlePageRank: | # PageRank
-    CALL algo.pageRank.stream('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85})
+    CALL algo.pageRank('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85, write:true, writeProperty:"pagerank"}})
     YIELD nodeId, score
     MATCH (a:Article) WHERE id(a) = nodeId
-    RETURN nodeId,
-    a.pmid AS pmid,
-    a.doi AS doi,
-    duration.inDays(a.date,date()).days AS age,
-    a.title,
-    score,
-    score*365/(duration.inDays(a.date,date()).days) AS timeWeightedScore
-    ORDER BY score DESC
+    SET age=duration.inDays(a.date,date()).days,
+    timeWeightedScore= score*365/(duration.inDays(a.date,date()).days)
+
+- getArticle
 
 - deleteMeshCooccur: | # MESH terms
     MATCH (:MeshCode)-[u:CO_OCCUR]->(:MeshCode) DELETE u
@@ -216,6 +196,25 @@ queries:
     r.probability = toFloat(r.cooccurrences)/total,
     r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total ),
     r.total = total
+
+analyse:
+- matchingTitles: | # matching titles - sometimes this is not a duplicate
+    MATCH (n:Article), (m:Article) 
+    WHERE n.title <> "" 
+    AND n.title = m.title 
+    AND n<>m 
+    RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
+
+- matchingDois: | # matching dois case insensitive - this is always a duplicate
+    MATCH (n:Article), (m:Article) 
+    WHERE toUpper(n.doi) = toUpper(m.doi) 
+    AND n<>m 
+    RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
+
+- articlesWithNoRefs: |    # articles with no references
+    MATCH (source:Article) 
+    WHERE NOT (source)-[:HAS_REFERENCE]-()
+    RETURN source
 
 - getKeywordCooccurMutualInformation: | # export for further visualisation
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
