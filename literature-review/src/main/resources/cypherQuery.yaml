@@ -73,12 +73,7 @@ build:
     SET a.age=duration.inDays(a.date,date()).days,
     a.timeWeightedPagerank=a.pagerank*365/(duration.inDays(a.date,date()).days)
 
-- getArticlesByAge:
-    MATCH (a:Article)
-    RETURN floor(duration.inMonths(a.date,date()).months/3) as qtr, count(a) as articles
-    ORDER BY qtr ASC
-
-#MESH_CODES
+# MESH_CODES
 - deleteMeshCooccur: | # MESH terms
     MATCH (:MeshCode)-[u:CO_OCCUR]->(:MeshCode) DELETE u
 
@@ -107,7 +102,6 @@ build:
     r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total ),
     r.total = total
 
-
 # KEY WORDS
 
 - mergeKeywordsIgnoreCase: |
@@ -128,19 +122,6 @@ build:
     CREATE (n)-[r:CO_OCCUR]->(o)
     SET r.cooccurrences = cooccurrences
     RETURN count(r)
-
-- getKeywordCooccurConnectedness: | # Check connectedness
-    CALL algo.unionFind.stream('Keyword', 'CO_OCCUR', {})
-    YIELD nodeId,setId
-    RETURN setId,count(*) as size_of_component
-    ORDER BY size_of_component DESC
-
-- getKeywordCooccurCommunities: | # Community
-    CALL algo.louvain.stream('Keyword', 'HAS_KEYWORD', {direction:'out'}) 
-    YIELD nodeId, community 
-    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
-    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, community 
-    ORDER BY community
 
 - createKeywordOccurencesCount: | # set up counts
     MATCH (n:Article)-[u:HAS_KEYWORD]->(m:Keyword) 
@@ -176,7 +157,20 @@ analyse:
     MATCH (source:Article) 
     WHERE NOT (source)-[:HAS_REFERENCE]-()
     RETURN source
+
+- getArticlesByAge:
+    MATCH (a:Article)
+    RETURN floor(duration.inMonths(a.date,date()).months/3) as qtr, count(a) as articles
+    ORDER BY qtr ASC
+
+# TODO: Ordered authors + journal name
+- getArticlesByPagerank:
+    MATCH (a:Article)-[r:HAS_AUTHOR]->(b.author)
+    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, collect(b.lastName) as authors
+    ORDER by a.pagerank DESC
     
+- getArticleByJournal:
+    # TODO: need to get the journal name in the database!
     
 # AUTHORS
 
@@ -213,6 +207,20 @@ analyse:
 
 # KEYWORDS
 
+- getKeywordCooccurConnectedness: | # Check connectedness
+    CALL algo.unionFind.stream('Keyword', 'CO_OCCUR', {})
+    YIELD nodeId,setId
+    RETURN setId,count(*) as size_of_component
+    ORDER BY size_of_component DESC
+
+- getKeywordCooccurCommunities: | # Community
+    CALL algo.louvain.stream('Keyword', 'CO_OCCUR', {direction:'both'}) 
+    YIELD nodeId, community 
+    MATCH (a:Keyword) WHERE id(a) = nodeId
+    AND a.occurrences > 2
+    RETURN collect(a.term) as terms, sum(a.occurrences) as count, community 
+    ORDER BY community
+
 - getKeywordCooccurMutualInformation: | # export for further visualisation
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
     RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
@@ -228,6 +236,14 @@ analyse:
     YIELD nodeId,setId
     RETURN setId,count(*) as size_of_component
     ORDER BY size_of_component DESC
+    
+- getMeshCodeCooccurCommunities: | # Community  - not so useful
+    CALL algo.louvain.stream('MeshCode', 'CO_OCCUR', {direction:'both'}) 
+    YIELD nodeId, community 
+    MATCH (a:MeshCode) WHERE id(a) = nodeId
+    AND a.occurrences > 2
+    RETURN collect(a.term) as terms, sum(a.occurrences) as count, community 
+    ORDER BY community
 
 - getMeshCodeCooccurMutualInformation: | # export for further visualisation
     MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
