@@ -1,6 +1,6 @@
 build:
 
-# AUTHORS
+# AUTHORS - DISAMBIGUATE
 - mergeAuthorsWithSameOrcid: | # orchid matches: combine clause here causes error
     MATCH (n:Author), (o:Author) 
     WHERE n.orcid = o.orcid 
@@ -43,9 +43,6 @@ build:
 - deleteNullAuthors: | # Tidy up null authors
     MATCH (n:Author)-[r]-() WHERE n.lastName IS NULL DELETE r,n
 
-# AUTHORS
-
-
 - createAuthorCoauthorCommunity: | # Community
     CALL algo.louvain('Author', 'CO_AUTHOR', {direction:'out', write:true, writeProperty:"community"}) 
     YIELD nodes, communityCount, iterations, loadMillis, computeMillis, writeMillis;
@@ -58,49 +55,15 @@ build:
 - deleteAuthorCites: | # Delete any that have been merged together
     MATCH (:Author) -[r:CITES]-> (:Author) DELETE r
 
-- createAuthorCites: | # The CO_AUTHOR graph is disconnected. The CITES graph however is not 
+- createAuthorCites: | # The CITES graph is disconnected. 
     MATCH (n:Author) <-[:HAS_AUTHOR]- () -[:HAS_REFERENCE]-> () -[:HAS_AUTHOR]-> (o:Author) CREATE (n)-[r:CITES]->(o)
 
 - createAuthorCitesClosenessCentrality: | # closeness algorithm
     CALL algo.closeness.harmonic('Author','CITES',{direction:'both',write:true, writeProperty:'citesHarmonic'})
     YIELD nodes,loadMillis, computeMillis, writeMillis;
     
+# ARTICLES
 
-
-- getAuthorCoauthorConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
-    CALL algo.unionFind.stream('Author', 'CO_AUTHOR', {})
-    YIELD nodeId,setId
-    RETURN setId,count(*) as size_of_component
-    ORDER BY size_of_component DESC
-
-- getAuthorCitedConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
-    CALL algo.unionFind.stream('Author', 'CITED', {})
-    YIELD nodeId,setId
-    RETURN setId,count(*) as size_of_component
-    ORDER BY size_of_component DESC
-
-- getAuthorCoauthorCommunity: 
-    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
-    RETURN 
-    a.authorLabel, 
-    a.lastName, 
-    collect(b.organisationName) AS affiliations, 
-    a.community 
-    ORDER BY a.community
-
-- getAuthorCoauthorHarmonicCentrality: | # closeness
-    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
-    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic
-    ORDER BY a.harmonic DESC;
-
-- getAuthorCitesClosenessCentrality: | # closeness algorithm
-    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
-    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
-    ORDER BY centrality DESC;
-
-
-
-# PAPERS
 - createArticlePageRank: | # PageRank
     CALL algo.pageRank('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85, write:true, writeProperty:"pagerank"})
     YIELD nodes, iterations, loadMillis, computeMillis, writeMillis, dampingFactor, write, writeProperty
@@ -109,6 +72,11 @@ build:
     MATCH (a:Article) 
     SET a.age=duration.inDays(a.date,date()).days,
     a.timeWeightedPagerank=a.pagerank*365/(duration.inDays(a.date,date()).days)
+
+- getArticlesByAge:
+    MATCH (a:Article)
+    RETURN floor(duration.inMonths(a.date,date()).months/3) as qtr, count(a) as articles
+    ORDER BY qtr ASC
 
 #MESH_CODES
 - deleteMeshCooccur: | # MESH terms
@@ -122,12 +90,6 @@ build:
     CREATE (n)-[r:CO_OCCUR]->(o)
     SET r.cooccurrences = cooccurrences
     RETURN count(r)
-
-- getCooccurConnectedness: | # Check connectedness Connected graph
-    CALL algo.unionFind.stream('MeshCode', 'CO_OCCUR', {})
-    YIELD nodeId,setId
-    RETURN setId,count(*) as size_of_component
-    ORDER BY size_of_component DESC
 
 - createMeshCodeOccurencesCount: | # set up counts
     MATCH (n:Article)-[u:HAS_MESH]->(m:MeshCode) 
@@ -145,13 +107,8 @@ build:
     r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total ),
     r.total = total
 
-- getMeshCodeCooccurMutualInformation: | # export for further visualisation
-    MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
-    RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
-    ORDER BY r.cooccurrences DESC
 
-- getMeshCodeMutualInformation: | # Mutual information
-    MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) RETURN sum(r.pmi*r.probability) as mutualInformation
+# KEY WORDS
 
 - mergeKeywordsIgnoreCase: |
     MATCH (n:Keyword), (o:Keyword) 
@@ -200,23 +157,61 @@ build:
     r.total = total
 
 analyse:
-- matchingTitles: | # matching titles - sometimes this is not a duplicate
+
+# ARTICLES
+- getArticlesWithMatchingTitles: | # matching titles - sometimes this is not a duplicate
     MATCH (n:Article), (m:Article) 
     WHERE n.title <> "" 
     AND n.title = m.title 
     AND n<>m 
     RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
-- matchingDois: | # matching dois case insensitive - this is always a duplicate
+- getArticlesWithMatchingDois: | # matching dois case insensitive - this is always a duplicate
     MATCH (n:Article), (m:Article) 
     WHERE toUpper(n.doi) = toUpper(m.doi) 
     AND n<>m 
     RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
-- articlesWithNoRefs: |    # articles with no references
+- getArticlesWithNoRefs: |    # articles with no references
     MATCH (source:Article) 
     WHERE NOT (source)-[:HAS_REFERENCE]-()
     RETURN source
+    
+    
+# AUTHORS
+
+- getAuthorCoauthorConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
+    CALL algo.unionFind.stream('Author', 'CO_AUTHOR', {})
+    YIELD nodeId,setId
+    RETURN setId,count(*) as size_of_component
+    ORDER BY size_of_component DESC
+
+- getAuthorCitedConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
+    CALL algo.unionFind.stream('Author', 'CITES', {})
+    YIELD nodeId,setId
+    RETURN setId,count(*) as size_of_component
+    ORDER BY size_of_component DESC
+
+- getAuthorCommunityAffiliations: 
+    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
+    WITH id(a) as nodeId, 
+    collect(b.organisationName) AS affiliations, 
+    a.community as community 
+    RETURN 
+    community, count(nodeId) as size, collect(affiliations) as affiliations
+    ORDER BY size DESC
+
+- getAuthorCoauthorHarmonicCentrality: | # closeness
+    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
+    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic, a.community
+    ORDER BY a.harmonic DESC;
+
+- getAuthorCitesHarmonicCentrality: | # 
+    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
+    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.citesHarmonic, a.community
+    ORDER BY a.citesHarmonic DESC;
+
+# KEYWORDS
 
 - getKeywordCooccurMutualInformation: | # export for further visualisation
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
@@ -225,3 +220,20 @@ analyse:
 
 - getKeywordMutualInformation: | # Mutual information
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) RETURN sum(r.pmi*r.probability) as mutualInformation
+    
+# MESH CODES
+
+- getCooccurConnectedness: | # Check connectedness Connected graph
+    CALL algo.unionFind.stream('MeshCode', 'CO_OCCUR', {})
+    YIELD nodeId,setId
+    RETURN setId,count(*) as size_of_component
+    ORDER BY size_of_component DESC
+
+- getMeshCodeCooccurMutualInformation: | # export for further visualisation
+    MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
+    RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
+    ORDER BY r.cooccurrences DESC
+
+- getMeshCodeMutualInformation: | # Mutual information
+    MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) RETURN sum(r.pmi*r.probability) as mutualInformation
+
