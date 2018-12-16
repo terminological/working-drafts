@@ -1,19 +1,5 @@
 build:
 
-# ARTICLES
-- articlePageRank: |
-    CALL algo.pageRank('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85, write:true, writeProperty:"pagerank"})
-    YIELD nodeId, score
-    MATCH (n) WHERE id(n)=nodeId
-    RETURN 
-    nodeId,
-    n.pmid AS pmid,
-    n.doi AS doi, 
-    n.title AS page,
-    duration.inDays(n.date,date()) AS age,
-    score
-    ORDER BY score DESC
-
 # AUTHORS
 - mergeAuthorsWithSameOrcid: | # orchid matches: combine clause here causes error
     MATCH (n:Author), (o:Author) 
@@ -58,57 +44,73 @@ build:
     MATCH (n:Author)-[r]-() WHERE n.lastName IS NULL DELETE r,n
 
 # AUTHORS
+
+
+- createAuthorCoauthorCommunity: | # Community
+    CALL algo.louvain('Author', 'CO_AUTHOR', {direction:'out', write:true, writeProperty:"community"}) 
+    YIELD nodes, communityCount, iterations, loadMillis, computeMillis, writeMillis;
+
+# as co-author community graph is disconnected we look at harmonic centrality
+- createAuthorCoauthorHarmonicCentrality: | # https://infoscience.epfl.ch/record/200525/files/[EN]ASNA09.pdf;
+    CALL algo.closeness.harmonic('Author','CO_AUTHOR',{direction:'both', write:true, writeProperty:"harmonic"})
+    YIELD nodes,loadMillis, computeMillis, writeMillis;
+
+- deleteAuthorCites: | # Delete any that have been merged together
+    MATCH (:Author) -[r:CITES]-> (:Author) DELETE r
+
+- createAuthorCites: | # The CO_AUTHOR graph is disconnected. The CITES graph however is not 
+    MATCH (n:Author) <-[:HAS_AUTHOR]- () -[:HAS_REFERENCE]-> () -[:HAS_AUTHOR]-> (o:Author) CREATE (n)-[r:CITES]->(o)
+
+- createAuthorCitesClosenessCentrality: | # closeness algorithm
+    CALL algo.closeness.harmonic('Author','CITES',{direction:'both',write:true, writeProperty:'citesHarmonic'})
+    YIELD nodes,loadMillis, computeMillis, writeMillis;
+    
+
+
 - getAuthorCoauthorConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
     CALL algo.unionFind.stream('Author', 'CO_AUTHOR', {})
     YIELD nodeId,setId
     RETURN setId,count(*) as size_of_component
     ORDER BY size_of_component DESC
 
-- getAuthorCoauthorCommunity: | # Community
-    CALL algo.louvain('Author', 'CO_AUTHOR', {direction:'out', write:true, writeProperty:"community"}}) 
-    YIELD nodeId, community 
-    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
+- getAuthorCitedConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
+    CALL algo.unionFind.stream('Author', 'CITED', {})
+    YIELD nodeId,setId
+    RETURN setId,count(*) as size_of_component
+    ORDER BY size_of_component DESC
+
+- getAuthorCoauthorCommunity: 
+    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     RETURN 
     a.authorLabel, 
     a.lastName, 
     collect(b.organisationName) AS affiliations, 
-    community 
-    ORDER BY community
-
-- getAuthorCoauthorBetweennessCentrality: | # centrality betweenness
-    CALL algo.betweenness('Author','CO_AUTHOR',{direction:'out', write:true, writeProperty:"betweenness"}})
-    YIELD nodeId, centrality
-    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
-    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
-    ORDER BY centrality DESC;
+    a.community 
+    ORDER BY a.community
 
 - getAuthorCoauthorHarmonicCentrality: | # closeness
-    CALL algo.closeness.harmonic('Author','CO_AUTHOR',{direction:'out', write:true, writeProperty:"harmonic"}})
-    YIELD nodeId, centrality
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
-    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
-    ORDER BY centrality DESC;
-
-- createAuthorCites: | # The CO_AUTHOR graph is disconnected. The CITES graph however is not 
-    MATCH (n:Author) <-[:HAS_AUTHOR]- () -[:HAS_REFERENCE]-> () -[:HAS_AUTHOR]-> (o:Author) CREATE (n)-[r:CITES]->(o)
+    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic
+    ORDER BY a.harmonic DESC;
 
 - getAuthorCitesClosenessCentrality: | # closeness algorithm
-    CALL algo.closeness.stream('Author','CITES',{direction:'out'})
-    YIELD nodeId, centrality
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation) WHERE id(a) = nodeId
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations,centrality
     ORDER BY centrality DESC;
 
+
+
 # PAPERS
-- getArticlePageRank: | # PageRank
-    CALL algo.pageRank('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85, write:true, writeProperty:"pagerank"}})
-    YIELD nodeId, score
-    MATCH (a:Article) WHERE id(a) = nodeId
-    SET age=duration.inDays(a.date,date()).days,
-    timeWeightedScore= score*365/(duration.inDays(a.date,date()).days)
+- createArticlePageRank: | # PageRank
+    CALL algo.pageRank('Article', 'HAS_REFERENCE', {iterations:20, dampingFactor:0.85, write:true, writeProperty:"pagerank"})
+    YIELD nodes, iterations, loadMillis, computeMillis, writeMillis, dampingFactor, write, writeProperty
 
-- getArticle
+- setArticleAge: | # PageRank
+    MATCH (a:Article) 
+    SET a.age=duration.inDays(a.date,date()).days,
+    a.timeWeightedPagerank=a.pagerank*365/(duration.inDays(a.date,date()).days)
 
+#MESH_CODES
 - deleteMeshCooccur: | # MESH terms
     MATCH (:MeshCode)-[u:CO_OCCUR]->(:MeshCode) DELETE u
 
