@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
@@ -82,42 +84,22 @@ public class PubMedGraphAnalysis {
 	        	String qry = queries.get("getMeshCodeCooccurMutualInformation");
 	        	List<Record> res = tx.run( qry ).list();
 	        	//List<Triple<String,Double,String>> links = new ArrayList<>();
-	        	Map<String, Integer> nodes = new HashMap<>();
-	        	Map<String, DataEntry> links = new HashMap<>();
+	        	Set<String> nodes = new HashSet<>();
+	        	List<Triple<String,Double,String>> links = new ArrayList<>();
 	        	
 	        	res.forEach(r -> {
-	        		DataEntry tmp = new DataEntry();
-	        		tmp.sourceTerm = r.get("sourceTerm").asString();
-	        		tmp.sourceOccurrences = r.get("sourceOccurrences").asInt();
-	        		tmp.targetTerm = r.get("targetTerm").asString();
-	        		tmp.targetOccurrences = r.get("targetOccurrences").asInt();
-	        		tmp.cooccurrenceCount = r.get("cooccurrences").asInt();
-	        		tmp.totalOccurrence = r.get("totalOccurrences").asInt();
-	        		
-	        		/*if (!nodes.containsKey(tmp.sourceTerm) && nodes.size() < 25) {
-	        			nodes.put(tmp.sourceTerm, tmp.sourceOccurrences);
-	        		} else {
-	        			tmp.sourceTerm = "Other";
-	        		}
-	        		
-	        		if (!nodes.containsKey(tmp.targetTerm) && nodes.size() < 25) {
-	        			nodes.put(tmp.targetTerm, tmp.targetOccurrences);
-	        		} else {
-	        			tmp.targetTerm = "Other";
-	        		}
-	        		
-	        		DataEntry previous = links.get(tmp.key());
-	        		if (previous != null) 
-	        			tmp.cooccurrenceCount += previous.cooccurrenceCount;
-	        		links.put(tmp.key(), tmp);*/
+	        		String sourceTerm = r.get("sourceTerm").asString();
+	        		String targetTerm = r.get("targetTerm").asString();
+	        		Integer cooccurrenceCount = r.get("cooccurrences").asInt();
+	        		Double npmi = r.get("npmi").asDouble();
 	        		
 	        		if (nodes.size() < 50) {
-	        			nodes.put(tmp.sourceTerm, tmp.sourceOccurrences);
-	        			nodes.put(tmp.targetTerm, tmp.targetOccurrences);
+	        			nodes.add(sourceTerm);
+	        			nodes.add(targetTerm);
 	        		}
 	        		
-	        		if (nodes.containsKey(tmp.sourceTerm) && nodes.containsKey(tmp.targetTerm)) {
-	        			links.put(tmp.key(), tmp);
+	        		if (nodes.contains(sourceTerm) && nodes.contains(targetTerm)) {
+	        			links.add(Triple.create(sourceTerm, npmi, targetTerm));
 	        		}	
 		        	
 	        		
@@ -127,10 +109,10 @@ public class PubMedGraphAnalysis {
 	        	try {
 	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
 					.withNewChart("Articles by age", ChartType.CHORD)
-					.withSeries(new ArrayList<>(links.values()))
-						.bind(ID, t -> t.sourceTerm, "source")
-						.bind(STRENGTH, t -> t.cooccurrenceCount)
-						.bind(ID, t -> t.targetTerm, "target")
+					.withSeries(links)
+						.bind(ID, t -> t.getFirst(), "source")
+						.bind(STRENGTH, t -> t.getSecond())
+						.bind(ID, t -> t.getThird(), "target")
 						.withColourScheme(ColourScheme.Accent)
 					.done()
 					.render();
