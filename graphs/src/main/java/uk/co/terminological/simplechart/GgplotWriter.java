@@ -35,12 +35,12 @@ public abstract class GgplotWriter extends Writer {
 	
 	private <X> String extractData(Series<X> series) {
 		
-		StringBuilder dfConstruct = new StringBuilder("df <- data.frame(");
+		StringBuilder dfConstruct = new StringBuilder();
 		StringBuilder vector = new StringBuilder();
 		
 		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
-			String varName = binding.getFirst().toString()+
-					binding.getThird() == null ? "" : "_"+binding.getThird();
+			String varName = binding.getFirst().name()+
+					binding.getThird() == "" ? "" : "_"+binding.getThird();
 			
 			vector.append(varName+" <- c[");
 			
@@ -53,7 +53,10 @@ public abstract class GgplotWriter extends Writer {
 			
 			vector.append("];\n");
 			
-			if (dfConstruct.length()>0) dfConstruct.append(",");
+			if (dfConstruct.length()>0) 
+				dfConstruct.append(",");
+			else 
+				dfConstruct.append("df <- data.frame(");
 			dfConstruct.append(varName);
 			
 		}
@@ -105,7 +108,7 @@ public abstract class GgplotWriter extends Writer {
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"+ geom_bar(stat='identity', aes(x=X, y=Y))"
+					"geom_bar(stat='identity', aes(x=X, y=Y))"
 					);
 		}
 		
