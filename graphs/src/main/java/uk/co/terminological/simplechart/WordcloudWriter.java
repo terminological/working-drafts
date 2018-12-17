@@ -21,7 +21,7 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class WordcloudWriter extends Writer {
 
-	List<String> text = new ArrayList<>();
+	List<String> text;
 	ColorPalette pallette;
 	
 	public WordcloudWriter(Chart chart) {
@@ -57,6 +57,7 @@ public class WordcloudWriter extends Writer {
 		List<Color> colors = series.getScheme().values(8).stream().map(c -> c.toAwt()).collect(Collectors.toList());
 		pallette = new ColorPalette(colors);
 		Function<Y, Object> xGenerator = series.functionFor(Dimension.TEXT);
+		text = new ArrayList<>();
 		series.getData().stream().map(xGenerator).map(o -> o.toString()).forEach(s-> text.add(s));
 		return "";
 	}
