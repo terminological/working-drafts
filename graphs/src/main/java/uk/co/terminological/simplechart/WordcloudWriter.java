@@ -33,6 +33,8 @@ public class WordcloudWriter extends Writer {
 		
 		File f = getChart().getFile("png");
 		final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
+		frequencyAnalyzer.setWordFrequenciesToReturn(300);
+		frequencyAnalyzer.setMinWordLength(4);
 		final List<WordFrequency> wordFrequencies = frequencyAnalyzer.load(text);
 		final java.awt.Dimension dimension = new java.awt.Dimension(600, 600);
 		final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
