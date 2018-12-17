@@ -30,12 +30,12 @@
 	</head>
 	<body>
 	
-		<div id = "chart"></div>
-		<input id="dl"
+	<div id = "chart"></div>
+	<input id="dl"
       name="downloadButton"
       type="button"
       value="Download SVG" />
-		<script>
+	<script>
 ////////////////////////////////////////////////////////////
 //////////////////////// Set-Up ////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -46,7 +46,6 @@ var margin = {left:90, top:90, right:90, bottom:90},
     innerRadius = Math.min(width, height) * .3,
     outerRadius = innerRadius * 1.1;
 	
-// var colors = ["#301E1E", "#083E77", "#342350", "#567235", "#8B161C", "#DF7C00"];
 var opacityDefault = 0.8;
 
 ${data}
@@ -141,11 +140,9 @@ function fade(opacity) {
 
 
 d3.select('#dl').on('click', function() {
-      var config = {
-        filename: '${config.getOutputFile()}.svg',
-      }
-      d3_save_svg.save(d3.select('svg').node(), config);
-    });
+    d3_save_svg.save(d3.select('svg').node());
+});
+
 
 		</script>
 
