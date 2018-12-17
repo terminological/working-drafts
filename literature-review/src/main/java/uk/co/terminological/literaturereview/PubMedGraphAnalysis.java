@@ -3,6 +3,7 @@ package uk.co.terminological.literaturereview;
 import static uk.co.terminological.simplechart.Chart.Dimension.ID;
 import static uk.co.terminological.simplechart.Chart.Dimension.STRENGTH;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
+import static uk.co.terminological.simplechart.Chart.Dimension.X;
 
 import java.io.File;
 import java.io.InputStream;
