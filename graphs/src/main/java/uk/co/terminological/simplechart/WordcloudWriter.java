@@ -73,11 +73,8 @@ public class WordcloudWriter extends Writer {
 	}
 	
 	protected String extractStopwords(Series<String> series) {
-		List<Color> colors = series.getScheme().values(8).stream().map(c -> c.toAwt()).collect(Collectors.toList());
-		pallette = new ColorPalette(colors);
-		Function<String, Object> xGenerator = series.functionFor(Dimension.TEXT);
 		stopWords = new ArrayList<>();
-		series.getData().stream().map(xGenerator).map(o -> o.toString()).forEach(s-> stopWords.add(s));
+		series.getData().stream().forEach(s-> stopWords.add(s));
 		return "";
 	}
 }
