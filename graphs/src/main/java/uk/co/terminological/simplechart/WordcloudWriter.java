@@ -2,11 +2,8 @@ package uk.co.terminological.simplechart;
 
 import java.awt.Color;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -17,7 +14,7 @@ import com.kennycason.kumo.WordFrequency;
 import com.kennycason.kumo.bg.CircleBackground;
 import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
-import com.kennycason.kumo.palette.*;
+import com.kennycason.kumo.palette.ColorPalette;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.simplechart.Chart.Dimension;
