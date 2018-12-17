@@ -118,7 +118,7 @@ public class PubMedGraphAnalysis {
 					.withSeries(new ArrayList<>(links.values()))
 						.bind(ID, t -> t.sourceTerm, "source")
 						.bind(STRENGTH, t -> t.cooccurrenceCount)
-						.bind(ID, t -> t.targetTerm, "term")
+						.bind(ID, t -> t.targetTerm, "target")
 					.done()
 					.render();
 	        	} catch (Exception e) {throw new RuntimeException(e);}
