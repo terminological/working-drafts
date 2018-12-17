@@ -55,8 +55,8 @@ public class PubMedGraphAnalysis {
 	        	List<Record> res = tx.run( qry ).list();
 	        	
 	        	try {
-	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/ggplot"))
-					.withNewChart("Hello", ChartType.XYBAR)
+	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
+					.withNewChart("Articles by age", ChartType.XYBAR)
 					.withSeries(res)
 						.bind(X, t -> t.get("qtr"))
 						.bind(Y, t -> t.get("articles"))
