@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -11,12 +12,12 @@ import freemarker.template.TemplateException;
 public abstract class Writer {
 
 	private Chart chart;
-	private Template template;
+	private Optional<Template> template;
 	private Map<String,Object> root = new HashMap<String,Object>();
 
 	public Writer(Chart chart) {
 		this.chart = chart;
-		this.template = chart.template;
+		this.template = chart.getTemplate();
 		root.put("data", extractData());
 		root.put("config", chart.config());
 		for (Entry<String,String> custom: this.chart.customField.entrySet()) {

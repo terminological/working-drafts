@@ -101,7 +101,7 @@ public class Chart {
 
 
 
-	protected Template getTemplate() {
+	protected Optional<Template> getTemplate() {
 		return template;
 	}
 
