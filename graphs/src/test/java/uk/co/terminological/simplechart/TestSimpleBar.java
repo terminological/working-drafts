@@ -33,7 +33,6 @@ public class TestSimpleBar {
 			.withSeries(example)
 				.bind(X, t -> t.getFirst())
 				.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
-				.bind(Y_FIT, t -> t.getSecond())
 			.done()
 			.config()
 				.withXLabel("x-axis")
