@@ -26,7 +26,7 @@ public abstract class D3JSWriter extends Writer {
 	protected void process() throws IOException, TemplateException {
 		File f = getChart().getFile("html");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
-		getTemplate().process(getRoot(), out);
+		getTemplate().get().process(getRoot(), out);
 		out.close();
 		Chart.log.info("Writing html to: "+f.getAbsolutePath());
 		
