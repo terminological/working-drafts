@@ -51,7 +51,8 @@ public class PubMedGraphAnalysis {
 		try ( Session session = driver.session() ) {
 	        session.readTransaction( tx -> {
 	        	
-	        	List<Record> res = tx.run( queries.get("getArticlesByAge") ).list();
+	        	String qry = queries.get("getArticlesByAge");
+	        	List<Record> res = tx.run( qry ).list();
 	        	
 	        	try {
 	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/ggplot"))
