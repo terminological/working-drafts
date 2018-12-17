@@ -60,7 +60,7 @@ public class GnuplotWriter extends Writer {
 	protected void process() throws IOException, TemplateException {
 		File f = getChart().getFile("gplot");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
-		getTemplate().process(getRoot(), out);
+		getTemplate().get().process(getRoot(), out);
 		out.close();
 		Chart.log.info("Starting GNUPlot...");
 		
