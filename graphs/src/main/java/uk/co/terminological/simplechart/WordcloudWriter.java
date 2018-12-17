@@ -27,6 +27,10 @@ public class WordcloudWriter extends Writer {
 	List<String> text = new ArrayList<>();
 	ColorPalette pallette;
 	
+	public WordcloudWriter(Chart chart) {
+		super(chart);
+	}
+	
 	@Override
 	protected void process() throws IOException, TemplateException {
 		
