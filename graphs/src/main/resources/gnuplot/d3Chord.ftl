@@ -7,6 +7,8 @@
 		<!-- D3.js -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 		
+		<script src="http://edeno.github.io/d3-save-svg/assets/d3-save-svg.min.js" charset="utf-8"></script>
+		
 		<!-- Google Fonts -->
 		<link href='https://fonts.googleapis.com/css?family=Lato:400,900' rel='stylesheet' type='text/css'>
 		
@@ -29,6 +31,10 @@
 	<body>
 	
 		<div id = "chart"></div>
+		<input id="dl"
+      name="downloadButton"
+      type="button"
+      value="Download SVG" />
 		<script>
 ////////////////////////////////////////////////////////////
 //////////////////////// Set-Up ////////////////////////////
@@ -132,6 +138,14 @@ function fade(opacity) {
         .style("opacity", opacity);
   };
 }//fade
+
+
+d3.select('#dl').on('click', function() {
+      var config = {
+        filename: '${config.getOutputFile()}.svg',
+      }
+      d3_save_svg.save(d3.select('svg').node(), config);
+    });
 
 		</script>
 
