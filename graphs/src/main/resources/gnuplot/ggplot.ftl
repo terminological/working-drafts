@@ -7,7 +7,7 @@ ${data};
 
 plot <- ggplot(df)+
 <#list plots as plot>
-${plot}<#sep>+
+${plot}+
 </#list>
 labs(title="${config.getTitle()}", x="${config.getXLabel()}", y="${config.getYLabel()}");
 
