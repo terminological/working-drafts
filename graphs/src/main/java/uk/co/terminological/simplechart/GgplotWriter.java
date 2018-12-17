@@ -42,7 +42,7 @@ public abstract class GgplotWriter extends Writer {
 			String varName = binding.getFirst().name()+
 					(binding.getThird() == "" ? "" : "_"+binding.getThird());
 			
-			vector.append(varName+" <- c[");
+			vector.append(varName+" <- c(");
 			
 			vector.append(
 					series.getData().stream().map(binding.getSecond())
@@ -51,7 +51,7 @@ public abstract class GgplotWriter extends Writer {
 						);
 			
 			
-			vector.append("];\n");
+			vector.append(");\n");
 			
 			if (dfConstruct.length()>0) 
 				dfConstruct.append(",");
