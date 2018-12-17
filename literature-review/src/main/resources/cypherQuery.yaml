@@ -242,8 +242,15 @@ analyse:
 
   getKeywordCooccurMutualInformation: | # export for further visualisation
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
-    RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
-    ORDER BY r.cooccurrences DESC
+    n.term AS sourceTerm, 
+    m.term AS targetTerm, 
+    r.pmi AS pmi, 
+    r.npmi AS npmi, 
+    r.cooccurrences AS cooccurrences, 
+    m.occurrences AS sourceOccurrences, 
+    n.occurrences AS targetOccurrences, 
+    r.total AS totalOccurrences
+    ORDER BY cooccurrences DESC
 
   getKeywordMutualInformation: | # Mutual information
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) RETURN sum(r.pmi*r.probability) as mutualInformation
