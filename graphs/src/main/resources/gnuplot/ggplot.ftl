@@ -11,4 +11,4 @@ ${plot}<#sep>+
 </#list>
 labs(title="${config.getTitle()}", x="${config.getXLabel()}", y="${config.getYLabel()}");
 
-save_plot("${output}", plot)
+save_plot("${output}", plot);
