@@ -266,8 +266,16 @@ analyse:
 
   getMeshCodeCooccurMutualInformation: | # export for further visualisation
     MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
-    RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
-    ORDER BY r.cooccurrences DESC
+    RETURN 
+    n.term AS sourceTerm, 
+    m.term AS targetTerm, 
+    r.pmi AS pmi, 
+    r.npmi AS npmi, 
+    r.cooccurrences AS cooccurrences, 
+    m.occurrences AS sourceOccurrences, 
+    n.occurrences AS targetOccurrences, 
+    r.total AS totalOccurrences
+    ORDER BY cooccurrences DESC
 
   getMeshCodeMutualInformation: | # Mutual information
     MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) RETURN sum(r.pmi*r.probability) as mutualInformation
