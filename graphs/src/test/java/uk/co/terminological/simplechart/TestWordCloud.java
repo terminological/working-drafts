@@ -33,6 +33,7 @@ public class TestWordCloud {
 				.bind(TEXT, t -> t)
 				.withColourScheme(ColourScheme.Blues)
 			.done()
+			.withSeries(Arrays.asList("learning")).bind(TEXT, t -> t).done()
 			.render();
 		;
 	}
