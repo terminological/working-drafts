@@ -40,7 +40,7 @@ public abstract class GgplotWriter extends Writer {
 		
 		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
 			String varName = binding.getFirst().name()+
-					binding.getThird() == "" ? "" : "_"+binding.getThird();
+					(binding.getThird() == "" ? "" : "_"+binding.getThird());
 			
 			vector.append(varName+" <- c[");
 			
