@@ -3,7 +3,7 @@
 library(tidyverse);
 library(cowplot);
 
-${data};
+${data}
 
 plot <- ggplot(df)+
 <#list plots as plot>
