@@ -1,5 +1,6 @@
 package uk.co.terminological.simplechart;
 
+import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,6 +52,9 @@ public class ColourScheme {
 		}
 		private static String hex(int i) {
 			return (i<16 ? "0" : "")+Integer.toHexString(i);
+		}
+		public Color toAwt() {
+			return new Color(r,g,b);
 		}
 	}
 	
