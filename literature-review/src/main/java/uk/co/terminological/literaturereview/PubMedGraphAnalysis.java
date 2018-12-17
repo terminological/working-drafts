@@ -108,7 +108,7 @@ public class PubMedGraphAnalysis {
 	        	
 	        	try {
 	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-					.withNewChart("Articles by age", ChartType.CHORD)
+					.withNewChart("Mesh codes by npmi", ChartType.CHORD)
 					.withSeries(links)
 						.bind(ID, t -> t.getFirst(), "source")
 						.bind(STRENGTH, t -> t.getSecond())
