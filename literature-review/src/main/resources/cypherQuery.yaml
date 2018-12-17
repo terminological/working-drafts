@@ -140,53 +140,53 @@ build:
 analyse:
 
 # ARTICLES
-- getArticlesWithMatchingTitles: | # matching titles - sometimes this is not a duplicate
+  getArticlesWithMatchingTitles: | # matching titles - sometimes this is not a duplicate
     MATCH (n:Article), (m:Article) 
     WHERE n.title <> "" 
     AND n.title = m.title 
     AND n<>m 
     RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
-- getArticlesWithMatchingDois: | # matching dois case insensitive - this is always a duplicate
+  getArticlesWithMatchingDois: | # matching dois case insensitive - this is always a duplicate
     MATCH (n:Article), (m:Article) 
     WHERE toUpper(n.doi) = toUpper(m.doi) 
     AND n<>m 
     RETURN n.title,n.pmid,n.doi,m.title,m.pmid,m.doi
 
-- getArticlesWithNoRefs: |    # articles with no references
+  getArticlesWithNoRefs: |    # articles with no references
     MATCH (source:Article) 
     WHERE NOT (source)-[:HAS_REFERENCE]-()
     RETURN source
 
-- getArticlesByAge:
+  getArticlesByAge: |
     MATCH (a:Article)
     RETURN floor(duration.inMonths(a.date,date()).months/3) as qtr, count(a) as articles
     ORDER BY qtr ASC
 
 # TODO: Ordered authors + journal name
-- getArticlesByPagerank:
+  getArticlesByPagerank: |
     MATCH (a:Article)-[r:HAS_AUTHOR]->(b.author)
     RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, collect(b.lastName) as authors
     ORDER by a.pagerank DESC
     
-- getArticleByJournal:
+  getArticleByJournal:
     # TODO: need to get the journal name in the database!
     
 # AUTHORS
 
-- getAuthorCoauthorConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
+  getAuthorCoauthorConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
     CALL algo.unionFind.stream('Author', 'CO_AUTHOR', {})
     YIELD nodeId,setId
     RETURN setId,count(*) as size_of_component
     ORDER BY size_of_component DESC
 
-- getAuthorCitedConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
+  getAuthorCitedConnectedness: | # Graph connectedness - generally shows that the graph is disconnected
     CALL algo.unionFind.stream('Author', 'CITES', {})
     YIELD nodeId,setId
     RETURN setId,count(*) as size_of_component
     ORDER BY size_of_component DESC
 
-- getAuthorCommunityAffiliations: 
+  getAuthorCommunityAffiliations: |
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     WITH id(a) as nodeId, 
     collect(b.organisationName) AS affiliations, 
@@ -195,7 +195,7 @@ analyse:
     community, count(nodeId) as size, collect(affiliations) as affiliations
     ORDER BY size DESC
 
-- getAuthorCommunityMeshCodes: 
+  getAuthorCommunityMeshCodes: |
     MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
     WITH distinct id(t) as articleId,
     a.community as community
@@ -204,7 +204,7 @@ analyse:
     DISTINCT community, count(t) as size, collect(k.term) as terms
     ORDER BY community ASC
 
-- getAuthorCommunityKeywords: 
+  getAuthorCommunityKeywords: |
     MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
     WITH distinct id(t) as articleId,
     a.community as community
@@ -213,25 +213,25 @@ analyse:
     DISTINCT community, count(t) as size, collect(k.term) as terms
     ORDER BY community ASC
 
-- getAuthorCoauthorHarmonicCentrality: | # closeness
+  getAuthorCoauthorHarmonicCentrality: | # closeness
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic, a.community
     ORDER BY a.harmonic DESC;
 
-- getAuthorCitesHarmonicCentrality: | # 
+  getAuthorCitesHarmonicCentrality: | # 
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.citesHarmonic, a.community
     ORDER BY a.citesHarmonic DESC;
 
 # KEYWORDS
 
-- getKeywordCooccurConnectedness: | # Check connectedness
+  getKeywordCooccurConnectedness: | # Check connectedness
     CALL algo.unionFind.stream('Keyword', 'CO_OCCUR', {})
     YIELD nodeId,setId
     RETURN setId,count(*) as size_of_component
     ORDER BY size_of_component DESC
 
-- getKeywordCooccurCommunities: | # Community
+  getKeywordCooccurCommunities: | # Community
     CALL algo.louvain.stream('Keyword', 'CO_OCCUR', {direction:'both'}) 
     YIELD nodeId, community 
     MATCH (a:Keyword) WHERE id(a) = nodeId
@@ -239,23 +239,23 @@ analyse:
     RETURN collect(a.term) as terms, sum(a.occurrences) as count, community 
     ORDER BY community
 
-- getKeywordCooccurMutualInformation: | # export for further visualisation
+  getKeywordCooccurMutualInformation: | # export for further visualisation
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
     RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
     ORDER BY r.cooccurrences DESC
 
-- getKeywordMutualInformation: | # Mutual information
+  getKeywordMutualInformation: | # Mutual information
     MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) RETURN sum(r.pmi*r.probability) as mutualInformation
     
 # MESH CODES
 
-- getCooccurConnectedness: | # Check connectedness Connected graph
+  getCooccurConnectedness: | # Check connectedness Connected graph
     CALL algo.unionFind.stream('MeshCode', 'CO_OCCUR', {})
     YIELD nodeId,setId
     RETURN setId,count(*) as size_of_component
     ORDER BY size_of_component DESC
     
-- getMeshCodeCooccurCommunities: | # Community  - not so useful
+  getMeshCodeCooccurCommunities: | # Community  - not so useful
     CALL algo.louvain.stream('MeshCode', 'CO_OCCUR', {direction:'both'}) 
     YIELD nodeId, community 
     MATCH (a:MeshCode) WHERE id(a) = nodeId
@@ -263,11 +263,11 @@ analyse:
     RETURN collect(a.term) as terms, sum(a.occurrences) as count, community 
     ORDER BY community
 
-- getMeshCodeCooccurMutualInformation: | # export for further visualisation
+  getMeshCodeCooccurMutualInformation: | # export for further visualisation
     MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) 
     RETURN n.term, m.term, r.pmi, r.npmi, r.cooccurrences, m.occurrences, n.occurrences, r.total
     ORDER BY r.cooccurrences DESC
 
-- getMeshCodeMutualInformation: | # Mutual information
+  getMeshCodeMutualInformation: | # Mutual information
     MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) RETURN sum(r.pmi*r.probability) as mutualInformation
 
