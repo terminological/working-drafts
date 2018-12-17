@@ -24,6 +24,7 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 public class WordcloudWriter extends Writer {
 
 	List<String> text;
+	List<String> stopWords;
 	ColorPalette pallette;
 	
 	public WordcloudWriter(Chart chart) {
@@ -37,6 +38,7 @@ public class WordcloudWriter extends Writer {
 		final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
 		frequencyAnalyzer.setWordFrequenciesToReturn(300);
 		frequencyAnalyzer.setMinWordLength(4);
+		frequencyAnalyzer.setStopWords(stopWords);
 		final List<WordFrequency> wordFrequencies = frequencyAnalyzer.load(text);
 		final java.awt.Dimension dimension = new java.awt.Dimension(600, 600);
 		final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.RECTANGLE);
@@ -53,9 +55,12 @@ public class WordcloudWriter extends Writer {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected String extractData() {
-		return extractData(this.getChart().getSeries().get(0));
+		extractData(this.getChart().getSeries().get(0));
+		if (this.getChart().getSeries().size() > 1) extractStopwords((Series<String>) this.getChart().getSeries().get(1));
+		return "";
 	}
 
 	protected <Y> String extractData(Series<Y> series) {
@@ -67,4 +72,12 @@ public class WordcloudWriter extends Writer {
 		return "";
 	}
 	
+	protected String extractStopwords(Series<String> series) {
+		List<Color> colors = series.getScheme().values(8).stream().map(c -> c.toAwt()).collect(Collectors.toList());
+		pallette = new ColorPalette(colors);
+		Function<String, Object> xGenerator = series.functionFor(Dimension.TEXT);
+		stopWords = new ArrayList<>();
+		series.getData().stream().map(xGenerator).map(o -> o.toString()).forEach(s-> stopWords.add(s));
+		return "";
+	}
 }
