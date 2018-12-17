@@ -241,7 +241,7 @@ analyse:
     CALL algo.louvain.stream('MeshCode', 'CO_OCCUR', {direction:'both'}) 
     YIELD nodeId, community 
     MATCH (a:MeshCode) WHERE id(a) = nodeId
-    AND a.occurrences > 2
+    AND a.occurrences > 10
     RETURN collect(a.term) as terms, sum(a.occurrences) as count, community 
     ORDER BY community
 
