@@ -1,6 +1,7 @@
 package uk.co.terminological.simplechart;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import com.kennycason.kumo.CollisionMode;
 import com.kennycason.kumo.WordCloud;
 import com.kennycason.kumo.WordFrequency;
 import com.kennycason.kumo.bg.CircleBackground;
+import com.kennycason.kumo.font.KumoFont;
 import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.nlp.FrequencyAnalyzer;
 import com.kennycason.kumo.palette.ColorPalette;
@@ -39,6 +41,7 @@ public class WordcloudWriter extends Writer {
 		final java.awt.Dimension dimension = new java.awt.Dimension(600, 600);
 		final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.RECTANGLE);
 		wordCloud.setPadding(2);
+		wordCloud.setKumoFont(new KumoFont(new Font("Lucida Sans", Font.PLAIN, 10)));
 		wordCloud.setBackground(new CircleBackground(300));
 		
 		wordCloud.setColorPalette(pallette);
