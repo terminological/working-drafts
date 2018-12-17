@@ -37,12 +37,12 @@ public class WordcloudWriter extends Writer {
 		frequencyAnalyzer.setMinWordLength(4);
 		final List<WordFrequency> wordFrequencies = frequencyAnalyzer.load(text);
 		final java.awt.Dimension dimension = new java.awt.Dimension(600, 600);
-		final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
+		final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.RECTANGLE);
 		wordCloud.setPadding(2);
 		wordCloud.setBackground(new CircleBackground(300));
 		
 		wordCloud.setColorPalette(pallette);
-		wordCloud.setFontScalar(new SqrtFontScalar(10, 40));
+		wordCloud.setFontScalar(new SqrtFontScalar(10, 50));
 		wordCloud.build(wordFrequencies);
 		wordCloud.writeToFile(f.getAbsolutePath());
 		
