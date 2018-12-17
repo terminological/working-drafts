@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
 
 public class PubMedGraphAnalysis {
@@ -130,6 +131,7 @@ public class PubMedGraphAnalysis {
 						.bind(ID, t -> t.sourceTerm, "source")
 						.bind(STRENGTH, t -> t.cooccurrenceCount)
 						.bind(ID, t -> t.targetTerm, "target")
+						.withColourScheme(ColourScheme.Accent)
 					.done()
 					.render();
 	        	} catch (Exception e) {throw new RuntimeException(e);}

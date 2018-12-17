@@ -35,8 +35,8 @@
 ////////////////////////////////////////////////////////////
 
 var margin = {left:90, top:90, right:90, bottom:90},
-	width = Math.min(window.innerWidth, 700) - margin.left - margin.right,
-    height = Math.min(window.innerWidth, 700) - margin.top - margin.bottom,
+	width = Math.min(window.innerWidth, 1000) - margin.left - margin.right,
+    height = Math.min(window.innerWidth, 1000) - margin.top - margin.bottom,
     innerRadius = Math.min(width, height) * .39,
     outerRadius = innerRadius * 1.1;
 	
