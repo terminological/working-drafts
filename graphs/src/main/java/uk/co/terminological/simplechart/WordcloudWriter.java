@@ -41,7 +41,7 @@ public class WordcloudWriter extends Writer {
 		final java.awt.Dimension dimension = new java.awt.Dimension(600, 600);
 		final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.RECTANGLE);
 		wordCloud.setPadding(2);
-		wordCloud.setKumoFont(new KumoFont(new Font("Lucida Sans", Font.PLAIN, 10)));
+		wordCloud.setKumoFont(new KumoFont(new Font("Lucida Sans", Font.PLAIN, 14)));
 		wordCloud.setBackground(new CircleBackground(300));
 		
 		wordCloud.setColorPalette(pallette);
