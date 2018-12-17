@@ -16,7 +16,6 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
-import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
