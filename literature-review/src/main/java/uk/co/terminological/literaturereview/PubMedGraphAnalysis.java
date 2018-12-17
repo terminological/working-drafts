@@ -125,7 +125,61 @@ public class PubMedGraphAnalysis {
 					.bind(ID, t -> t.getFirst(), "source")
 					.bind(STRENGTH, t -> t.getSecond())
 					.bind(ID, t -> t.getThird(), "target")
-					.withColourScheme(ColourScheme.Accent)
+					.withColourScheme(ColourScheme.Set1)
+				.done()
+				.render();
+	        	} catch (Exception e) {throw new RuntimeException(e);}
+	        	
+	            return true;
+	        });
+	        
+	        session.readTransaction( tx -> {
+	        	
+	        	String qry = queries.get("getKeywordCooccurMutualInformation");
+	        	List<Record> res = tx.run( qry ).list();
+	        	//List<Triple<String,Double,String>> links = new ArrayList<>();
+	        	Set<String> nodes = new HashSet<>();
+	        	List<Triple<String,Double,String>> links = new ArrayList<>();
+	        	List<Triple<String,Integer,String>> links2 = new ArrayList<>();
+	        	
+	        	res.forEach(r -> {
+	        		String sourceTerm = r.get("sourceTerm").asString();
+	        		String targetTerm = r.get("targetTerm").asString();
+	        		Integer cooccurrenceCount = r.get("cooccurrences").asInt();
+	        		Double npmi = r.get("npmi").asDouble();
+	        		
+	        		if (nodes.size() < 50) {
+	        			nodes.add(sourceTerm);
+	        			nodes.add(targetTerm);
+	        		}
+	        		
+	        		if (nodes.contains(sourceTerm) && nodes.contains(targetTerm)) {
+	        			links.add(Triple.create(sourceTerm, npmi, targetTerm));
+	        			links2.add(Triple.create(sourceTerm, cooccurrenceCount, targetTerm));
+	        		}	
+		        	
+	        		
+	        			        		
+	        	});
+	        	
+	        	try {
+	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
+					.withNewChart("Keywords by npmi", ChartType.CHORD)
+					.withSeries(links)
+						.bind(ID, t -> t.getFirst(), "source")
+						.bind(STRENGTH, t -> t.getSecond())
+						.bind(ID, t -> t.getThird(), "target")
+						.withColourScheme(ColourScheme.Accent)
+					.done()
+					.render();
+	        	
+	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
+				.withNewChart("Keywords by cooccurrence", ChartType.CHORD)
+				.withSeries(links2)
+					.bind(ID, t -> t.getFirst(), "source")
+					.bind(STRENGTH, t -> t.getSecond())
+					.bind(ID, t -> t.getThird(), "target")
+					.withColourScheme(ColourScheme.Set1)
 				.done()
 				.render();
 	        	} catch (Exception e) {throw new RuntimeException(e);}
