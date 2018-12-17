@@ -115,7 +115,7 @@ public class PubMedGraphAnalysis {
 	        			nodes.put(tmp.targetTerm, tmp.targetOccurrences);
 	        		}
 	        		
-	        		if (nodes.containsKey(tmp.targetTerm) && nodes.containsKey(tmp.targetTerm)) {
+	        		if (nodes.containsKey(tmp.sourceTerm) && nodes.containsKey(tmp.targetTerm)) {
 	        			links.put(tmp.key(), tmp);
 	        		}	
 		        	
