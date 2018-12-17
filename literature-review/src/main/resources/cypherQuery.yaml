@@ -241,7 +241,8 @@ analyse:
     ORDER BY community
 
   getKeywordCooccurMutualInformation: | # export for further visualisation
-    MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword) 
+    MATCH (m:Keyword)-[r:CO_OCCUR]->(n:Keyword)
+    RETURN 
     n.term AS sourceTerm, 
     m.term AS targetTerm, 
     r.pmi AS pmi, 
