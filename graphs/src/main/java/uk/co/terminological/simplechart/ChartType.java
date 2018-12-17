@@ -7,7 +7,8 @@ public enum ChartType {
 	XYZ_CONTOUR("xyzcontour.ftl",GnuplotWriter.class), 
 	NETWORK("d3Network.ftl",D3JSWriter.Nodes.class), 
 	CHORD("d3Chord.ftl",D3JSWriter.Matrix.class),
-	WORDCLOUD(null,WordcloudWriter.class),
+	WORDCLOUD(null,WordcloudWriter.class), 
+	XYBAR("ggplot.ftl",GgplotWriter.BarChart.class),
 	;
 
 	String templateFilename;

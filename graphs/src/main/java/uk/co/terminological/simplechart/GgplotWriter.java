@@ -96,9 +96,9 @@ public abstract class GgplotWriter extends Writer {
 		Chart.log.info("Ending R...");
 	}
 	
-	public static class GGBarChart extends GgplotWriter {
+	public static class BarChart extends GgplotWriter {
 
-		public GGBarChart(Chart chart) {
+		public BarChart(Chart chart) {
 			super(chart);
 		}
 

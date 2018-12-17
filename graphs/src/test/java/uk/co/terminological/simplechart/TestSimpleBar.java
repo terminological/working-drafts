@@ -27,9 +27,9 @@ public class TestSimpleBar {
 				Tuple.create(5D, 3D)
 				);
 		
-		Chart tmp = Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/gnuplot"))
+		Chart tmp = Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/ggplot"))
 			
-			.withNewChart("Hello", ChartType.XY_LINE)
+			.withNewChart("Hello", ChartType.XYBAR)
 			.withSeries(example)
 				.bind(X, t -> t.getFirst())
 				.bind(Y, t -> t.getSecond()+Math.random()-0.5D)
