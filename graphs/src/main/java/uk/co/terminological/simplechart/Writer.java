@@ -36,6 +36,10 @@ public abstract class Writer {
 		return root;
 	}
 	
+	public String getData() {
+		return root.get("data").toString();
+	}
+	
 	protected abstract void process() throws IOException, TemplateException;
 
 	protected abstract String extractData();

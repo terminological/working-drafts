@@ -195,6 +195,24 @@ analyse:
     community, count(nodeId) as size, collect(affiliations) as affiliations
     ORDER BY size DESC
 
+- getAuthorCommunityMeshCodes: 
+    MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
+    WITH distinct id(t) as articleId,
+    a.community as community
+    MATCH (t:Article) -[:HAS_MESH]-> (k:MeshCode) WHERE id(t)=articleId 
+    RETURN 
+    DISTINCT community, count(t) as size, collect(k.term) as terms
+    ORDER BY community ASC
+
+- getAuthorCommunityKeywords: 
+    MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
+    WITH distinct id(t) as articleId,
+    a.community as community
+    MATCH (t:Article) -[:HAS_KEYWORD]-> (k:Keyword) WHERE id(t)=articleId 
+    RETURN 
+    DISTINCT community, count(t) as size, collect(k.term) as terms
+    ORDER BY community ASC
+
 - getAuthorCoauthorHarmonicCentrality: | # closeness
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic, a.community
