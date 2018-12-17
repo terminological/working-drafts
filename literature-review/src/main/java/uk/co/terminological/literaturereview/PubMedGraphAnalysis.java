@@ -57,11 +57,11 @@ public class PubMedGraphAnalysis {
 	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
 					.withNewChart("Articles by age", ChartType.XYSCATTER)
 					.withSeries(res)
-						.bind(X, t -> t.get("qtr").asDouble())
+						.bind(X, t -> t.get("qtr").asDouble()/4)
 						.bind(Y, t -> t.get("articles").asInt())
 					.done()
 					.config()
-						.withXLabel("time ago")
+						.withXLabel("years elapsed")
 						.withYLabel("articles")
 					.done().render();
 	        	} catch (Exception e) {throw new RuntimeException(e);}
