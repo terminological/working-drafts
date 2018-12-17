@@ -10,9 +10,6 @@ import java.util.List;
 import org.apache.log4j.BasicConfigurator;
 
 import freemarker.template.TemplateException;
-import uk.co.terminological.datatypes.FluentList;
-import uk.co.terminological.datatypes.Triple;
-import uk.co.terminological.datatypes.Tuple;
 
 public class TestWordCloud {
 
