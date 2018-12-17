@@ -37,7 +37,7 @@
 var margin = {left:90, top:90, right:90, bottom:90},
 	width = Math.min(window.innerWidth, 1000) - margin.left - margin.right,
     height = Math.min(window.innerWidth, 1000) - margin.top - margin.bottom,
-    innerRadius = Math.min(width, height) * .39,
+    innerRadius = Math.min(width, height) * .3,
     outerRadius = innerRadius * 1.1;
 	
 // var colors = ["#301E1E", "#083E77", "#342350", "#567235", "#8B161C", "#DF7C00"];
