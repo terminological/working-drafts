@@ -93,13 +93,13 @@ public class PubMedGraphAnalysis {
 	        		tmp.cooccurrenceCount = r.get("cooccurrences").asInt();
 	        		tmp.totalOccurrence = r.get("totalOccurrences").asInt();
 	        		
-	        		if (!nodes.containsKey(tmp.sourceTerm) && nodes.size() < 50) {
+	        		if (!nodes.containsKey(tmp.sourceTerm) && nodes.size() < 25) {
 	        			nodes.put(tmp.sourceTerm, tmp.sourceOccurrences);
 	        		} else {
 	        			tmp.sourceTerm = "Other";
 	        		}
 	        		
-	        		if (!nodes.containsKey(tmp.targetTerm) && nodes.size() < 50) {
+	        		if (!nodes.containsKey(tmp.targetTerm) && nodes.size() < 25) {
 	        			nodes.put(tmp.targetTerm, tmp.targetOccurrences);
 	        		} else {
 	        			tmp.targetTerm = "Other";
