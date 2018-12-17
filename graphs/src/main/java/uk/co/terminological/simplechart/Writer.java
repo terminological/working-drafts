@@ -44,8 +44,4 @@ public abstract class Writer {
 
 	protected abstract String extractData();
 
-	public Writer() {
-		super();
-	}
-
 }
