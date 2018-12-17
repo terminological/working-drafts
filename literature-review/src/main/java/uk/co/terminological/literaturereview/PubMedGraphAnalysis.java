@@ -72,6 +72,8 @@ public class PubMedGraphAnalysis {
 	        log.error(ex.getMessage());
 	    }
 		
+		driver.close();
+		
 	}
 	
 }
