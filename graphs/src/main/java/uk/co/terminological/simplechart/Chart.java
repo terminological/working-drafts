@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -21,7 +22,7 @@ import uk.co.terminological.datatypes.Tuple;
 public class Chart {
 
 	List<Series<?>> series = new ArrayList<>();
-	Template template;
+	Optional<Template> template;
 	Figure figure;
 	Config config;
 	Map<String,String> customField = new HashMap<>();
@@ -30,7 +31,7 @@ public class Chart {
 	
 	public static Logger log = LoggerFactory.getLogger(Chart.class);
 	
-	protected Chart(String title, Template template, Class<? extends Writer> class1, File workingDirectory, Figure figure) {
+	protected Chart(String title, Optional<Template> template, Class<? extends Writer> class1, File workingDirectory, Figure figure) {
 		this.template = template;
 		this.figure = figure;
 		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");

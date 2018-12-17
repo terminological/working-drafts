@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
 
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -80,9 +81,10 @@ public class Figure {
 		return new Figure("No title",directory);
 	}
 
-	protected Template getTemplate(ChartType chartType) {
+	protected Optional<Template> getTemplate(ChartType chartType) {
 		try {
-			return cfg.getTemplate(chartType.getTemplateFilename());
+			if (chartType.getTemplateFilename()==null) return Optional.empty();
+			return Optional.of(cfg.getTemplate(chartType.getTemplateFilename()));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
