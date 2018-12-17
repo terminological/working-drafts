@@ -29,7 +29,7 @@ public abstract class Writer {
 		return chart;
 	}
 
-	public Template getTemplate() {
+	public Optional<Template> getTemplate() {
 		return template;
 	}
 
