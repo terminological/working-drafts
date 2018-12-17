@@ -55,7 +55,7 @@ public class PubMedGraphAnalysis {
 	        	
 	        	try {
 	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-					.withNewChart("Articles by age", ChartType.XYBAR)
+					.withNewChart("Articles by age", ChartType.XYSCATTER)
 					.withSeries(res)
 						.bind(X, t -> t.get("qtr").asDouble())
 						.bind(Y, t -> t.get("articles").asInt())

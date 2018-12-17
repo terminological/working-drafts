@@ -15,6 +15,8 @@ import uk.co.terminological.datatypes.Triple;
 
 public abstract class GgplotWriter extends Writer {
 
+	
+
 	public abstract List<String> getPlots();
 	
 	public GgplotWriter(Chart chart) {
@@ -112,6 +114,22 @@ public abstract class GgplotWriter extends Writer {
 					);
 		}
 		
+	}
+	
+	public static class Scatter extends GgplotWriter {
+
+		public Scatter(Chart chart) {
+			super(chart);
+			
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_point(stat='identity', aes(x=X, y=Y))",
+					"geom_smooth(aes(x=X, y=Y))"
+					);
+		}
 	}
 	
 }

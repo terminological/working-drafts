@@ -8,7 +8,8 @@ public enum ChartType {
 	NETWORK("d3Network.ftl",D3JSWriter.Nodes.class), 
 	CHORD("d3Chord.ftl",D3JSWriter.Matrix.class),
 	WORDCLOUD(null,WordcloudWriter.class), 
-	XYBAR("ggplot.ftl",GgplotWriter.BarChart.class),
+	XYBAR("ggplot.ftl",GgplotWriter.BarChart.class), 
+	XYSCATTER("ggplot.ftl",GgplotWriter.Scatter.class),
 	;
 
 	String templateFilename;
