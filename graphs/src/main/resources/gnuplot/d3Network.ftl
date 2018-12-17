@@ -26,8 +26,14 @@ text {
       <g class="nodes"></g>
     </svg>
   </div>
+  <input id="dl"
+      name="downloadButton"
+      type="button"
+      value="Download SVG" />
+  <script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+  <script src="http://edeno.github.io/d3-save-svg/assets/d3-save-svg.min.js" charset="utf-8"></script>
 
   <script>
 var width = 400, height = 300
@@ -96,6 +102,11 @@ function ticked() {
   updateLinks()
   updateNodes()
 }
+
+//Add a save SVG button
+d3.select('#dl').on('click', function() {
+    d3_save_svg.save(d3.select('svg').node());
+});
 
   </script>
 </body>

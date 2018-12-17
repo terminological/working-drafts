@@ -138,7 +138,7 @@ function fade(opacity) {
   };
 }//fade
 
-
+//Add a save SVG button
 d3.select('#dl').on('click', function() {
     d3_save_svg.save(d3.select('svg').node());
 });
