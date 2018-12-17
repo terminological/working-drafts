@@ -5,18 +5,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 
-public class GgplotWriter extends Writer {
+public abstract class GgplotWriter extends Writer {
 
-	public static  void write(Chart chart) throws IOException, TemplateException {
-		GnuplotWriter out = new GnuplotWriter(chart);
-		out.process();
-	}
+	public abstract List<String> getPlots();
 	
 	public GgplotWriter(Chart chart) {
 		super(chart);
@@ -66,19 +65,25 @@ public class GgplotWriter extends Writer {
 
 	//TODO: localDate support?
 	private static String format(Object o) {
+		if (o == null) return "NA";
 		if (o instanceof Number) return o.toString();
 		return "'"+o.toString()+"'";
 	}
 	
 	@Override
 	protected void process() throws IOException, TemplateException {
+		
+		getRoot().put("plots", getPlots());
+		//TODO: how to control this?
+		getRoot().put("output", getChart().getFile("png").getAbsolutePath());
+		
 		File f = getChart().getFile("R");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		getTemplate().get().process(getRoot(), out);
 		out.close();
 		Chart.log.info("Starting R...");
 		
-		Process process2 = new ProcessBuilder("/usr/bin/R","-c",f.getAbsolutePath())
+		Process process2 = new ProcessBuilder("/usr/bin/R","-f",f.getAbsolutePath())
 		.redirectOutput(Redirect.INHERIT)
 		.start();
 		
@@ -91,6 +96,19 @@ public class GgplotWriter extends Writer {
 		Chart.log.info("Ending R...");
 	}
 	
-	
+	public static class GGBarChart extends GgplotWriter {
+
+		public GGBarChart(Chart chart) {
+			super(chart);
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"+ geom_bar(stat='identity', aes(x=X, y=Y))"
+					);
+		}
+		
+	}
 	
 }

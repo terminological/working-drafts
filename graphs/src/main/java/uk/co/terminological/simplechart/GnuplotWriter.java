@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,10 +16,6 @@ import uk.co.terminological.datatypes.Triple;
 
 public class GnuplotWriter extends Writer {
 
-	public static  void write(Chart chart) throws IOException, TemplateException {
-		GnuplotWriter out = new GnuplotWriter(chart);
-		out.process();
-	}
 	
 	public GnuplotWriter(Chart chart) {
 		super(chart);
@@ -58,6 +56,7 @@ public class GnuplotWriter extends Writer {
 
 	@Override
 	protected void process() throws IOException, TemplateException {
+		
 		File f = getChart().getFile("gplot");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		getTemplate().get().process(getRoot(), out);
