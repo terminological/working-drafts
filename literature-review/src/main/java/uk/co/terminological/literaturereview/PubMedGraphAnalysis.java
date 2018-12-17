@@ -46,7 +46,7 @@ public class PubMedGraphAnalysis {
 		Map<String, Object> obj = yaml.load(inputStream);
 		
 		@SuppressWarnings("unchecked")
-		Map<String,String> queries = (Map<String,String> ) obj.get("analyze");
+		Map<String,String> queries = (Map<String,String> ) obj.get("analyse");
 		
 		try ( Session session = driver.session() ) {
 	        session.readTransaction( tx -> {
