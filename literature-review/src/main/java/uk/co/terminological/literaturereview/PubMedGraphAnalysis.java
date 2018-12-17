@@ -86,6 +86,7 @@ public class PubMedGraphAnalysis {
 	        	//List<Triple<String,Double,String>> links = new ArrayList<>();
 	        	Set<String> nodes = new HashSet<>();
 	        	List<Triple<String,Double,String>> links = new ArrayList<>();
+	        	List<Triple<String,Integer,String>> links2 = new ArrayList<>();
 	        	
 	        	res.forEach(r -> {
 	        		String sourceTerm = r.get("sourceTerm").asString();
@@ -100,6 +101,7 @@ public class PubMedGraphAnalysis {
 	        		
 	        		if (nodes.contains(sourceTerm) && nodes.contains(targetTerm)) {
 	        			links.add(Triple.create(sourceTerm, npmi, targetTerm));
+	        			links2.add(Triple.create(sourceTerm, cooccurrenceCount, targetTerm));
 	        		}	
 		        	
 	        		
@@ -116,6 +118,16 @@ public class PubMedGraphAnalysis {
 						.withColourScheme(ColourScheme.Accent)
 					.done()
 					.render();
+	        	
+	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
+				.withNewChart("Mesh codes by cooccurrence", ChartType.CHORD)
+				.withSeries(links2)
+					.bind(ID, t -> t.getFirst(), "source")
+					.bind(STRENGTH, t -> t.getSecond())
+					.bind(ID, t -> t.getThird(), "target")
+					.withColourScheme(ColourScheme.Accent)
+				.done()
+				.render();
 	        	} catch (Exception e) {throw new RuntimeException(e);}
 	        	
 	            return true;
