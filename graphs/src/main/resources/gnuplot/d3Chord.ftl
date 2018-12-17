@@ -54,7 +54,7 @@ var colors = d3.scale.ordinal()
 	.range(colors);
 
 var chord = d3.layout.chord()
-    .padding(.15)
+    .padding(.01)
     .sortChords(d3.descending)
 	.matrix(matrix);
 		
