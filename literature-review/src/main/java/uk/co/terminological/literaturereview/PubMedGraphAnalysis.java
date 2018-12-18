@@ -53,6 +53,8 @@ public class PubMedGraphAnalysis {
 		InputStream inputStream = PubMedGraphAnalysis.class.getClassLoader().getResourceAsStream("cypherQuery.yaml");
 		Map<String, Object> obj = yaml.load(inputStream);
 		
+		Figure fig = Figure.outputTo(new File(System.getProperty("user.home")+"/Dropbox/litReview/output"));
+		
 		@SuppressWarnings("unchecked")
 		Map<String,String> queries = (Map<String,String> ) obj.get("analyse");
 		
@@ -65,8 +67,7 @@ public class PubMedGraphAnalysis {
 	        	List<Record> res = tx.run( qry ).list();
 	        	
 	        	try {
-	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-					.withNewChart("Articles by age", ChartType.XYSCATTER)
+	        	fig.withNewChart("Articles by age", ChartType.XYSCATTER)
 					.withSeries(res)
 						.bind(X, t -> t.get("qtr").asDouble()/4)
 						.bind(Y, t -> t.get("articles").asInt())
@@ -110,8 +111,7 @@ public class PubMedGraphAnalysis {
 	        	});
 	        	
 	        	try {
-	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-					.withNewChart("Mesh codes by npmi", ChartType.CHORD)
+	        	fig.withNewChart("Mesh codes by npmi", ChartType.CHORD)
 					.withSeries(links)
 						.bind(ID, t -> t.getFirst(), "source")
 						.bind(STRENGTH, t -> t.getSecond())
@@ -120,8 +120,7 @@ public class PubMedGraphAnalysis {
 					.done()
 					.render();
 	        	
-	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-				.withNewChart("Mesh codes by cooccurrence", ChartType.CHORD)
+	        	fig.withNewChart("Mesh codes by cooccurrence", ChartType.CHORD)
 				.withSeries(links2)
 					.bind(ID, t -> t.getFirst(), "source")
 					.bind(STRENGTH, t -> t.getSecond())
@@ -164,8 +163,7 @@ public class PubMedGraphAnalysis {
 	        	});
 	        	
 	        	try {
-	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-					.withNewChart("Keywords by npmi", ChartType.CHORD)
+	        	fig.withNewChart("Keywords by npmi", ChartType.CHORD)
 					.withSeries(links)
 						.bind(ID, t -> t.getFirst(), "source")
 						.bind(STRENGTH, t -> t.getSecond())
@@ -174,8 +172,7 @@ public class PubMedGraphAnalysis {
 					.done()
 					.render();
 	        	
-	        	Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-				.withNewChart("Keywords by cooccurrence", ChartType.CHORD)
+	        	fig.withNewChart("Keywords by cooccurrence", ChartType.CHORD)
 				.withSeries(links2)
 					.bind(ID, t -> t.getFirst(), "source")
 					.bind(STRENGTH, t -> t.getSecond())
@@ -188,6 +185,7 @@ public class PubMedGraphAnalysis {
 	            return true;
 	        });
 	        
+	        List<Integer> communityIndex = new ArrayList<>();
 	        
 	        session.readTransaction( tx -> {
 	        	
@@ -197,8 +195,7 @@ public class PubMedGraphAnalysis {
 	        	
 	        	BiConsumer<List<String>,Integer> plot = (list,community) -> {try {
 	        	//TODO:WORDCOUNTS
-	        		Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-					.withNewChart("Community affiliations "+community, ChartType.WORDCLOUD)
+	        		fig.withNewChart("Community affiliations "+community, ChartType.WORDCLOUD)
 					.withSeries(list)
 						.bind(TEXT, t -> t)
 						.withColourScheme(ColourScheme.sequential(community))
