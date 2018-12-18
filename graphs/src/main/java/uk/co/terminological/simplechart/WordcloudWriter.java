@@ -42,7 +42,7 @@ public class WordcloudWriter extends Writer {
 		final List<WordFrequency> wordFrequencies = frequencyAnalyzer.load(text);
 		final java.awt.Dimension dimension = new java.awt.Dimension(600, 600);
 		final WordCloud wordCloud = new WordCloud(dimension, CollisionMode.PIXEL_PERFECT);
-		wordCloud.setPadding(0);
+		wordCloud.setPadding(2);
 		wordCloud.setKumoFont(new KumoFont(new Font("Lucida Sans", Font.PLAIN, 14)));
 		wordCloud.setBackground(new CircleBackground(300));
 		
