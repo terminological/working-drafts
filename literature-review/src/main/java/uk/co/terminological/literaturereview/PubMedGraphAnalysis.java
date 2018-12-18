@@ -1,19 +1,19 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.simplechart.Chart.Dimension.ID;
-import static uk.co.terminological.simplechart.Chart.Dimension.STRENGTH;
-import static uk.co.terminological.simplechart.Chart.Dimension.Y;
-import static uk.co.terminological.simplechart.Chart.Dimension.X;
+import static uk.co.terminological.simplechart.Chart.Dimension.*;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.neo4j.driver.v1.AuthTokens;
@@ -22,6 +22,7 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.exceptions.ServiceUnavailableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,7 +170,7 @@ public class PubMedGraphAnalysis {
 						.bind(ID, t -> t.getFirst(), "source")
 						.bind(STRENGTH, t -> t.getSecond())
 						.bind(ID, t -> t.getThird(), "target")
-						.withColourScheme(ColourScheme.Accent)
+						.withColourScheme(ColourScheme.Set2)
 					.done()
 					.render();
 	        	
@@ -179,11 +180,47 @@ public class PubMedGraphAnalysis {
 					.bind(ID, t -> t.getFirst(), "source")
 					.bind(STRENGTH, t -> t.getSecond())
 					.bind(ID, t -> t.getThird(), "target")
-					.withColourScheme(ColourScheme.Set1)
+					.withColourScheme(ColourScheme.Set3)
 				.done()
 				.render();
 	        	} catch (Exception e) {throw new RuntimeException(e);}
 	        	
+	            return true;
+	        });
+	        
+	        
+	        session.readTransaction( tx -> {
+	        	
+	        	String qry = queries.get("getAuthorCommunityAffiliations");
+	        	List<Record> res = tx.run( qry ).list();
+	        	
+	        	
+	        	BiConsumer<List<String>,String> plot = (list,title) -> {try {
+	        	//TODO:WORDCOUNTS
+	        		Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
+					.withNewChart(title, ChartType.WORDCLOUD)
+					.withSeries(list)
+						.bind(TEXT, t -> t)
+					.done()	
+					.withSeries(Arrays.asList(
+							"university","of","the","college"
+							)).bind(TEXT, t -> t).done()
+					.render();
+	        	} catch (Exception e) {throw new RuntimeException(e);}
+	        	};
+	        	
+	        	List<String> texts = new ArrayList<>();
+	        	Integer community = null;
+	        	for( Record r : res) {
+	        		Integer next = r.get("community").asInt();
+	        		if (community == null) community = next;
+	        		if (community != next) {
+	        			plot.accept(texts, "Community affiliations "+community);
+	        			texts = new ArrayList<>();
+	        		}
+	        		texts.addAll(r.get("affiliations").asList(Values.ofString()));
+	        		community = next;
+	        	}
 	            return true;
 	        });
 	        
@@ -195,14 +232,5 @@ public class PubMedGraphAnalysis {
 		
 	}
 	
-	private static class DataEntry {
-		String sourceTerm;
-		String targetTerm;
-		Integer sourceOccurrences;
-		Integer targetOccurrences;
-		Integer cooccurrenceCount;
-		Integer totalOccurrence;
-		String key() {return sourceTerm+"_"+targetTerm;}
-	}
 	
 }

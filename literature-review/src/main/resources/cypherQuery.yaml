@@ -190,11 +190,11 @@ analyse:
   getAuthorCommunityAffiliations: |
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     WITH id(a) as nodeId, 
-    collect(b.organisationName) AS affiliations, 
+    b.organisationName AS affiliation, 
     a.community as community 
     RETURN 
-    community, count(nodeId) as size, collect(affiliations) as affiliations
-    ORDER BY size DESC
+    community, count(DISTINCT nodeId) as size, collect(affiliation) as affiliations
+    ORDER BY size DESC  LIMIT 10
 
   getAuthorCommunityMeshCodes: |
     MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
