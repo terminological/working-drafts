@@ -249,7 +249,7 @@ public class PubMedGraphAnalysis {
 			communityIndex.add(community);
 		}
 		
-		fig.withNewChart("Community affiliations "+i, ChartType.WORDCLOUD)
+		fig.withNewChart(name+i, ChartType.WORDCLOUD)
 		.withSeries(list)
 			.bind(TEXT, t -> t)
 			.withColourScheme(ColourScheme.sequential(i))

@@ -212,7 +212,7 @@ analyse:
     MATCH (t:Article) -[:HAS_KEYWORD]-> (k:Keyword) WHERE id(t)=articleId 
     RETURN 
     DISTINCT community, count(t) as size, collect(k.term) as terms
-    ORDER BY community ASC
+    ORDER BY size DESC LIMIT 10
 
   getAuthorCoauthorHarmonicCentrality: | # closeness
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
