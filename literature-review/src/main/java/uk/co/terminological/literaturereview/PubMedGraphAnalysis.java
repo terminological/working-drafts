@@ -187,6 +187,7 @@ public class PubMedGraphAnalysis {
 	        
 	        List<Integer> communityIndex = new ArrayList<>();
 	        
+	        
 	        session.readTransaction( tx -> {
 	        	
 	        	String qry = queries.get("getAuthorCommunityAffiliations");
@@ -194,14 +195,20 @@ public class PubMedGraphAnalysis {
 	        	
 	        	
 	        	BiConsumer<List<String>,Integer> plot = (list,community) -> {try {
-	        	//TODO:WORDCOUNTS
-	        		fig.withNewChart("Community affiliations "+community, ChartType.WORDCLOUD)
+	        	
+	        		Integer i = communityIndex.indexOf(community);
+	        		if (i == -1) {
+	        			i = communityIndex.size();
+	        			communityIndex.add(community);
+	        		}
+	        		
+	        		fig.withNewChart("Community affiliations "+i, ChartType.WORDCLOUD)
 					.withSeries(list)
 						.bind(TEXT, t -> t)
 						.withColourScheme(ColourScheme.sequential(community))
 					.done()	
 					.withSeries(Arrays.asList(
-							"university","of","the","college"
+							"university","of","the","college", "department", "division", "research"
 							)).bind(TEXT, t -> t).done()
 					.render();
 	        	} catch (Exception e) {throw new RuntimeException(e);}
@@ -217,6 +224,49 @@ public class PubMedGraphAnalysis {
 	        			texts = new ArrayList<>();
 	        		}
 	        		texts.addAll(r.get("affiliations").asList(Values.ofString()));
+	        		community = next;
+	        	}
+	        	plot.accept(texts, community);
+	        	return true;
+	        });
+	        
+	        // 
+	        
+	        session.readTransaction( tx -> {
+	        	
+	        	String qry = queries.get("getAuthorCommunityKeywords");
+	        	List<Record> res = tx.run( qry ).list();
+	        	
+	        	
+	        	BiConsumer<List<String>,Integer> plot = (list,community) -> {try {
+	        	
+	        		Integer i = communityIndex.indexOf(community);
+	        		if (i == -1) {
+	        			i = communityIndex.size();
+	        			communityIndex.add(community);
+	        		}
+	        		
+	        		fig.withNewChart("Community keywords "+i, ChartType.WORDCLOUD)
+					.withSeries(list)
+						.bind(TEXT, t -> t)
+						.withColourScheme(ColourScheme.sequential(community))
+					.done()	
+					//.withSeries(Arrays.asList(
+					//		)).bind(TEXT, t -> t).done()
+					.render();
+	        	} catch (Exception e) {throw new RuntimeException(e);}
+	        	};
+	        	
+	        	List<String> texts = new ArrayList<>();
+	        	Integer community = null;
+	        	for( Record r : res) {
+	        		Integer next = r.get("community").asInt();
+	        		if (community == null) community = next;
+	        		if (community != next) {
+	        			plot.accept(texts, community);
+	        			texts = new ArrayList<>();
+	        		}
+	        		texts.addAll(r.get("terms").asList(Values.ofString()));
 	        		community = next;
 	        	}
 	        	plot.accept(texts, community);
