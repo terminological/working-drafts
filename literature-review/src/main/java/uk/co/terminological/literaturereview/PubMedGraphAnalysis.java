@@ -195,12 +195,13 @@ public class PubMedGraphAnalysis {
 	        	List<Record> res = tx.run( qry ).list();
 	        	
 	        	
-	        	BiConsumer<List<String>,String> plot = (list,title) -> {try {
+	        	BiConsumer<List<String>,Integer> plot = (list,community) -> {try {
 	        	//TODO:WORDCOUNTS
 	        		Figure.outputTo(new File(System.getProperty("user.home")+"/tmp/lit-review"))
-					.withNewChart(title, ChartType.WORDCLOUD)
+					.withNewChart("Community affiliations "+community, ChartType.WORDCLOUD)
 					.withSeries(list)
 						.bind(TEXT, t -> t)
+						.withColourScheme(ColourScheme.sequential(community))
 					.done()	
 					.withSeries(Arrays.asList(
 							"university","of","the","college"
@@ -215,13 +216,14 @@ public class PubMedGraphAnalysis {
 	        		Integer next = r.get("community").asInt();
 	        		if (community == null) community = next;
 	        		if (community != next) {
-	        			plot.accept(texts, "Community affiliations "+community);
+	        			plot.accept(texts, community);
 	        			texts = new ArrayList<>();
 	        		}
 	        		texts.addAll(r.get("affiliations").asList(Values.ofString()));
 	        		community = next;
 	        	}
-	            return true;
+	        	plot.accept(texts, community);
+	        	return true;
 	        });
 	        
 	    } catch ( ServiceUnavailableException ex ) {
