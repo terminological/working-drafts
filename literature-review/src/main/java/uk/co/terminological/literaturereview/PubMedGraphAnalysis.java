@@ -163,8 +163,12 @@ public class PubMedGraphAnalysis {
 	        	});
 	        	
 	        	try {
-	        	fig.withNewChart("Keywords by npmi", ChartType.CHORD)
-					.withSeries(links)
+	        	fig.withNewChart("Keywords by npmi", ChartType.NETWORK)
+	        		.withSeries(new ArrayList<>(nodes))
+	        			.bind(ID, t -> t)
+	        			.bind(LABEL, t -> t)
+	        		.done()
+	        		.withSeries(links)
 						.bind(ID, t -> t.getFirst(), "source")
 						.bind(STRENGTH, t -> t.getSecond())
 						.bind(ID, t -> t.getThird(), "target")
