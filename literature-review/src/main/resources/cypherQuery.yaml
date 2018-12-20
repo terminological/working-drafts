@@ -350,7 +350,7 @@ analyse:
 
 
 config:
-  stopwordsForAffiliation:
+  stopwordsForAffiliation: |
     university
     of
     the
@@ -358,7 +358,7 @@ config:
     department
     division
     research
-  stopwordsForText:
+  stopwordsForText: |
     i
     me
     my
