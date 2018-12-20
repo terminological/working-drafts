@@ -211,7 +211,6 @@ analyse:
     RETURN
     a.community as community, 
     size, collect(b.organisationName) as affiliations
-    
 
   getAuthorCommunityMeshCodes: |
     MATCH (a:Author)
@@ -273,8 +272,8 @@ analyse:
     count(distinct t2) as articles, 
     collect(t2.title) as titles,
     collect(t2.abstract) as abstracts
-    
-     getAuthorCoauthorHarmonicCentrality: | # closeness
+
+  getAuthorCoauthorHarmonicCentrality: | # closeness
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic, a.community
     ORDER BY a.harmonic DESC;
@@ -285,7 +284,6 @@ analyse:
     ORDER BY a.citesHarmonic DESC;
 
 # KEYWORDS
-
   getKeywordCooccurConnectedness: | # Check connectedness
     CALL algo.unionFind.stream('Keyword', 'CO_OCCUR', {})
     YIELD nodeId,setId
