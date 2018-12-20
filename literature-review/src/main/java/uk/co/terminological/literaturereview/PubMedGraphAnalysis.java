@@ -57,10 +57,10 @@ public class PubMedGraphAnalysis {
 		Figure fig = Figure.outputTo(new File(System.getProperty("user.home")+"/Dropbox/litReview/output"));
 		
 		@SuppressWarnings("unchecked")
-		List<String> affiliationStopwords = new ArrayList<>(((Map<String,Collection<String>>) obj.get("config")).get("stopWordsForAffiliation"));
+		List<String> affiliationStopwords = new ArrayList<>(((Map<String,Collection<String>>) obj.get("config")).get("stopwordsForAffiliation"));
 		
 		@SuppressWarnings("unchecked")
-		List<String> textStopwords = new ArrayList<>(((Map<String,Collection<String>>) obj.get("config")).get("stopWordsForText"));
+		List<String> textStopwords = new ArrayList<>(((Map<String,Collection<String>>) obj.get("config")).get("stopwordsForText"));
 		
 		
 		@SuppressWarnings("unchecked")
