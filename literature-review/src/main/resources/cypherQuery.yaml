@@ -186,51 +186,95 @@ analyse:
     YIELD nodeId,setId
     RETURN setId,count(*) as size_of_component
     ORDER BY size_of_component DESC
+    
+  getAuthorCommunityStats: |
+    MATCH (a:Author)
+    WITH 
+    a.community AS community,
+    count(a) AS size
+    ORDER BY size DESC 
+    MATCH (a:Author)<-[:HAS_AUTHOR]-(b:Article)
+    WHERE a.community = community
+    RETURN
+    a.community as community, 
+    size as authors, 
+    count(distinct b) as articles
 
   getAuthorCommunityAffiliations: |
+    MATCH (a:Author)
+    WITH 
+    a.community AS community,
+    count(a) AS size
+    ORDER BY size DESC LIMIT 10 
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
-    WITH id(a) as nodeId, 
-    b.organisationName AS affiliation, 
-    a.community as community 
-    RETURN 
-    community, count(DISTINCT nodeId) as size, collect(affiliation) as affiliations
-    ORDER BY size DESC  LIMIT 10
+    WHERE a.community = community
+    RETURN
+    a.community as community, 
+    size, collect(b.organisationName) as affiliations
+    
 
   getAuthorCommunityMeshCodes: |
-    MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
-    WITH distinct id(t) as articleId,
-    a.community as community
-    MATCH (t:Article) -[:HAS_MESH]-> (k:MeshCode) WHERE id(t)=articleId 
+    MATCH (a:Author)
+    WITH 
+    a.community AS community,
+    count(a) AS size
+    ORDER BY size DESC LIMIT 10 
+    MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
+    WHERE a.community = community
+    WITH DISTINCT
+    community,
+    size,
+    id(t) as articleId
+    MATCH (t2:Article) -[:HAS_MESH]-> (k:MeshCode)
+    WHERE id(t2)=articleId
     RETURN 
-    community, 
-    count(t) as size, 
+    community,
+    size as authors,
+    count(distinct t2) as articles, 
     collect(k.term) as terms
-    ORDER BY size DESC LIMIT 10
 
   getAuthorCommunityKeywords: |
-    MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
-    WITH distinct id(t) as articleId,
-    a.community as community
-    MATCH (t:Article) -[:HAS_KEYWORD]-> (k:Keyword) WHERE id(t)=articleId 
+    MATCH (a:Author)
+    WITH 
+    a.community AS community,
+    count(a) AS size
+    ORDER BY size DESC LIMIT 10 
+    MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
+    WHERE a.community = community
+    WITH DISTINCT
+    community,
+    size,
+    id(t) as articleId
+    MATCH (t2:Article) -[:HAS_KEYWORD]-> (k:Keyword)
+    WHERE id(t2)=articleId
     RETURN 
-    community, 
-    count(t) as size, 
+    community,
+    size as authors,
+    count(distinct t2) as articles, 
     collect(k.term) as terms
-    ORDER BY size DESC LIMIT 10
 
   getAuthorCommunityTitlesAbstracts: |
-    MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
-    WITH distinct id(t) as articleId,
-    a.community as community
-    MATCH (t:Article) WHERE id(t)=articleId 
+    MATCH (a:Author)
+    WITH 
+    a.community AS community,
+    count(a) AS size
+    ORDER BY size DESC LIMIT 10 
+    MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
+    WHERE a.community = community
+    WITH DISTINCT
+    community,
+    size,
+    id(t) as articleId
+    MATCH (t2:Article)
+    WHERE id(t2)=articleId
     RETURN 
-    community, 
-    count(t) as size, 
-    collect(t.asbtract) as abstracts,
-    collect(t.title) as titles 
-    ORDER BY size DESC LIMIT 10
-
-  getAuthorCoauthorHarmonicCentrality: | # closeness
+    community,
+    size as authors,
+    count(distinct t2) as articles, 
+    collect(t2.title) as titles,
+    collect(t2.abstract) as abstracts
+    
+     getAuthorCoauthorHarmonicCentrality: | # closeness
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic, a.community
     ORDER BY a.harmonic DESC;

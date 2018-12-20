@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +55,13 @@ public class PubMedGraphAnalysis {
 		Map<String, Object> obj = yaml.load(inputStream);
 		
 		Figure fig = Figure.outputTo(new File(System.getProperty("user.home")+"/Dropbox/litReview/output"));
+		
+		@SuppressWarnings("unchecked")
+		List<String> affiliationStopwords = new ArrayList<>(((Map<String,Collection<String>>) obj.get("config")).get("stopWordsForAffiliation"));
+		
+		@SuppressWarnings("unchecked")
+		List<String> textStopwords = new ArrayList<>(((Map<String,Collection<String>>) obj.get("config")).get("stopWordsForText"));
+		
 		
 		@SuppressWarnings("unchecked")
 		Map<String,String> queries = (Map<String,String> ) obj.get("analyse");
@@ -202,13 +210,13 @@ public class PubMedGraphAnalysis {
 	        		Integer next = r.get("community").asInt();
 	        		if (community == null) community = next;
 	        		if (community != next) {
-	        			plot(fig, "Community affiliations", texts, community);
+	        			plot(fig, "Community affiliations", texts, community, affiliationStopwords);
 	        			texts = new ArrayList<>();
 	        		}
 	        		texts.addAll(r.get("affiliations").asList(Values.ofString()));
 	        		community = next;
 	        	}
-	        	plot(fig, "Community affiliations", texts, community);
+	        	plot(fig, "Community affiliations", texts, community, affiliationStopwords);
 	        	return true;
 	        });
 	        
@@ -224,13 +232,34 @@ public class PubMedGraphAnalysis {
 	        		Integer next = r.get("community").asInt();
 	        		if (community == null) community = next;
 	        		if (community != next) {
-	        			plot(fig, "Community keywords", texts, community);
+	        			plot(fig, "Community keywords", texts, community, textStopwords);
 	        			texts = new ArrayList<>();
 	        		}
 	        		texts.addAll(r.get("terms").asList(Values.ofString()));
 	        		community = next;
 	        	}
-	        	plot(fig, "Community keywords", texts, community);
+	        	plot(fig, "Community keywords", texts, community, textStopwords);
+	        	return true;
+	        });
+	        
+	        session.readTransaction( tx -> {
+	        	
+	        	String qry = queries.get("getAuthorCommunityTitlesAbstracts");
+	        	List<Record> res = tx.run( qry ).list();
+	        	List<String> texts = new ArrayList<>();
+	        	Integer community = null;
+	        	for( Record r : res) {
+	        		Integer next = r.get("community").asInt();
+	        		if (community == null) community = next;
+	        		if (community != next) {
+	        			plot(fig, "Community content", texts, community, textStopwords);
+	        			texts = new ArrayList<>();
+	        		}
+	        		texts.addAll(r.get("abstracts").asList(Values.ofString()));
+	        		texts.addAll(r.get("titles").asList(Values.ofString()));
+	        		community = next;
+	        	}
+	        	plot(fig, "Community content", texts, community, textStopwords);
 	        	return true;
 	        });
 	        
@@ -244,7 +273,7 @@ public class PubMedGraphAnalysis {
 	
 	static List<Integer> communityIndex = new ArrayList<>();
 	
-	static void plot(Figure fig, String name, List<String> list, Integer community) {
+	static void plot(Figure fig, String name, List<String> list, Integer community, List<String> stopwords) {
 		try {
     	
 		Integer i = communityIndex.indexOf(community);
@@ -258,9 +287,7 @@ public class PubMedGraphAnalysis {
 			.bind(TEXT, t -> t)
 			.withColourScheme(ColourScheme.sequential(i))
 		.done()	
-		.withSeries(Arrays.asList(
-				"university","of","the","college", "department", "division", "research"
-				)).bind(TEXT, t -> t).done()
+		.withSeries(stopwords).bind(TEXT, t -> t).done()
 		.render();
 	} catch (Exception e) {throw new RuntimeException(e);}
 	};
