@@ -202,8 +202,10 @@ analyse:
     a.community as community
     MATCH (t:Article) -[:HAS_MESH]-> (k:MeshCode) WHERE id(t)=articleId 
     RETURN 
-    DISTINCT community, count(t) as size, collect(k.term) as terms
-    ORDER BY community ASC
+    community, 
+    count(t) as size, 
+    collect(k.term) as terms
+    ORDER BY size DESC LIMIT 10
 
   getAuthorCommunityKeywords: |
     MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
@@ -211,7 +213,21 @@ analyse:
     a.community as community
     MATCH (t:Article) -[:HAS_KEYWORD]-> (k:Keyword) WHERE id(t)=articleId 
     RETURN 
-    DISTINCT community, count(t) as size, collect(k.term) as terms
+    community, 
+    count(t) as size, 
+    collect(k.term) as terms
+    ORDER BY size DESC LIMIT 10
+
+  getAuthorCommunityTitlesAbstracts: |
+    MATCH (a:Author)<-[:HAS_AUTHOR]-(t:Article)
+    WITH distinct id(t) as articleId,
+    a.community as community
+    MATCH (t:Article) WHERE id(t)=articleId 
+    RETURN 
+    community, 
+    count(t) as size, 
+    collect(t.asbtract) as abstracts,
+    collect(t.title) as titles 
     ORDER BY size DESC LIMIT 10
 
   getAuthorCoauthorHarmonicCentrality: | # closeness
@@ -288,3 +304,141 @@ analyse:
   getMeshCodeMutualInformation: | # Mutual information
     MATCH (m:MeshCode)-[r:CO_OCCUR]->(n:MeshCode) RETURN sum(r.pmi*r.probability) as mutualInformation
 
+
+config:
+  stopwordsForAffiliation:
+    university
+    of
+    the
+    college
+    department
+    division
+    research
+  stopwordsForText:
+    i
+    me
+    my
+    myself
+    we
+    our
+    ours
+    ourselves
+    you
+    your
+    yours
+    yourself
+    yourselves
+    he
+    him
+    his
+    himself
+    she
+    her
+    hers
+    herself
+    it
+    its
+    itself
+    they
+    them
+    their
+    theirs
+    themselves
+    what
+    which
+    who
+    whom
+    this
+    that
+    these
+    those
+    am
+    is
+    are
+    was
+    were
+    be
+    been
+    being
+    have
+    has
+    had
+    having
+    do
+    does
+    did
+    doing
+    a
+    an
+    the
+    and
+    but
+    if
+    or
+    because
+    as
+    until
+    while
+    of
+    at
+    by
+    for
+    with
+    about
+    against
+    between
+    into
+    through
+    during
+    before
+    after
+    above
+    below
+    to
+    from
+    up
+    down
+    in
+    out
+    on
+    off
+    over
+    under
+    again
+    further
+    then
+    once
+    here
+    there
+    when
+    where
+    why
+    how
+    all
+    any
+    both
+    each
+    few
+    more
+    most
+    other
+    some
+    such
+    no
+    nor
+    not
+    only
+    own
+    same
+    so
+    than
+    too
+    very
+    s
+    t
+    can
+    will
+    just
+    don
+    should
+    now
