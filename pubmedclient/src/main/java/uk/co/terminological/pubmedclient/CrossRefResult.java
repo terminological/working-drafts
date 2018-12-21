@@ -56,12 +56,12 @@ public class CrossRefResult {
 		public Stream<Work> getItems() {return this.streamNode(Work.class, "items");}
 		public Optional<Long> getTotalResults() {return this.asLong("total-results");}
 		
-		@JsonProperty("facets") public Optional<Facets> facets = Optional.empty();
+		/*@JsonProperty("facets") public Optional<Facets> facets = Optional.empty();
 		@JsonProperty("total-results") public Optional<Integer> totalResults = Optional.empty();
 		@JsonProperty("items") public List<Work> items = Collections.emptyList();
 		@JsonProperty("items-per-page") public Optional<Integer> itemsPerPage = Optional.empty();
 		@JsonProperty("query") public Optional<Query> query = Optional.empty();
-		@JsonProperty("next-cursor") public Optional<String> nextCursor = Optional.empty();
+		@JsonProperty("next-cursor") public Optional<String> nextCursor = Optional.empty();*/
 	}
 	
 	public static class Facets extends ExtensibleJson {}
