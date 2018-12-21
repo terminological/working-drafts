@@ -40,8 +40,9 @@ public class ExtensibleJson {
 	public Stream<ExtensibleJson> streamPath(String... keys) {
 		Stream<ExtensibleJson> out = Stream.of(this);
 		for (String key: keys) {
-			out = out.streamNode(key);
+			out = out.flatMap(t -> t.streamNode(key));
 		}
+		return out;
 	}
 	
 	/*Map<String,Object> unknownProperties = new HashMap<>();
