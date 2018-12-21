@@ -455,11 +455,11 @@ public class PubMedGraphExperiment {
 						try {
 							Optional<SingleResult> tmp = api.getCrossref().getByDoi(doi);
 							tmp.ifPresent(t ->
-									t.work.ifPresent(work -> context.send(
-									Events.namedTypedEvent(work,doi,XREF_FETCH_RESULT)
-								)));
+									context.send(
+									Events.namedTypedEvent(t.getWork(),doi,XREF_FETCH_RESULT)
+								));
 							List<Reference> referencedDois = tmp.stream()
-								.flatMap(t -> t.work.stream())
+								.map(t -> t.getWork())
 								.flatMap(w -> w.reference.stream())
 								.collect(Collectors.toList());
 							context.getEventBus().logInfo("Crossref found "+referencedDois.size()+" articles related to: "+doi);
