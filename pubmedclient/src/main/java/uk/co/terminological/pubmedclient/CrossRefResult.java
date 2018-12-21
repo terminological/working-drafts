@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -25,14 +26,9 @@ public class CrossRefResult {
 		
 		public ListResult(JsonNode node) { super(node); }
 		
-		public Optional<String> getStatus() {
-			return Optional.ofNullable(
-					this.getRaw().get("status").asText(null));
-		}
+		public Optional<String> getStatus() {return this.asString("status");}
+		public Message getMessage() {return this.asObject(Message.class, "message").get();}
 		
-		public Message getMessage() {
-			return this.streamNode(Message.class, "message").findFirst().get();
-		}
 		
 		/*@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
@@ -43,15 +39,23 @@ public class CrossRefResult {
 	public static class SingleResult extends ExtensibleJson {
 		public SingleResult(JsonNode node) { super(node); }
 		
-		@JsonProperty("status") public Optional<String> status = Optional.empty();
+		public Optional<String> getStatus() {return this.asString("status");}
+		public Work getWork() {return this.asObject(Work.class, "message").get();}
+		
+		/*@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
 		@JsonProperty("message-version") public Optional<String> messageVersion = Optional.empty();
-		@JsonProperty("message") public Optional<Work> work = Optional.empty();
+		@JsonProperty("message") public Optional<Work> work = Optional.empty();*/
 	}
 	
 	//When message-type is work-list
 	public static class Message extends ExtensibleJson {
 		public Message(JsonNode node) { super(node); }
+		
+		public Optional<String> getNextCursor() {return this.asString("next-cursor");}
+		public Stream<Work> getItems() {return this.streamNode(Work.class, "items");}
+		public Optional<Long> getTotalResults() {return this.asLong("total-results");}
+		
 		@JsonProperty("facets") public Optional<Facets> facets = Optional.empty();
 		@JsonProperty("total-results") public Optional<Integer> totalResults = Optional.empty();
 		@JsonProperty("items") public List<Work> items = Collections.emptyList();

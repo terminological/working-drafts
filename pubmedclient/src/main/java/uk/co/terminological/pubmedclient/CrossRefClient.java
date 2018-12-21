@@ -241,11 +241,10 @@ public class CrossRefClient extends CachingApiClient {
 
 		public Optional<QueryBuilder> nextPage(ListResult resp) {
 			if (
-					resp.message.isPresent() && 
-					resp.message.get().nextCursor.isPresent() &&
+					resp.getMessage().getNextCursor().isPresent() &&
 					!(
-							resp.message.get().items.size() == 0 && 
-							resp.message.get().totalResults.orElse(0) > 0
+							resp.getMessage().getItems().message.get().items.size() == 0 && 
+							resp.getMessage().g.totalResults.orElse(0) > 0
 							)
 					) {
 				params.remove("cursor");
