@@ -243,12 +243,12 @@ public class CrossRefClient extends CachingApiClient {
 			if (
 					resp.getMessage().getNextCursor().isPresent() &&
 					!(
-							resp.getMessage().getItems().message.get().items.size() == 0 && 
-							resp.getMessage().g.totalResults.orElse(0) > 0
+							resp.getMessage().getItems().findFirst().isPresent() && 
+							resp.getMessage().getTotalResults().orElse(0L) > 0
 							)
 					) {
 				params.remove("cursor");
-				params.add("cursor", resp.message.get().nextCursor.get());
+				params.add("cursor", resp.getMessage().getNextCursor().get());
 				return Optional.of(this);
 			} else {
 				return Optional.empty();
