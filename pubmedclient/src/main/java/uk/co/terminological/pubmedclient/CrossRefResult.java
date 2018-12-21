@@ -22,17 +22,27 @@ v3	15th May 2018	Add peer review fields
 public class CrossRefResult {
 	
 	public static class ListResult extends ExtensibleJson {
-		private JsonNode raw;
-		public ListResult(JsonNode node) {
-			this.raw = node;
+		
+		public ListResult(JsonNode node) { super(node); }
+		
+		public Optional<String> getStatus() {
+			return Optional.ofNullable(
+					this.getRaw().get("status").asText(null));
 		}
-		@JsonProperty("status") public Optional<String> status = Optional.empty();
+		
+		public Message getMessage() {
+			return new Message(this.getRaw().get("message")	);
+		}
+		
+		/*@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
 		@JsonProperty("message-version") public Optional<String> messageVersion = Optional.empty();
-		@JsonProperty("message") public Optional<Message> message = Optional.empty();
+		@JsonProperty("message") public Optional<Message> message = Optional.empty();*/
 	}
 	
 	public static class SingleResult extends ExtensibleJson {
+		
+		public SingleResult(JsonNode node) { super(node); }
 		@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
 		@JsonProperty("message-version") public Optional<String> messageVersion = Optional.empty();
@@ -41,6 +51,7 @@ public class CrossRefResult {
 	
 	//When message-type is work-list
 	public static class Message extends ExtensibleJson {
+		public Message(JsonNode node) { super(node); }
 		@JsonProperty("facets") public Optional<Facets> facets = Optional.empty();
 		@JsonProperty("total-results") public Optional<Integer> totalResults = Optional.empty();
 		@JsonProperty("items") public List<Work> items = Collections.emptyList();

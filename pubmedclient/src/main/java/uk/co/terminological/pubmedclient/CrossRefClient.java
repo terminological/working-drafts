@@ -64,7 +64,7 @@ public class CrossRefClient extends CachingApiClient {
 	}
 
 	private String developerEmail;
-	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public static CrossRefClient create(String developerEmail) {
 		return create(developerEmail, null);
@@ -93,7 +93,7 @@ public class CrossRefClient extends CachingApiClient {
 		return this
 			.buildCall(url,SingleResult.class)
 			.cacheForever()
-			.withOperation(is -> objectMapper.readValue(is, SingleResult.class))
+			.withOperation(is -> new SingleResult(objectMapper.readTree(is, SingleResult.class)))
 			.get();
 		
 	}
@@ -274,7 +274,7 @@ public class CrossRefClient extends CachingApiClient {
 		public Optional<ListResult> execute() {
 			return client.buildCall(url, ListResult.class)
 					.withParams(params)
-					.withOperation(is -> client.objectMapper.readValue(is, CrossRefResult.ListResult.class))
+					.withOperation(is -> new ListResult(client.objectMapper.readTree(is)))
 					.get();
 		}
 
