@@ -93,7 +93,7 @@ public class CrossRefClient extends CachingApiClient {
 		return this
 			.buildCall(url,SingleResult.class)
 			.cacheForever()
-			.withOperation(is -> new SingleResult(objectMapper.readTree(is, SingleResult.class)))
+			.withOperation(is -> new SingleResult(objectMapper.readTree(is)))
 			.get();
 		
 	}
@@ -169,7 +169,7 @@ public class CrossRefClient extends CachingApiClient {
 				.sortedBy(Sort.SCORE, SortOrder.DESC)
 				.limit(1)
 				.execute();
-		Optional<Work> out = lr.stream().flatMap(l -> l.message.stream())
+		Optional<Work> out = lr.stream().map(l -> l.getMessage())
 				.flatMap(i -> i.items.stream())
 				.filter(o -> o.score.orElse(0F) > 85.0F)
 				.findFirst();

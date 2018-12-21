@@ -2,6 +2,10 @@ package uk.co.terminological.pubmedclient;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +25,23 @@ public class ExtensibleJson {
 	
 	public ExtensibleJson(JsonNode node) {
 		this.raw = node;
+	}
+	
+	public Stream<ExtensibleJson> streamNode(String key) {
+		JsonNode node = raw.get(key); 
+		if (node.isNull() | node.isMissingNode()) return Stream.empty();
+		if (node.isArray()) return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(node.elements(), Spliterator.ORDERED),false)
+				.map(s -> new ExtensibleJson(s))
+				;
+		else return Stream.of(new ExtensibleJson(node));
+	}
+	
+	public Stream<ExtensibleJson> streamPath(String... keys) {
+		Stream<ExtensibleJson> out = Stream.of(this);
+		for (String key: keys) {
+			out = out.streamNode(key);
+		}
 	}
 	
 	/*Map<String,Object> unknownProperties = new HashMap<>();
