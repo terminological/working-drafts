@@ -41,8 +41,8 @@ public class CrossRefResult {
 	}
 	
 	public static class SingleResult extends ExtensibleJson {
-		
 		public SingleResult(JsonNode node) { super(node); }
+		
 		@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
 		@JsonProperty("message-version") public Optional<String> messageVersion = Optional.empty();

@@ -2,6 +2,7 @@ package uk.co.terminological.pubmedclient;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -44,6 +45,26 @@ public class ExtensibleJson {
 		}
 		return out;
 	}
+	
+	public Optional<String> asString(String key) {
+		return Optional.ofNullable(raw.get(key).asText(null));
+	}
+	
+	public Optional<Double> asDouble(String key) {
+		if (!raw.has(key)) return Optional.empty();
+		JsonNode tmp = raw.get(key);
+		if (!tmp.isDouble()) return Optional.empty(); 
+		return Optional.of(raw.get(key).asDouble());
+	}
+	
+	public Optional<Long> asLong(String key) {
+		if (!raw.has(key)) return Optional.empty();
+		JsonNode tmp = raw.get(key);
+		if (!tmp.canConvertToLong()) return Optional.empty(); 
+		return Optional.of(raw.get(key).asLong());
+	}
+	
+	
 	
 	/*Map<String,Object> unknownProperties = new HashMap<>();
 	
