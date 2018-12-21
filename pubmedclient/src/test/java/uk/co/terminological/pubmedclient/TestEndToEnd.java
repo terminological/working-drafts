@@ -69,10 +69,10 @@ public class TestEndToEnd {
 				return Stream.empty();
 			}
 		})
-				.flatMap(sr -> sr.work.stream());
+				.map(sr -> sr.getWork());
 		work.forEach(w -> w.title.forEach(System.out::println));
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
-		CrossRefResult.Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().work.get();
+		CrossRefResult.Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().getWork();
 		//System.out.println(work.journalAbstract.get());
 		work2.reference.forEach(r -> System.out.println(r.DOI+"\t"+r.articleTitle));
 		System.exit(0);
