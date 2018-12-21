@@ -98,6 +98,17 @@ public class ExtensibleJson {
 		return Optional.of(raw.get(key).asLong());
 	}
 	
+	public <X extends ExtensibleJson> Optional<X> asObject(Class<X> subtype, String key) {
+		if (!raw.has(key)) return Optional.empty();
+		JsonNode tmp = raw.get(key);
+		if (!tmp.canConvertToLong()) return Optional.empty(); 
+		try {
+			return Optional.of(subtype.getDeclaredConstructor(JsonNode.class).newInstance(tmp));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	
 	
 	/*Map<String,Object> unknownProperties = new HashMap<>();

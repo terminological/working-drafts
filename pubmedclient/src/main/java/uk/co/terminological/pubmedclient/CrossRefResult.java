@@ -31,7 +31,7 @@ public class CrossRefResult {
 		}
 		
 		public Message getMessage() {
-			return new Message(this.getRaw().get("message")	);
+			return this.streamNode(Message.class, "message").findFirst().get();
 		}
 		
 		/*@JsonProperty("status") public Optional<String> status = Optional.empty();
