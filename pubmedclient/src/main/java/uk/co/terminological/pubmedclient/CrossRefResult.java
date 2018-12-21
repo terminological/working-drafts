@@ -64,14 +64,16 @@ public class CrossRefResult {
 		@JsonProperty("next-cursor") public Optional<String> nextCursor = Optional.empty();*/
 	}
 	
-	public static class Facets extends ExtensibleJson {}
+	/*public static class Facets extends ExtensibleJson {}
 	
 	public static class Query extends ExtensibleJson {
 		@JsonProperty("start-index") public Optional<Integer> startIndex = Optional.empty();
 		@JsonProperty("search-terms") public Optional<String> searchTerm = Optional.empty();
-	}
+	}*/
 	
 	public static class Work extends ExtensibleJson {
+		public Work(JsonNode node) {super(node);}
+		
 		@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
 		@JsonProperty("original-title") public List<String> originalTitle = Collections.emptyList(); // No-Work titles in the work's original publication language
