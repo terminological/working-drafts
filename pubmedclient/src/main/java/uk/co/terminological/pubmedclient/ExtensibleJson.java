@@ -1,7 +1,5 @@
 package uk.co.terminological.pubmedclient;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -11,7 +9,6 @@ import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ExtensibleJson {
