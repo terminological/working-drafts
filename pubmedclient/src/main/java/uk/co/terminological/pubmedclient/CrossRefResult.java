@@ -74,7 +74,7 @@ public class CrossRefResult {
 	public static class Work extends ExtensibleJson {
 		public Work(JsonNode node) {super(node);}
 		
-		@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
+		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
 		@JsonProperty("original-title") public List<String> originalTitle = Collections.emptyList(); // No-Work titles in the work's original publication language
 		@JsonProperty("short-title") public List<String> shortTitle = Collections.emptyList(); // No-Short or abbreviated work titles
@@ -132,9 +132,10 @@ public class CrossRefResult {
 		@JsonProperty("journal-issue") public Optional<JournalIssue> journalIssue = Optional.empty(); //NOT IN SPEC
 		@JsonProperty("isbn-type") public List<ISSNWithType> isbnType = Collections.emptyList(); //NOT IN SPEC
 		@JsonProperty("publisher-location") public Optional<String> publisherLocation = Optional.empty(); //NOT IN SPEC
+		*/
 	}
 
-	public static class Event extends ExtensibleJson {
+	/*public static class Event extends ExtensibleJson {
 		@JsonProperty("name") public Optional<String> name = Optional.empty(); //NOT IN SPEC
 		@JsonProperty("location") public Optional<String> location = Optional.empty(); //NOT IN SPEC
 		@JsonProperty("theme") public Optional<String> theme = Optional.empty(); //NOT IN SPEC
@@ -159,7 +160,7 @@ public class CrossRefResult {
 		@JsonProperty("clinical-trial-Integer") public Optional<String> clinicalTrialNumber = Optional.empty(); // Yes-Identifier of the clinical trial
 		@JsonProperty("registry") public Optional<String> registry = Optional.empty(); // Yes-DOI of the clinical trial regsitry that assigned the trial Integer
 		@JsonProperty("type") public Optional<String> type = Optional.empty(); // No-One of preResults, results or postResults
-	}
+	}*/
 
 	public static class Contributor extends ExtensibleJson {
 		@JsonProperty("family") public Optional<String> family = Optional.empty(); // Yes-
@@ -188,7 +189,7 @@ public class CrossRefResult {
 		@JsonProperty("date-parts") public List<List<Integer>> dateParts = Collections.emptyList(); // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 	}
 
-	public static class Update extends ExtensibleJson {
+	/*public static class Update extends ExtensibleJson {
 		@JsonProperty("updated") public Optional<PartialDate> updated = Optional.empty(); // Yes-Date on which the update was published
 		@JsonProperty("DOI") public Optional<String> DOI = Optional.empty(); // Yes-DOI of the updated work
 		@JsonProperty("type") public Optional<String> type = Optional.empty(); // Yes-The type of update, for example retraction or correction
@@ -215,7 +216,7 @@ public class CrossRefResult {
 		@JsonProperty("delay-in-days") public Optional<Integer> delayInDays = Optional.empty(); // Yes-Integer of days between the publication date of the work and the start date of this license
 		@JsonProperty("start") public Optional<Date> start = Optional.empty(); // Yes-Date on which this license begins to take effect
 		@JsonProperty("URL") public Optional<URL> URL = Optional.empty(); // Yes-Link to a web page describing this license
-	}
+	}*/
 
 	public static class ResourceLink extends ExtensibleJson {
 		@JsonProperty("intended-application") public Optional<String> intendedApplication = Optional.empty(); // Yes-Either text-mining, similarity-checking or unspecified
@@ -253,6 +254,7 @@ public class CrossRefResult {
 		@JsonProperty("type") public Optional<String> type = Optional.empty(); // Yes-One of eissn, pissn or lissn
 	}
 
+	/*
 	public static class ContentDomain extends ExtensibleJson {
 		@JsonProperty("domain") public List<String> domain = Collections.emptyList(); // Yes-
 		@JsonProperty("crossmark-restriction") public Optional<Boolean> crossmarkRestriction = Optional.empty(); // Yes-
@@ -272,7 +274,7 @@ public class CrossRefResult {
 		@JsonProperty("type") public Optional<String> type = Optional.empty(); // No-One of referee-report or editor-report or author-comment or community-comment or aggregate
 		@JsonProperty("competing-interest-statement") public Optional<String> competingInterestStatement = Optional.empty(); // No-
 		@JsonProperty("language") public Optional<String> language = Optional.empty();	// String	No
-	}
+	}*/
 
 
 }
