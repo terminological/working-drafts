@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 /* 
 Crossref Metadata API JSON Format
@@ -21,6 +22,10 @@ v3	15th May 2018	Add peer review fields
 public class CrossRefResult {
 	
 	public static class ListResult extends ExtensibleJson {
+		private JsonNode raw;
+		public ListResult(JsonNode node) {
+			this.raw = node;
+		}
 		@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
 		@JsonProperty("message-version") public Optional<String> messageVersion = Optional.empty();
