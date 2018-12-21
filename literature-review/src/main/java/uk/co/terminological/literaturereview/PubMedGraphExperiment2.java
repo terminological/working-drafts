@@ -496,7 +496,7 @@ public class PubMedGraphExperiment2 {
 			try {
 				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 				List<Reference> referencedDois = tmp.stream()
-						.flatMap(t -> t.work.stream())
+						.map(t -> t.getWork())
 						.flatMap(w -> w.reference.stream())
 						.collect(Collectors.toList());
 				log.debug("Crossref found "+referencedDois.size()+" articles related to: "+doi);
@@ -515,11 +515,9 @@ public class PubMedGraphExperiment2 {
 			try {
 				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 				tmp.ifPresent(t -> {
-					t.work.ifPresent(w -> {
-						Optional<String> out = updateCrossRefMetadata(w,graphApi);
+						Optional<String> out = updateCrossRefMetadata(t.getWork(),graphApi);
 						out.ifPresent(o->outDois.add(o.toLowerCase()));
 						});
-				});
 			} catch (BibliographicApiException e) {
 				//e.printStackTrace();
 			}
