@@ -1,5 +1,8 @@
 package uk.co.terminological.pubmedclient;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -10,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
 
 public class ExtensibleJson {
 	
@@ -41,6 +45,39 @@ public class ExtensibleJson {
 			out = out.flatMap(t -> t.streamNode(key));
 		}
 		return out;
+	}
+	
+	public <X extends ExtensibleJson> Stream<X> streamNode(Class<X> subtype, String key) {
+		JsonNode node = raw.get(key); 
+		if (node.isNull() | node.isMissingNode()) return Stream.empty();
+		if (node.isArray()) return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(node.elements(), Spliterator.ORDERED),false)
+				.map(s -> {
+					try {
+						return subtype.getDeclaredConstructor(JsonNode.class).newInstance(s);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}});
+		else
+			try {
+				return Stream.of(subtype.getDeclaredConstructor(JsonNode.class).newInstance(node));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+	}
+	
+	public <X extends ExtensibleJson> Stream<X> streamPath(Class<X> subtype, String... keys) {
+		Stream<ExtensibleJson> out = Stream.of(this);
+		Iterator<String> keysIt = Arrays.asList(keys).iterator();
+		while (keysIt.hasNext()) { 
+			String key = keysIt.next();
+			if (!keysIt.hasNext()) {
+				return out.flatMap(t -> t.streamNode(subtype, key));
+			} else {
+				out = out.flatMap(t -> t.streamNode(key));
+			}
+		}
+		return Stream.empty();
 	}
 	
 	public Optional<String> asString(String key) {
