@@ -73,7 +73,11 @@ public class CrossRefResult {
 	
 	public static class Work extends ExtensibleJson {
 		public Work(JsonNode node) {super(node);}
-		
+		public Optional<Double> getScore() {return this.asDouble("score");}
+		public Optional<String> getDoi() {return this.asString("doi");}
+		public Stream<String> getLicenses() {return this.streamPath("license").flatMap(n -> n.asString("URL").stream());}
+		public Stream<ResourceLink> getLinks() {return this.streamPath(ResourceLink.class, "links");}
+ 		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
 		@JsonProperty("original-title") public List<String> originalTitle = Collections.emptyList(); // No-Work titles in the work's original publication language

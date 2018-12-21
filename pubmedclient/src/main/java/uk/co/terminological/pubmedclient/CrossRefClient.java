@@ -171,7 +171,7 @@ public class CrossRefClient extends CachingApiClient {
 				.execute();
 		Optional<Work> out = lr.stream().map(l -> l.getMessage())
 				.flatMap(i -> i.getItems())
-				.filter(o -> o.score.orElse(0F) > 85.0F)
+				.filter(o -> o.getScore().orElse(0D) > 85.0D)
 				.findFirst();
 		return out;
 	}
