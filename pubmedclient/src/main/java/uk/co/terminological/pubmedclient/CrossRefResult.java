@@ -74,7 +74,7 @@ public class CrossRefResult {
 	public static class Work extends ExtensibleJson {
 		public Work(JsonNode node) {super(node);}
 		public Optional<Double> getScore() {return this.asDouble("score");}
-		public Optional<String> getDoi() {return this.asString("doi");}
+		public String getDoi() {return this.asString("doi").get();}
 		public Stream<String> getLicenses() {return this.streamPath("license").flatMap(n -> n.asString("URL").stream());}
 		public Stream<ResourceLink> getLinks() {return this.streamPath(ResourceLink.class, "links");}
  		
