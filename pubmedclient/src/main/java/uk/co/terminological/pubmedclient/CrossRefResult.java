@@ -88,7 +88,11 @@ public class CrossRefResult {
  		public Optional<String> getJournal() {return this.asString("container-title");}
  		public Optional<String> getVolume() {return this.asString("volume");}
  		public Optional<String> getIssue() {return this.asString("issue");}
- 		public Optional<String> getYear() {return this.asString("container-title");}
+ 		public Optional<String> getYear() {
+ 			return this.streamPath("published-print","date-parts")
+ 					.findFirst().stream() // weird nested array
+ 					.findFirst().map(n -> n.asString());
+ 			}
  		public Optional<String> getPage() {return this.asString("page");}
 		
  		public Optional<URI> getTextMiningUri() {
@@ -100,6 +104,8 @@ public class CrossRefResult {
  					.map(URI::create)
  					.findFirst();
  		}
+ 		
+ 		public Stream<Contributor> getAuthors() {return this.streamPath(Contributor.class, "links");}
  		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
@@ -190,21 +196,22 @@ public class CrossRefResult {
 	}*/
 
 	public static class Contributor extends ExtensibleJson {
-		@JsonProperty("family") public Optional<String> family = Optional.empty(); // Yes-
-		@JsonProperty("given") public Optional<String> given = Optional.empty(); // No-
-		@JsonProperty("sequence") public Optional<String> sequence = Optional.empty(); // No-
-		@JsonProperty("ORCID") public Optional<URL> ORCID = Optional.empty(); // No-URL-form of an ORCID identifier
-		@JsonProperty("authenticated-orcid") public Optional<Boolean> authenticatedOrcid = Optional.empty(); // No-If true, record owner asserts that the ORCID user completed ORCID OAuth authentication
-		@JsonProperty("affiliation") public List<Affiliation> affiliation = Collections.emptyList(); // No-
+		
+		public Optional<String> getFamilyName() {return this.asString("family");}
+		public Optional<URI> getORCID() {return this.asString("ORCID").map(URI::create);}
+		public Stream<String> getAffiliations() {return this.streamNode("affiliations").flatMap(n -> n.asString("name").stream());}
+		public Optional<String> getGivenName() {return this.asString("given");}
+		
+		public boolean isFirst() {return this.asString("sequence").filter(s -> s.equals("first")).isPresent();}
 		
 		public String getLabel() {
-			return (family.orElse("Unknown")+", "+given.orElse("Unknown").substring(0, 1)).toLowerCase();
+			return (getFamilyName().orElse("Unknown")+", "+getGivenName().orElse("Unknown").substring(0, 1)).toLowerCase();
 		}
 	}
 
-	public static class Affiliation extends ExtensibleJson {
+	/*public static class Affiliation extends ExtensibleJson {
 		@JsonProperty("name") public Optional<String> name = Optional.empty(); // Yes-
-	}
+	}*/
 
 	public static class Date extends ExtensibleJson {
 		@JsonProperty("date-parts") public List<List<Integer>> dateParts = Collections.emptyList(); // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
