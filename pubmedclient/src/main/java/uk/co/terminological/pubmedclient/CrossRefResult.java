@@ -91,6 +91,8 @@ public class CrossRefResult {
  		public Optional<String> getYear() {return this.asString("container-title");}
  		public Optional<String> getPage() {return this.asString("page");}
 		
+ 		
+ 		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
 		@JsonProperty("original-title") public List<String> originalTitle = Collections.emptyList(); // No-Work titles in the work's original publication language
