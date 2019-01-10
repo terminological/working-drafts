@@ -95,6 +95,8 @@ public class CrossRefResult {
  			}
  		public Optional<String> getPage() {return this.asString("page");}
 		
+ 		// TODO: public LocalDate from  create.date-parts.date-time
+ 		
  		public Optional<URI> getTextMiningUri() {
  			// text-mining, similarity-checking or unspecified
  			return this
