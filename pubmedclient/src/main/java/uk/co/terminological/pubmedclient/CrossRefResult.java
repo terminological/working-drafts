@@ -75,9 +75,13 @@ public class CrossRefResult {
 		public Work(JsonNode node) {super(node);}
 		public Optional<Double> getScore() {return this.asDouble("score");}
 		public String getDoi() {return this.asString("doi").get();}
-		public Stream<String> getLicenses() {return this.streamPath("license").flatMap(n -> n.asString("URL").stream());}
+		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 		public Stream<ResourceLink> getLinks() {return this.streamPath(ResourceLink.class, "links");}
+		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
+		public Long getReferencesCount() {return this.asLong("references-count").get();}
+ 		public String getTitle() {return this.streamPath("title").findFirst().get().asString();}
  		
+		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
 		@JsonProperty("original-title") public List<String> originalTitle = Collections.emptyList(); // No-Work titles in the work's original publication language

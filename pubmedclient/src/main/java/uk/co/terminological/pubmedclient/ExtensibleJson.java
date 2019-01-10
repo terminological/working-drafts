@@ -80,6 +80,18 @@ public class ExtensibleJson {
 		return Stream.empty();
 	}
 	
+	public String asString() {
+		return raw.asText();
+	}
+	
+	public Double asDouble() {
+		return raw.asDouble();
+	}
+	
+	public Long asLong() {
+		return raw.asLong();
+	}
+	
 	public Optional<String> asString(String key) {
 		return Optional.ofNullable(raw.get(key).asText(null));
 	}
