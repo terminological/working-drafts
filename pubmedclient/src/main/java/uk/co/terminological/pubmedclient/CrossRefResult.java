@@ -73,9 +73,12 @@ public class CrossRefResult {
 	
 	public static class Work extends ExtensibleJson {
 		public Work(JsonNode node) {super(node);}
+		
 		public Optional<Double> getScore() {return this.asDouble("score");}
+		
 		public String getDoi() {return this.asString("doi").get();}
 		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
+		
 		public Stream<ResourceLink> getLinks() {return this.streamPath(ResourceLink.class, "links");}
 		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 		public Long getReferencesCount() {return this.asLong("references-count").get();}
