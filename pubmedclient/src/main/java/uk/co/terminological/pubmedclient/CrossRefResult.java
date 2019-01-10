@@ -1,6 +1,6 @@
 package uk.co.terminological.pubmedclient;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +79,7 @@ public class CrossRefResult {
 		public String getDoi() {return this.asString("doi").get();}
 		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 		
-		public Stream<ResourceLink> getLinks() {return this.streamPath(ResourceLink.class, "links");}
+		//public Stream<ResourceLink> getLinks() {return this.streamPath(ResourceLink.class, "links");}
 		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 		public Long getReferencesCount() {return this.asLong("references-count").get();}
  		public String getTitle() {return this.streamPath("title").findFirst().get().asString();}
@@ -91,7 +91,15 @@ public class CrossRefResult {
  		public Optional<String> getYear() {return this.asString("container-title");}
  		public Optional<String> getPage() {return this.asString("page");}
 		
- 		
+ 		public Optional<URI> getTextMiningUri() {
+ 			// text-mining, similarity-checking or unspecified
+ 			return this
+ 					.streamPath("links")
+ 					.filter(n -> n.asString("intended-application").filter(s -> s.equals("text-mining")).isPresent())
+ 					.flatMap(n -> n.asString("URL").stream())
+ 					.map(URI::create)
+ 					.findFirst();
+ 		}
  		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
@@ -237,12 +245,12 @@ public class CrossRefResult {
 		@JsonProperty("URL") public Optional<URL> URL = Optional.empty(); // Yes-Link to a web page describing this license
 	}*/
 
-	public static class ResourceLink extends ExtensibleJson {
+	/*public static class ResourceLink extends ExtensibleJson {
 		@JsonProperty("intended-application") public Optional<String> intendedApplication = Optional.empty(); // Yes-Either text-mining, similarity-checking or unspecified
 		@JsonProperty("content-version") public Optional<String> contentVersion = Optional.empty(); // Yes-Either vor (version of record,) am (accepted manuscript) or unspecified
 		@JsonProperty("URL") public Optional<URL> URL = Optional.empty(); // Yes-Direct link to a full-text download location
 		@JsonProperty("content-type") public Optional<String> contentType = Optional.empty(); // No-Content type (or MIME type) of the full-text object
-	}
+	}*/
 
 	public static class Reference extends ExtensibleJson {
 		@JsonProperty("key") public Optional<String> key = Optional.empty(); // Yes-
