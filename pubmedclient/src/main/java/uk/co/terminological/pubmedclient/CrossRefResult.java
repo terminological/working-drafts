@@ -103,6 +103,10 @@ public class CrossRefResult {
  				.findFirst();
  		}
  		
+ 		public String getFirstAuthorName() {
+ 			return this.getAuthors().findFirst().flatMap(o -> o.getFamilyName()).get();
+ 		}
+ 		
  		public Optional<URI> getTextMiningUri() {
  			// text-mining, similarity-checking or unspecified
  			return this
