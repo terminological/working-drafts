@@ -1,6 +1,8 @@
 package uk.co.terminological.pubmedclient;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +81,8 @@ public class CrossRefResult {
 		public String getDoi() {return this.asString("doi").get();}
 		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 		
-		//public Stream<ResourceLink> getLinks() {return this.streamPath(ResourceLink.class, "links");}
+		public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
+		
 		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 		public Long getReferencesCount() {return this.asLong("references-count").get();}
  		public String getTitle() {return this.streamPath("title").findFirst().get().asString();}
@@ -95,7 +98,11 @@ public class CrossRefResult {
  			}
  		public Optional<String> getPage() {return this.asString("page");}
 		
- 		// TODO: public LocalDate from  create.date-parts.date-time
+ 		public Optional<LocalDate> getDate() {
+ 			return this.streamPath("create","date-parts","date-time").map(n -> n.asString())
+ 				.map(s -> LocalDate.parse(s, DateTimeFormatter.ISO_DATE_TIME))
+ 				.findFirst();
+ 		}
  		
  		public Optional<URI> getTextMiningUri() {
  			// text-mining, similarity-checking or unspecified
