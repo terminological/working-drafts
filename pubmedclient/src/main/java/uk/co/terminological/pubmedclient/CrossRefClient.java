@@ -1,7 +1,7 @@
 package uk.co.terminological.pubmedclient;
 
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -136,10 +136,7 @@ public class CrossRefClient extends CachingApiClient {
 
 		if (work.getLicenses().anyMatch(licenceFilter)) {
 
-			Optional<URL> url = work.getLinks()
-					.filter(rl -> rl.intendedApplication.orElse("").equals("text-mining"))
-					.flatMap(rl -> rl.URL.stream())
-					.findFirst();
+			Optional<URI> url = work.getTextMiningUri();
 			if (!url.isPresent()) throw new BibliographicApiException("no content for intended application of text-mining");
 
 			//TODO: try and find correct type for output, or specify xml. 
