@@ -70,7 +70,7 @@ public class TestEndToEnd {
 			}
 		})
 				.map(sr -> sr.getWork());
-		work.forEach(w -> w.title.forEach(System.out::println));
+		work.forEach(w -> System.out.println(w.getTitle()));
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
 		CrossRefResult.Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().getWork();
 		//System.out.println(work.journalAbstract.get());

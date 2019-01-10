@@ -18,7 +18,7 @@ public class TestJsonParsing {
 		CrossRefResult.ListResult  response = objectMapper.readValue(is, CrossRefResult.ListResult.class);
 		response.getMessage().getItems().forEach(
 				item -> {
-					item.title.forEach(System.out::println);
+					System.out.println(item.getTitle());
 					item.link.forEach(
 							rl -> System.out.println(rl.intendedApplication+" => "+rl.URL)
 							);

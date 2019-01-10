@@ -80,7 +80,13 @@ public class CrossRefResult {
 		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 		public Long getReferencesCount() {return this.asLong("references-count").get();}
  		public String getTitle() {return this.streamPath("title").findFirst().get().asString();}
+ 		public Optional<String> getAbstract() {return this.asString("abstract");}
  		
+ 		public Optional<String> getJournal() {return this.asString("container-title");}
+ 		public Optional<String> getVolume() {return this.asString("volume");}
+ 		public Optional<String> getIssue() {return this.asString("issue");}
+ 		public Optional<String> getYear() {return this.asString("container-title");}
+ 		public Optional<String> getPage() {return this.asString("page");}
 		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
