@@ -25,8 +25,18 @@ public class ExtensibleJson {
 	}
 	public JsonNode getRaw() {return raw;}
 	
+	public ExtensibleJson() {}
+	
 	public ExtensibleJson(JsonNode node) {
 		this.raw = node;
+	}
+	
+	public Stream<ExtensibleJson> streamNode() {
+		if (raw.isArray()) return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(raw.elements(), Spliterator.ORDERED),false)
+				.map(s -> new ExtensibleJson(s))
+				;
+		else return Stream.of(new ExtensibleJson(raw));
 	}
 	
 	public Stream<ExtensibleJson> streamNode(String key) {
