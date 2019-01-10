@@ -19,9 +19,7 @@ public class TestJsonParsing {
 		response.getMessage().getItems().forEach(
 				item -> {
 					System.out.println(item.getTitle());
-					item.getLinks().forEach(
-							rl -> System.out.println(rl.intendedApplication+" => "+rl.URL)
-							);
+					item.getTextMiningUri().ifPresent(System.out::println);
 				}
 				);
 		
