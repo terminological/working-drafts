@@ -19,7 +19,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.JAXBException;
 
 import org.ehcache.Cache;
-import org.isomorphism.util.TokenBucket;
 import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
