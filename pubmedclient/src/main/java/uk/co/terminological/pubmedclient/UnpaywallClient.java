@@ -1,9 +1,11 @@
 package uk.co.terminological.pubmedclient;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -13,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -21,9 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+
+import uk.co.terminological.pubmedclient.CrossRefResult.Contributor;
+import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
 
 public class UnpaywallClient extends CachingApiClient {
 
@@ -93,7 +100,7 @@ public class UnpaywallClient extends CachingApiClient {
 	
 	public Optional<InputStream> getPdfByResult(Result result) {
 		try {
-			String url = result.pdfUrl().orElseThrow(() -> new BibliographicApiException("no pdf for doi: "+result.doi.get()));
+			String url = result.getPdfUri().orElseThrow(() -> new BibliographicApiException("no pdf for doi: "+result.doi.get())).toString();
 			return getPdfFetcher().getPdfFromUrl(url);
 		} catch (Exception e) {
 			logger.debug("Cannot fetch content for {} - {}",result.doi.get(), e.getLocalizedMessage());
@@ -107,7 +114,50 @@ public class UnpaywallClient extends CachingApiClient {
 	}
 	
 	public static class Result extends ExtensibleJson {
-		@JsonProperty("best_oa_location") public Optional<Location> bestOaLocation = Optional.empty(); //The best OA Location Object we could find for this DOI.
+		public Result(JsonNode node) {super(node);}
+		
+		public String getDoi() {return this.asString("doi").get();}
+ 		public String getTitle() {return this.streamPath("title").findFirst().map(
+ 				n -> n.asString()).orElse(getJournal().orElse("No title"));}
+ 		public String getFirstAuthorName() {
+ 			return this.getAuthors().findFirst().flatMap(o -> o.getFamilyName()).get();
+ 		}
+ 		public Optional<String> getJournal() {return this.asString("journal_name");}
+ 		//public Optional<String> getVolume() {return Optional.empty();}
+ 		//public Optional<String> getIssue() {return Optional.empty();}
+ 		public Optional<Long> getYear() {return getDate().map(d -> (long) d.getYear());}
+ 		//public Optional<String> getPage() {return Optional.empty();}
+		
+ 		public Optional<LocalDate> getDate() {
+ 			return this.asString("published_date").map(LocalDate::parse);
+ 		}
+ 		
+ 		public Stream<String> getLicenses() {
+ 			return this.streamPath("oa_locations","URL").map(o -> o.asString());}
+ 		
+ 		
+ 		
+ 		//public Optional<Double> getScore() {return this.asDouble("score");}
+		//public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
+		
+ 		public Stream<Author> getAuthors() {return this.streamPath(Author.class, "z_authors");}
+ 		//public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
+		//public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
+		//public Long getReferencesCount() {return this.asLong("references-count").get();}
+ 		public Optional<String> getAbstract() {return this.asString("abstract");}
+ 		
+ 		public Optional<URI> getTextMiningUri() {
+ 			return Optional.empty();
+ 		}
+ 		
+ 		public Optional<URI> getPdfUri() {
+			return this.streamPath("best_oa_location","url_for_pdf").findFirst()
+					.or(() -> this.streamPath("oa_locations","url_for_pdf").findFirst())
+					.map(n -> URI.create(n.asString()));
+		}
+		
+		
+		/*@JsonProperty("best_oa_location") public Optional<Location> bestOaLocation = Optional.empty(); //The best OA Location Object we could find for this DOI.
 		@JsonProperty("data_standard") public Optional<Integer> dataStandard = Optional.empty(); //Indicates the data collection approaches used for this resource.
 		@JsonProperty("doi") public Optional<String> doi = Optional.empty(); //The DOI of this resource.
 		@JsonProperty("doi_url") public Optional<String> doiUrl = Optional.empty(); //The DOI in hyperlink form.
@@ -120,21 +170,14 @@ public class UnpaywallClient extends CachingApiClient {
 		@JsonProperty("oa_locations") public List<Location> oaLocations = Collections.emptyList(); //List of all the OA Location objects associated with this resource.
 		@JsonProperty("published_date") public Optional<Date> publishedDate = Optional.empty(); //The date this resource was published.
 		@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); //The name of this resource's publisher.
-		@JsonProperty("title") public Optional<String> title = Optional.empty(); //The title of this resource.
+		//@JsonProperty("title") public Optional<String> title = Optional.empty(); //The title of this resource.
 		@JsonProperty("updated") public Optional<Date> updated = Optional.empty(); //Time when the data for this resource was last updated.
 		@JsonProperty("year") public Optional<String> year = Optional.empty(); //The year this resource was published.
 		@JsonProperty("z_authors") public List<Author> zAuthors = Collections.emptyList(); //The authors of this resource.
-		public Optional<String> pdfUrl() {
-			if (bestOaLocation.isPresent() && bestOaLocation.get().urlForPdf.isPresent())
-				return bestOaLocation.get().urlForPdf;
-			return oaLocations.stream().flatMap(loc -> loc.urlForPdf.stream()).findFirst();
-		}
-		public Optional<LocalDate> getPublishedDate() {
-			return publishedDate.map(o -> o.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-		}
+		*/
 	}
 
-	public static class Location extends ExtensibleJson {
+	/*public static class Location extends ExtensibleJson {
 		@JsonProperty("evidence") public Optional<String> evidence = Optional.empty(); //How we found this OA location.
 		@JsonProperty("host_type") public Optional<String> hostType = Optional.empty(); //The type of host that serves this OA location.
 		@JsonProperty("is_best") public Optional<Boolean> isBest = Optional.empty(); //Is this location the bestOaLocation for its resource.See the DOI object's bestOaLocation description for more on how we select which location is "best."
@@ -145,20 +188,33 @@ public class UnpaywallClient extends CachingApiClient {
 		@JsonProperty("url_for_landing_page") public Optional<String> urlForLandingPage = Optional.empty(); //The URL for a landing page describing this OA copy.
 		@JsonProperty("url_for_pdf") public Optional<String> urlForPdf = Optional.empty(); //The URL with a PDF version of this OA copy.
 		@JsonProperty("version") public Optional<String> version = Optional.empty(); //The content version accessible at this location.
-	}
+	}*/
 
 	public static class Author extends ExtensibleJson {
-		@JsonProperty("family") public Optional<String> family = Optional.empty();
+		/*@JsonProperty("family") public Optional<String> family = Optional.empty();
 		@JsonProperty("given") public Optional<String> given = Optional.empty();
 		@JsonProperty("name") public Optional<String> name = Optional.empty();
 		@JsonProperty("ORCID") public Optional<String> orchid = Optional.empty();
 		@JsonProperty("authenticated-orcid") public Optional<Boolean> authenticated = Optional.empty();
 		@JsonProperty("affiliation") public List<Organisation> affiliation = Collections.emptyList();
+		*/
+		public Author(JsonNode node) { super(node); }
+		
+		public Optional<String> getFamilyName() {return this.asString("family");}
+		public Optional<URI> getORCID() {return this.asString("ORCID").map(URI::create);}
+		public Stream<String> getAffiliations() {return this.streamPath("affiliation","name").map(n -> n.asString());}
+		public Optional<String> getGivenName() {return this.asString("given");}
+		
+		public boolean isFirst() {return this.asString("sequence").filter(s -> s.equals("first")).isPresent();}
+		
+		public String getLabel() {
+			return (getFamilyName().orElse(this.asString("name").orElse("Unknown"))+", "+getGivenName().orElse("Unknown").substring(0, 1)).toLowerCase();
+		}
 	}
 	
-	public static class Organisation extends ExtensibleJson {
+	/*public static class Organisation extends ExtensibleJson {
 		@JsonProperty("name") public Optional<String> name = Optional.empty();
-	}
+	}*/
 	
 
 }
