@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 public class UnpaywallClient extends CachingApiClient {
@@ -31,7 +30,7 @@ public class UnpaywallClient extends CachingApiClient {
 	private static final Logger logger = LoggerFactory.getLogger(UnpaywallClient.class);
 
 	private String developerEmail;
-	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
+	private ObjectMapper objectMapper = new ObjectMapper();
 	private PdfFetcher pdfFetcher=null;
 
 	private PdfFetcher getPdfFetcher() {
