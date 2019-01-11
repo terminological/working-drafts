@@ -60,7 +60,7 @@ public class TestEndToEnd {
 		
 		System.out.println("Unpaywall entries");
 		unpaywall.getUnpaywallByDois(dois2).stream()
-			.forEach(res -> System.out.println(res.doi.get()+"\t"+res.title.get()+"\t"+res.pdfUrl()));
+			.forEach(res -> System.out.println(res.getDoi()+"\t"+res.getTitle()+"\t"+res.getPdfUri()));
 		
 		Stream<CrossRefResult.Work> work = dois2.stream().flatMap(doi -> {
 			try {
