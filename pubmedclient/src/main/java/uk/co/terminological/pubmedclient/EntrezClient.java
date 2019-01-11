@@ -52,8 +52,7 @@ public class EntrezClient extends CachingApiClient {
 	private static final String ESEARCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
 	private static final String EFETCH = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi";
 	private static final String ELINK = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi";
-	private TokenBucket rateLimiter;
-
+	
 	private static Map<String, EntrezClient> singleton = new HashMap<>();
 
 	public static EntrezClient create(String apiKey, String appId, String developerEmail) {
@@ -257,7 +256,7 @@ public class EntrezClient extends CachingApiClient {
 			fetchParams.add("db", "pubmed");
 			deferred.forEach(id -> fetchParams.add("id",id));
 			fetchParams.add("format", "xml");
-			rateLimiter.consume();
+			rateLimit();
 			logger.debug("making efetch query for {} pubmed records with params {}", deferred.size(), fetchParams.toString());
 			Optional<InputStream> is = this.buildCall(EFETCH, InputStream.class)
 					.withParams(fetchParams)

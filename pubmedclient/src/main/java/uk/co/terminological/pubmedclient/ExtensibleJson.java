@@ -40,7 +40,7 @@ public class ExtensibleJson {
 	
 	public Stream<ExtensibleJson> streamNode(String key) {
 		JsonNode node = raw.get(key); 
-		if (node.isNull() | node.isMissingNode()) return Stream.empty();
+		if (node == null || node.isNull() || node.isMissingNode()) return Stream.empty();
 		if (node.isArray()) return StreamSupport.stream(
 				Spliterators.spliteratorUnknownSize(node.elements(), Spliterator.ORDERED),false)
 				.map(s -> new ExtensibleJson(s))
@@ -102,7 +102,9 @@ public class ExtensibleJson {
 	}
 	
 	public Optional<String> asString(String key) {
-		return Optional.ofNullable(raw.get(key).asText(null));
+		JsonNode tmp = raw.get(key);
+		if (tmp == null) return Optional.empty();
+		return Optional.ofNullable(tmp.asText(null));
 	}
 	
 	public Optional<Double> asDouble(String key) {
@@ -122,7 +124,6 @@ public class ExtensibleJson {
 	public <X extends ExtensibleJson> Optional<X> asObject(Class<X> subtype, String key) {
 		if (!raw.has(key)) return Optional.empty();
 		JsonNode tmp = raw.get(key);
-		if (!tmp.canConvertToLong()) return Optional.empty(); 
 		try {
 			return Optional.of(subtype.getDeclaredConstructor(JsonNode.class).newInstance(tmp));
 		} catch (Exception e) {

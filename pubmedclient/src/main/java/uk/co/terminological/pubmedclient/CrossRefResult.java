@@ -75,25 +75,19 @@ public class CrossRefResult {
 	public static class Work extends ExtensibleJson {
 		public Work(JsonNode node) {super(node);}
 		
-		public Optional<Double> getScore() {return this.asDouble("score");}
-		
-		public String getDoi() {return this.asString("doi").get();}
-		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
-		
-		public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
-		
-		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
-		public Long getReferencesCount() {return this.asLong("references-count").get();}
- 		public String getTitle() {return this.streamPath("title").findFirst().get().asString();}
- 		public Optional<String> getAbstract() {return this.asString("abstract");}
- 		
+		public String getDoi() {return this.asString("DOI").get();}
+ 		public String getTitle() {return this.streamPath("title").findFirst().map(
+ 				n -> n.asString()).orElse(getJournal().orElse("No title"));}
+ 		public String getFirstAuthorName() {
+ 			return this.getAuthors().findFirst().flatMap(o -> o.getFamilyName()).get();
+ 		}
  		public Optional<String> getJournal() {return this.asString("container-title");}
  		public Optional<String> getVolume() {return this.asString("volume");}
  		public Optional<String> getIssue() {return this.asString("issue");}
- 		public Optional<String> getYear() {
+ 		public Optional<Long> getYear() {
  			return this.streamPath("published-print","date-parts")
  					.findFirst().stream() // weird nested array
- 					.findFirst().map(n -> n.asString());
+ 					.findFirst().map(n -> n.asLong());
  			}
  		public Optional<String> getPage() {return this.asString("page");}
 		
@@ -103,9 +97,18 @@ public class CrossRefResult {
  				.findFirst();
  		}
  		
- 		public String getFirstAuthorName() {
- 			return this.getAuthors().findFirst().flatMap(o -> o.getFamilyName()).get();
- 		}
+ 		
+ 		
+ 		
+ 		
+ 		public Optional<Double> getScore() {return this.asDouble("score");}
+		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
+		
+ 		public Stream<Contributor> getAuthors() {return this.streamPath(Contributor.class, "links");}
+ 		public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
+		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
+		public Long getReferencesCount() {return this.asLong("references-count").get();}
+ 		public Optional<String> getAbstract() {return this.asString("abstract");}
  		
  		public Optional<URI> getTextMiningUri() {
  			// text-mining, similarity-checking or unspecified
@@ -116,8 +119,6 @@ public class CrossRefResult {
  					.map(URI::create)
  					.findFirst();
  		}
- 		
- 		public Stream<Contributor> getAuthors() {return this.streamPath(Contributor.class, "links");}
  		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
@@ -209,6 +210,8 @@ public class CrossRefResult {
 
 	public static class Contributor extends ExtensibleJson {
 		
+		public Contributor(JsonNode node) { super(node); }
+		
 		public Optional<String> getFamilyName() {return this.asString("family");}
 		public Optional<URI> getORCID() {return this.asString("ORCID").map(URI::create);}
 		public Stream<String> getAffiliations() {return this.streamNode("affiliations").flatMap(n -> n.asString("name").stream());}
@@ -225,7 +228,7 @@ public class CrossRefResult {
 		@JsonProperty("name") public Optional<String> name = Optional.empty(); // Yes-
 	}*/
 
-	public static class Date extends ExtensibleJson {
+	/*public static class Date extends ExtensibleJson {
 		@JsonProperty("date-parts") public List<List<Integer>> dateParts = Collections.emptyList(); // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
 		@JsonProperty("timestamp") public Optional<Long> timestamp = Optional.empty(); // Yes-Seconds since UNIX epoch
 		@JsonProperty("date-time") public Optional<String> dateTime = Optional.empty(); // Yes-ISO 8601 date time
@@ -233,7 +236,7 @@ public class CrossRefResult {
 
 	public static class PartialDate extends ExtensibleJson {
 		@JsonProperty("date-parts") public List<List<Integer>> dateParts = Collections.emptyList(); // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
-	}
+	}*/
 
 	/*public static class Update extends ExtensibleJson {
 		@JsonProperty("updated") public Optional<PartialDate> updated = Optional.empty(); // Yes-Date on which the update was published
@@ -272,7 +275,20 @@ public class CrossRefResult {
 	}*/
 
 	public static class Reference extends ExtensibleJson {
-		@JsonProperty("key") public Optional<String> key = Optional.empty(); // Yes-
+		
+		public Reference(JsonNode node) { super(node); }
+		
+		public Optional<String> getDoi() {return this.asString("DOI");}
+		public Optional<String> getTitle() {return this.asString("article-title");}
+ 		public Optional<String> getFirstAuthorName() {return this.asString("author");}
+ 		public Optional<String> getJournal() {return this.asString("journal-title");}
+ 		public Optional<String> getVolume() {return this.asString("volume");}
+ 		public Optional<String> getIssue() {return this.asString("issue");}
+ 		public Optional<String> getYear() {return this.asString("year");}
+ 		public Optional<String> getPage() {return this.asString("first-page");}
+		
+		
+		/*@JsonProperty("key") public Optional<String> key = Optional.empty(); // Yes-
 		@JsonProperty("DOI") public Optional<String> DOI = Optional.empty(); // No-
 		@JsonProperty("doi-asserted-by") public Optional<String> doiAssertedBy = Optional.empty(); // No-One of crossref or publisher
 		@JsonProperty("issue") public Optional<String> issue = Optional.empty(); // No-
@@ -292,7 +308,7 @@ public class CrossRefResult {
 		@JsonProperty("ISSN") public Optional<String> ISSN = Optional.empty(); // No-
 		@JsonProperty("issn-type") public Optional<String> issnType = Optional.empty(); // No-One of pissn or eissn
 		@JsonProperty("ISBN") public Optional<String> ISBN = Optional.empty(); // No-
-		@JsonProperty("isbn-type") public Optional<String> isbnType = Optional.empty(); // No-
+		@JsonProperty("isbn-type") public Optional<String> isbnType = Optional.empty(); // No-*/
 	}
 
 	public static class ISSNWithType extends ExtensibleJson {
