@@ -3,12 +3,10 @@ package uk.co.terminological.pubmedclient;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+// import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /* 
@@ -311,10 +309,10 @@ public class CrossRefResult {
 		@JsonProperty("isbn-type") public Optional<String> isbnType = Optional.empty(); // No-*/
 	}
 
-	public static class ISSNWithType extends ExtensibleJson {
+	/*public static class ISSNWithType extends ExtensibleJson {
 		@JsonProperty("value") public Optional<String> value = Optional.empty(); // Yes-
 		@JsonProperty("type") public Optional<String> type = Optional.empty(); // Yes-One of eissn, pissn or lissn
-	}
+	}*/
 
 	/*
 	public static class ContentDomain extends ExtensibleJson {
