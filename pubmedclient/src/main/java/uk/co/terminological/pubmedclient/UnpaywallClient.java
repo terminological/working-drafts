@@ -4,13 +4,8 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -23,14 +18,10 @@ import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-
-import uk.co.terminological.pubmedclient.CrossRefResult.Contributor;
-import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
 
 public class UnpaywallClient extends CachingApiClient {
 
@@ -90,7 +81,7 @@ public class UnpaywallClient extends CachingApiClient {
 		logger.debug("fetching unpaywall record for: {}",doi);
 		return this.buildCall("https://api.unpaywall.org/v2/"+encode(doi), Result.class)
 			.cacheForever()
-			.withOperation(is -> objectMapper.readValue(is, Result.class))
+			.withOperation(is -> new Result(objectMapper.readTree(is)))
 			.get();
 	}
 
