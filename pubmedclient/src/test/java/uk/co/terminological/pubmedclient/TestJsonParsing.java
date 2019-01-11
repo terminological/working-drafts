@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
-import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
-
 public class TestJsonParsing {
 
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
