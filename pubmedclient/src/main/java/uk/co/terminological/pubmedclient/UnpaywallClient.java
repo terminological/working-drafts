@@ -100,10 +100,10 @@ public class UnpaywallClient extends CachingApiClient {
 	
 	public Optional<InputStream> getPdfByResult(Result result) {
 		try {
-			String url = result.getPdfUri().orElseThrow(() -> new BibliographicApiException("no pdf for doi: "+result.doi.get())).toString();
+			String url = result.getPdfUri().orElseThrow(() -> new BibliographicApiException("no pdf for doi: "+result.getDoi())).toString();
 			return getPdfFetcher().getPdfFromUrl(url);
 		} catch (Exception e) {
-			logger.debug("Cannot fetch content for {} - {}",result.doi.get(), e.getLocalizedMessage());
+			logger.debug("Cannot fetch content for {} - {}",result.getDoi(), e.getLocalizedMessage());
 			return Optional.empty();
 		}
 	}
