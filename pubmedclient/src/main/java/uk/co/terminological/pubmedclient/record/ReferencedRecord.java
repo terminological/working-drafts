@@ -1,5 +1,5 @@
 package uk.co.terminological.pubmedclient.record;
 
-public interface Referenced {
+public interface ReferencedRecord extends Record {
 
 }
