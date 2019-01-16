@@ -153,27 +153,8 @@ public class UnpaywallClient extends CachingApiClient {
 		
 	}
 
-	/*public static class Location extends ExtensibleJson {
-		@JsonProperty("evidence") public Optional<String> evidence = Optional.empty(); //How we found this OA location.
-		@JsonProperty("host_type") public Optional<String> hostType = Optional.empty(); //The type of host that serves this OA location.
-		@JsonProperty("is_best") public Optional<Boolean> isBest = Optional.empty(); //Is this location the bestOaLocation for its resource.See the DOI object's bestOaLocation description for more on how we select which location is "best."
-		@JsonProperty("license") public Optional<String> license = Optional.empty(); //The license under which this copy is published.
-		@JsonProperty("pmh_id") public Optional<String> pmhId = Optional.empty(); //OAI-PMH endpoint where we found this location.This is primarily for internal debugging. It's Null for locations that weren't found using OAI-PMH.
-		@JsonProperty("updated") public Optional<String> updated = Optional.empty(); //Time when the data for this location was last updated.Returned as an ISO8601-formatted timestamp. Example: 2017-08-17T23:43:27.753663
-		@JsonProperty("url") public Optional<String> url = Optional.empty(); //The urlForPdf if there is one; otherwise landing page URL.
-		@JsonProperty("url_for_landing_page") public Optional<String> urlForLandingPage = Optional.empty(); //The URL for a landing page describing this OA copy.
-		@JsonProperty("url_for_pdf") public Optional<String> urlForPdf = Optional.empty(); //The URL with a PDF version of this OA copy.
-		@JsonProperty("version") public Optional<String> version = Optional.empty(); //The content version accessible at this location.
-	}*/
-
 	public static class Author extends ExtensibleJson implements uk.co.terminological.pubmedclient.record.Author {
-		/*@JsonProperty("family") public Optional<String> family = Optional.empty();
-		@JsonProperty("given") public Optional<String> given = Optional.empty();
-		@JsonProperty("name") public Optional<String> name = Optional.empty();
-		@JsonProperty("ORCID") public Optional<String> orchid = Optional.empty();
-		@JsonProperty("authenticated-orcid") public Optional<Boolean> authenticated = Optional.empty();
-		@JsonProperty("affiliation") public List<Organisation> affiliation = Collections.emptyList();
-		*/
+		
 		public Author(JsonNode node) { super(node); }
 		
 		public String getLastName() {return this.asString("family").orElse(this.asString("name").orElse("Unknown"));}
@@ -194,10 +175,6 @@ public class UnpaywallClient extends CachingApiClient {
 
 		
 	}
-	
-	/*public static class Organisation extends ExtensibleJson {
-		@JsonProperty("name") public Optional<String> name = Optional.empty();
-	}*/
 	
 
 }
