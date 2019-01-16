@@ -497,11 +497,11 @@ public class PubMedGraphExperiment2 {
 				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 				List<Reference> referencedDois = tmp.stream()
 						.map(t -> t.getWork())
-						.flatMap(w -> w.reference.stream())
+						.flatMap(w -> w.getCitations())
 						.collect(Collectors.toList());
 				log.debug("Crossref found "+referencedDois.size()+" articles related to: "+doi);
 				mapCrossRefReferences(doi,referencedDois,graphApi);
-				outDois.addAll(referencedDois.stream().flatMap(c -> c.DOI.stream()).map(s -> s.toLowerCase()).collect(Collectors.toSet()));
+				outDois.addAll(referencedDois.stream().map(c -> c.getIdentifier()).map(s -> s.toLowerCase()).collect(Collectors.toSet()));
 			} catch (BibliographicApiException e) {
 				e.printStackTrace();
 			}
