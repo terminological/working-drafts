@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 // import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import pl.edu.icm.cermine.metadata.model.IDType;
 import uk.co.terminological.pubmedclient.record.Author;
 import uk.co.terminological.pubmedclient.record.IdType;
 import uk.co.terminological.pubmedclient.record.PrintRecord;
@@ -113,8 +112,7 @@ public class CrossRefResult {
 
 		@Override
 		public Optional<URI> getPdfUri() {
-			// TODO Auto-generated method stub
-			return null;
+			return Optional.empty();
 		}
 
 		
