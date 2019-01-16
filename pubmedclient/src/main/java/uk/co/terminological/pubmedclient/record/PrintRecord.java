@@ -10,4 +10,10 @@ public interface PrintRecord {
 	public Optional<String> getIssue();
 	public Optional<Long> getYear();
 	public Optional<String> getPage();
+	
+	public default String getLabel() {
+		return getFirstAuthorName()+" ("+getJournal()
+		+(getYear().isPresent() ? " "+getYear() : "") 
+		+")";
+	}
 }

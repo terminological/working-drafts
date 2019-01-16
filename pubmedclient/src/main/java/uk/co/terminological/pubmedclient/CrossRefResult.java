@@ -232,7 +232,7 @@ public class CrossRefResult {
 		public Reference(JsonNode node) { super(node); }
 		
 		public String getIdentifier() {return this.asString("DOI").orElse(
-				getFirstAuthorName()+" ("+getJournal()+" "+getYear()+")"
+				
 				);}
 		public Optional<String> getTitle() {return this.asString("article-title");}
  		public String getFirstAuthorName() {return this.asString("author").orElse("Unknown");}
