@@ -180,7 +180,7 @@ public class UnpaywallClient extends CachingApiClient {
 		@JsonProperty("version") public Optional<String> version = Optional.empty(); //The content version accessible at this location.
 	}*/
 
-	public static class Author extends ExtensibleJson {
+	public static class Author extends ExtensibleJson implements uk.co.terminological.pubmedclient.record.Author {
 		/*@JsonProperty("family") public Optional<String> family = Optional.empty();
 		@JsonProperty("given") public Optional<String> given = Optional.empty();
 		@JsonProperty("name") public Optional<String> name = Optional.empty();
@@ -190,15 +190,15 @@ public class UnpaywallClient extends CachingApiClient {
 		*/
 		public Author(JsonNode node) { super(node); }
 		
-		public Optional<String> getFamilyName() {return this.asString("family");}
-		public Optional<URI> getORCID() {return this.asString("ORCID").map(URI::create);}
+		public String getLastName() {return this.asString("family").orElse(this.asString("name").orElse("Unknown"));}
+		public Optional<String> getORCID() {return this.asString("ORCID");}
 		public Stream<String> getAffiliations() {return this.streamPath("affiliation","name").map(n -> n.asString());}
-		public Optional<String> getGivenName() {return this.asString("given");}
+		public Optional<String> getFirstName() {return this.asString("given");}
 		
 		public boolean isFirst() {return this.asString("sequence").filter(s -> s.equals("first")).isPresent();}
 		
 		public String getLabel() {
-			return (getFamilyName().orElse(this.asString("name").orElse("Unknown"))+", "+getGivenName().orElse("Unknown").substring(0, 1)).toLowerCase();
+			return (getLastName()+", "+getFirstName().orElse("Unknown").substring(0, 1)).toLowerCase();
 		}
 	}
 	
