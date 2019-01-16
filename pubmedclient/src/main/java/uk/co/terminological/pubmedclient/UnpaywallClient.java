@@ -94,10 +94,10 @@ public class UnpaywallClient extends CachingApiClient {
 	
 	public Optional<InputStream> getPdfByResult(Result result) {
 		try {
-			String url = result.getPdfUri().orElseThrow(() -> new BibliographicApiException("no pdf for doi: "+result.getDoi())).toString();
+			String url = result.getPdfUri().orElseThrow(() -> new BibliographicApiException("no pdf for doi: "+result.getIdentifier())).toString();
 			return getPdfFetcher().getPdfFromUrl(url);
 		} catch (Exception e) {
-			logger.debug("Cannot fetch content for {} - {}",result.getDoi(), e.getLocalizedMessage());
+			logger.debug("Cannot fetch content for {} - {}",result.getIdentifier(), e.getLocalizedMessage());
 			return Optional.empty();
 		}
 	}
@@ -119,10 +119,6 @@ public class UnpaywallClient extends CachingApiClient {
  		public String getJournal() {return this.asString("journal_name").orElse("Unknown");}
  		public Optional<Long> getYear() {return getDate().map(d -> (long) d.getYear());}
  		
- 		//public Optional<String> getVolume() {return Optional.empty();}
- 		//public Optional<String> getIssue() {return Optional.empty();}
- 		//public Optional<String> getPage() {return Optional.empty();}
-		
  		public Optional<LocalDate> getDate() {
  			return this.asString("published_date").map(LocalDate::parse);
  		}
@@ -130,15 +126,9 @@ public class UnpaywallClient extends CachingApiClient {
  		public Stream<String> getLicenses() {
  			return this.streamPath("oa_locations","URL").map(o -> o.asString());}
  		
- 		
- 		
  		//public Optional<Double> getScore() {return this.asDouble("score");}
-		//public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 		
  		public Stream<Author> getAuthors() {return this.streamPath(Author.class, "z_authors");}
- 		//public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
-		//public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
-		//public Long getReferencesCount() {return this.asLong("references-count").get();}
  		public Optional<String> getAbstract() {return this.asString("abstract");}
  		
  		public Optional<URI> getTextMiningUri() {
@@ -160,31 +150,7 @@ public class UnpaywallClient extends CachingApiClient {
 		public Set<RecordReference> getOtherIdentifiers() {
 			return Collections.emptySet();
 		}
-
-		@Override
-		public Stream<? extends RecordReference> getCitations() {
-			return Stream.empty();
-		}
 		
-		
-		/*@JsonProperty("best_oa_location") public Optional<Location> bestOaLocation = Optional.empty(); //The best OA Location Object we could find for this DOI.
-		@JsonProperty("data_standard") public Optional<Integer> dataStandard = Optional.empty(); //Indicates the data collection approaches used for this resource.
-		@JsonProperty("doi") public Optional<String> doi = Optional.empty(); //The DOI of this resource.
-		@JsonProperty("doi_url") public Optional<String> doiUrl = Optional.empty(); //The DOI in hyperlink form.
-		@JsonProperty("genre") public Optional<String> genre = Optional.empty(); //The type of resource.
-		@JsonProperty("is_oa") public Optional<Boolean> isOa = Optional.empty(); //True if there is an OA copy of this resource.
-		@JsonProperty("journal_is_in_doaj") public Optional<Boolean> journalIsInDoaj = Optional.empty(); //Is this resource published in a DOAJ-indexed journal.
-		@JsonProperty("journal_is_oa") public Optional<Boolean> journalIsOa = Optional.empty(); //Is this resource published in a completely OA journal.
-		@JsonProperty("journal_issns") public Optional<String> journalIssns = Optional.empty(); //Any ISSNs assigned to the journal publishing this resource.
-		@JsonProperty("journal_name") public Optional<String> journalName = Optional.empty(); //The name of the journal publishing this resource.
-		@JsonProperty("oa_locations") public List<Location> oaLocations = Collections.emptyList(); //List of all the OA Location objects associated with this resource.
-		@JsonProperty("published_date") public Optional<Date> publishedDate = Optional.empty(); //The date this resource was published.
-		@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); //The name of this resource's publisher.
-		//@JsonProperty("title") public Optional<String> title = Optional.empty(); //The title of this resource.
-		@JsonProperty("updated") public Optional<Date> updated = Optional.empty(); //Time when the data for this resource was last updated.
-		@JsonProperty("year") public Optional<String> year = Optional.empty(); //The year this resource was published.
-		@JsonProperty("z_authors") public List<Author> zAuthors = Collections.emptyList(); //The authors of this resource.
-		*/
 	}
 
 	/*public static class Location extends ExtensibleJson {
