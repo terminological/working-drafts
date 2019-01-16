@@ -22,8 +22,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import uk.co.terminological.pubmedclient.record.Affiliation;
-
 public class UnpaywallClient extends CachingApiClient {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
