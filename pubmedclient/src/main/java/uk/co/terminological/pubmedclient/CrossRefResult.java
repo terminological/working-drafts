@@ -65,7 +65,7 @@ public class CrossRefResult {
  		public String getTitle() {return this.streamPath("title").findFirst().map(
  				n -> n.asString()).orElse(getJournal());}
  		public String getFirstAuthorName() {
- 			return this.getAuthors().findFirst().flatMap(o -> o.getFamilyName()).get();
+ 			return this.getAuthors().findFirst().map(o -> o.getLastName()).orElse("Unknown");
  		}
  		public String getJournal() {return this.asString("container-title").orElse("No title");}
  		public Optional<String> getVolume() {return this.asString("volume");}
@@ -231,7 +231,9 @@ public class CrossRefResult {
 		
 		public Reference(JsonNode node) { super(node); }
 		
-		public Optional<String> getIdentifier() {return this.asString("DOI");}
+		public String getIdentifier() {return this.asString("DOI").orElse(
+				getFirstAuthorName()+" ("+getJournal()+" "+getYear()+")"
+				);}
 		public Optional<String> getTitle() {return this.asString("article-title");}
  		public String getFirstAuthorName() {return this.asString("author").orElse("Unknown");}
  		public String getJournal() {return this.asString("journal-title").orElse("Unknown");}
