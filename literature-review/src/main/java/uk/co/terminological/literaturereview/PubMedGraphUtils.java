@@ -227,32 +227,34 @@ public class PubMedGraphUtils {
 	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getLabel(),
-				author.lastName(),
-				author.firstName(), 
-				author.initials(), 
-				author.affiliations().collect(Collectors.toSet()),
-				author.orcid(), graph, tx)
+				author.getLastName(),
+				author.getFirstName(), 
+				author.getInitials(), 
+				author.getAffiliations().collect(Collectors.toSet()),
+				author.getORCID(), graph, tx)
 				;
 	}
 		
 	public static Optional<Node> mapAuthorToNode(Contributor author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getLabel(),
-				author.family, author.given, Optional.empty(),
-				author.affiliation.stream().flatMap(af -> af.name.stream()).collect(Collectors.toSet()),
-				author.ORCID.map(url -> url.toString()), graph, tx
+				author.getLastName(), 
+				author.getFirstName(), 
+				author.getInitials(),
+				author.getAffiliations().collect(Collectors.toSet()),
+				author.getORCID().map(url -> url.toString()), graph, tx
 				);
 	}
 	
 	
-	public static Optional<Node> mapAuthorToNode(String label, Optional<String> lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, Optional<String> orcid, GraphDatabaseApi graph, Transaction tx) {
+	public static Optional<Node> mapAuthorToNode(String label, String lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, Optional<String> orcid, GraphDatabaseApi graph, Transaction tx) {
 
 		Node out = null;
 
 			Node node = graph.get().createNode(Labels.AUTHOR);// doMerge(AUTHOR, "identifier", identifier, graph.get());
 			node.setProperty(Prop.AUTHOR_LABEL, label);
 			firstName.ifPresent(fn -> node.setProperty(Prop.FIRST_NAME, fn));
-			lastName.ifPresent(fn -> node.setProperty(Prop.LAST_NAME, fn));
+			node.setProperty(Prop.LAST_NAME, lastName);
 			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
 			orcid.ifPresent(fn -> node.setProperty(Prop.ORCID, fn));
 			affiliations.forEach(af -> {
