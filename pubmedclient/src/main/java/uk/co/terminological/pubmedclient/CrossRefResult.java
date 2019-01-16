@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.pubmedclient.record.Author;
+import uk.co.terminological.pubmedclient.record.Citation;
 import uk.co.terminological.pubmedclient.record.IdType;
 import uk.co.terminological.pubmedclient.record.PrintRecord;
 import uk.co.terminological.pubmedclient.record.RecordReference;
@@ -90,7 +91,7 @@ public class CrossRefResult {
 		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 		
  		public Stream<Contributor> getAuthors() {return this.streamPath(Contributor.class, "links");}
- 		public Stream<Reference> getCitations() {return this.streamPath(Reference.class, "reference");}
+ 		public Stream<Citation> getCitations() {return this.streamPath(Reference.class, "reference");}
 		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 		public Long getReferencesCount() {return this.asLong("references-count").get();}
  		public Optional<String> getAbstract() {return this.asString("abstract");}
