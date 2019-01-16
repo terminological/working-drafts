@@ -3,13 +3,19 @@ package uk.co.terminological.pubmedclient;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 // import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import pl.edu.icm.cermine.metadata.model.IDType;
+import uk.co.terminological.pubmedclient.record.Author;
+import uk.co.terminological.pubmedclient.record.IdType;
 import uk.co.terminological.pubmedclient.record.PrintRecord;
+import uk.co.terminological.pubmedclient.record.RecordReference;
 import uk.co.terminological.pubmedclient.record.RecordWithCitations;
 
 /* 
@@ -54,7 +60,8 @@ public class CrossRefResult {
 	public static class Work extends ExtensibleJson implements PrintRecord, RecordWithCitations {
 		public Work(JsonNode node) {super(node);}
 		
-		public String getDoi() {return this.asString("DOI").get();}
+		public String getIdentifier() {return this.asString("DOI").get();}
+		public IdType getIdentifierType() {return IdType.DOI;}
  		public String getTitle() {return this.streamPath("title").findFirst().map(
  				n -> n.asString()).orElse(getJournal());}
  		public String getFirstAuthorName() {
@@ -84,7 +91,7 @@ public class CrossRefResult {
 		public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 		
  		public Stream<Contributor> getAuthors() {return this.streamPath(Contributor.class, "links");}
- 		public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
+ 		public Stream<Reference> getCitations() {return this.streamPath(Reference.class, "reference");}
 		public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 		public Long getReferencesCount() {return this.asLong("references-count").get();}
  		public Optional<String> getAbstract() {return this.asString("abstract");}
@@ -98,6 +105,19 @@ public class CrossRefResult {
  					.map(URI::create)
  					.findFirst();
  		}
+
+		@Override
+		public Set<RecordReference> getOtherIdentifiers() {
+			return Collections.emptySet();
+		}
+
+		@Override
+		public Optional<URI> getPdfUri() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		
  		
 		/*@JsonProperty("publisher") public Optional<String> publisher = Optional.empty(); // Yes-Name of work's publisher
 		@JsonProperty("title") public List<String> title = Collections.emptyList(); // Yes-Work titles, including translated titles
@@ -187,84 +207,43 @@ public class CrossRefResult {
 		@JsonProperty("type") public Optional<String> type = Optional.empty(); // No-One of preResults, results or postResults
 	}*/
 
-	public static class Contributor extends ExtensibleJson {
+	public static class Contributor extends ExtensibleJson implements Author {
 		
 		public Contributor(JsonNode node) { super(node); }
 		
-		public Optional<String> getFamilyName() {return this.asString("family");}
-		public Optional<URI> getORCID() {return this.asString("ORCID").map(URI::create);}
+		public String getLastName() {return this.asString("family").orElse("Unknown");}
+		public Optional<String> getORCID() {return this.asString("ORCID");}
 		public Stream<String> getAffiliations() {return this.streamNode("affiliations").flatMap(n -> n.asString("name").stream());}
-		public Optional<String> getGivenName() {return this.asString("given");}
-		
+		public Optional<String> getFirstName() {return this.asString("given");}
 		public boolean isFirst() {return this.asString("sequence").filter(s -> s.equals("first")).isPresent();}
-		
 		public String getLabel() {
-			return (getFamilyName().orElse("Unknown")+", "+getGivenName().orElse("Unknown").substring(0, 1)).toLowerCase();
+			return (getFirstName().orElse("Unknown")+", "+getLastName().substring(0, 1)).toLowerCase();
+		}
+		@Override
+		public Optional<String> getInitials() {
+			return getFirstName().map(o -> o.substring(0, 1));
 		}
 	}
 
-	/*public static class Affiliation extends ExtensibleJson {
-		@JsonProperty("name") public Optional<String> name = Optional.empty(); // Yes-
-	}*/
 
-	/*public static class Date extends ExtensibleJson {
-		@JsonProperty("date-parts") public List<List<Integer>> dateParts = Collections.emptyList(); // Yes-Contains an ordered array of year, month, day of month. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
-		@JsonProperty("timestamp") public Optional<Long> timestamp = Optional.empty(); // Yes-Seconds since UNIX epoch
-		@JsonProperty("date-time") public Optional<String> dateTime = Optional.empty(); // Yes-ISO 8601 date time
-	}
 
-	public static class PartialDate extends ExtensibleJson {
-		@JsonProperty("date-parts") public List<List<Integer>> dateParts = Collections.emptyList(); // Yes-Contains an ordered array of year, month, day of month. Only year is required. Note that the field contains a nested array, e.g. [ [ 2006, 5, 19 ] ] to conform to citeproc JSON dates
-	}*/
-
-	/*public static class Update extends ExtensibleJson {
-		@JsonProperty("updated") public Optional<PartialDate> updated = Optional.empty(); // Yes-Date on which the update was published
-		@JsonProperty("DOI") public Optional<String> DOI = Optional.empty(); // Yes-DOI of the updated work
-		@JsonProperty("type") public Optional<String> type = Optional.empty(); // Yes-The type of update, for example retraction or correction
-		@JsonProperty("label") public Optional<String> label = Optional.empty(); // No-A display-friendly label for the update type
-	}
-
-	public static class Assertion extends ExtensibleJson {
-		@JsonProperty("name") public Optional<String> name = Optional.empty(); // Yes-
-		@JsonProperty("value") public Optional<String> value = Optional.empty(); // Yes-
-		@JsonProperty("URL") public Optional<URL> URL = Optional.empty(); // No-
-		@JsonProperty("explanation") public Optional<ExtensibleJson> explanation = Optional.empty(); // No-
-		@JsonProperty("label") public Optional<String> label = Optional.empty(); // No-
-		@JsonProperty("order") public Optional<Integer> order = Optional.empty(); // No-
-		@JsonProperty("group") public Optional<AssertionGroup> group = Optional.empty(); // No-
-	}
-
-	public static class AssertionGroup extends ExtensibleJson {
-		@JsonProperty("name") public Optional<String> name = Optional.empty(); // Yes-
-		@JsonProperty("label") public Optional<String> label = Optional.empty(); // No-
-	}
-
-	public static class License extends ExtensibleJson {
-		@JsonProperty("content-version") public Optional<String> contentVersion = Optional.empty(); // Yes-Either vor (version of record,) am (accepted manuscript,) tdm (text and data mining) or unspecified
-		@JsonProperty("delay-in-days") public Optional<Integer> delayInDays = Optional.empty(); // Yes-Integer of days between the publication date of the work and the start date of this license
-		@JsonProperty("start") public Optional<Date> start = Optional.empty(); // Yes-Date on which this license begins to take effect
-		@JsonProperty("URL") public Optional<URL> URL = Optional.empty(); // Yes-Link to a web page describing this license
-	}*/
-
-	/*public static class ResourceLink extends ExtensibleJson {
-		@JsonProperty("intended-application") public Optional<String> intendedApplication = Optional.empty(); // Yes-Either text-mining, similarity-checking or unspecified
-		@JsonProperty("content-version") public Optional<String> contentVersion = Optional.empty(); // Yes-Either vor (version of record,) am (accepted manuscript) or unspecified
-		@JsonProperty("URL") public Optional<URL> URL = Optional.empty(); // Yes-Direct link to a full-text download location
-		@JsonProperty("content-type") public Optional<String> contentType = Optional.empty(); // No-Content type (or MIME type) of the full-text object
-	}*/
-
-	public static class Reference extends ExtensibleJson {
+	public static class Reference extends ExtensibleJson implements RecordReference, PrintRecord {
 		
 		public Reference(JsonNode node) { super(node); }
 		
-		public Optional<String> getDoi() {return this.asString("DOI");}
+		public Optional<String> getIdentifier() {return this.asString("DOI");}
 		public Optional<String> getTitle() {return this.asString("article-title");}
- 		public Optional<String> getFirstAuthorName() {return this.asString("author");}
- 		public Optional<String> getJournal() {return this.asString("journal-title");}
+ 		public String getFirstAuthorName() {return this.asString("author").orElse("Unknown");}
+ 		public String getJournal() {return this.asString("journal-title").orElse("Unknown");}
  		public Optional<String> getVolume() {return this.asString("volume");}
  		public Optional<String> getIssue() {return this.asString("issue");}
- 		public Optional<String> getYear() {return this.asString("year");}
+ 		public Optional<Long> getYear() {return this.asLong("year");}
  		public Optional<String> getPage() {return this.asString("first-page");}
+
+		@Override
+		public IdType getIdentifierType() {
+			return IdType.DOI;
+		}
 		
 		
 		/*@JsonProperty("key") public Optional<String> key = Optional.empty(); // Yes-
