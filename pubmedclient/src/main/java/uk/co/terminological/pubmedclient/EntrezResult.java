@@ -100,7 +100,7 @@ public class EntrezResult {
 
 	}
 
-	public static class PubMedEntry {
+	public static class PubMedEntry  {
 
 		private XmlElement raw; //PubmedArticle
 

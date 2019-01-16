@@ -242,7 +242,7 @@ public class PubMedGraphUtils {
 				author.getFirstName(), 
 				author.getInitials(),
 				author.getAffiliations().collect(Collectors.toSet()),
-				author.getORCID().map(url -> url.toString()), graph, tx
+				author.getORCID(), graph, tx
 				);
 	}
 	
@@ -291,7 +291,7 @@ public class PubMedGraphUtils {
 			//Node start = 
 					doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
 			citedDois.forEach(cite -> {
-				cite.DOI.ifPresent(citedDoi -> {
+				cite.getIdentifier().ifPresent(citedDoi -> {
 					
 					Node end = doMerge(Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get(), citedStubLabel);
 					/*Relationship tmp = null;
