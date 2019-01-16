@@ -8,8 +8,6 @@ import java.util.stream.Stream;
 
 public interface Record {
 
-	public String getIdentifier();
-	public IdType getIdentifierType();
 	public RecordReference getPrimaryIdentifier();
 	public Set<RecordReference> getOtherIdentifiers();
 	public Stream<Author> getAuthors();
