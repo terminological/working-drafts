@@ -9,6 +9,6 @@ public interface Author {
 	Optional<String> getFirstName();
 	String getLastName();
 	Optional<String> getInitials();
-	Stream<Affiliation> getAffiliations();
+	Stream<String> getAffiliations();
 	
 }
