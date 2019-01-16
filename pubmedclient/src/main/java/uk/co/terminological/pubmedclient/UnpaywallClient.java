@@ -112,7 +112,7 @@ public class UnpaywallClient extends CachingApiClient {
  		public String getTitle() {return this.streamPath("title").findFirst().map(
  				n -> n.asString()).orElse(getJournal().orElse("No title"));}
  		public String getFirstAuthorName() {
- 			return this.getAuthors().findFirst().flatMap(o -> o.getLastName()).get();
+ 			return this.getAuthors().findFirst().map(o -> o.getLastName()).orElse("n/a");
  		}
  		public Optional<String> getJournal() {return this.asString("journal_name");}
  		//public Optional<String> getVolume() {return Optional.empty();}
