@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import uk.co.terminological.pubmedclient.record.Affiliation;
+
 public class UnpaywallClient extends CachingApiClient {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
@@ -110,7 +112,7 @@ public class UnpaywallClient extends CachingApiClient {
  		public String getTitle() {return this.streamPath("title").findFirst().map(
  				n -> n.asString()).orElse(getJournal().orElse("No title"));}
  		public String getFirstAuthorName() {
- 			return this.getAuthors().findFirst().flatMap(o -> o.getFamilyName()).get();
+ 			return this.getAuthors().findFirst().flatMap(o -> o.getLastName()).get();
  		}
  		public Optional<String> getJournal() {return this.asString("journal_name");}
  		//public Optional<String> getVolume() {return Optional.empty();}
@@ -200,6 +202,13 @@ public class UnpaywallClient extends CachingApiClient {
 		public String getLabel() {
 			return (getLastName()+", "+getFirstName().orElse("Unknown").substring(0, 1)).toLowerCase();
 		}
+
+		@Override
+		public Optional<String> getInitials() {
+			return getFirstName().map(s -> s.substring(0,1));
+		}
+
+		
 	}
 	
 	/*public static class Organisation extends ExtensibleJson {
