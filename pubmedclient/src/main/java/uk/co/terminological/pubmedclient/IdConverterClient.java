@@ -152,14 +152,14 @@ public class IdConverterClient extends CachingApiClient {
 	}
 	
 	//https://github.com/FasterXML/jackson-modules-java8
-	public static class Result extends ExtensibleJson {
+	public static class Result {
 		@JsonProperty("status") public Optional<String> status = Optional.empty();
 		@JsonProperty("responseDate") public Optional<String> responseDate = Optional.empty();
 		@JsonProperty("request") public Optional<String> request = Optional.empty();
 		@JsonProperty("records") public List<Record> records = Collections.emptyList();
 	}
 	
-	public static class Record extends ExtensibleJson {
+	public static class Record {
 		@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
 		@JsonProperty("pmid") public Optional<String> pmid = Optional.empty();
 		@JsonProperty("doi") public Optional<String> doi = Optional.empty();
@@ -172,7 +172,7 @@ public class IdConverterClient extends CachingApiClient {
 		public boolean idNotFound() { return status.orElse("ok").equals("error"); } 
 	}
 	
-	public static class Version extends ExtensibleJson {
+	public static class Version {
 		@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
 		@JsonProperty("mid") public Optional<String> pmid = Optional.empty();
 		@JsonProperty("current") public Optional<Boolean> current = Optional.empty();

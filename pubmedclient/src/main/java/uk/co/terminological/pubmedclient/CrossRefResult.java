@@ -9,6 +9,9 @@ import java.util.stream.Stream;
 // import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import uk.co.terminological.pubmedclient.record.PrintRecord;
+import uk.co.terminological.pubmedclient.record.RecordWithCitations;
+
 /* 
 Crossref Metadata API JSON Format
 Versioning
@@ -28,11 +31,6 @@ public class CrossRefResult {
 		public Optional<String> getStatus() {return this.asString("status");}
 		public Message getMessage() {return this.asObject(Message.class, "message").get();}
 		
-		
-		/*@JsonProperty("status") public Optional<String> status = Optional.empty();
-		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
-		@JsonProperty("message-version") public Optional<String> messageVersion = Optional.empty();
-		@JsonProperty("message") public Optional<Message> message = Optional.empty();*/
 	}
 	
 	public static class SingleResult extends ExtensibleJson {
@@ -41,10 +39,6 @@ public class CrossRefResult {
 		public Optional<String> getStatus() {return this.asString("status");}
 		public Work getWork() {return this.asObject(Work.class, "message").get();}
 		
-		/*@JsonProperty("status") public Optional<String> status = Optional.empty();
-		@JsonProperty("message-type") public Optional<String> messageType = Optional.empty();
-		@JsonProperty("message-version") public Optional<String> messageVersion = Optional.empty();
-		@JsonProperty("message") public Optional<Work> work = Optional.empty();*/
 	}
 	
 	//When message-type is work-list
@@ -55,31 +49,18 @@ public class CrossRefResult {
 		public Stream<Work> getItems() {return this.streamNode(Work.class, "items");}
 		public Optional<Long> getTotalResults() {return this.asLong("total-results");}
 		
-		/*@JsonProperty("facets") public Optional<Facets> facets = Optional.empty();
-		@JsonProperty("total-results") public Optional<Integer> totalResults = Optional.empty();
-		@JsonProperty("items") public List<Work> items = Collections.emptyList();
-		@JsonProperty("items-per-page") public Optional<Integer> itemsPerPage = Optional.empty();
-		@JsonProperty("query") public Optional<Query> query = Optional.empty();
-		@JsonProperty("next-cursor") public Optional<String> nextCursor = Optional.empty();*/
 	}
 	
-	/*public static class Facets extends ExtensibleJson {}
-	
-	public static class Query extends ExtensibleJson {
-		@JsonProperty("start-index") public Optional<Integer> startIndex = Optional.empty();
-		@JsonProperty("search-terms") public Optional<String> searchTerm = Optional.empty();
-	}*/
-	
-	public static class Work extends ExtensibleJson {
+	public static class Work extends ExtensibleJson implements PrintRecord, RecordWithCitations {
 		public Work(JsonNode node) {super(node);}
 		
 		public String getDoi() {return this.asString("DOI").get();}
  		public String getTitle() {return this.streamPath("title").findFirst().map(
- 				n -> n.asString()).orElse(getJournal().orElse("No title"));}
+ 				n -> n.asString()).orElse(getJournal());}
  		public String getFirstAuthorName() {
  			return this.getAuthors().findFirst().flatMap(o -> o.getFamilyName()).get();
  		}
- 		public Optional<String> getJournal() {return this.asString("container-title");}
+ 		public String getJournal() {return this.asString("container-title").orElse("No title");}
  		public Optional<String> getVolume() {return this.asString("volume");}
  		public Optional<String> getIssue() {return this.asString("issue");}
  		public Optional<Long> getYear() {
