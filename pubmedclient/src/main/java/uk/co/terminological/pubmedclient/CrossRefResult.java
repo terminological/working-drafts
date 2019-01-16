@@ -231,9 +231,7 @@ public class CrossRefResult {
 		
 		public Reference(JsonNode node) { super(node); }
 		
-		public String getIdentifier() {return this.asString("DOI").orElse(
-				
-				);}
+		public String getIdentifier() {return this.asString("DOI").orElse(getLabel());}
 		public Optional<String> getTitle() {return this.asString("article-title");}
  		public String getFirstAuthorName() {return this.asString("author").orElse("Unknown");}
  		public String getJournal() {return this.asString("journal-title").orElse("Unknown");}
@@ -244,7 +242,7 @@ public class CrossRefResult {
 
 		@Override
 		public IdType getIdentifierType() {
-			return IdType.DOI;
+			return this.asString("DOI").isPresent() ? IdType.DOI : IdType.MID;
 		}
 		
 		
