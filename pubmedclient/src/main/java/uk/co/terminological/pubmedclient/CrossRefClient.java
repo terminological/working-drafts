@@ -131,7 +131,7 @@ public class CrossRefClient extends CachingApiClient {
 
 	public InputStream getTDM(CrossRefResult.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
 
-		logger.debug("Retrieving crossref content for:" + work.getDoi()+": "+work.getTitle());
+		logger.debug("Retrieving crossref content for:" + work.getIdentifier()+": "+work.getTitle());
 
 		if (work.getLicenses().anyMatch(licenceFilter)) {
 
