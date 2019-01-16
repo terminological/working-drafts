@@ -18,7 +18,7 @@ public interface Record extends RecordReference {
 	public String getJournal();
 	public Optional<LocalDate> getDate();
 		
-	public Stream<? extends RecordReference> getCitations();
+	
 	public Optional<URI> getPdfUri(); 
 	
 }

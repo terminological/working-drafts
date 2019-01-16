@@ -5,6 +5,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -21,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+
+import uk.co.terminological.pubmedclient.record.IdType;
+import uk.co.terminological.pubmedclient.record.RecordReference;
 
 public class UnpaywallClient extends CachingApiClient {
 
@@ -103,16 +107,16 @@ public class UnpaywallClient extends CachingApiClient {
 		return result.flatMap(r -> getPdfByResult(r));
 	}
 	
-	public static class Result extends ExtensibleJson {
+	public static class Result extends ExtensibleJson implements uk.co.terminological.pubmedclient.record.Record {
 		public Result(JsonNode node) {super(node);}
 		
-		public String getDoi() {return this.asString("doi").get();}
+		public String getIdentifier() {return this.asString("doi").get();}
  		public String getTitle() {return this.streamPath("title").findFirst().map(
- 				n -> n.asString()).orElse(getJournal().orElse("No title"));}
+ 				n -> n.asString()).orElse(getJournal());}
  		public String getFirstAuthorName() {
  			return this.getAuthors().findFirst().map(o -> o.getLastName()).orElse("n/a");
  		}
- 		public Optional<String> getJournal() {return this.asString("journal_name");}
+ 		public String getJournal() {return this.asString("journal_name").orElse("Unknown");}
  		public Optional<Long> getYear() {return getDate().map(d -> (long) d.getYear());}
  		
  		//public Optional<String> getVolume() {return Optional.empty();}
@@ -145,6 +149,21 @@ public class UnpaywallClient extends CachingApiClient {
 			return this.streamPath("best_oa_location","url_for_pdf").findFirst()
 					.or(() -> this.streamPath("oa_locations","url_for_pdf").findFirst())
 					.map(n -> URI.create(n.asString()));
+		}
+
+		@Override
+		public IdType getIdentifierType() {
+			return IdType.DOI;
+		}
+
+		@Override
+		public Set<RecordReference> getOtherIdentifiers() {
+			return Collections.emptySet();
+		}
+
+		@Override
+		public Stream<? extends RecordReference> getCitations() {
+			return Stream.empty();
 		}
 		
 		
