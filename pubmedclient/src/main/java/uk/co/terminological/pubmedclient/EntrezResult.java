@@ -213,36 +213,36 @@ public class EntrezResult {
 		}
 	}
 
-	public static class Author {
+	public static class Author implements uk.co.terminological.pubmedclient.record.Author {
 
 		private XmlElement raw;
 		public Author(XmlElement raw) {this.raw = raw;}
-		public Optional<String> lastName() {
-			return raw.childElements("LastName").findFirst().flatMap(o -> o.getTextContent());
+		public String getLastName() {
+			return raw.childElements("LastName").findFirst().flatMap(o -> o.getTextContent()).orElse("Unknown");
 		}
-		public Optional<String> firstName() {
+		public Optional<String> getFirstName() {
 			return raw.childElements("ForeName").findFirst().flatMap(o -> o.getTextContent());
 		}
-		public Optional<String> initials() {
+		public Optional<String> getInitials() {
 			return raw.childElements("Initials").findFirst().flatMap(o -> o.getTextContent());
 		}
-		public Optional<String> orcid() {
+		public Optional<String> getORCID() {
 			try {
 				return raw.doXpath("./Identifier[@Source='ORCID']").get(XmlElement.class).flatMap(o -> o.getTextContent());
 			} catch (XmlException e) {
 				return Optional.empty();
 			}
 		}
- 		public Stream<String> affiliations() {
+ 		public Stream<String> getAffiliations() {
 			return raw.childElements("AffiliationInfo").stream()
 					.flatMap(el -> el.childElements("Affiliation").stream())
 					.flatMap(o -> o.getTextContent().stream());
 		}
 		public String getLabel() {
-			return (lastName().orElse("Unknown")+", "+initials().orElse("Unknown").substring(0, 1)).toLowerCase();
+			return (getLastName()+", "+getInitials().orElse("Unknown").substring(0, 1)).toLowerCase();
 		}
 		public String toString() {
-			return lastName().orElse("Unknown")+", "+initials().orElse("Unknown");
+			return getLastName()+", "+getInitials().orElse("Unknown");
 		}
 
 	}
