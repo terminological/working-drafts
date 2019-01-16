@@ -10,12 +10,16 @@ public interface Record {
 
 	public RecordReference getPrimaryIdentifier();
 	public Set<RecordReference> getOtherIdentifiers();
+	
 	public Stream<Author> getAuthors();
+	public Stream<String> getLicenses();
+	
 	public Optional<String> getAbstract();
 	public String getTitle();
-	public Stream<RecordReference> getCitations();
 	public String getJournal();
-	public Optional<URI> getPdfLocation(); 
-	public Optional<LocalDate> getPublishedDate();
+	public Optional<LocalDate> getDate();
+		
+	public Stream<RecordReference> getCitations();
+	public Optional<URI> getPdfUri(); 
 	
 }

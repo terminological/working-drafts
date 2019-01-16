@@ -113,9 +113,10 @@ public class UnpaywallClient extends CachingApiClient {
  			return this.getAuthors().findFirst().map(o -> o.getLastName()).orElse("n/a");
  		}
  		public Optional<String> getJournal() {return this.asString("journal_name");}
+ 		public Optional<Long> getYear() {return getDate().map(d -> (long) d.getYear());}
+ 		
  		//public Optional<String> getVolume() {return Optional.empty();}
  		//public Optional<String> getIssue() {return Optional.empty();}
- 		public Optional<Long> getYear() {return getDate().map(d -> (long) d.getYear());}
  		//public Optional<String> getPage() {return Optional.empty();}
 		
  		public Optional<LocalDate> getDate() {
