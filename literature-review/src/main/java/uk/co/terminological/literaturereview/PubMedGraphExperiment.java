@@ -460,7 +460,7 @@ public class PubMedGraphExperiment {
 								));
 							List<Reference> referencedDois = tmp.stream()
 								.map(t -> t.getWork())
-								.flatMap(w -> w.reference.stream())
+								.flatMap(w -> w.getCitations())
 								.collect(Collectors.toList());
 							context.getEventBus().logInfo("Crossref found "+referencedDois.size()+" articles related to: "+doi);
 							mapCrossRefReferences(doi,referencedDois,graph);
