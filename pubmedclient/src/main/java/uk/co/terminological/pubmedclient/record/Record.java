@@ -6,12 +6,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public interface Record {
+public interface Record extends RecordReference {
 
-	public RecordReference getPrimaryIdentifier();
 	public Set<RecordReference> getOtherIdentifiers();
 	
-	public Stream<Author> getAuthors();
+	public Stream<? extends Author> getAuthors();
 	public Stream<String> getLicenses();
 	
 	public Optional<String> getAbstract();
@@ -19,7 +18,7 @@ public interface Record {
 	public String getJournal();
 	public Optional<LocalDate> getDate();
 		
-	public Stream<RecordReference> getCitations();
+	public Stream<? extends RecordReference> getCitations();
 	public Optional<URI> getPdfUri(); 
 	
 }
