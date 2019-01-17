@@ -26,7 +26,7 @@ public class Work extends ExtensibleJson implements PrintRecord, RecordWithCitat
 	public Optional<String> getFirstAuthorName() {
 		return this.getAuthors().findFirst().map(o -> o.getLastName());
 	}
-	public Optional<String> getJournal() {return this.asString("container-title");}
+	public Optional<String> getJournal() {return this.streamNode("container-title").map(n -> n.asString()).findFirst();}
 	public Optional<String> getVolume() {return this.asString("volume");}
 	public Optional<String> getIssue() {return this.asString("issue");}
 	public Optional<Long> getYear() {
