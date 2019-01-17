@@ -19,7 +19,7 @@ public class Reference extends ExtensibleJson implements RecordReference, PrintR
 	public Optional<String> getJournal() {return this.asString("journal-title");}
 	public Optional<String> getVolume() {return this.asString("volume");}
 	public Optional<String> getIssue() {return this.asString("issue");}
-	public Optional<Long> getYear() {return this.asLong("year");}
+	public Optional<Long> getYear() {return this.asString("year").map(Long::parseLong);}
 	public Optional<String> getPage() {return this.asString("first-page");}
 
 	@Override
