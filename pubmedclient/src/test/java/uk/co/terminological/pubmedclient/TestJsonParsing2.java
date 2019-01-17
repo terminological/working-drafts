@@ -9,20 +9,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import uk.co.terminological.bibliography.crossref.ListResult;
+import uk.co.terminological.bibliography.entrez.PubMedEntries;
+import uk.co.terminological.fluentxml.Xml;
 
-public class TestJsonParsing2 {
+public class TestEntrezParsing {
 
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
 		// TODO Auto-generated method stub
 
-		ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());;
-		InputStream is = ClassLoader.getSystemResourceAsStream("ontologiesExample.json");
-		ListResult  response = new ListResult(objectMapper.readTree(is));
-		response.getMessage().getItems().forEach(
+		InputStream is = ClassLoader.getSystemResourceAsStream("efetch.json");
+		Xml xml = Xml.fromStream(is);
+		PubMedEntries  response = new PubMedEntries(xml.content());
+		response.stream().forEach(
 				item -> {
 					System.out.println("\n========================================\n"+item.getTitle());
 					System.out.println("abs: "+item.getAbstract());
-					System.out.println("cited by: "+item.getCitedByCount());
+					//System.out.println("cited by: "+item.getCitedByCount());
 					System.out.println("date: "+item.getDate());
 					System.out.println("first author: "+item.getFirstAuthorName());
 					System.out.println("id: "+item.getIdentifier());
@@ -31,10 +33,10 @@ public class TestJsonParsing2 {
 					System.out.println("journal: "+item.getJournal());
 					System.out.println("page: "+item.getPage());
 					System.out.println("pdf uri: "+item.getPdfUri());
-					System.out.println("references: "+item.getReferencesCount());
-					System.out.println("score: "+item.getScore());
+					//System.out.println("references: "+item.getReferencesCount());
+					//System.out.println("score: "+item.getScore());
 					System.out.println("title: "+item.getTitle());
-					System.out.println("tect mining uri: "+item.getTextMiningUri());
+					//System.out.println("tect mining uri: "+item.getTextMiningUri());
 					System.out.println("vol: "+item.getVolume());
 					System.out.println("year: "+item.getYear());
 					System.out.println("AUTHORS:");
@@ -46,7 +48,7 @@ public class TestJsonParsing2 {
 						System.out.println("orcid name: "+a.getORCID());
 					});
 					System.out.println("CITATIONS:");
-					item.getCitations().forEach(r -> {
+					/*item.getCitations().forEach(r -> {
 						System.out.println("CITATION:");
 						System.out.println(r.getFirstAuthorName());
 						System.out.println(r.getIdentifier());
@@ -57,7 +59,7 @@ public class TestJsonParsing2 {
 						System.out.println(r.getTitle());
 						System.out.println(r.getVolume());
 						System.out.println(r.getYear());
-					});
+					});*/
 				}
 				);
 		
