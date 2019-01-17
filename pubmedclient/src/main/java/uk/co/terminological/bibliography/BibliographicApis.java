@@ -1,4 +1,4 @@
-package uk.co.terminological.pubmedclient;
+package uk.co.terminological.bibliography;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -6,6 +6,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
+
+import uk.co.terminological.bibliography.crossref.CrossRefClient;
+import uk.co.terminological.bibliography.entrez.EntrezClient;
+import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
+import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
 
 public class BibliographicApis {
 

@@ -8,10 +8,12 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-import uk.co.terminological.pubmedclient.CrossRefClient.Field;
-import uk.co.terminological.pubmedclient.CrossRefClient.QueryBuilder;
-import uk.co.terminological.pubmedclient.CrossRefClient.Sort;
-import uk.co.terminological.pubmedclient.CrossRefClient.SortOrder;
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.crossref.CrossRefClient;
+import uk.co.terminological.bibliography.crossref.CrossRefClient.Field;
+import uk.co.terminological.bibliography.crossref.CrossRefClient.QueryBuilder;
+import uk.co.terminological.bibliography.crossref.CrossRefClient.Sort;
+import uk.co.terminological.bibliography.crossref.CrossRefClient.SortOrder;
 
 public class TestCrossRefClient {
 

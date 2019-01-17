@@ -18,7 +18,6 @@ import static uk.co.terminological.literaturereview.PubMedGraphUtils.updateUnpay
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,26 +44,26 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import pl.edu.icm.cermine.exception.AnalysisException;
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.BibliographicApis;
+import uk.co.terminological.bibliography.crossref.Reference;
+import uk.co.terminological.bibliography.crossref.SingleResult;
+import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
+import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
+import uk.co.terminological.bibliography.entrez.EntrezClient.ELinksQueryBuilder;
+import uk.co.terminological.bibliography.entrez.Link;
+import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.entrez.Search;
+import uk.co.terminological.bibliography.pmcidconv.Record;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.unpaywall.Result;
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 import uk.co.terminological.nlptools.Similarity;
 import uk.co.terminological.nlptools.StringCrossMapper;
-import uk.co.terminological.pubmedclient.BibliographicApiException;
-import uk.co.terminological.pubmedclient.BibliographicApis;
-import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
-import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
-import uk.co.terminological.pubmedclient.CrossRefResult.Work;
-import uk.co.terminological.pubmedclient.EntrezClient.Command;
-import uk.co.terminological.pubmedclient.EntrezClient.Database;
-import uk.co.terminological.pubmedclient.EntrezClient.ELinksQueryBuilder;
-import uk.co.terminological.pubmedclient.EntrezResult.Link;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-import uk.co.terminological.pubmedclient.EntrezResult.Search;
-import uk.co.terminological.pubmedclient.IdConverterClient.Record;
-import uk.co.terminological.pubmedclient.UnpaywallClient.Result;
-import uk.co.terminological.pubmedclient.record.IdType;
 
 public class PubMedGraphExperiment2 {
 
@@ -180,6 +179,7 @@ public class PubMedGraphExperiment2 {
 		// work out what pmids we already have written in graph from the broader search and which we need to get.
 		List<Link> links = findPMCCitedByPMIDs(broadSearch.getIds().collect(Collectors.toList()));
 		Set<String> ancestorPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
+		//TODO: something with these?
 		
 		Set<String> broadSearchPlusAncestorPMIDs =broadSearch.getIds().collect(Collectors.toSet());
 		//TODO: broadSearchPlusAncestorPMIDs.addAll(ancestorPMIDs);
@@ -501,7 +501,7 @@ public class PubMedGraphExperiment2 {
 						.collect(Collectors.toList());
 				log.debug("Crossref found "+referencedDois.size()+" articles related to: "+doi);
 				mapCrossRefReferences(doi,referencedDois,graphApi);
-				outDois.addAll(referencedDois.stream().map(c -> c.getIdentifier()).map(s -> s.toLowerCase()).collect(Collectors.toSet()));
+				outDois.addAll(referencedDois.stream().flatMap(c -> c.getIdentifier().stream()).map(s -> s.toLowerCase()).collect(Collectors.toSet()));
 			} catch (BibliographicApiException e) {
 				e.printStackTrace();
 			}

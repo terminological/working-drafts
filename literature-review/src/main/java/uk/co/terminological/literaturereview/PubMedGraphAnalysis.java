@@ -1,20 +1,21 @@
 package uk.co.terminological.literaturereview;
 
-import static uk.co.terminological.simplechart.Chart.Dimension.*;
+import static uk.co.terminological.simplechart.Chart.Dimension.ID;
+import static uk.co.terminological.simplechart.Chart.Dimension.LABEL;
+import static uk.co.terminological.simplechart.Chart.Dimension.STRENGTH;
+import static uk.co.terminological.simplechart.Chart.Dimension.TEXT;
+import static uk.co.terminological.simplechart.Chart.Dimension.X;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.neo4j.driver.v1.AuthTokens;

@@ -12,11 +12,13 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.terminological.pubmedclient.EntrezClient.Command;
-import uk.co.terminological.pubmedclient.EntrezClient.Database;
-import uk.co.terminological.pubmedclient.EntrezResult.Links;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-import uk.co.terminological.pubmedclient.EntrezResult.Search;
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.entrez.EntrezClient;
+import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
+import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
+import uk.co.terminological.bibliography.entrez.Links;
+import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.entrez.Search;
 
 public class TestPubMedRestClient {
 

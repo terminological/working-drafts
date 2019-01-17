@@ -64,6 +64,9 @@ public class PubMedGraphSchema {
 		public static final String ORGANISATION_NAME = "organisationName";
 		public static final String ORCID = "orcid";
 		public static final String SCORE = "score";
+		public static final String JOURNAL = "journal";
+		public static final String CITED_BY = "citedByCount";
+		public static final String REFERENCE_COUNT = "referencesCount";
 	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {

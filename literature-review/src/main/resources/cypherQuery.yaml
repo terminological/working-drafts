@@ -47,6 +47,7 @@ build:
     CALL algo.louvain('Author', 'CO_AUTHOR', {direction:'out', write:true, writeProperty:"community"}) 
     YIELD nodes, communityCount, iterations, loadMillis, computeMillis, writeMillis;
 
+<<<<<<<<<<<<<<<<<
 # as co-author community graph is disconnected we look at harmonic centrality
 - createAuthorCoauthorHarmonicCentrality: | # https://infoscience.epfl.ch/record/200525/files/[EN]ASNA09.pdf;
     CALL algo.closeness.harmonic('Author','CO_AUTHOR',{direction:'both', write:true, writeProperty:"harmonic"})

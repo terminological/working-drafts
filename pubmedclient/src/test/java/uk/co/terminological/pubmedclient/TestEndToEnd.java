@@ -15,7 +15,14 @@ import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 
-import uk.co.terminological.pubmedclient.record.IdType;
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.crossref.CrossRefClient;
+import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.entrez.EntrezClient;
+import uk.co.terminological.bibliography.entrez.Search;
+import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
 
 public class TestEndToEnd {
 
@@ -40,7 +47,7 @@ public class TestEndToEnd {
 		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache.resolve("xref"));
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail, ehcache.resolve("unpaywall"));
 		
-		EntrezResult.Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
+		Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
 				LocalDate.of(2016, 01, 1), 
 				LocalDate.of(2017, 01, 1)).execute().get();
 		
@@ -60,9 +67,9 @@ public class TestEndToEnd {
 		
 		System.out.println("Unpaywall entries");
 		unpaywall.getUnpaywallByDois(dois2).stream()
-			.forEach(res -> System.out.println(res.getIdentifier()+"\t"+res.getTitle()+"\t"+res.getPdfUri()));
+			.forEach(res -> System.out.println(res.getIdentifier().orElse("?")+"\t"+res.getTitle()+"\t"+res.getPdfUri()));
 		
-		Stream<CrossRefResult.Work> work = dois2.stream().flatMap(doi -> {
+		Stream<Work> work = dois2.stream().flatMap(doi -> {
 			try {
 				return xref.getByDoi(doi).stream();
 			} catch (BibliographicApiException e) {
@@ -72,9 +79,9 @@ public class TestEndToEnd {
 				.map(sr -> sr.getWork());
 		work.forEach(w -> System.out.println(w.getTitle()));
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
-		CrossRefResult.Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().getWork();
+		Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().getWork();
 		//System.out.println(work.journalAbstract.get());
-		work2.getCitations().forEach(r -> System.out.println(r.getIdentifier()+"\t"+r.getTitle().orElse("No title")));
+		work2.getCitations().forEach(r -> System.out.println(r.getIdentifier().orElse("?")+"\t"+r.getTitle().orElse("No title")));
 		System.exit(0);
 	}
 

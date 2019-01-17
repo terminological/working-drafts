@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pl.edu.icm.cermine.exception.AnalysisException;
-import uk.co.terminological.pubmedclient.BibliographicApiException;
+import uk.co.terminological.bibliography.BibliographicApiException;
 
 
 

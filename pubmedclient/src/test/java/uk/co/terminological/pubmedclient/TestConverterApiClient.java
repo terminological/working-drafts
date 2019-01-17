@@ -6,7 +6,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.co.terminological.pubmedclient.record.IdType;
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
+import uk.co.terminological.bibliography.record.IdType;
 
 public class TestConverterApiClient {
 

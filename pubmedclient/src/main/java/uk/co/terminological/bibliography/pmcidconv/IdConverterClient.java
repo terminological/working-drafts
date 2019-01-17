@@ -1,10 +1,9 @@
-package uk.co.terminological.pubmedclient;
+package uk.co.terminological.bibliography.pmcidconv;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,13 +21,15 @@ import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import uk.co.terminological.pubmedclient.record.IdType;
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.BinaryData;
+import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.record.IdType;
 
 public class IdConverterClient extends CachingApiClient {
 
@@ -149,35 +150,6 @@ public class IdConverterClient extends CachingApiClient {
 		return getMapping(ids, type).stream()
 				.flatMap(r -> r.pmid.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toSet());
-	}
-	
-	//https://github.com/FasterXML/jackson-modules-java8
-	public static class Result {
-		@JsonProperty("status") public Optional<String> status = Optional.empty();
-		@JsonProperty("responseDate") public Optional<String> responseDate = Optional.empty();
-		@JsonProperty("request") public Optional<String> request = Optional.empty();
-		@JsonProperty("records") public List<Record> records = Collections.emptyList();
-	}
-	
-	public static class Record {
-		@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
-		@JsonProperty("pmid") public Optional<String> pmid = Optional.empty();
-		@JsonProperty("doi") public Optional<String> doi = Optional.empty();
-		@JsonProperty("live") public Optional<Boolean> live = Optional.empty();
-		@JsonProperty("status") public Optional<String> status = Optional.empty();
-		@JsonProperty("errmsg") public Optional<String> errmsg = Optional.empty();
-		@JsonProperty("versions") public List<Version> versions = Collections.emptyList();
-		@JsonProperty("release-date") public Optional<String> releaseDate = Optional.empty();
-		
-		public boolean idNotFound() { return status.orElse("ok").equals("error"); } 
-	}
-	
-	public static class Version {
-		@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
-		@JsonProperty("mid") public Optional<String> pmid = Optional.empty();
-		@JsonProperty("current") public Optional<Boolean> current = Optional.empty();
-		@JsonProperty("live") public Optional<Boolean> live = Optional.empty();
-		@JsonProperty("release-date") public Optional<String> releaseDate = Optional.empty();
 	}
 
 	

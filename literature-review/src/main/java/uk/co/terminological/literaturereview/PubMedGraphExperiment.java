@@ -34,6 +34,15 @@ import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.BibliographicApis;
+import uk.co.terminological.bibliography.crossref.Reference;
+import uk.co.terminological.bibliography.crossref.SingleResult;
+import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
+import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
+import uk.co.terminological.bibliography.entrez.Link;
+import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
 import uk.co.terminological.pipestream.FluentEvents.Events;
@@ -41,15 +50,6 @@ import uk.co.terminological.pipestream.FluentEvents.Generators;
 import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
 import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
-import uk.co.terminological.pubmedclient.BibliographicApiException;
-import uk.co.terminological.pubmedclient.BibliographicApis;
-import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
-import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
-import uk.co.terminological.pubmedclient.EntrezClient.Command;
-import uk.co.terminological.pubmedclient.EntrezClient.Database;
-import  uk.co.terminological.pubmedclient.EntrezResult.Link;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-import uk.co.terminological.pubmedclient.record.IdType;
 
 public class PubMedGraphExperiment {
 

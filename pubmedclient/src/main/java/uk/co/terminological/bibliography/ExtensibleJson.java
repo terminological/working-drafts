@@ -1,10 +1,11 @@
-package uk.co.terminological.pubmedclient;
+package uk.co.terminological.bibliography;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -58,7 +59,7 @@ public class ExtensibleJson {
 	
 	public <X extends ExtensibleJson> Stream<X> streamNode(Class<X> subtype, String key) {
 		JsonNode node = raw.get(key); 
-		if (node.isNull() | node.isMissingNode()) return Stream.empty();
+		if (node == null || node.isNull() || node.isMissingNode()) return Stream.empty();
 		if (node.isArray()) return StreamSupport.stream(
 				Spliterators.spliteratorUnknownSize(node.elements(), Spliterator.ORDERED),false)
 				.map(s -> {
@@ -75,6 +76,20 @@ public class ExtensibleJson {
 			}
 	}
 	
+	public <X extends ExtensibleJson> Stream<X> streamNode(Function<ExtensibleJson,X> converter, String key) {
+		JsonNode node = raw.get(key); 
+		if (node == null || node.isNull() || node.isMissingNode()) return Stream.empty();
+		if (node.isArray()) return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(node.elements(), Spliterator.ORDERED),false)
+				.map(s -> converter.apply(new ExtensibleJson(s)));
+		else
+			try {
+				return Stream.of(converter.apply(new ExtensibleJson(node)));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+	}
+	
 	public <X extends ExtensibleJson> Stream<X> streamPath(Class<X> subtype, String... keys) {
 		Stream<ExtensibleJson> out = Stream.of(this);
 		Iterator<String> keysIt = Arrays.asList(keys).iterator();
@@ -82,6 +97,20 @@ public class ExtensibleJson {
 			String key = keysIt.next();
 			if (!keysIt.hasNext()) {
 				return out.flatMap(t -> t.streamNode(subtype, key));
+			} else {
+				out = out.flatMap(t -> t.streamNode(key));
+			}
+		}
+		return Stream.empty();
+	}
+	
+	public <X extends ExtensibleJson> Stream<X> streamPath(Function<ExtensibleJson, X> converter, String... keys) {
+		Stream<ExtensibleJson> out = Stream.of(this);
+		Iterator<String> keysIt = Arrays.asList(keys).iterator();
+		while (keysIt.hasNext()) { 
+			String key = keysIt.next();
+			if (!keysIt.hasNext()) {
+				return out.flatMap(t -> t.streamNode(converter, key));
 			} else {
 				out = out.flatMap(t -> t.streamNode(key));
 			}

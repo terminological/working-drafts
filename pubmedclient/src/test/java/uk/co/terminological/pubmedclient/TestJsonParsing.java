@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
+import uk.co.terminological.bibliography.crossref.ListResult;
+
 public class TestJsonParsing {
 
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
@@ -15,7 +17,7 @@ public class TestJsonParsing {
 
 		ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());;
 		InputStream is = ClassLoader.getSystemResourceAsStream("ontologiesExample.json");
-		CrossRefResult.ListResult  response = new CrossRefResult.ListResult(objectMapper.readTree(is));
+		ListResult  response = new ListResult(objectMapper.readTree(is));
 		response.getMessage().getItems().forEach(
 				item -> {
 					System.out.println(item.getTitle());

@@ -1,4 +1,4 @@
-package uk.co.terminological.pubmedclient.record;
+package uk.co.terminological.bibliography.record;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -14,8 +14,8 @@ public interface Record extends RecordReference {
 	public Stream<String> getLicenses();
 	
 	public Optional<String> getAbstract();
-	public String getTitle();
-	public String getJournal();
+	public Optional<String> getTitle();
+	public Optional<String> getJournal();
 	public Optional<LocalDate> getDate();
 		
 	

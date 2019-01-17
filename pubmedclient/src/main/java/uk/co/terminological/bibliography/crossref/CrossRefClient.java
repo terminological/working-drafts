@@ -1,4 +1,4 @@
-package uk.co.terminological.pubmedclient;
+package uk.co.terminological.bibliography.crossref;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -22,9 +22,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import uk.co.terminological.pubmedclient.CrossRefResult.ListResult;
-import uk.co.terminological.pubmedclient.CrossRefResult.SingleResult;
-import uk.co.terminological.pubmedclient.CrossRefResult.Work;
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.CachingApiClient;
 
 public class CrossRefClient extends CachingApiClient {
 	// https://www.crossref.org/schemas/
@@ -129,9 +128,9 @@ public class CrossRefClient extends CachingApiClient {
 		}
 	}*/
 
-	public InputStream getTDM(CrossRefResult.Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
+	public InputStream getTDM(Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
 
-		logger.debug("Retrieving crossref content for:" + work.getIdentifier()+": "+work.getTitle());
+		logger.debug("Retrieving crossref content for:" + work.getIdentifier().orElse("?")+": "+work.getTitle());
 
 		if (work.getLicenses().anyMatch(licenceFilter)) {
 

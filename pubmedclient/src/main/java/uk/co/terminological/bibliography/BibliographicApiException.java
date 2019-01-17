@@ -1,4 +1,4 @@
-package uk.co.terminological.pubmedclient;
+package uk.co.terminological.bibliography;
 
 public class BibliographicApiException extends Exception {
 	public BibliographicApiException(String string) {

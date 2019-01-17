@@ -1,6 +1,12 @@
 package uk.co.terminological.literaturereview;
 
 
+import uk.co.terminological.bibliography.crossref.Reference;
+import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.entrez.Link;
+import uk.co.terminological.bibliography.entrez.MeshCode;
+import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.unpaywall.Result;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
@@ -27,15 +33,6 @@ import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import uk.co.terminological.pubmedclient.CrossRefResult.Contributor;
-import uk.co.terminological.pubmedclient.CrossRefResult.Reference;
-import uk.co.terminological.pubmedclient.CrossRefResult.Work;
-import uk.co.terminological.pubmedclient.EntrezResult.Author;
-import uk.co.terminological.pubmedclient.EntrezResult.Link;
-import uk.co.terminological.pubmedclient.EntrezResult.MeshCode;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
-import uk.co.terminological.pubmedclient.UnpaywallClient.Result;
 
 public class PubMedGraphUtils {
 
@@ -185,8 +182,8 @@ public class PubMedGraphUtils {
 				Node node = tmp;
 				
 				entry.getPMCID().ifPresent(pmc -> node.setProperty(Prop.PMCID, pmc));
-				entry.getPMCPdfUrl().ifPresent(url -> node.setProperty(Prop.PDF_URL, url));
-				entry.getPubMedDate().ifPresent(dt -> {
+				entry.getPdfUri().ifPresent(url -> node.setProperty(Prop.PDF_URL, url.toString()));
+				entry.getDate().ifPresent(dt -> {
 					node.setProperty(Prop.DATE, dt);
 					/*if (dt.isAfter(earliest) && dt.isBefore(latest)) {
 						node.addLabel(EXPAND);
@@ -194,8 +191,8 @@ public class PubMedGraphUtils {
 						logger.debug("not expanding: date="+dt.format(DateTimeFormatter.ISO_LOCAL_DATE)+" title="+entry.getTitle() );
 					}*/
 				});
-				node.setProperty(Prop.ABSTRACT, entry.getAbstract());
-				node.setProperty(Prop.TITLE, entry.getTitle());
+				entry.getAbstract().ifPresent(abs -> node.setProperty(Prop.ABSTRACT, abs));
+				entry.getTitle().ifPresent(title -> node.setProperty(Prop.TITLE, title));
 				node.removeLabel(Labels.DOI_STUB);
 				node.removeLabel(Labels.PMID_STUB);
 				node.removeLabel(Labels.PMCENTRAL_STUB);
@@ -224,7 +221,7 @@ public class PubMedGraphUtils {
 
 	}
 
-	public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
+	/*public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getLabel(),
 				author.getLastName(),
@@ -233,31 +230,18 @@ public class PubMedGraphUtils {
 				author.getAffiliations().collect(Collectors.toSet()),
 				author.getORCID(), graph, tx)
 				;
-	}
+	}*/
 		
-	public static Optional<Node> mapAuthorToNode(Contributor author, GraphDatabaseApi graph, Transaction tx) {
-		return mapAuthorToNode(
-				author.getLabel(),
-				author.getLastName(), 
-				author.getFirstName(), 
-				author.getInitials(),
-				author.getAffiliations().collect(Collectors.toSet()),
-				author.getORCID(), graph, tx
-				);
-	}
-	
-	
-	public static Optional<Node> mapAuthorToNode(String label, String lastName, Optional<String> firstName, Optional<String> initials, Set<String> affiliations, Optional<String> orcid, GraphDatabaseApi graph, Transaction tx) {
-
+	public static Optional<Node> mapAuthorToNode(uk.co.terminological.bibliography.record.Author author, GraphDatabaseApi graph, Transaction tx) {
 		Node out = null;
 
 			Node node = graph.get().createNode(Labels.AUTHOR);// doMerge(AUTHOR, "identifier", identifier, graph.get());
-			node.setProperty(Prop.AUTHOR_LABEL, label);
-			firstName.ifPresent(fn -> node.setProperty(Prop.FIRST_NAME, fn));
-			node.setProperty(Prop.LAST_NAME, lastName);
-			initials.ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
-			orcid.ifPresent(fn -> node.setProperty(Prop.ORCID, fn));
-			affiliations.forEach(af -> {
+			node.setProperty(Prop.AUTHOR_LABEL, author.getLabel());
+			node.setProperty(Prop.LAST_NAME, author.getLastName());
+			author.getFirstName().ifPresent(fn -> node.setProperty(Prop.FIRST_NAME, fn));
+			author.getInitials().ifPresent(fn -> node.setProperty(Prop.INITIALS, fn));
+			author.getORCID().ifPresent(fn -> node.setProperty(Prop.ORCID, fn));
+			author.getAffiliations().forEach(af -> {
 				Node node2 = graph.get().createNode(Labels.AFFILIATION);
 				node2.setProperty(Prop.ORGANISATION_NAME, af);
 				node.createRelationshipTo(node2, Rel.HAS_AFFILIATION);
@@ -304,7 +288,7 @@ public class PubMedGraphUtils {
 					Relationship tmp = doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase() ,relType, Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
 					tmp.setProperty(Prop.CROSSREF, true);
 					if (end.hasLabel(citedStubLabel)) {
-						cite.articleTitle.ifPresent(t -> end.setProperty(Prop.TITLE, t));
+						cite.getTitle().ifPresent(t -> end.setProperty(Prop.TITLE, t));
 					}
 					out.add(tmp);
 				});
@@ -328,7 +312,7 @@ public class PubMedGraphUtils {
 			tx.acquireWriteLock(lockNode);
 			//Node start = 
 			doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase(), graph.get(), citingStubLabel);
-			out = cite.DOI.map(citedDoi -> {
+			out = cite.getIdentifier().map(citedDoi -> {
 					Relationship tmp = doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase() ,relType, Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
 					tmp.setProperty(Prop.HAS_PDF, true);
 					return citedDoi;
@@ -399,82 +383,61 @@ public class PubMedGraphUtils {
 	}
 	
 	public static Optional<String> updateCrossRefMetadata(Work work, GraphDatabaseApi graph) {
-		if (work.DOI.isPresent()) {
+		if (work.getIdentifier().isPresent()) {
 			
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
 
-				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.DOI.get().toLowerCase(), graph.get());
-				node.setProperty(Prop.TITLE, work.title.stream().collect(Collectors.joining("\n")));
-				work.author.forEach(as -> {
+				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.getIdentifier().get().toLowerCase(), graph.get());
+				work.getTitle().ifPresent(title -> node.setProperty(Prop.TITLE, title));
+				work.getAuthors().forEach(as -> {
 					Optional<Node> targetNode = mapAuthorToNode(as, graph, tx);
 					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_AUTHOR));
 				});
-				work.journalAbstract.ifPresent(abs -> node.setProperty(Prop.ABSTRACT, abs));
-				if (work.publishedOnline.isPresent()) {
-					work.publishedOnline.ifPresent(po -> {
-					try {
-						node.setProperty(Prop.DATE,LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
-					} catch (Exception e) {
-						// date is not well formed
-					}
-				});
-				} else if (work.publishedPrint.isPresent()) {
-				work.publishedPrint.ifPresent(po -> {
-					try {
-						node.setProperty(Prop.DATE,LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
-					} catch (Exception e) {
-						// date is not well formed
-					}
-				});
-				} else if (work.issued.isPresent()) {
-					work.issued.ifPresent(po -> {
-						try {
-							node.setProperty(Prop.DATE,LocalDate.of(po.dateParts.get(0).get(0), po.dateParts.get(0).get(1), po.dateParts.get(0).get(2)));
-						} catch (Exception e) {
-							// date is not well formed
-						}
-					});
-				}
+				work.getAbstract().ifPresent(abs -> node.setProperty(Prop.ABSTRACT, abs));
+				work.getDate().ifPresent(date -> node.setProperty(Prop.DATE,date));
+				work.getJournal().ifPresent(journal -> node.setProperty(Prop.JOURNAL,journal));
+				work.getCitedByCount().ifPresent(cited -> node.setProperty(Prop.CITED_BY, cited));
+				work.getReferencesCount().ifPresent(cites -> node.setProperty(Prop.REFERENCE_COUNT, cites));
 				node.removeLabel(Labels.DOI_STUB);
 				node.removeLabel(Labels.PMID_STUB);
 				node.removeLabel(Labels.PMCENTRAL_STUB);
 				tx.success();
 				
 			}
-
-			return Optional.of(work.DOI.get().toLowerCase());
+			return Optional.of(work.getIdentifier().get().toLowerCase());
 		}
 		return Optional.empty();
 	}
 
 	public static Optional<String> updateUnpaywallMetadata(Result work, GraphDatabaseApi graph) {
-		if (work.doi.isPresent()) {
+		if (work.getIdentifier().isPresent()) {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
-				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.doi.get().toLowerCase(), graph.get());
-				work.pdfUrl().ifPresent(url -> node.setProperty(Prop.PDF_URL, url));
-				work.getPublishedDate().ifPresent(date -> node.setProperty(Prop.DATE, date));
-				work.title.ifPresent(title -> node.setProperty(Prop.TITLE, title));
+				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.getIdentifier().get().toLowerCase(), graph.get());
+				work.getPdfUri().ifPresent(url -> node.setProperty(Prop.PDF_URL, url.toString()));
+				work.getDate().ifPresent(date -> node.setProperty(Prop.DATE, date));
+				work.getTitle().ifPresent(title -> node.setProperty(Prop.TITLE, title));
+				work.getJournal().ifPresent(journal -> node.setProperty(Prop.JOURNAL, journal));
 				node.removeLabel(Labels.DOI_STUB);
 				node.removeLabel(Labels.PMID_STUB);
 				node.removeLabel(Labels.PMCENTRAL_STUB);
 				tx.success();
 			}
-			return Optional.of(work.doi.get().toLowerCase());
+			return Optional.of(work.getIdentifier().get().toLowerCase());
 		}
 		return Optional.empty();
 	}
 	
 	public static Optional<String> updatePdfLink(Result work, GraphDatabaseApi graph) {
-		if (work.doi.isPresent()) {
+		if (work.getIdentifier().isPresent()) {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
-				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.doi.get().toLowerCase(), graph.get());
-				work.pdfUrl().ifPresent(url -> node.setProperty(Prop.PDF_URL, url));
+				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.getIdentifier().get().toLowerCase(), graph.get());
+				work.getPdfUri().ifPresent(url -> node.setProperty(Prop.PDF_URL, url.toString()));
 				tx.success();
 			}
-			return Optional.of(work.doi.get().toLowerCase());
+			return Optional.of(work.getIdentifier().get().toLowerCase());
 		}
 		return Optional.empty();
 	}

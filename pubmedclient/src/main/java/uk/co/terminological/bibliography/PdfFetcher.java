@@ -1,4 +1,4 @@
-package uk.co.terminological.pubmedclient;
+package uk.co.terminological.bibliography;
 
 import java.io.InputStream;
 import java.nio.file.Path;

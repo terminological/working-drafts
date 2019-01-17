@@ -6,6 +6,9 @@ import java.nio.file.Path;
 
 import org.apache.log4j.BasicConfigurator;
 
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.PdfFetcher;
+
 public class TestPdfUtil {
 
 	public static String[] urls = {

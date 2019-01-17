@@ -1,4 +1,4 @@
-package uk.co.terminological.pubmedclient.record;
+package uk.co.terminological.bibliography.record;
 
 import java.util.Optional;
 

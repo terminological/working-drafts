@@ -1,0 +1,63 @@
+package uk.co.terminological.bibliography.entrez;
+
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import uk.co.terminological.fluentxml.XmlElement;
+import uk.co.terminological.fluentxml.XmlException;
+
+public class Search {
+
+	private XmlElement raw;
+
+	public Search(XmlElement raw) {
+		this.raw = raw;
+	}
+
+	public XmlElement raw() {return raw;}
+
+	public Optional<Integer> count() {
+		try {
+			return raw.doXpath("/eSearchResult/Count").getOne(XmlElement.class).getTextContent().map(s -> Integer.parseInt(s));
+		} catch (XmlException e) {
+			return Optional.empty();
+		}
+	}
+
+	public Stream<String> getIds() {
+		try {
+			return raw.doXpath(".//Id")
+					.getManyAsStream(XmlElement.class).flatMap(o -> o.getTextContent().stream());
+		} catch (XmlException e) {
+			return Stream.empty();
+		}
+	}
+
+	public Optional<String> getWebEnv() {
+		try {
+			return raw.doXpath(".//WebEnv").getOne(XmlElement.class).getTextContent();
+		} catch (XmlException e) {
+			return Optional.empty();
+		}
+	}
+	
+	public Optional<String> getQueryKey() {
+		try {
+			return raw.doXpath(".//QueryKey").getOne(XmlElement.class).getTextContent();
+		} catch (XmlException e) {
+			return Optional.empty();
+		}
+	}
+	
+	public Optional<PubMedEntries> getStoredResult(EntrezClient client) {
+		Optional<String> webEnv = getWebEnv(); 
+		Optional<String> queryKey = getQueryKey();
+		if (webEnv.isPresent() && queryKey.isPresent()) {
+			return client.getPMEntriesByWebEnvAndQueryKey(webEnv.get(),queryKey.get());
+		}
+		return Optional.empty();
+	}
+
+	
+	
+}

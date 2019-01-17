@@ -1,4 +1,4 @@
-package uk.co.terminological.pubmedclient;
+package uk.co.terminological.bibliography.entrez;
 
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -26,11 +26,12 @@ import org.slf4j.LoggerFactory;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.BinaryData;
+import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.PdfFetcher;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
-import uk.co.terminological.pubmedclient.EntrezResult.Links;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntries;
-import uk.co.terminological.pubmedclient.EntrezResult.PubMedEntry;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
@@ -159,13 +160,13 @@ public class EntrezClient extends CachingApiClient {
 			return this;
 		}
 		
-		public Optional<EntrezResult.Search> execute() throws BibliographicApiException {
+		public Optional<Search> execute() throws BibliographicApiException {
 			if (empty) return Optional.empty();
-			return client.buildCall(ESEARCH, EntrezResult.Search.class)
+			return client.buildCall(ESEARCH, Search.class)
 					.withParams(searchParams)
 					.withOperation(is -> {
 						Xml resp = Xml.fromStream(is);
-						return new EntrezResult.Search(resp.content());
+						return new Search(resp.content());
 					}).post();
 			
 		}
@@ -232,8 +233,8 @@ public class EntrezClient extends CachingApiClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public Set<EntrezResult.PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
-		Set<EntrezResult.PubMedEntry> out = new HashSet<>();
+	public Set<PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
+		Set<PubMedEntry> out = new HashSet<>();
 		if (pmids.isEmpty()) return out;
 		Cache<String,BinaryData> cache = this.permanentCache(); 
 		Collection<String> deferred = new HashSet<>();
@@ -268,7 +269,7 @@ public class EntrezClient extends CachingApiClient {
 			Xml xml;
 			try {
 				xml = Xml.fromStream(is.get());
-				EntrezResult.PubMedEntries tmp = new EntrezResult.PubMedEntries(xml.content());
+				PubMedEntries tmp = new PubMedEntries(xml.content());
 				tmp.stream().forEach(entry -> {
 					out.add(entry);
 					String pmid = entry.getPMID().get();
@@ -291,11 +292,11 @@ public class EntrezClient extends CachingApiClient {
 			.withParams(fetchParams)
 			.withOperation(is -> {
 				Xml xml = Xml.fromStream(is);
-				return new EntrezResult.PubMedEntries(xml.content());
+				return new PubMedEntries(xml.content());
 			}).post();
 	}
 
-	public Optional<EntrezResult.PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
+	public Optional<PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
 		if (pmid == null || pmid.isEmpty()) return Optional.empty(); 
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
@@ -312,26 +313,26 @@ public class EntrezClient extends CachingApiClient {
 	}
 
 
-	public Optional<InputStream> getPubMedCentralXMLByPMEntries(EntrezResult.PubMedEntries pmEntries) {
+	public Optional<InputStream> getPubMedCentralXMLByPMEntries(PubMedEntries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
 		return getXMLByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
-	public Optional<InputStream> getPubMedCentralXMLByPMEntry(EntrezResult.PubMedEntry pmEntry) {
+	public Optional<InputStream> getPubMedCentralXMLByPMEntry(PubMedEntry pmEntry) {
 		Optional<String> pmcId = pmEntry.getPMCID();
 		return pmcId.flatMap(p -> getPubMedCentralXMLByPubMedCentralId(p));
 	}
 
-	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry, PdfFetcher pdfFetch) {
-		if (pmEntry.getPMCPdfUrl().isPresent()) {
-			String pdfUrl = pmEntry.getPMCPdfUrl().get();
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(PubMedEntry pmEntry, PdfFetcher pdfFetch) {
+		if (pmEntry.getPdfUri().isPresent()) {
+			String pdfUrl = pmEntry.getPdfUri().get().toString();
 			return pdfFetch.getPdfFromUrl(pdfUrl);
 		} else {
 			return Optional.empty();
 		}
 	}
 	
-	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezResult.PubMedEntry pmEntry) throws BibliographicApiException {
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(PubMedEntry pmEntry) throws BibliographicApiException {
 		return getPubMedCentralPdfByPMEntry(pmEntry, PdfFetcher.create());
 	}
 	
@@ -452,7 +453,7 @@ public class EntrezClient extends CachingApiClient {
 				.withParams(searchParams)
 				.withOperation(is -> {
 					Xml resp = Xml.fromStream(is);
-					return new EntrezResult.Links(resp.content());
+					return new Links(resp.content());
 				}).post();
 		}
 		
