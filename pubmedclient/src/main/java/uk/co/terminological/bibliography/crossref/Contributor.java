@@ -12,7 +12,9 @@ public class Contributor extends ExtensibleJson implements Author {
 	
 	public Contributor(JsonNode node) { super(node); }
 	
-	public String getLastName() {return this.asString("family").orElse("Unknown");}
+	public String getLastName() {
+		return this.asString("family").orElse("Unknown");
+	}
 	public Optional<String> getORCID() {return this.asString("ORCID");}
 	public Stream<String> getAffiliations() {return this.streamNode("affiliation").flatMap(n -> n.asString("name").stream());}
 	public Optional<String> getFirstName() {return this.asString("given");}
