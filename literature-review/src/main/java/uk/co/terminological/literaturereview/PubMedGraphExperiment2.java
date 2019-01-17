@@ -327,6 +327,7 @@ public class PubMedGraphExperiment2 {
 							q.getRelationshipsDeleted(),
 							q.getPropertiesSet()
 							);
+					tx.success();
 				}
 			});
 		});
