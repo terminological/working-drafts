@@ -37,12 +37,24 @@ public class TestJsonParsing {
 					System.out.println("tect mining uri: "+item.getTextMiningUri());
 					System.out.println("vol: "+item.getVolume());
 					System.out.println("year: "+item.getYear());
-					System.out.println("authors:");
+					System.out.println("AUTHORS:");
 					item.getAuthors().forEach(a -> {
 						System.out.println("first name: "+a.getFirstName());
 						System.out.println("last name: "+a.getLastName());
 						System.out.println("initials name: "+a.getInitials());
 						System.out.println("orcid name: "+a.getORCID());
+					});
+					System.out.println("CITATIONS:");
+					item.getCitations().forEach(r -> {
+						System.out.println(r.getFirstAuthorName());
+						System.out.println(r.getIdentifier());
+						System.out.println(r.getIdentifierType());
+						System.out.println(r.getIssue());
+						System.out.println(r.getJournal());
+						System.out.println(r.getPage());
+						System.out.println(r.getTitle());
+						System.out.println(r.getVolume());
+						System.out.println(r.getYear());
 					});
 				}
 				);
