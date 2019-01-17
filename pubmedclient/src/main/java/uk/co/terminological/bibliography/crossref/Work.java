@@ -32,7 +32,8 @@ public class Work extends ExtensibleJson implements PrintRecord, RecordWithCitat
 	public Optional<Long> getYear() {
 		return this.streamPath("published-print","date-parts")
 				.findFirst().stream() // weird nested array
-				.findFirst().map(n -> n.asLong());
+				.findFirst().map(n -> n.asLong())
+				.or(() -> getDate().map(d -> (long) d.getYear()));
 		}
 	public Optional<String> getPage() {return this.asString("page");}
 	

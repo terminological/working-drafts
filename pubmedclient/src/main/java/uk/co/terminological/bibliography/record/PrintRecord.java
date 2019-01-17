@@ -11,9 +11,5 @@ public interface PrintRecord {
 	public Optional<Long> getYear();
 	public Optional<String> getPage();
 	
-	public default String getLabel() {
-		return getFirstAuthorName().orElse("Unknown")+" ("+getJournal().orElse("")
-		+(getYear().isPresent() ? " "+getYear() : "") 
-		+")";
-	}
+	
 }
