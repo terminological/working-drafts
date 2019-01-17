@@ -37,6 +37,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.QueryStatistics;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
@@ -317,7 +318,15 @@ public class PubMedGraphExperiment2 {
 			map.forEach((k,v) -> {
 				log.info("Executing: "+k);
 				try (Transaction tx = graphApi.get().beginTx()) {
-					graphApi.get().execute(v);
+					org.neo4j.graphdb.Result r = graphApi.get().execute(v);
+					QueryStatistics q = r.getQueryStatistics();
+					log.info("nodes: added {},removed {}; relationships: added {},removed {}; properties: added {}",
+							q.getNodesCreated(),
+							q.getNodesDeleted(),
+							q.getRelationshipsCreated(),
+							q.getRelationshipsDeleted(),
+							q.getPropertiesSet()
+							);
 				}
 			});
 		});
