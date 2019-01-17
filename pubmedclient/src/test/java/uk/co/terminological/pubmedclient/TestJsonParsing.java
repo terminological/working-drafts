@@ -22,22 +22,22 @@ public class TestJsonParsing {
 				item -> {
 					System.out.println("\n========================================\n"+item.getTitle());
 					System.out.println("abs: "+item.getAbstract());
-					System.out.println("abs: "+item.getCitedByCount());
-					System.out.println("abs: "+item.getDate());
-					System.out.println("abs: "+item.getFirstAuthorName());
-					System.out.println("abs: "+item.getIdentifier());
-					System.out.println("abs: "+item.getIdentifierType());
-					System.out.println("abs: "+item.getIssue());
-					System.out.println("abs: "+item.getJournal());
-					System.out.println("abs: "+item.getLabel());
-					System.out.println("abs: "+item.getPage());
-					System.out.println("abs: "+item.getPdfUri());
-					System.out.println("abs: "+item.getReferencesCount());
-					System.out.println("abs: "+item.getScore());
-					System.out.println("abs: "+item.getTitle());
-					System.out.println("abs: "+item.getTextMiningUri());
-					System.out.println("abs: "+item.getVolume());
-					System.out.println("abs: "+item.getYear());
+					System.out.println("cited by: "+item.getCitedByCount());
+					System.out.println("date: "+item.getDate());
+					System.out.println("first author: "+item.getFirstAuthorName());
+					System.out.println("id: "+item.getIdentifier());
+					System.out.println("idtype: "+item.getIdentifierType());
+					System.out.println("issue: "+item.getIssue());
+					System.out.println("journal: "+item.getJournal());
+					System.out.println("label: "+item.getLabel());
+					System.out.println("page: "+item.getPage());
+					System.out.println("pdf uri: "+item.getPdfUri());
+					System.out.println("references: "+item.getReferencesCount());
+					System.out.println("score: "+item.getScore());
+					System.out.println("title: "+item.getTitle());
+					System.out.println("tect mining uri: "+item.getTextMiningUri());
+					System.out.println("vol: "+item.getVolume());
+					System.out.println("year: "+item.getYear());
 				}
 				);
 		
