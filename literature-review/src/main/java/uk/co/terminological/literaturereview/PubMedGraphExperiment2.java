@@ -150,7 +150,6 @@ public class PubMedGraphExperiment2 {
 		// once search is conducted use entrez history to retrieve result.
 		// and write the result into the graph
 		// TODO: what fields actually need to be written into graph?
-		// TODO: best to cache the results of this maybe, or at least save the answer for downstream?
 		
 		Path pubmedXmlCache = workingDir.resolve("xml");
 		/*PubMedEntries ent = broadSearch.getStoredResult(biblioApi.getEntrez()).get();
@@ -258,7 +257,6 @@ public class PubMedGraphExperiment2 {
 		
 		// There are some DOIs that will neither have been found by original pubmed searched or the pubmed id converter.
 		// We look them up in XRef
-		// TODO: Cache metadata entry in case
 		toDois.removeAll(loadedDois);
 		log.info("Looking up {} dois with metadata on Xref",toDois.size());
 		Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);

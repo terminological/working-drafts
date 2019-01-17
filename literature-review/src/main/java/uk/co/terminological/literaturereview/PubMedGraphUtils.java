@@ -193,6 +193,8 @@ public class PubMedGraphUtils {
 				});
 				entry.getAbstract().ifPresent(abs -> node.setProperty(Prop.ABSTRACT, abs));
 				entry.getTitle().ifPresent(title -> node.setProperty(Prop.TITLE, title));
+				entry.getJournal().ifPresent(journal -> node.setProperty(Prop.JOURNAL, journal));
+				entry.get
 				node.removeLabel(Labels.DOI_STUB);
 				node.removeLabel(Labels.PMID_STUB);
 				node.removeLabel(Labels.PMCENTRAL_STUB);
