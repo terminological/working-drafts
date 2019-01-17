@@ -12,7 +12,7 @@ public class TestEntrezParsing {
 	public static void main(String[] args) throws IOException, XmlException {
 		// TODO Auto-generated method stub
 
-		InputStream is = ClassLoader.getSystemResourceAsStream("efetch.json");
+		InputStream is = ClassLoader.getSystemResourceAsStream("efetch.xml");
 		Xml xml = Xml.fromStream(is);
 		PubMedEntries  response = new PubMedEntries(xml.content());
 		response.stream().forEach(
