@@ -40,9 +40,9 @@ public class TestJsonParsing {
 					System.out.println("authors:");
 					item.getAuthors().forEach(a -> {
 						System.out.println("first name: "+a.getFirstName());
-						System.out.println("first name: "+a.getLastName());
-						System.out.println("first name: "+a.getInitials());
-						System.out.println("first name: "+a.getORCID());
+						System.out.println("last name: "+a.getLastName());
+						System.out.println("initials name: "+a.getInitials());
+						System.out.println("orcid name: "+a.getORCID());
 					});
 				}
 				);
