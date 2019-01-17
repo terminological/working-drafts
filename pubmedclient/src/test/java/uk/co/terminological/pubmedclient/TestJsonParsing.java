@@ -29,7 +29,6 @@ public class TestJsonParsing {
 					System.out.println("idtype: "+item.getIdentifierType());
 					System.out.println("issue: "+item.getIssue());
 					System.out.println("journal: "+item.getJournal());
-					System.out.println("label: "+item.getLabel());
 					System.out.println("page: "+item.getPage());
 					System.out.println("pdf uri: "+item.getPdfUri());
 					System.out.println("references: "+item.getReferencesCount());
