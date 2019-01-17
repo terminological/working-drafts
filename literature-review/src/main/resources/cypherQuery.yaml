@@ -167,8 +167,8 @@ analyse:
 
 # TODO: Ordered authors + journal name
   getArticlesByPagerank: |
-    MATCH (a:Article)-[r:HAS_AUTHOR]->(b.author)
-    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, collect(b.lastName) as authors
+    MATCH (a:Article)-[r:HAS_AUTHOR]->(b:Author)
+    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, a.journal, a.citedByCount, collect(b.lastName) as authors
     ORDER by a.pagerank DESC
     
   getArticleByJournal:
