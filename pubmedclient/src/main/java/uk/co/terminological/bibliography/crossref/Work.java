@@ -37,7 +37,7 @@ public class Work extends ExtensibleJson implements PrintRecord, RecordWithCitat
 	public Optional<String> getPage() {return this.asString("page");}
 	
 	public Optional<LocalDate> getDate() {
-		return this.streamPath("create","date-parts","date-time").map(n -> n.asString())
+		return this.streamPath("created","date-time").map(n -> n.asString())
 			.map(s -> LocalDate.parse(s, DateTimeFormatter.ISO_DATE_TIME))
 			.findFirst();
 	}
