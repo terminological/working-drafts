@@ -39,6 +39,7 @@ public class TestJsonParsing {
 					System.out.println("year: "+item.getYear());
 					System.out.println("AUTHORS:");
 					item.getAuthors().forEach(a -> {
+						System.out.println("AUTHOR:");
 						System.out.println("first name: "+a.getFirstName());
 						System.out.println("last name: "+a.getLastName());
 						System.out.println("initials name: "+a.getInitials());
@@ -46,6 +47,7 @@ public class TestJsonParsing {
 					});
 					System.out.println("CITATIONS:");
 					item.getCitations().forEach(r -> {
+						System.out.println("CITATION:");
 						System.out.println(r.getFirstAuthorName());
 						System.out.println(r.getIdentifier());
 						System.out.println(r.getIdentifierType());
