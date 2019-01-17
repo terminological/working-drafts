@@ -37,6 +37,13 @@ public class TestJsonParsing {
 					System.out.println("tect mining uri: "+item.getTextMiningUri());
 					System.out.println("vol: "+item.getVolume());
 					System.out.println("year: "+item.getYear());
+					System.out.println("authors:");
+					item.getAuthors().forEach(a -> {
+						System.out.println("first name: "+a.getFirstName());
+						System.out.println("first name: "+a.getLastName());
+						System.out.println("first name: "+a.getInitials());
+						System.out.println("first name: "+a.getORCID());
+					});
 				}
 				);
 		
