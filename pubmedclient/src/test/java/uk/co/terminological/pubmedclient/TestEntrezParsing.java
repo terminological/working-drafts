@@ -3,19 +3,13 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-
-import uk.co.terminological.bibliography.crossref.ListResult;
 import uk.co.terminological.bibliography.entrez.PubMedEntries;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 
 public class TestEntrezParsing {
 
-	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException, XmlException {
+	public static void main(String[] args) throws IOException, XmlException {
 		// TODO Auto-generated method stub
 
 		InputStream is = ClassLoader.getSystemResourceAsStream("efetch.json");
