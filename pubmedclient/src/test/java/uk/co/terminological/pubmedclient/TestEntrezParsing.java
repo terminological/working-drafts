@@ -11,10 +11,11 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import uk.co.terminological.bibliography.crossref.ListResult;
 import uk.co.terminological.bibliography.entrez.PubMedEntries;
 import uk.co.terminological.fluentxml.Xml;
+import uk.co.terminological.fluentxml.XmlException;
 
 public class TestEntrezParsing {
 
-	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
+	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException, XmlException {
 		// TODO Auto-generated method stub
 
 		InputStream is = ClassLoader.getSystemResourceAsStream("efetch.json");
