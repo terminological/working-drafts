@@ -50,7 +50,9 @@ public class Work extends ExtensibleJson implements PrintRecord, RecordWithCitat
 	public Optional<Double> getScore() {return this.asDouble("score");}
 	public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 	
-	public Stream<Contributor> getAuthors() {return this.streamPath(Contributor.class, "author");}
+	public Stream<Contributor> getAuthors() {
+		return this.streamPath(Contributor.class, "author"
+	);}
 	public Stream<Reference> getCitations() {return this.streamPath(Reference.class, "reference");}
 	public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 	public Optional<Long> getReferencesCount() {return this.asLong("references-count");}
