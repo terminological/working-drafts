@@ -210,13 +210,26 @@ public class PubMedGraphExperiment2 {
 		Set<String> xrefDois2 = PubMedGraphUtils.lookupDoisForUnknownCitedBy(graphApi);
 		Set<String> toDois2 = updateMetadataFromCrossRef(xrefDois2);
 		
+		// there may be a few straggles for which we cannot get metadata from xref
+		// highly unlikely that we can get them from unpaywall but give it a go. 
+		Set<String> doiStub = PubMedGraphUtils.lookupDoiStubs(graphApi);
+		log.info("Looking up {} dois with no metadata on Unpaywall",doiStub.size());
+		Set<String> unpaywallSources = updateMetadataFromUnpaywall(doiStub);
+		log.info("Updated {} dois from Unpaywall",unpaywallSources.size());
+
+		// the basic broad search articles - find pdf links.
+		//TODO: should this be determined in response to the pagerank? 
+		Set<String> loadedDois = PubMedGraphUtils.lookupBroadSearchDois(graphApi);
+		log.info("finding open access pdf links for {} dois",loadedDois.size());
+		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
+		log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
 		// get narrow search result - date constrained specific search.
 		// the intersection of this set and the broader set will be tagged to make finding them easier.
-		Optional<Search> narrowSearchIds = searchPubMed(this.search);
-		Set<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toSet());
-		log.info("Pubmed narrow search refer to {} articles",pmids.size());
-		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, ORIGINAL_SEARCH, graphApi);
+		// Optional<Search> narrowSearchIds = searchPubMed(this.search);
+		// Set<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toSet());
+		// log.info("Pubmed narrow search refer to {} articles",pmids.size());
+		// PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, ORIGINAL_SEARCH, graphApi);
 		
 		// get all the links for the broad search using xRef
 		// and write them into database. creating stubs if required
@@ -273,32 +286,10 @@ public class PubMedGraphExperiment2 {
 		//log.info("Of which {} are not yet known in the graph", toDois.size());
 		
 		// Find out which broadSearch nodes have dois and no references (by query)
-		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
-		log.info("Found {} articles with no references", pdfDois.size());
 		
-		pdfDois.forEach(
-			StreamExceptions.ignore(
-				doi -> {
-					// Look these up in unpaywall and get pdfs (can do directly)
-					Optional<InputStream> ois = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase());
-					ois.ifPresent( is -> {
-						
-						List<String> refs = biblioApi.getPdfFetcher().extractArticleRefs(doi, is);
-						log.info("Found {} references for {}", refs.size(), doi);
-						
-						Set<Work> works = refs.stream().flatMap(ref -> {
-							log.info(ref);
-							return biblioApi.getCrossref().findWorkByCitationString(ref).stream();
-						}).collect(Collectors.toSet());
-						
-						log.info("Found {} xref entries for {} references", works.size(), refs.size());
-						mapCermineReferences(doi, works, graphApi);
-					});
-		}));
-		
-		Set<String> xrefDois3 = PubMedGraphUtils.lookupDoiStubs(graphApi);
-		Set<String> toDois3 = updateMetadataFromCrossRef(xrefDois3);
-		log.info("{} dois without info about cited by, Updated {} dois from xref", xrefDois3, toDois3.size());
+		// Set<String> xrefDois3 = PubMedGraphUtils.lookupDoiStubs(graphApi);
+		// Set<String> toDois3 = updateMetadataFromCrossRef(xrefDois3);
+		// log.info("{} dois without info about cited by, Updated {} dois from xref", xrefDois3, toDois3.size());
 		
 		// There are some DOIs that will neither have been found by original pubmed searched or the pubmed id converter.
 		// We look them up in XRef
@@ -307,17 +298,6 @@ public class PubMedGraphExperiment2 {
 		//Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);
 		//loadedDois.addAll(xrefSourced);
 		//toDois.removeAll(xrefSourced);
-		
-		
-		Set<String> doiStub = PubMedGraphUtils.lookupDoiStubs(graphApi);
-		log.info("Looking up {} dois with no metadata on Unpaywall",doiStub.size());
-		Set<String> unpaywallSources = updateMetadataFromUnpaywall(doiStub);
-		log.info("Updated {} dois fromunpaywall",unpaywallSources.size());
-
-		Set<String> loadedDois = PubMedGraphUtils.lookupBroadSearchDois(graphApi);
-		log.info("finding open access pdf links for {} dois",loadedDois.size());
-		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
-		log.info("found open access pdf links for {} dois",identifyPdf.size());
 		
 		
 		
