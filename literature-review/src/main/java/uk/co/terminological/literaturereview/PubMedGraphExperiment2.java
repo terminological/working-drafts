@@ -129,9 +129,14 @@ public class PubMedGraphExperiment2 {
 		log.error("Starting graphDb build");
 		
 		//if (!graphApi.get().schema().getIndexes().iterator().hasNext()) {
-			PubMedGraphSchema.setupSchema(graphApi);
+		PubMedGraphSchema.setupSchema(graphApi);
 		//}
 
+		try (Transaction tx = graphApi.get().beginTx()) {
+			PubMedGraphUtils.lockNode = graphApi.get().createNode();
+			tx.success();
+		}
+		
 		// get search results for broad catch all terms without any date constraints.
 		// This may be a large set and should be tested to be reasonable
 		Search broadSearch = fullSearchPubMed(this.broaderSearch).get();
@@ -163,7 +168,10 @@ public class PubMedGraphExperiment2 {
 		});
 		
 		// link back out using pubmed this time...
-		Set<String> pmidsLeftInBroaderSet =  
+		Set<String> pmidsLeftInBroaderSet = PubMedGraphUtils.lookupPmidsWithoutDois(graphApi);
+		List<Link> links2 = findPMCReferencesFromPMIDs(pmidsLeftInBroaderSet);
+		
+		Set<String> pmidStubs = PubMedGraphUtils.lookupPmidStubs(graphApi);
 		
 		// this leaves some dois that haven't been updated as the reverse lookup has failed or pubmed doesn't have metadata
 		// we want to look these up on xref simply for their metadata
