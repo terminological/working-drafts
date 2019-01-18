@@ -158,7 +158,7 @@ public class PubMedGraphExperiment2 {
 		
 		// link back out using pubmed this time from the set, create the links and fill in metadata from 
 		// pubmed for the new articles... If there was a hit on the doi then remove it from the list of dois
-		Set<String> pmidsLeftInBroaderSet = PubMedGraphUtils.lookupPMIDSMissingDoi(graphApi);
+		Set<String> pmidsLeftInBroaderSet = PubMedGraphUtils.lookupPMIDSforUnreferenced(graphApi);
 		List<Link> links2 = findPMCReferencesFromPMIDs(pmidsLeftInBroaderSet);
 		Set<String> pmidStubs = PubMedGraphUtils.lookupPmidStubs(graphApi);
 		Set<PubMedEntry> entries5 = fetchPubMedEntries(pmidStubs);

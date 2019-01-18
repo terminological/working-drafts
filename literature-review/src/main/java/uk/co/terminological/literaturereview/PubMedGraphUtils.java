@@ -454,6 +454,17 @@ public class PubMedGraphUtils {
 		return out;
 	}; 
 	
+	public static Set<String> lookupDoisForUnreferenced(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Article) WHERE NOT (source)-[:HAS_REFERENCE]->() AND source.pmid IS NOT NULL RETURN source.pmid AS out").columnAs("out"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
+			tx.success();
+		}
+		return out;
+	};
+	
 	public static Set<String> lookupDoisForUnknownCitedBy(GraphDatabaseApi graph) {
 		Set<String> out = new HashSet<>();
 		try (Transaction tx = graph.get().beginTx()) {
