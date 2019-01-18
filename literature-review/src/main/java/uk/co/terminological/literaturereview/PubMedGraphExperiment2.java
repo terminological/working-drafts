@@ -177,12 +177,17 @@ public class PubMedGraphExperiment2 {
 		// get all the links for the broad search using entrez history
 		// and write them into database. crating stubs if required
 		// work out what pmids we already have written in graph from the broader search and which we need to get.
-		List<Link> links = findPMCCitedByPMIDs(broadSearch.getIds().collect(Collectors.toList()));
-		Set<String> ancestorPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
+		//TODO: List<Link> links = findPMCCitedByPMIDs(broadSearch.getIds().collect(Collectors.toList()));
+		//TODO: Set<String> ancestorPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
 		//TODO: something with these?
 		
-		Set<String> broadSearchPlusAncestorPMIDs =broadSearch.getIds().collect(Collectors.toSet());
+		Set<String> broadSearchPlusAncestorPMIDs = broadSearch.getIds().collect(Collectors.toSet());
 		//TODO: broadSearchPlusAncestorPMIDs.addAll(ancestorPMIDs);
+		
+		//TODO: Realistically I need to invert this 
+		// and use Xref for the majority of linking where there is a doi.
+		// this will hit daily xref limits probably first time.
+		
 		
 		List<Link> links2 = findPMCReferencesFromPMIDs(broadSearchPlusAncestorPMIDs);
 		
