@@ -445,18 +445,18 @@ public class PubMedGraphUtils {
 		Set<String> out = new HashSet<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() AND source.doi IS NOT NULL RETURN source.doi AS out").columnAs("out"); 
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Article) WHERE NOT (source)-[:HAS_REFERENCE]->() AND source.doi IS NOT NULL RETURN source.doi AS out").columnAs("out"); 
 			resultIterator.forEachRemaining(doi -> out.add(doi));
 			tx.success();
 		}
 		return out;
 	}; 
 	
-	public static Set<String> lookupDoisForUnreferenced(GraphDatabaseApi graph) {
+	public static Set<String> lookupDoisForUnknownCitedBy(GraphDatabaseApi graph) {
 		Set<String> out = new HashSet<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
-			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() AND source.doi IS NOT NULL RETURN source.doi AS out").columnAs("out"); 
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Article) WHERE source.doi IS NOT NULL AND source.citedByCount IS NULL RETURN source.doi AS out").columnAs("out"); 
 			resultIterator.forEachRemaining(doi -> out.add(doi));
 			tx.success();
 		}
