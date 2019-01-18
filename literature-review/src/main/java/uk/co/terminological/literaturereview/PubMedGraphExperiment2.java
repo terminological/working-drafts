@@ -140,7 +140,7 @@ public class PubMedGraphExperiment2 {
 		// get search results for broad catch all terms without any date constraints.
 		// This may be a large set and should be tested to be reasonable
 		Search broadSearch = fullSearchPubMed(this.broaderSearch).get();
-		log.info("Pubmed broad search found to {} articles",broadSearch.count().get());
+		log.info("Pubmed broad search found {} articles",broadSearch.count().get());
 		
 		// once search is conducted use entrez history to retrieve result.
 		// and write the result into the graph
@@ -153,28 +153,63 @@ public class PubMedGraphExperiment2 {
 		Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
 		Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
 		
-		// focussing just on those that have been added as a reference - i.e. the sibling terms
+		// focussing just on those that have been added as a reference - i.e. the new ones from xref
 		toDois.removeAll(xrefDois);
 		
-		// reverse lookup dois that XRef found back to pubmed
-		// grab those from pubmed and update graph metadata
+		// link back out using pubmed this time from the set, create the links and fill in metadata from 
+		// pubmed for the new articles... If there was a hit on the doi then remove it from the list of dois
+		Set<String> pmidsLeftInBroaderSet = PubMedGraphUtils.lookupPMIDSMissingDoi(graphApi);
+		List<Link> links2 = findPMCReferencesFromPMIDs(pmidsLeftInBroaderSet);
+		Set<String> pmidStubs = PubMedGraphUtils.lookupPmidStubs(graphApi);
+		Set<PubMedEntry> entries5 = fetchPubMedEntries(pmidStubs);
+		//entries5.forEach(e -> e.getDoi().ifPresent(d -> toDois.remove(d)));
+		
+		// OK we are left with some unreferenced articles in the original broader set
+		Set<String> articlesWithoutRefs = PubMedGraphUtils.lookupDoisForUnreferenced(graphApi);
+		Set<String> doisInBroaderSet = PubMedGraphUtils.lookupBroadSearchDois(graphApi);
+		articlesWithoutRefs.retainAll(doisInBroaderSet);
+		
+		log.info("Found {} articles with no references", articlesWithoutRefs.size());
+		
+		articlesWithoutRefs.forEach(
+			StreamExceptions.ignore(
+				doi -> {
+					// Look these up in unpaywall and get pdfs (can do directly)
+					Optional<InputStream> ois = biblioApi.getUnpaywall().getPdfByDoi(doi.toLowerCase());
+					ois.ifPresent( is -> {
+						
+						List<String> refs = biblioApi.getPdfFetcher().extractArticleRefs(doi, is);
+						log.info("Found {} references for {}", refs.size(), doi);
+						
+						Set<Work> works = refs.stream().flatMap(ref -> {
+							log.info(ref);
+							return biblioApi.getCrossref().findWorkByCitationString(ref).stream();
+						}).collect(Collectors.toSet());
+						
+						log.info("Found {} xref entries for {} references", works.size(), refs.size());
+						mapCermineReferences(doi, works, graphApi);
+					});
+		}));
+		
+		Set<String> doisMissingPMIDS = PubMedGraphUtils.lookupDoisMissingPMID(graphApi);
+		Set<String> PMIDSMissingDois = PubMedGraphUtils.lookupPMIDSMissingDoi(graphApi);
+		// reverse lookup dois that XRef found back but that were not linked to by pubmed
+		// grab those from pubmed and update graph metadata from pubmed
 		// this be a big number and need to be broken into batches?
 		log.info("Mapping {} dois back to pubmed",toDois.size()); 
 		tryRethrow( t -> {
-			Map<String,String> moreDoi2PMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
-			Set<PubMedEntry> entries4 = fetchPubMedEntries(moreDoi2PMIDs.values());
-			entries4.forEach(e -> e.getDoi().ifPresent(d -> toDois.remove(d)));
+			Map<String,String> moreDoi2PMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(doisMissingPMIDS, IdType.DOI);
+			PMIDSMissingDois.addAll(moreDoi2PMIDs.values());
+			Set<PubMedEntry> entries4 = fetchPubMedEntries(PMIDSMissingDois);
+			// entries4.forEach(e -> e.getDoi().ifPresent(d -> toDois.remove(d)));
 			log.info("Found metadata for {} pubmed entries",entries4.size());
 		});
 		
-		// link back out using pubmed this time...
-		Set<String> pmidsLeftInBroaderSet = PubMedGraphUtils.lookupPmidsWithoutDois(graphApi);
-		List<Link> links2 = findPMCReferencesFromPMIDs(pmidsLeftInBroaderSet);
+		// there are now probably a lot of articles for which we could get basic metadata from xref
+		// key bit we need is cited by.
+		Set<String> xrefDois2 = PubMedGraphUtils.lookupDoisForUnknownCitedBy(graphApi);
+		Set<String> toDois2 = updateMetadataFromCrossRef(xrefDois2);
 		
-		Set<String> pmidStubs = PubMedGraphUtils.lookupPmidStubs(graphApi);
-		
-		// this leaves some dois that haven't been updated as the reverse lookup has failed or pubmed doesn't have metadata
-		// we want to look these up on xref simply for their metadata
 		
 		// get narrow search result - date constrained specific search.
 		// the intersection of this set and the broader set will be tagged to make finding them easier.
@@ -192,7 +227,7 @@ public class PubMedGraphExperiment2 {
 		//TODO: Set<String> ancestorPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
 		//TODO: something with these?
 		
-		Set<String> broadSearchPlusAncestorPMIDs = broadSearch.getIds().collect(Collectors.toSet());
+		// Set<String> broadSearchPlusAncestorPMIDs = broadSearch.getIds().collect(Collectors.toSet());
 		//TODO: broadSearchPlusAncestorPMIDs.addAll(ancestorPMIDs);
 		
 		//TODO: Realistically I need to invert this 
@@ -200,42 +235,42 @@ public class PubMedGraphExperiment2 {
 		// this will hit daily xref limits probably first time.
 		
 		
-		List<Link> links2 = findPMCReferencesFromPMIDs(broadSearchPlusAncestorPMIDs);
+		// List<Link> links2 = findPMCReferencesFromPMIDs(broadSearchPlusAncestorPMIDs);
 		
-		Set<String> toPMIDs = links2.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
+		// Set<String> toPMIDs = links2.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
 		//toPMIDs.addAll(links2.stream().map(l -> l.fromId).collect(Collectors.toSet()));
 		
-		log.info("Pubmed broad search refer to {} articles",toPMIDs.size());
-		Set<String> loadedPMIDs = ent.stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
-		toPMIDs.removeAll(loadedPMIDs);
-		log.info("Of which {} are articles outside of broad search",toPMIDs.size());
+		//log.info("Pubmed broad search refer to {} articles",toPMIDs.size());
+		//Set<String> loadedPMIDs = ent.stream().flatMap(e -> e.getPMID().stream()).collect(Collectors.toSet());
+		//toPMIDs.removeAll(loadedPMIDs);
+		//log.info("Of which {} are articles outside of broad search",toPMIDs.size());
 		
 		
 		// fetch all the entries that were outside broader search but pointed to by pmid citations
 		// write these in as stubs.
-		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs);
+		//Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs);
 		
 		// now for DOIs...
 		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
-		Set<String> broadSearchDois = ent.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet());
-		log.info("Pubmed broad search include {} articles with a doi",broadSearchDois.size());
-		Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
-		log.info("Of which {} articles have no references yet and we can look up in Xref",xrefDois.size());
+		//Set<String> broadSearchDois = ent.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet());
+		//log.info("Pubmed broad search include {} articles with a doi",broadSearchDois.size());
+		//Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
+		//log.info("Of which {} articles have no references yet and we can look up in Xref",xrefDois.size());
 		
 		//TODO: could lookup those without a doi in id cross reference - maybe the same data though.
-		Set<String> loadedDois = new HashSet<>(broadSearchDois);
-		loadedDois.addAll(entries2.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet()));
-		log.info("With referenced articles there are {} articles with a doi",loadedDois.size()); 
+		//Set<String> loadedDois = new HashSet<>(broadSearchDois);
+		//loadedDois.addAll(entries2.stream().flatMap(e -> e.getDoi().stream()).map(s-> s.toLowerCase()).collect(Collectors.toSet()));
+		//log.info("With referenced articles there are {} articles with a doi",loadedDois.size()); 
 		
 		
 		// fetch all doi cross references for broader search, load into graph.
 		// and find all resulting dois that we do not already know about.
 		// TODO: chance that mapping api does not know about a PMID->DOI mapping that we do already know about via pubmed - does this matter?
-		Set<String> toDois = findCrossRefReferencesFromNodes(broadSearchDois);
+		//Set<String> toDois = findCrossRefReferencesFromNodes(broadSearchDois);
 		//Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
-		log.info("Found {} dois, referred to by {} articles in broad search with doi", toDois.size(), broadSearchDois.size());
-		toDois.removeAll(loadedDois);
-		log.info("Of which {} are not yet known in the graph", toDois.size());
+		//log.info("Found {} dois, referred to by {} articles in broad search with doi", toDois.size(), broadSearchDois.size());
+		//toDois.removeAll(loadedDois);
+		//log.info("Of which {} are not yet known in the graph", toDois.size());
 		
 		// Find out which broadSearch nodes have dois and no references (by query)
 		Set<String> pdfDois = lookupDoisForUnreferenced(graphApi); 
@@ -261,37 +296,25 @@ public class PubMedGraphExperiment2 {
 					});
 		}));
 		
-		// reverse lookup unknown dois that XRef found but are not already in the graph
-		// grab those from pubmed and update graph metadata
-		// TODO: will this be a massive number and need to be broken into batches?
-		log.info("Mapping {} dois back to pubmed",toDois.size()); 
-		tryRethrow( t -> {
-			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
-			Set<PubMedEntry> entries4 = fetchPubMedEntries(morePMIDs);
-			entries4.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
-			log.info("Found additional {} pubmed entries",entries4.size());
-		}); 
+		Set<String> xrefDois3 = PubMedGraphUtils.lookupDoiStubs(graphApi);
+		Set<String> toDois3 = updateMetadataFromCrossRef(xrefDois3);
+		log.info("{} dois without info about cited by, Updated {} dois from xref", xrefDois3, toDois3.size());
 		
 		// There are some DOIs that will neither have been found by original pubmed searched or the pubmed id converter.
 		// We look them up in XRef
-		toDois.removeAll(loadedDois);
-		log.info("Looking up {} dois with metadata on Xref",toDois.size());
-		Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);
-		loadedDois.addAll(xrefSourced);
-		toDois.removeAll(xrefSourced);
+		//toDois.removeAll(loadedDois);
+		//log.info("Looking up {} dois with metadata on Xref",toDois.size());
+		//Set<String> xrefSourced = updateMetadataFromCrossRef(toDois);
+		//loadedDois.addAll(xrefSourced);
+		//toDois.removeAll(xrefSourced);
 		
 		
-		// TODO: grab pdfs for broader search nodes (with EXPAND label) using unpaywall and broadSearchDois.
-		// TODO: Query graph for broader search nodes (labelled with EXPAND) that do not have any citations - these could be 
-		// TODO: Grab the pdfs for these and resolve the references from the original citations.... yikes.
-		
-		log.info("Looking up {} dois with no metadata on Unpaywall",toDois.size());
-		Set<String> unpaywallSources = updateMetadataFromUnpaywall(toDois);
-		toDois.removeAll(unpaywallSources);
-		loadedDois.addAll(unpaywallSources);
-		log.info("Leaving {} dois with no metadata",toDois.size());
+		Set<String> doiStub = PubMedGraphUtils.lookupDoiStubs(graphApi);
+		log.info("Looking up {} dois with no metadata on Unpaywall",doiStub.size());
+		Set<String> unpaywallSources = updateMetadataFromUnpaywall(doiStub);
+		log.info("Updated {} dois fromunpaywall",unpaywallSources.size());
 
-		
+		Set<String> loadedDois = PubMedGraphUtils.lookupBroadSearchDois(graphApi);
 		log.info("finding open access pdf links for {} dois",loadedDois.size());
 		Set<String> identifyPdf = updatePdfLinksFromUnpaywall(loadedDois);
 		log.info("found open access pdf links for {} dois",identifyPdf.size());
@@ -580,5 +603,7 @@ public class PubMedGraphExperiment2 {
 		}
 		return out;
 	}
+	
+	
 	
 }

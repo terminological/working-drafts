@@ -381,6 +381,8 @@ public class PubMedGraphUtils {
 		return out;
 	}
 	
+	
+	
 	public static Optional<String> updateCrossRefMetadata(Work work, GraphDatabaseApi graph) {
 		if (work.getIdentifier().isPresent()) {
 			
@@ -463,23 +465,56 @@ public class PubMedGraphUtils {
 		return out;
 	};
 
-	
-	public static Set<String> lookupPmidsWithoutDois(GraphDatabaseApi graph) {
-		Set<String> out = new HashSet<>();
-		try (Transaction tx = graph.get().beginTx()) {
-			tx.acquireWriteLock(lockNode);
-			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Article) WHERE source.doi IS NULL RETURN source.pmid AS out").columnAs("out"); 
-			resultIterator.forEachRemaining(doi -> out.add(doi));
-			tx.success();
-		}
-		return out;
-	};
-
 	public static Set<String> lookupPmidStubs(GraphDatabaseApi graph) {
 		Set<String> out = new HashSet<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);
 			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:PMIDStub) RETURN source.pmid AS out").columnAs("out"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
+			tx.success();
+		}
+		return out;
+	};
+	
+	public static Set<String> lookupDoiStubs(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:DOIStub) RETURN source.doi AS out").columnAs("out"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
+			tx.success();
+		}
+		return out;
+	};
+	
+	
+	public static Set<String> lookupBroadSearchDois(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE source.doi IS NOT NULL RETURN source.doi AS out").columnAs("out"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
+			tx.success();
+		}
+		return out;
+	};
+	
+	public static Set<String> lookupDoisMissingPMID(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Article) WHERE source.doi IS NOT NULL AND source.pmid IS NULL RETURN source.doi AS out").columnAs("out"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
+			tx.success();
+		}
+		return out;
+	};
+	
+	public static Set<String> lookupPMIDSMissingDoi(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Article) WHERE source.doi IS NULL AND source.pmid IS NOT NULL RETURN source.pmid AS out").columnAs("out"); 
 			resultIterator.forEachRemaining(doi -> out.add(doi));
 			tx.success();
 		}
