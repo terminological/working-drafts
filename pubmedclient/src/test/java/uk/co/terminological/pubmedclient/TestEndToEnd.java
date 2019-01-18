@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,14 +53,14 @@ public class TestEndToEnd {
 				LocalDate.of(2017, 01, 1)).execute().get();
 		
 		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds().collect(Collectors.toList())).stream().flatMap(pme -> pme.getDoi().stream()).collect(Collectors.toList());
-		Set<String> dois = mapper.getDoisByIdAndType(result.getIds().collect(Collectors.toList()), IdType.PMID);
+		Map<String,String> dois = mapper.getDoisByIdAndType(result.getIds().collect(Collectors.toList()), IdType.PMID);
 
 		List<String> tmp = new ArrayList<>(dois2);
-		tmp.removeAll(dois);
+		tmp.removeAll(dois.values());
 		System.out.println("Extra dois found by pubmed");
 		tmp.forEach(System.out::println);
 		
-		List<String> tmp2 = new ArrayList<>(dois);
+		List<String> tmp2 = new ArrayList<>(dois.values());
 		tmp2.removeAll(dois2);
 		System.out.println("Extra dois found by id mapper");
 		tmp2.forEach(System.out::println);
