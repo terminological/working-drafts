@@ -168,7 +168,7 @@ public class PubMedGraphExperiment2 {
 		log.info("Pubmed broad search found to {} articles with metadata",ent.size());
 		
 		// get narrow search result - date constrained specific search.
-		// the intersection of this set and the borader set will be tagged to make finding them easier.
+		// the intersection of this set and the broader set will be tagged to make finding them easier.
 		Optional<Search> narrowSearchIds = searchPubMed(this.search);
 		Set<String> pmids = narrowSearchIds.get().getIds().collect(Collectors.toSet());
 		log.info("Pubmed narrow search refer to {} articles",pmids.size());

@@ -171,7 +171,8 @@ analyse:
     ORDER by a.pagerank DESC
     
   getArticleByJournal:
-    # TODO: need to get the journal name in the database!
+    MATCH (b:Article)
+    RETURN DISTINCT b.journal, sum(b.pagerank) as totalPagerank, count(b) as articles order by totalPagerank DESC LIMIT 20
     
 # AUTHORS
 

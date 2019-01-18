@@ -156,7 +156,7 @@ public class PubMedEntry implements Record, PrintRecord {
 	@Override
 	public Optional<String> getJournal() {
 		try {
-			return raw.doXpath(".//Article/Journal/Title").get(XmlElement.class).flatMap(o -> o.getTextContent());
+			return raw.doXpath(".//Article/Journal/ISOAbbreviation").get(XmlElement.class).flatMap(o -> o.getTextContent());
 		} catch (XmlException e) {
 			return Optional.empty();
 		}
