@@ -462,5 +462,17 @@ public class PubMedGraphUtils {
 		}
 		return out;
 	};
+
 	
+	public static Set<String> lookupPmidsWithoutDois(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Article) WHERE source.doi IS NULL RETURN source.pmid AS out").columnAs("out"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
+			tx.success();
+		}
+		return out;
+	};
+
 }

@@ -144,23 +144,29 @@ public class PubMedGraphExperiment2 {
 		log.info("Of broad search pubmed found {} articles with metadata",ent.size());
 		// At this stage we have search result + metadata
 		
-		// Next we expand one level using xRef
+		// Next for everything with a doi, we update metadata and expand one level using xRef
 		Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
 		Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
 		
-		Set<String> loadedDois = new HashSet<>();
+		// focussing just on those that have been added as a reference - i.e. the sibling terms
+		toDois.removeAll(xrefDois);
 		
 		// reverse lookup dois that XRef found back to pubmed
 		// grab those from pubmed and update graph metadata
-		// TODO: will this be a massive number and need to be broken into batches?
+		// this be a big number and need to be broken into batches?
 		log.info("Mapping {} dois back to pubmed",toDois.size()); 
 		tryRethrow( t -> {
-			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
-			Set<PubMedEntry> entries4 = fetchPubMedEntries(morePMIDs);
-			entries4.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
-			log.info("Found additional {} pubmed entries",entries4.size());
+			Map<String,String> moreDoi2PMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
+			Set<PubMedEntry> entries4 = fetchPubMedEntries(moreDoi2PMIDs.values());
+			entries4.forEach(e -> e.getDoi().ifPresent(d -> toDois.remove(d)));
+			log.info("Found metadata for {} pubmed entries",entries4.size());
 		});
 		
+		// link back out using pubmed this time...
+		Set<String> pmidsLeftInBroaderSet =  
+		
+		// this leaves some dois that haven't been updated as the reverse lookup has failed or pubmed doesn't have metadata
+		// we want to look these up on xref simply for their metadata
 		
 		// get narrow search result - date constrained specific search.
 		// the intersection of this set and the broader set will be tagged to make finding them easier.
