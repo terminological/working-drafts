@@ -172,7 +172,11 @@ analyse:
     
   getArticleByJournal:
     MATCH (b:Article)
-    RETURN DISTINCT b.journal, sum(b.pagerank) as totalPagerank, count(b) as articles order by totalPagerank DESC LIMIT 20
+    RETURN DISTINCT b.journal, 
+    sum(b.pagerank) as totalPagerank, 
+    count(b) as articles, 
+    sum(b.pagerank)/count(b) as avgPagerank 
+    ORDER BY totalPagerank DESC
     
 # AUTHORS
 
@@ -199,7 +203,10 @@ analyse:
     RETURN
     a.community as community, 
     size as authors, 
-    count(distinct b) as articles
+    count(distinct b) as articles,
+    count(b) as articles2,
+    sum(distinct b.pagerank)/articles as avgPagerank,
+    sum(b.pagerank)/articles2 as avgPagerank2
 
   getAuthorCommunityAffiliations: |
     MATCH (a:Author)
