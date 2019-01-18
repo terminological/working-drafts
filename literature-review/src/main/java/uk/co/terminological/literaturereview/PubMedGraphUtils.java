@@ -279,13 +279,11 @@ public class PubMedGraphUtils {
 				cite.getIdentifier().ifPresent(citedDoi -> {
 					
 					Node end = doMerge(Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get(), citedStubLabel);
-					/*Relationship tmp = null;
-					for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
-						if (r.getEndNode().equals(end)) tmp=r;
-					};
-					if (tmp == null) {
-						tmp = start.createRelationshipTo(end, relType);						
-					}*/
+					//TODO: there is more metadata available here but it is not all written in
+					cite.getFirstAuthorName().ifPresent(auth -> end.setProperty(Prop.AUTHOR_LABEL, auth));
+					cite.getJournal().ifPresent(o -> end.setProperty(Prop.JOURNAL, o));
+					cite.getTitle().ifPresent(o -> end.setProperty(Prop.TITLE, o));
+					
 					Relationship tmp = doMerge(Labels.ARTICLE, citingType, citingDoi.toLowerCase() ,relType, Labels.ARTICLE, citedType, citedDoi.toLowerCase(),graph.get() );
 					tmp.setProperty(Prop.CROSSREF, true);
 					if (end.hasLabel(citedStubLabel)) {
@@ -453,5 +451,16 @@ public class PubMedGraphUtils {
 		}
 		return out;
 	}; 
+	
+	public static Set<String> lookupDoisForUnreferenced(GraphDatabaseApi graph) {
+		Set<String> out = new HashSet<>();
+		try (Transaction tx = graph.get().beginTx()) {
+			tx.acquireWriteLock(lockNode);
+			ResourceIterator<String> resultIterator = graph.get().execute("MATCH (source:Expand) WHERE NOT (source)-[:HAS_REFERENCE]->() AND source.doi IS NOT NULL RETURN source.doi AS out").columnAs("out"); 
+			resultIterator.forEachRemaining(doi -> out.add(doi));
+			tx.success();
+		}
+		return out;
+	};
 	
 }
