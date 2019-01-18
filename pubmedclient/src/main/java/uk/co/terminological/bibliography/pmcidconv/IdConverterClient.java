@@ -79,7 +79,7 @@ public class IdConverterClient extends CachingApiClient {
 	public Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
 		Set<Record> out = new HashSet<>();
 		Cache<String,BinaryData> cache = permanentCache();
-		List<String> id = new ArrayList<String>(id2);
+		List<String> id = new ArrayList<String>();
 		
 		for (String nextId: id2) {
 			if (cache.containsKey(keyFrom(nextId,idType))) {
