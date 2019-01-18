@@ -132,29 +132,31 @@ public class IdConverterClient extends CachingApiClient {
 			.get();
 	}
 	
-	//TODO: Map output to this....
 	public Map<String,String> getDoisByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
 		Set<Record> tmp = getMapping(ids, type);
 		Map<String,String> out = new HashMap<>();
 		for (Record r: tmp) {
-			
-			out.put(r., value)
+			r.doi.ifPresent(d -> out.put(r.idByType(type).get(), d));
 		}
-		return tmp.forEach()
-				.flatMap(r -> r.doi.stream()).filter(o -> !o.isEmpty())
-				.collect(Collectors.toSet());
+		return out;
 	}
 	
-	public Set<String> getPubMedCentralIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		return getMapping(ids, type).stream()
-				.flatMap(r -> r.pmcid.stream()).filter(o -> !o.isEmpty())
-				.collect(Collectors.toSet());
+	public Map<String,String> getPubMedCentralIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
+		Set<Record> tmp = getMapping(ids, type);
+		Map<String,String> out = new HashMap<>();
+		for (Record r: tmp) {
+			r.pmcid.ifPresent(d -> out.put(r.idByType(type).get(), d));
+		}
+		return out;
 	}
 	
-	public Set<String> getPMIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		return getMapping(ids, type).stream()
-				.flatMap(r -> r.pmid.stream()).filter(o -> !o.isEmpty())
-				.collect(Collectors.toSet());
+	public Map<String,String> getPMIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
+		Set<Record> tmp = getMapping(ids, type);
+		Map<String,String> out = new HashMap<>();
+		for (Record r: tmp) {
+			r.pmid.ifPresent(d -> out.put(r.idByType(type).get(), d));
+		}
+		return out;
 	}
 
 	
