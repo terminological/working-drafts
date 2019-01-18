@@ -66,10 +66,12 @@ public class IdConverterClient extends CachingApiClient {
 		return out;
 	}
 	
+	//These keys are for the individual components but format could collide with single query
 	private String keyFrom(String id, IdType idType) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id);
 		params.add("idtype", idType.name().toLowerCase());
+		params.add("component", "result"); //Prevent a key collision
 		return keyFromApiQuery(URL,params);
 	}
 	
