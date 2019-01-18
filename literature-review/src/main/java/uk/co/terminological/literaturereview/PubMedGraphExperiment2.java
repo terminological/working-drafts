@@ -132,40 +132,35 @@ public class PubMedGraphExperiment2 {
 			PubMedGraphSchema.setupSchema(graphApi);
 		//}
 
-		//TODO: Main loop
-			
-		try ( Transaction tx = graphApi.get().beginTx() ) {
-			PubMedGraphUtils.lockNode = graphApi.get().createNode();
-			tx.success();
-		}
-			
-		
-		//TODO: some problem with nodeId 1 - How Cognitive Machines Can Augment Medical Imaging
-		
 		// get search results for broad catch all terms without any date constraints.
-		// This may be a large set and shoudl be tested to be reasonable
+		// This may be a large set and should be tested to be reasonable
 		Search broadSearch = fullSearchPubMed(this.broaderSearch).get();
-		log.info("Pubmed broad search found to {} articles with metadata",broadSearch.count().get());
+		log.info("Pubmed broad search found to {} articles",broadSearch.count().get());
 		
 		// once search is conducted use entrez history to retrieve result.
 		// and write the result into the graph
-		// TODO: what fields actually need to be written into graph?
 		
-		Path pubmedXmlCache = workingDir.resolve("xml");
-		/*PubMedEntries ent = broadSearch.getStoredResult(biblioApi.getEntrez()).get();
-		log.info("Pubmed broad search found to {} articles with metadata",ent.stream().count());
+		Set<PubMedEntry> ent = fetchPubMedEntries(broadSearch.getIds().collect(Collectors.toSet()), EXPAND);
+		log.info("Of broad search pubmed found {} articles with metadata",ent.size());
+		// At this stage we have search result + metadata
 		
-		mapEntriesToNode(ent.stream(), graphApi, earliest, latest, EXPAND);
+		// Next we expand one level using xRef
+		Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
+		Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
 		
-		tryRethrow(pubmedXmlCache, t -> Files.createDirectories(t));
-		ent.stream().forEach(
-				logWarn(entry -> {
-					Path tmp2 = pubmedXmlCache.resolve(entry.getPMID().orElseThrow(() -> new IOException("No pmid")));
-					entry.getRaw().write(Files.newOutputStream(tmp2));
-		}));*/
+		Set<String> loadedDois = new HashSet<>();
 		
-		Set<PubMedEntry> ent = fetchPubMedEntries(pubmedXmlCache, broadSearch.getIds().collect(Collectors.toSet()), EXPAND);
-		log.info("Pubmed broad search found to {} articles with metadata",ent.size());
+		// reverse lookup dois that XRef found back to pubmed
+		// grab those from pubmed and update graph metadata
+		// TODO: will this be a massive number and need to be broken into batches?
+		log.info("Mapping {} dois back to pubmed",toDois.size()); 
+		tryRethrow( t -> {
+			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
+			Set<PubMedEntry> entries4 = fetchPubMedEntries(morePMIDs);
+			entries4.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
+			log.info("Found additional {} pubmed entries",entries4.size());
+		});
+		
 		
 		// get narrow search result - date constrained specific search.
 		// the intersection of this set and the broader set will be tagged to make finding them easier.
@@ -174,8 +169,10 @@ public class PubMedGraphExperiment2 {
 		log.info("Pubmed narrow search refer to {} articles",pmids.size());
 		PubMedGraphUtils.addLabelsByIds(ARTICLE, PMID, pmids, ORIGINAL_SEARCH, graphApi);
 		
-		// get all the links for the broad search using entrez history
-		// and write them into database. crating stubs if required
+		// get all the links for the broad search using xRef
+		// and write them into database. creating stubs if required
+		
+		
 		// work out what pmids we already have written in graph from the broader search and which we need to get.
 		//TODO: List<Link> links = findPMCCitedByPMIDs(broadSearch.getIds().collect(Collectors.toList()));
 		//TODO: Set<String> ancestorPMIDs = links.stream().map(l -> l.toId.get()).collect(Collectors.toSet());
@@ -202,7 +199,7 @@ public class PubMedGraphExperiment2 {
 		
 		// fetch all the entries that were outside broader search but pointed to by pmid citations
 		// write these in as stubs.
-		Set<PubMedEntry> entries2 = fetchPubMedEntries(pubmedXmlCache,toPMIDs);
+		Set<PubMedEntry> entries2 = fetchPubMedEntries(toPMIDs);
 		
 		// now for DOIs...
 		// collect all DOIs in the graph so far. This could be done by a query (which may give more accurate
@@ -256,7 +253,7 @@ public class PubMedGraphExperiment2 {
 		log.info("Mapping {} dois back to pubmed",toDois.size()); 
 		tryRethrow( t -> {
 			Set<String> morePMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(toDois, IdType.DOI);
-			Set<PubMedEntry> entries4 = fetchPubMedEntries(pubmedXmlCache,morePMIDs);
+			Set<PubMedEntry> entries4 = fetchPubMedEntries(morePMIDs);
 			entries4.forEach(e -> e.getDoi().ifPresent(f -> loadedDois.add(f.toLowerCase())));
 			log.info("Found additional {} pubmed entries",entries4.size());
 		}); 
@@ -398,7 +395,7 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	Set<PubMedEntry> fetchPubMedEntries(Path cacheDir, Collection<String> pmids, Label... labels) {
+	Set<PubMedEntry> fetchPubMedEntries(Collection<String> pmids, Label... labels) {
 		Set<PubMedEntry> entriesOut = new HashSet<>();
 		List<String> deferred = new ArrayList<>(pmids);
 		while (!deferred.isEmpty()) {
@@ -503,14 +500,19 @@ public class PubMedGraphExperiment2 {
 	
 	
 	
-
+	/**
+	 * gets a record for each doi, updates the metadata a matching article in the graph or creates one
+	 * creates a stub record with basic metadata for each of the citations (or matches an existing record)
+	 * creates the links between cited and citing
+	 * @param dois
+	 * @return a set of dois representing the references
+	 */
 	Set<String> findCrossRefReferencesFromNodes(Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
 			try {
 				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 				tmp.ifPresent(t -> updateCrossRefMetadata(t.getWork(),graphApi));
-				
 				List<Reference> referencedDois = tmp.stream()
 						.map(t -> t.getWork())
 						.flatMap(w -> w.getCitations())

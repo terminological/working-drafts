@@ -133,9 +133,14 @@ public class IdConverterClient extends CachingApiClient {
 	}
 	
 	//TODO: Map output to this....
-	public Set<String> getDoisByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
+	public Map<String,String> getDoisByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
 		Set<Record> tmp = getMapping(ids, type);
-		return tmp.stream()
+		Map<String,String> out = new HashMap<>();
+		for (Record r: tmp) {
+			
+			out.put(r., value)
+		}
+		return tmp.forEach()
 				.flatMap(r -> r.doi.stream()).filter(o -> !o.isEmpty())
 				.collect(Collectors.toSet());
 	}
