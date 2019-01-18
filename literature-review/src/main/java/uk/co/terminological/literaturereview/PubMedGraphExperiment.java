@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -214,7 +215,7 @@ public class PubMedGraphExperiment {
 					try {
 						while(dois.size() > 0) {
 							List<String> batchDois = dois.subList(0, Math.min(100, dois.size()));
-							Set<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchDois, IdType.DOI);
+							Collection<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchDois, IdType.DOI).values();
 							context.getEventBus().logInfo("Looked up "+batchDois.size()+" dois and found "+pmids.size()+" pubmed records");
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
@@ -246,7 +247,7 @@ public class PubMedGraphExperiment {
 					try {
 						while(pmcids.size() > 0) {
 							List<String> batchPmcids = pmcids.subList(0, Math.min(100, pmcids.size()));
-							Set<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchPmcids,IdType.PMCID);
+							Collection<String> pmids = bib.getPmcIdConv().getPMIdsByIdAndType(batchPmcids,IdType.PMCID).values();
 							context.getEventBus().logInfo("Looked up "+batchPmcids.size()+" PMCIDs and found "+pmids.size()+" pubmed records");
 							context.send(
 								Events.typedEvent(pmids,type -> PUBMED_SEARCH_RESULT)
