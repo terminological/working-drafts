@@ -22,10 +22,10 @@ public class TestConverterApiClient {
 		BasicConfigurator.configure();
 		IdConverterClient client = IdConverterClient.create(APP_ID,DEVELOPER_EMAIL);
 		client.debugMode();
-		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
-		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
-		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
-		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach(System.out::println);
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach((k,v) -> System.out.println(k+"->"+v));
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach((k,v) -> System.out.println(k+"->"+v));
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach((k,v) -> System.out.println(k+"->"+v));
+		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach((k,v) -> System.out.println(k+"->"+v));
 	}
 
 }
