@@ -135,5 +135,17 @@ public class Term {
 		return out;
 	}
 
+	public Map<Term,Double> chiSqCollocations(int spanLength) {
+		Map<Term,Double> out = new HashMap<>();
+		Integer N = this.corpus.countCorpusCollocations(spanLength);
+		Map<Term,Integer> coll = collocations(spanLength);
+		coll.forEach((term,count) -> {
+			Double obs = ((double) count)/N;
+			Double exp = ((double) this.corpus.countTermsUsage(this) * this.corpus.countTermsUsage(term)) / (this.corpus.countCorpusTerms()^2);
+			Double chiSq = (obs-exp)/Math.sqrt(obs/N);
+			out.put(term, chiSq);
+		});
+		return out;
+	}
 
 }
