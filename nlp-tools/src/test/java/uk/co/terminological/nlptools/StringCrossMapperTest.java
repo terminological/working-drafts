@@ -49,4 +49,7 @@ public class StringCrossMapperTest extends TestCase {
 		});
 	}
 
+	@Test
+	publi void testNo
+	
 }

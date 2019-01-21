@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.nlptools.StringCrossMapper.Normaliser;
 import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
 
@@ -150,6 +151,14 @@ public class Corpus {
 	public List<Term> getTermsByTotalEntropy() {
 		List<Term> out = new ArrayList<>(terms.values());
 		out.sort((t1,t2) -> totalShannonEntropy(t2).compareTo(totalShannonEntropy(t2)));
+		return out;
+	}
+	
+	public EavMap<Term,Term,Double> getMutualInformation() {
+		EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
+		this.terms.values().forEach(source -> {
+			out.add(source, source.normalisedMutualInformation());
+		});
 		return out;
 	}
 }
