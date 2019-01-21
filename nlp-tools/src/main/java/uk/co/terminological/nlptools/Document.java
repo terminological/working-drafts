@@ -41,14 +41,15 @@ public class Document {
 				}
 				return false;
 			});
-		Term previous = null;
+		TermInstance previous = null;
 		Iterator<String> tokenIt = tokens.iterator(); 
 		while (tokenIt.hasNext()) {
 			String token = tokenIt.next();
 			Term tmp = corpus.createTermFrom(token);
-			termSequence.add(new TermInstance(tmp,previous));
+			TermInstance tmp2 = new TermInstance(tmp,previous);
+			termSequence.add(tmp2);
 			tmp.add(this);
-			previous = tmp;
+			previous = tmp2;
 			termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 		}
 		this.corpus.addDocument(this);
@@ -87,7 +88,7 @@ public class Document {
 	
 	public String toString() {
 		return string+" ("+
-				terms.stream()
+				termSequence.stream().map(ti -> ti.getTerm())
 					.map(t -> t.tag+"  {tfidf:"+tfIdf(t)+",entropy: "+t.shannonEntropy()+"}")
 					.collect(Collectors.joining(","))+")";
 	}
@@ -132,7 +133,7 @@ public class Document {
 	 * returns the terms of the document in entropy descending order.
 	 */
 	public List<Term> entropyOrder() {
-		List<Term> tmp = new ArrayList<>(terms);
+		List<Term> tmp = new ArrayList<>(termCounts.keySet());
 		tmp.sort((t1,t2) -> t2.shannonEntropy().compareTo(t1.shannonEntropy()));
 		return tmp;
 	}
@@ -142,7 +143,7 @@ public class Document {
 	 * @return
 	 */
 	public List<Term> tfIdfOrder() {
-		List<Term> orderedTerms = new ArrayList<>(terms);
+		List<Term> orderedTerms = new ArrayList<>(termCounts.keySet());
 		orderedTerms.sort((t1,t2) -> tfIdf(t2).compareTo(tfIdf(t1)));
 		return orderedTerms;
 	}
