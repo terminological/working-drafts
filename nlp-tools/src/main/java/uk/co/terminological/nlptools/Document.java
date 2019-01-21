@@ -47,6 +47,7 @@ public class Document {
 			Term tmp = corpus.createTermFrom(token);
 			TermInstance tmp2 = new TermInstance(tmp,previous);
 			termSequence.add(tmp2);
+			tmp.addInstance(tmp2);
 			previous = tmp2;
 			termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 		}

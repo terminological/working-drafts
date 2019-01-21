@@ -11,6 +11,7 @@ public class Term {
 	Corpus corpus;
 	Set<Document> documentsUsing = new HashSet<>();
 	Map<Term,Integer> cooccurrences = new HashMap<>();
+	Set<TermInstance> instances = new HashSet<>();
 
 	protected Term(String tag, Corpus map) {
 		this.tag = tag;
@@ -41,6 +42,9 @@ public class Term {
 		}
 	}
 
+	protected void addInstance(TermInstance tmp2) {
+		instances.add(tmp2);
+	}
 
 	public int countDocumentsWithTerm() {
 		return documentsUsing.size();
@@ -115,5 +119,7 @@ public class Term {
 	public Set<Document> getDocumentsUsing() {
 		return documentsUsing;
 	}
+
+	
 
 }
