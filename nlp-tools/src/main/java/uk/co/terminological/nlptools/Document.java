@@ -5,11 +5,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * A document is an identifiable string associated with a corpus
@@ -29,16 +32,25 @@ public class Document {
 		this.string = string;
 		//TODO: retain positional information
 		this.normalised = corpus.getNormaliser().apply(string);
-		corpus.getTokeniser().apply(normalised)
-			//TODO: make filter mechanism more generic
-			.filter(t-> !corpus.getStopWords().contains(t))
-			.forEach(tag -> {
-				//Create a new term
-				Term tmp = corpus.createTermFrom(tag);
-				termSequence.add(tmp);
-				tmp.add(this);
-				termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
+		Stream<String> tokens = corpus.getTokeniser().apply(normalised)
+			.filter(t -> {
+				//apply all the filters in sequence. 
+				//If any filter matches reject this token.
+				for (Predicate<String> filter: corpus.getFilters()) {
+					if (filter.test(t)) return true;
+				}
+				return false;
 			});
+		Term previous = null;
+		Iterator<String> tokenIt = tokens.iterator(); 
+		while (tokenIt.hasNext()) {
+			String token = tokenIt.next();
+			Term tmp = corpus.createTermFrom(token);
+			termSequence.add(new TermInstance(tmp,previous));
+			tmp.add(this);
+			previous = tmp;
+			termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
+		}
 		this.corpus.addDocument(this);
 	}
 	
