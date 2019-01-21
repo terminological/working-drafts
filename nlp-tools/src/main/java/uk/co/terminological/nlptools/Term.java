@@ -30,10 +30,15 @@ public class Term {
 
 	/*
 	 * Add a new document to this term - called when a term is found in a document during the Document constructor
+	 * This is called after the document is set up but before the document is added to the corpus
 	 */
-	protected void add(Document norm) {
-		documentsUsing.add(norm);
-		
+	protected void add(Document doc) {
+		documentsUsing.add(doc);
+		for (Term other: doc.getTerms()) {
+			if (!this.equals(other)) {
+				coOccurences.put(other, coOccurences.getOrDefault(other, 0)+1);
+			}
+		}
 	}
 
 
@@ -50,23 +55,7 @@ public class Term {
 		return -p * Math.log(p) / Math.log(2D);
 	}
 
-	/**
-	 * Calculates and caches a coOccurence matrix for this term.
-	 * Will not update if more documents are added to the corpus
-	 * @return
-	 */
 	public Map<Term,Integer> coOccurences() {
-		if (coOccurences == null) {
-			Map<Term,Integer> out = new HashMap<>();
-			for (Document doc: documentsUsing) {
-				for (Term other: doc.getTerms()) {
-					if (!this.equals(other)) {
-						out.put(other, out.getOrDefault(other, 0)+1);
-					}
-				}
-			}
-			coOccurences = out;
-		}
 		return coOccurences;
 	}
 
