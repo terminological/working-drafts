@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import uk.co.terminological.nlptools.StringCrossMapper.DuplicateIdentityException;
 import uk.co.terminological.nlptools.StringCrossMapper.Normaliser;
 import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
 
