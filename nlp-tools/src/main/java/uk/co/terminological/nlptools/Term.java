@@ -120,6 +120,19 @@ public class Term {
 		return documentsUsing;
 	}
 
-	
+	public Map<Term, Integer> collocations(int spanLength) {
+		Map<Term, Integer> out = new HashMap<>();
+		this.instances.forEach(ti -> {
+			ti.getNext(spanLength).forEach(ti2 -> {
+				Term t = ti2.getTerm();
+				out.merge(t, 1, (oldV,newV) -> oldV+1);
+			});
+			ti.getPrevious(spanLength).forEach(ti2 -> {
+				Term t = ti2.getTerm();
+				out.merge(t, 1, (oldV,newV) -> oldV+1);
+			});
+		});
+		return out;
+	}
 
 }
