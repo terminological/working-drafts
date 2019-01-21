@@ -10,7 +10,7 @@ public class Term {
 	String tag;
 	Corpus corpus;
 	Set<Document> documentsUsing = new HashSet<>();
-	Map<Term,Integer> coOccurences = new HashMap<>();
+	Map<Term,Integer> coOccurrences = new HashMap<>();
 
 	protected Term(String tag, Corpus map) {
 		this.tag = tag;
@@ -55,8 +55,8 @@ public class Term {
 		return -p * Math.log(p) / Math.log(2D);
 	}
 
-	public Map<Term,Integer> coOccurences() {
-		return coOccurences;
+	public Map<Term,Integer> coOccurrences() {
+		return coOccurrences;
 	}
 
 
