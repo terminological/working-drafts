@@ -117,6 +117,10 @@ public class Corpus {
 		return documents.size();
 	}
 	
+	public int countCorpusCollocations(int spanLength) {
+		return documents.stream().map(d -> d.countCollocations(spanLength)).mapToInt(i -> i).sum();
+	}
+	
 	public int countCorpusTerms() {
 		return termsInCorpus;
 	}
