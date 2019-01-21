@@ -59,6 +59,20 @@ public class Term {
 		return coOccurrences;
 	}
 
+	public Map<Term,Double> normalisedMutualInformation() {
+		Integer total = corpus.countCorpusDocuments();
+		Map<Term,Double> out = new HashMap<>();
+		coOccurrences.forEach((k,cooccur) -> {
+			Double p = ((double) cooccur)/total;
+			Double mi = Math.log(((double) cooccur*total) / (this.countDocumentsWithTerm()*k.countDocumentsWithTerm()));
+			out.put(k, ( -mi / Math.log(p)));
+		});
+		return out;
+		//r.pmi = log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) )
+	    //r.probability = toFloat(r.cooccurrences)/total
+	    //r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total )
+	}
+	
 
 	/**
 	 * The inverse document frequency is a measure of how much information the word provides, i.e., if it's common or rare across all documents. 
