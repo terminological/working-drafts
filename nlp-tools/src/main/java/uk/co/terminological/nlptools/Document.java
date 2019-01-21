@@ -19,6 +19,7 @@ public class Document {
 	private String string;
 	private String normalised;
 	private List<Term> terms = new ArrayList<>();
+	private List<TermInstance> termSequence = new ArrayList<>();
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
 	
@@ -26,6 +27,7 @@ public class Document {
 		this.identifier = id;
 		this.corpus = corpus;
 		this.string = string;
+		//TODO: retain positional information
 		this.normalised = corpus.getNormaliser().apply(string);
 		corpus.getTokeniser().apply(normalised)
 			.filter(t-> !corpus.getStopWords().contains(t))
