@@ -36,7 +36,7 @@ public class Term {
 		documentsUsing.add(doc);
 		for (Term other: doc.getTerms()) {
 			if (!this.equals(other)) {
-				coOccurences.put(other, coOccurences.getOrDefault(other, 0)+1);
+				coOccurrences.put(other, coOccurrences.getOrDefault(other, 0)+1);
 			}
 		}
 	}
