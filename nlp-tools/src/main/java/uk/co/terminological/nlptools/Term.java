@@ -10,7 +10,7 @@ public class Term {
 	String tag;
 	Corpus corpus;
 	Set<Document> documentsUsing = new HashSet<>();
-	Map<Term,Integer> coOccurrences = new HashMap<>();
+	Map<Term,Integer> cooccurrences = new HashMap<>();
 
 	protected Term(String tag, Corpus map) {
 		this.tag = tag;
@@ -36,7 +36,7 @@ public class Term {
 		documentsUsing.add(doc);
 		for (Term other: doc.getTerms()) {
 			if (!this.equals(other)) {
-				coOccurrences.put(other, coOccurrences.getOrDefault(other, 0)+1);
+				cooccurrences.put(other, cooccurrences.getOrDefault(other, 0)+1);
 			}
 		}
 	}
@@ -55,8 +55,8 @@ public class Term {
 		return -p * Math.log(p) / Math.log(2D);
 	}
 
-	public Map<Term,Integer> coOccurrences() {
-		return coOccurrences;
+	public Map<Term,Integer> cooccurrences() {
+		return cooccurrences;
 	}
 
 	/**
@@ -65,13 +65,14 @@ public class Term {
 	 * 0 for independence, and +1 for complete co-occurrence.[2]
 	 * @return
 	 */
-	public Map<Term,Double> normalisedMutualInformation() {
+	public Map<Term,Double> mutualInformation() {
 		Integer total = corpus.countCorpusDocuments();
 		Map<Term,Double> out = new HashMap<>();
-		coOccurrences.forEach((k,cooccur) -> {
-			Double p = ((double) cooccur)/total;
+		cooccurrences.forEach((k,cooccur) -> {
+			//Double p = ((double) cooccur)/total;
 			Double mi = Math.log(((double) cooccur*total) / (this.countDocumentsWithTerm()*k.countDocumentsWithTerm()));
-			out.put(k, ( -mi / Math.log(p)));
+			out.put(k, mi);
+			//out.put(k, ( -mi / Math.log(p)));
 		});
 		return out;
 		//r.pmi = log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) )
@@ -80,6 +81,24 @@ public class Term {
 	}
 	
 
+	/**
+	 * Pointwise mutual information can be normalized between [-1,+1] 
+	 * resulting in -1 (in the limit) for never occurring together, 
+	 * 0 for independence, and +1 for complete co-occurrence.[2]
+	 * @return
+	 */
+	public Map<Term,Double> cooccurenceProbablity() {
+		Integer total = corpus.countCorpusDocuments();
+		Map<Term,Double> out = new HashMap<>();
+		cooccurrences.forEach((k,cooccur) -> {
+			Double p = ((double) cooccur)/total;
+			out.put(k, p);
+			
+		});
+		return out;
+	}
+
+	
 	/**
 	 * The inverse document frequency is a measure of how much information the word provides, i.e., if it's common or rare across all documents. 
 	 * <br/>
