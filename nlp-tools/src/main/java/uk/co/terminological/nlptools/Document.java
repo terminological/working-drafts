@@ -50,6 +50,7 @@ public class Document {
 			previous = tmp2;
 			termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 		}
+		// add document to the term - this generated some of the counts and co-occurences
 		termCounts.keySet().forEach(tmp  -> tmp.add(this));
 		this.corpus.addDocument(this);
 	}
