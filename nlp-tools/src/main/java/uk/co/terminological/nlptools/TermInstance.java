@@ -69,5 +69,10 @@ public class TermInstance {
 		}
 	}
 	
+	public String toString() {
+		return previous.map(ti -> ti.current.tag).orElse("X")+"-"+
+				current.tag+"-"+
+				next.map(ti -> ti.current.tag).orElse("X");
+	}
 	
 }
