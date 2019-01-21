@@ -33,6 +33,7 @@ public class Term {
 	 */
 	protected void add(Document norm) {
 		documentsUsing.add(norm);
+		
 	}
 
 
