@@ -170,7 +170,15 @@ public class Document {
 		return out;
 	}
 	
-	
+	/**
+	 * possible collocations with max distance of spanLength between terms
+	 * @param spanLength a number - typically larger than 1
+	 * @return
+	 */
+	public int countCollocations(int spanLength) {
+		int window = spanLength*2+1;
+		return countTermsInDocument()*window-(window*(window+1))/2;
+	}
 	
 	/**
 	 * reconstructs a document from a list of terms and a separator
