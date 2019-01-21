@@ -16,4 +16,8 @@ public class TermInstance {
 		this(current);
 		this.previous = Optional.ofNullable(previous);
 	}
+	
+	public Term getTerm() {
+		return current;
+	}
 }
