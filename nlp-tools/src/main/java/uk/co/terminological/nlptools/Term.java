@@ -82,10 +82,7 @@ public class Term {
 	
 
 	/**
-	 * Pointwise mutual information can be normalized between [-1,+1] 
-	 * resulting in -1 (in the limit) for never occurring together, 
-	 * 0 for independence, and +1 for complete co-occurrence.[2]
-	 * @return
+	 *
 	 */
 	public Map<Term,Double> cooccurenceProbablity() {
 		Integer total = corpus.countCorpusDocuments();

@@ -156,8 +156,17 @@ public class Corpus {
 	
 	public EavMap<Term,Term,Double> getMutualInformation() {
 		EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
+		HashSet<Term> targets = new HashSet<Term>(this.terms.values());
 		this.terms.values().forEach(source -> {
-			out.add(source, source.normalisedMutualInformation());
+			Map<Term,Double> probs = source.cooccurenceProbablity();
+			Map<Term,Double> mis = source.mutualInformation();
+			targets.remove(source);
+			targets.forEach(target -> {
+				Double prob = probs.getOrDefault(target, 0D);
+				Double mi = mis.getOrDefault(target, 0D);
+				out.add(source, target,  -mi / Math.log(prob));
+			});
+			out.add(source, p);
 		});
 		return out;
 	}
