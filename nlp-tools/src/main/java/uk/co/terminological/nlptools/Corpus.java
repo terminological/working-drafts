@@ -166,7 +166,6 @@ public class Corpus {
 				Double mi = mis.getOrDefault(target, 0D);
 				out.add(source, target,  -mi / Math.log(prob));
 			});
-			out.add(source, p);
 		});
 		return out;
 	}
