@@ -52,7 +52,11 @@ public class TermInstance {
 				return FluentList.create(previous.get());
 			} else {
 				List<TermInstance> tmp = getNext(n-1);
-				tmp.set(0, previous.get());
+				if (tmp.size() == 0) {
+					tmp.add(previous.get()); 
+				} else {
+					tmp.set(0, previous.get());
+				}
 				return tmp;
 			}
 		} else {
