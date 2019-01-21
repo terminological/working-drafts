@@ -162,9 +162,13 @@ public class Corpus {
 			Map<Term,Double> mis = source.mutualInformation();
 			targets.remove(source);
 			targets.forEach(target -> {
-				Double prob = probs.getOrDefault(target, 0D);
-				Double mi = mis.getOrDefault(target, Double.NEGATIVE_INFINITY);
-				out.add(source, target,  -mi / Math.log(prob));
+				if (probs.containsKey(target) && mis.containsKey(target)) {
+					Double prob = probs.get(target);
+					Double mi = mis.get(target);
+					out.add(source, target,  -mi / Math.log(prob)); }
+				else {
+					out.add(source, target,  -1D);
+				}
 			});
 		});
 		return out;
