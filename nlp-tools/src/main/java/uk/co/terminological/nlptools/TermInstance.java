@@ -1,6 +1,5 @@
 package uk.co.terminological.nlptools;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
