@@ -38,7 +38,11 @@ public class TermInstance {
 				return FluentList.create(next.get());
 			} else {
 				List<TermInstance> tmp = getNext(n-1);
-				tmp.set(0, next.get());
+				if (tmp.size() == 0) {
+					tmp.add(next.get()); 
+				} else {
+					tmp.set(0, next.get());
+				}
 				return tmp;
 			}
 		} else {
@@ -51,7 +55,7 @@ public class TermInstance {
 			if (n==1) {
 				return FluentList.create(previous.get());
 			} else {
-				List<TermInstance> tmp = getNext(n-1);
+				List<TermInstance> tmp = getPrevious(n-1);
 				if (tmp.size() == 0) {
 					tmp.add(previous.get()); 
 				} else {
