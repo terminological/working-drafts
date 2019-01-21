@@ -124,7 +124,8 @@ public class Document {
 	
 	
 	public Double shannonEntropy() {
-		return terms.stream().collect(Collectors.summingDouble(t -> t.shannonEntropy()));
+		return termSequence.stream().map(ti -> ti.getTerm())
+				.collect(Collectors.summingDouble(t -> t.shannonEntropy()));
 	}
 	
 	/**
