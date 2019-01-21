@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +19,6 @@ public class Document {
 	private String identifier;
 	private String string;
 	private String normalised;
-	private List<Term> terms = new ArrayList<>();
 	private List<TermInstance> termSequence = new ArrayList<>();
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
@@ -30,11 +30,12 @@ public class Document {
 		//TODO: retain positional information
 		this.normalised = corpus.getNormaliser().apply(string);
 		corpus.getTokeniser().apply(normalised)
+			//TODO: make filter mechanism more generic
 			.filter(t-> !corpus.getStopWords().contains(t))
 			.forEach(tag -> {
 				//Create a new term
 				Term tmp = corpus.createTermFrom(tag);
-				terms.add(tmp);
+				termSequence.add(tmp);
 				tmp.add(this);
 				termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 			});
@@ -86,7 +87,7 @@ public class Document {
 	}
 	
 	public int countTermsInDocument() {
-		return terms.size();
+		return termSequence.size();
 	}
 	
 	/**

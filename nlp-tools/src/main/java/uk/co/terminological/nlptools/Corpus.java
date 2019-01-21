@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,15 +27,16 @@ public class Corpus {
 	private Set<Document> documents = new HashSet<>();
 	private Normaliser normaliser;
 	private Tokeniser tokeniser;
-	private Set<String> stopWords;
+	private List<Predicate<String>> filters = new ArrayList<>();
 	private int termsInCorpus;
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
 		this.normaliser = normaliser;
 		this.tokeniser = tokeniser;
-		this.stopWords = Stream.of(stopWords).map(normaliser).flatMap(tokeniser)
+		Set<String> stopWordList = Stream.of(stopWords).map(normaliser).flatMap(tokeniser)
 				.collect(Collectors.toSet());
+		this.filters.add(t -> !stopWordList.contains(t));
 	}
 	
 	public static Corpus create() {
@@ -75,8 +77,8 @@ public class Corpus {
 		return tokeniser;
 	}
 
-	public Set<String> getStopWords() {
-		return stopWords;
+	public List<Predicate<String>> getFilters() {
+		return filters;
 	}
 
 	
