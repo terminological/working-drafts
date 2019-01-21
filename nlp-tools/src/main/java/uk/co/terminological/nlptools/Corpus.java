@@ -1,6 +1,7 @@
 package uk.co.terminological.nlptools;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,12 +31,14 @@ public class Corpus {
 	private int termsInCorpus;
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	
-	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
+	@SafeVarargs
+	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords, Predicate<String>... otherFilters) {
 		this.normaliser = normaliser;
 		this.tokeniser = tokeniser;
 		Set<String> stopWordList = Stream.of(stopWords).map(normaliser).flatMap(tokeniser)
 				.collect(Collectors.toSet());
 		this.filters.add(t -> !stopWordList.contains(t));
+		this.filters.addAll(Arrays.asList(otherFilters));
 	}
 	
 	public static Corpus create() {
@@ -59,6 +62,7 @@ public class Corpus {
 	public void addDocument(String source) {
 		addDocument(new Document(UUID.randomUUID().toString(), source, this));
 	}
+	
 	
 	public Stream<Term> streamTerms() {
 		return terms.values().stream();
