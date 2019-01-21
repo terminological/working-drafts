@@ -163,7 +163,7 @@ public class Corpus {
 			targets.remove(source);
 			targets.forEach(target -> {
 				Double prob = probs.getOrDefault(target, 0D);
-				Double mi = mis.getOrDefault(target, 0D);
+				Double mi = mis.getOrDefault(target, Double.NEGATIVE_INFINITY);
 				out.add(source, target,  -mi / Math.log(prob));
 			});
 		});
