@@ -177,4 +177,14 @@ public class Corpus {
 		});
 		return out;
 	}
+	
+	public EavMap<Term,Term,Double> getCollocations(int span) {
+		EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
+		//HashSet<Term> targets = new HashSet<Term>(this.terms.values());
+		this.terms.values().forEach(source -> {
+			Map<Term,Double> chiSq = source.chiSqCollocations(span);
+			out.add(source, chiSq);
+		});
+		return out;
+	}
 }
