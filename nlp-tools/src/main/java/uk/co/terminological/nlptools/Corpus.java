@@ -2,6 +2,7 @@ package uk.co.terminological.nlptools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,15 +31,13 @@ public class Corpus {
 	private Tokeniser tokeniser;
 	private List<Predicate<String>> filters = new ArrayList<>();
 	private int termsInCorpus;
-	private Map<Term,Integer> termCounts = new HashMap<>();
+	//private Map<Term,Integer> termCounts = new HashMap<>();
 	
 	@SafeVarargs
-	public Corpus(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords, Predicate<String>... otherFilters) {
+	public Corpus(Normaliser normaliser, Tokeniser tokeniser, List<String> stopwords, Predicate<String>... otherFilters) {
 		this.normaliser = normaliser;
 		this.tokeniser = tokeniser;
-		Set<String> stopWordList = Stream.of(stopWords).map(normaliser).flatMap(tokeniser)
-				.collect(Collectors.toSet());
-		this.filters.add(t -> !stopWordList.contains(t));
+		this.filters.add(Filters.stopwords(stopwords, normaliser, tokeniser));
 		this.filters.addAll(Arrays.asList(otherFilters));
 	}
 	
@@ -46,7 +45,7 @@ public class Corpus {
 		return new Corpus(
 			string -> string.replaceAll("[_,\\.]"," ").replaceAll("[^a-zA-Z0-9\\s]", "-").replaceAll("\\s+", " ").toLowerCase(),
 			string -> Stream.of(string.split("\\s+")).filter(s -> !s.equals("-")),
-			new String[] {}
+			Collections.emptyList()
 		);
 	}
 
@@ -108,7 +107,7 @@ public class Corpus {
 	protected Term createTermFrom(String tag) {
 		Term tmp = terms.getOrDefault(tag, new Term(tag, this));
 		terms.put(tag, tmp);
-		termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
+		// termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 		termsInCorpus += 1;
 		return tmp;
 	}
@@ -140,16 +139,16 @@ public class Corpus {
 				.append("Unique terms: "+countUniqueTerms()).toString();
 	}
 
-	public Map<Term,Integer> getTermCounts() {
+	/*public Map<Term,Integer> getTermCounts() {
 		return termCounts;
 	}
 	
 	public int countTermsUsage(Term term) {
 		return termCounts.getOrDefault(term, 0);
-	}
+	}*/
 	
 	public Double totalShannonEntropy(Term term) {
-		return term.shannonEntropy()*countTermsUsage(term);
+		return term.shannonEntropy()*term.countOccurrences();
 	}
 	
 	public List<Term> getTermsByTotalEntropy() {
@@ -162,7 +161,7 @@ public class Corpus {
 		EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
 		HashSet<Term> targets = new HashSet<Term>(this.terms.values());
 		this.terms.values().forEach(source -> {
-			Map<Term,Double> probs = source.cooccurenceProbablity();
+			Map<Term,Double> probs = source.cooccurenceProbablities();
 			Map<Term,Double> mis = source.mutualInformation();
 			targets.remove(source);
 			targets.forEach(target -> {
@@ -185,5 +184,41 @@ public class Corpus {
 			out.add(source, chiSq);
 		});
 		return out;
+	}
+	
+	public int countCollocation(Set<Term> terms, int span) {
+		if (terms.isEmpty()) return 0;
+		Term start = terms.iterator().next();
+		terms.remove(start);
+		return (int) start.getInstances().stream().filter(ti -> {
+			Set<Term> neighbours = ti.getNeighbours(span)
+				.stream()
+				.map(n -> n.getTerm())
+				.collect(Collectors.toSet());
+			neighbours.retainAll(terms);
+			return neighbours.size() < terms.size();
+		}).count();
+	}
+	
+	public int countCorpusCollocations(int spanLength, int sizeCollocation) {
+		return documents.stream().map(d -> d.countCollocations(spanLength, sizeCollocation)).mapToInt(i -> i).sum();
+	}
+	
+	public double tStatisticCollocation(Set<Term> terms, int span) {
+		int N = countCorpusCollocations(span, terms.size());
+		double p = countCollocation(terms,span) / N;
+		double p0 = terms.stream().map(t -> t.probabilityOccurrence()).reduce((d1,d2) -> d1*d2).orElse(0D);
+		double estVar = p0*(1-p0);
+		return Math.sqrt(Math.pow((p - p0),2)/estVar);
+	}
+	
+	public int countCooccurrence(Set<Term> terms) {
+		Set<Document> out = new HashSet<>();
+		for (Term t: terms) {
+			if (out.isEmpty()) out.addAll(t.getDocumentsUsing());
+			else out.retainAll(t.getDocumentsUsing());
+			if (out.isEmpty()) return 0; 
+		}
+		return out.size();
 	}
 }

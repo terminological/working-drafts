@@ -1,6 +1,7 @@
 package uk.co.terminological.nlptools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,7 +45,11 @@ public class StringCrossMapper {
 		this.targets.put(id, new Document(id, target, targetCorpus));
 	}
 	
-	public StringCrossMapper(String... stopWords) {
+	public StringCrossMapper() {
+		this(Collections.emptyList());
+	}
+	
+	public StringCrossMapper(List<String> stopWords) {
 		this(
 			string -> string.replaceAll("[_,\\.]"," ").replaceAll("[^a-zA-Z0-9\\s]", "-").replaceAll("\\s+", " ").toLowerCase(),
 			string -> Stream.of(string.split("\\s+")).filter(s -> !s.equals("-")),
@@ -52,7 +57,7 @@ public class StringCrossMapper {
 		);
 	}
 	
-	public StringCrossMapper(Normaliser normaliser, Tokeniser tokeniser, String[] stopWords) {
+	public StringCrossMapper(Normaliser normaliser, Tokeniser tokeniser, List<String> stopWords) {
 		this.normaliser = normaliser;
 		this.tokeniser = tokeniser;
 		sourceCorpus = new Corpus(normaliser, tokeniser, stopWords);

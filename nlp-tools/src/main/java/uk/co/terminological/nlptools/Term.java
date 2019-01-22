@@ -2,8 +2,11 @@ package uk.co.terminological.nlptools;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 public class Term {
 
@@ -50,12 +53,16 @@ public class Term {
 		return documentsUsing.size();
 	}
 
-	public int countTotalOccurences() {
-		return corpus.countTermsUsage(this);
+	public int countOccurrences() {
+		return instances.size();
+	}
+	
+	public double probabilityOccurrence() {
+		return ((double) countOccurrences())/corpus.countCorpusTerms();
 	}
 
 	public Double shannonEntropy() {
-		Double p = ((double) (countTotalOccurences()) / corpus.countCorpusTerms());
+		Double p = ((double) (countOccurrences()) / corpus.countCorpusTerms());
 		return -p * Math.log(p) / Math.log(2D);
 	}
 
@@ -88,7 +95,7 @@ public class Term {
 	/**
 	 *
 	 */
-	public Map<Term,Double> cooccurenceProbablity() {
+	public Map<Term,Double> cooccurenceProbablities() {
 		Integer total = corpus.countCorpusDocuments();
 		Map<Term,Double> out = new HashMap<>();
 		cooccurrences.forEach((k,cooccur) -> {
@@ -123,11 +130,7 @@ public class Term {
 	public Map<Term, Integer> collocations(int spanLength) {
 		Map<Term, Integer> out = new HashMap<>();
 		this.instances.forEach(ti -> {
-			ti.getNext(spanLength).forEach(ti2 -> {
-				Term t = ti2.getTerm();
-				out.merge(t, 1, (oldV,newV) -> oldV+1);
-			});
-			ti.getPrevious(spanLength).forEach(ti2 -> {
+			ti.getNeighbours(spanLength).forEach(ti2 -> {
 				Term t = ti2.getTerm();
 				out.merge(t, 1, (oldV,newV) -> oldV+1);
 			});
@@ -135,17 +138,31 @@ public class Term {
 		return out;
 	}
 
+	private static ChiSquaredDistribution csq = new ChiSquaredDistribution(1);
+	
+	/**
+	 * Generates a set of p values for the 2 terms being correlated 
+	 * @param spanLength
+	 * @return
+	 */
 	public Map<Term,Double> chiSqCollocations(int spanLength) {
 		Map<Term,Double> out = new HashMap<>();
 		Integer N = this.corpus.countCorpusCollocations(spanLength);
 		Map<Term,Integer> coll = collocations(spanLength);
 		coll.forEach((term,count) -> {
-			Double obs = ((double) count)/N;
-			Double exp = ((double) this.corpus.countTermsUsage(this) * this.corpus.countTermsUsage(term)) / (this.corpus.countCorpusTerms()^2);
-			Double chiSq = (obs-exp)/Math.sqrt(obs/N);
-			out.put(term, chiSq);
+			Integer o11 = count; //term1 and term2
+			Integer o12 = this.countOccurrences() - count; //term1 present but not term2
+			Integer o21 = term.countOccurrences() - count; //term2 present but not term1
+			Integer o22 = N-this.countOccurrences()-term.countOccurrences()+count; // neither term present
+			Double chiSq = ((double) N)*Math.pow((o11*o22-o12*o21),2)/((o11+o12)*(o11+o21)*(o12+o22)*(o21+o22));
+			Double p = csq.cumulativeProbability(chiSq);
+			out.put(term, p);
 		});
 		return out;
+	}
+
+	public Set<TermInstance> getInstances() {
+		return instances;
 	}
 
 }

@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -301,7 +302,7 @@ public class PubMedGraphExperiment2 {
 		
 		
 		
-		StringCrossMapper mapper = new StringCrossMapper("University","Institute","Department", "Research","of","at","is","a","for", "Dept");
+		StringCrossMapper mapper = new StringCrossMapper(Arrays.asList("University","Institute","Department", "Research","of","at","is","a","for", "Dept"));
 		log.info("loading affiliations from graph");
 		
 		try (Transaction tx = graphApi.get().beginTx()) {

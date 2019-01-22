@@ -15,6 +15,8 @@ import com.kennycason.kumo.font.scale.LinearFontScalar;
 import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.palette.ColorPalette;
 
+import uk.co.terminological.datatypes.Tuple;
+
 public class WordCloudBuilder {
 
 	private WordCloudBuilder() {}
@@ -25,7 +27,7 @@ public class WordCloudBuilder {
 	
 	public static WordCloudBuilder from(Corpus corpus, int maxNumber) {
 		WordCloudBuilder out = new WordCloudBuilder();
-		corpus.getTermCounts().entrySet().stream()
+		corpus.streamTerms().map(t -> Tuple.create(t, t.countOccurrences()))
 	       .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
 	       .limit(maxNumber)
 	       .forEach((ti) -> {

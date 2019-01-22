@@ -13,6 +13,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.math3.util.CombinatoricsUtils;
+
 /**
  * A document is an identifiable string associated with a corpus
  */
@@ -100,7 +102,7 @@ public class Document {
 		return termCounts.get(term);
 	}
 	
-	public int countTermsInDocument() {
+	public int length() {
 		return termSequence.size();
 	}
 	
@@ -177,7 +179,16 @@ public class Document {
 	 */
 	public int countCollocations(int spanLength) {
 		int window = spanLength*2+1;
-		return countTermsInDocument()*window-(window*(window+1))/2;
+		if (window > length()) window = length();
+		return length()*window-(window*(window+1))/2;
+	}
+	
+	public int countCollocations(int spanLength, int sizeCollocations) {
+		int window = spanLength*2+1;
+		if (sizeCollocations > length() || sizeCollocations > window) return 0;
+		if (sizeCollocations == 2) return countCollocations(spanLength);
+		return (int) (countCollocations(spanLength)*CombinatoricsUtils.binomialCoefficient(window-2, sizeCollocations-2));
+		
 	}
 	
 	/**

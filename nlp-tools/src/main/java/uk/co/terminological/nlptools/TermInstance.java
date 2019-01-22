@@ -1,7 +1,9 @@
 package uk.co.terminological.nlptools;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import uk.co.terminological.datatypes.FluentList;
 
@@ -31,6 +33,12 @@ public class TermInstance {
 	
 	public boolean isLast() {
 		return !next.isPresent();
+	}
+	
+	public Set<TermInstance> getNeighbours(int n) {
+		Set<TermInstance> out = new HashSet<>(getNext(n));
+		out.addAll(getPrevious(n));
+		return out;
 	}
 	
 	public List<TermInstance> getNext(int n) {
