@@ -24,6 +24,7 @@ public class Document {
 	
 	private String identifier;
 	private String string;
+	private String name;
 	private String normalised;
 	private List<TermInstance> termSequence = new ArrayList<>();
 	private Map<Term,Integer> termCounts = new HashMap<>();
@@ -68,6 +69,10 @@ public class Document {
 	
 	public String getIdentifier() {
 		return identifier;
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	public String getString() {
