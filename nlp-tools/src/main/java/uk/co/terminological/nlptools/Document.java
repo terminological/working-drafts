@@ -45,9 +45,9 @@ public class Document {
 				//apply all the filters in sequence. 
 				//If any filter matches reject this token.
 				for (Predicate<String> filter: corpus.getFilters()) {
-					if (filter.test(t)) return true;
+					if (filter.test(t)) return false;
 				}
-				return false;
+				return true;
 			});
 		TermInstance previous = null;
 		Iterator<String> tokenIt = tokens.iterator(); 
