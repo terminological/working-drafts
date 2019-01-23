@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
+import cc.mallet.types.Token;
+
 public class Term {
 
 	String tag;
@@ -163,6 +165,10 @@ public class Term {
 
 	public Set<TermInstance> getInstances() {
 		return instances;
+	}
+	
+	public Token asToken() {
+		return new Token(tag);
 	}
 
 }
