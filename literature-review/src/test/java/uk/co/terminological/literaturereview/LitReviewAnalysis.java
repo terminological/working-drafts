@@ -305,7 +305,7 @@ public class LitReviewAnalysis {
 					Integer i = communityIndex.indexOf(r.get("community").asInt());
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
-					texts.addDocument(i.toString(), "Community "+i.toString(), title+"\n"+abstrct);
+					texts.addDocument(i.toString(), "community "+i.toString(), title+"\n"+abstrct);
 					
 				}
 
