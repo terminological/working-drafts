@@ -39,7 +39,7 @@ public class WordCloudBuilder {
 	public static WordCloudBuilder from(Corpus corpus, int maxNumber, int x, int y) {
 		WordCloudBuilder out = new WordCloudBuilder();
 		out.maxNumber = maxNumber;
-		out.withColourScheme(ColourScheme.Blues);
+		out.withColourScheme(ColourScheme.Greys);
 		out.dimension = new Dimension(x, y);
 		out.wordCloud = new WordCloud(out.dimension, CollisionMode.PIXEL_PERFECT);
 		out.wordCloud.setPadding(2);
@@ -49,6 +49,11 @@ public class WordCloudBuilder {
 		return out;
 	}
 	
+	public WordCloudBuilder withStatistic(Function<Term,Integer> mapper) {
+		this.statisticMapper = mapper;
+		return this;
+	}
+ 	
 	public WordCloudBuilder withOutputPath(Path path) {
 		this.output = path;
 		return this;
