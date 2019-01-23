@@ -313,11 +313,13 @@ public class LitReviewAnalysis {
 					
 				}
 
-				try {
+				texts.getCollocations(5).stream().forEach(System.out::println);
+				
+				/*try {
 					TopicModelBuilder.create(texts).withTopics(10).execute(0.01, 0.01).printTopics();
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
+				}*/
 				
 				return true;
 			});
