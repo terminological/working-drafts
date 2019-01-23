@@ -38,6 +38,7 @@ import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
+import uk.co.terminological.nlptools.Normaliser;
 
 public class LitReviewAnalysis {
 
