@@ -29,7 +29,7 @@ public class Document {
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
 	
-	protected Document(String id, String string, Corpus corpus) {
+	protected Document(String id, String name, String string, Corpus corpus) {
 		this.identifier = id;
 		this.corpus = corpus;
 		this.string = string;
