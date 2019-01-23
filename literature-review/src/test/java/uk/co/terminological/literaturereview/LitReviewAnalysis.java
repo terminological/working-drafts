@@ -34,11 +34,13 @@ import org.yaml.snakeyaml.Yaml;
 
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
+import uk.co.terminological.nlptools.Filters;
 import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.nlptools.Normaliser;
+import uk.co.terminological.nlptools.Tokeniser;
 
 public class LitReviewAnalysis {
 
@@ -296,7 +298,7 @@ public class LitReviewAnalysis {
 
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
-				Corpus texts = new Corpus(Normaliser.DEFAULT, null, affiliationStopwords, null);
+				Corpus texts = new Corpus(Normaliser.DEFAULT, Tokeniser.DEFAULT, textStopwords, Filters.shorterThan(3), Filters.number());
 				
 				for( Record r : res) {
 					
