@@ -65,8 +65,8 @@ public class WordCloudBuilder {
 		return this;
 	}
 	
-	public WordCloudBuilder circular(int r) {
-		wordCloud.setBackground(new CircleBackground(r));
+	public WordCloudBuilder circular() {
+		wordCloud.setBackground(new CircleBackground( (int) Math.floor(Math.min(dimension.getHeight(),dimension.getWidth())/2) ));
 		return this;
 	}
 	
