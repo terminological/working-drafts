@@ -295,7 +295,10 @@ public class LitReviewAnalysis {
 				Corpus texts = Corpus.create();
 				Integer community = null;
 				for( Record r : res) {
-					Integer next = r.get("community").asInt();
+					String abstr = r.get("abstracts").asString();
+					List<String> titles = r.get("titles").asList(Values.ofString()));
+					
+					/*Integer next = r.get("community").asInt();
 					if (community == null) community = next;
 					if (community != next) {
 						plot(fig, "Community content", texts, community, textStopwords);
@@ -303,10 +306,10 @@ public class LitReviewAnalysis {
 					}
 					texts.addAll(r.get("abstracts").asList(Values.ofString()));
 					texts.addAll(r.get("titles").asList(Values.ofString()));
-					community = next;
+					community = next;*/
 				}
 
-				plot(fig, "Community content", texts, community, textStopwords);
+				//plot(fig, "Community content", texts, community, textStopwords);
 				return true;
 			});
 
