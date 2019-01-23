@@ -57,14 +57,17 @@ public class Corpus {
 		this.documents.add(doc);
 	}
 	
-	public void addDocument(String id, String source) {
-		addDocument(new Document(id, source, this));
+	public void addDocument(String id, String name, String source) {
+		addDocument(new Document(id, name, source, this));
+	}
+	
+	public void addDocument(String name, String source) {
+		addDocument(new Document(UUID.randomUUID().toString(), name, source, this));
 	}
 	
 	public void addDocument(String source) {
-		addDocument(new Document(UUID.randomUUID().toString(), source, this));
+		addDocument(new Document(UUID.randomUUID().toString(), source, source, this));
 	}
-	
 	
 	public Stream<Term> streamTerms() {
 		return terms.values().stream();
