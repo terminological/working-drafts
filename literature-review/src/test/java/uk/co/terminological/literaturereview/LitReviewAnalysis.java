@@ -295,7 +295,7 @@ public class LitReviewAnalysis {
 
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
-				Corpus texts = Corpus.create();
+				Corpus texts = new Corpus(Normaliser.DEFAULT, null, affiliationStopwords, null);
 				
 				for( Record r : res) {
 					
