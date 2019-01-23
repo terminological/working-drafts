@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import cc.mallet.types.Instance;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.nlptools.StringCrossMapper.Normaliser;
 import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
@@ -220,5 +222,29 @@ public class Corpus {
 			if (out.isEmpty()) return 0; 
 		}
 		return out.size();
+	}
+	
+	public Iterator<Instance> tokenSequenceIterator() {
+		Iterator<Document> docIt = this.documents.iterator();
+		return new Iterator<Instance>() {
+
+			@Override
+			public boolean hasNext() {
+				return docIt.hasNext();
+			}
+
+			@Override
+			public Instance next() {
+				Document doc = docIt.next();
+				return new Instance(
+						doc.asTokenSequence(),
+						doc.getIdentifier(),
+						doc.getName(),
+						doc.getString()
+				);
+			}
+			
+		}
+		
 	}
 }
