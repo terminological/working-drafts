@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
@@ -293,23 +294,18 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = Corpus.create();
-				Integer community = null;
+				
 				for( Record r : res) {
-					String abstr = r.get("abstracts").asString();
-					List<String> titles = r.get("titles").asList(Values.ofString());
 					
-					/*Integer next = r.get("community").asInt();
-					if (community == null) community = next;
-					if (community != next) {
-						plot(fig, "Community content", texts, community, textStopwords);
-						texts = new ArrayList<>();
-					}
-					texts.addAll(r.get("abstracts").asList(Values.ofString()));
-					texts.addAll(r.get("titles").asList(Values.ofString()));
-					community = next;*/
+					Integer i = communityIndex.indexOf(r.get("community").asInt());
+					String abstrs = r.get("abstracts").asList(Values.ofString()).stream().collect(Collectors.joining("\n"));
+					String titles = r.get("titles").asList(Values.ofString()).stream().collect(Collectors.joining("\n"));
+					
+					texts.addDocument(i.toString(), "Community "+i.toString(), titles+"\n"+abstrs);
+					
 				}
 
-				//plot(fig, "Community content", texts, community, textStopwords);
+				
 				return true;
 			});
 
