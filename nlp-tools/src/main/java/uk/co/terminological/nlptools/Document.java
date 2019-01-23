@@ -216,7 +216,7 @@ public class Document {
 	};}
 
 	public TokenSequence asTokenSequence() {
-		
+		return new TokenSequence(this.termSequence.stream().map(ti -> ti.asToken()).collect(Collectors.toList());
 	}
 	
 }
