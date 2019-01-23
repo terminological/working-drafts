@@ -293,17 +293,16 @@ public class LitReviewAnalysis {
 		try ( Session session = driver.session() ) {
 			session.readTransaction( tx -> {
 
-				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
+				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = Corpus.create();
 				
 				for( Record r : res) {
 					
 					Integer i = communityIndex.indexOf(r.get("community").asInt());
-					String abstrs = r.get("abstracts").asList(Values.ofString()).stream().collect(Collectors.joining("\n"));
-					String titles = r.get("titles").asList(Values.ofString()).stream().collect(Collectors.joining("\n"));
-					
-					texts.addDocument(i.toString(), "Community "+i.toString(), titles+"\n"+abstrs);
+					String title = r.get("title").asString();
+					String abstrct = r.get("abstract").asString();
+					texts.addDocument(i.toString(), "Community "+i.toString(), title+"\n"+abstrct);
 					
 				}
 
