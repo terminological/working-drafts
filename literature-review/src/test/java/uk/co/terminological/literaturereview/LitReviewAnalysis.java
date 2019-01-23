@@ -51,15 +51,19 @@ public class LitReviewAnalysis {
 	List<String> textStopwords;
 	Map<String,String> queries;
 	List<Integer> communityIndex = new ArrayList<>();
+	
+	private int getCommunity(int community) {
+	Integer i = communityIndex.indexOf(community);
+	if (i == -1) {
+		i = communityIndex.size();
+		communityIndex.add(community);
+	}
+	return i;
+	}
 
 	void plot(Figure fig, String name, List<String> list, Integer community, List<String> stopwords) {
 		try {
-			Integer i = communityIndex.indexOf(community);
-			if (i == -1) {
-				i = communityIndex.size();
-				communityIndex.add(community);
-			}
-
+			Integer i = getCommunity(community);
 			fig.withNewChart(name+" "+i, ChartType.WORDCLOUD)
 			.withSeries(list)
 			.bind(TEXT, t -> t)
@@ -302,7 +306,7 @@ public class LitReviewAnalysis {
 				
 				for( Record r : res) {
 					
-					Integer i = communityIndex.indexOf(r.get("community").asInt());
+					Integer i = getCommunity(r.get("community").asInt());
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
 					texts.addDocument(i.toString(), "community "+i.toString(), title+"\n"+abstrct);
