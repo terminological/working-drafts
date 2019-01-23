@@ -36,9 +36,9 @@
     	<version>0.01-SNAPSHOT</version>
     </dependency>
     <dependency>
-    	<groupId>edu.umass.cs.mallet</groupId>
+    	<groupId>cc.mallet</groupId>
     	<artifactId>mallet</artifactId>
-    	<version>0.1.3</version>
+    	<version>2.0.8</version>
     </dependency>
   </dependencies>
 </project>
