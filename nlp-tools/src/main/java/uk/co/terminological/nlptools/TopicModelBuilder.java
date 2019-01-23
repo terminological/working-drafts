@@ -59,7 +59,10 @@ public class TopicModelBuilder {
 		Alphabet dataAlphabet;
 		
 		public void printTopics() {
-			model.topicPhraseXMLReport(new PrintWriter(System.out), 30);
+			PrintWriter pw = new PrintWriter(System.out);
+			model.topicPhraseXMLReport(pw, 30);
+			pw.flush();
+			pw.close();
 		}
 	}
 	
