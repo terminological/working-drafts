@@ -281,6 +281,19 @@ analyse:
     collect(t2.title) as titles,
     collect(t2.abstract) as abstracts
 
+  getAuthorCommunityTitlesAbstracts2: |
+    MATCH (a:Author)
+    WITH 
+    a.community AS community,
+    count(a) AS size
+    ORDER BY size DESC LIMIT 10 
+    MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
+    WHERE a.community = community
+    RETURN
+    community,
+    t.title as title,
+    t.abstract as abstract
+
   getAuthorCoauthorHarmonicCentrality: | # closeness
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic, a.community
