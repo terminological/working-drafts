@@ -34,7 +34,7 @@ public class StringCrossMapper {
 	
 	public void addSource(String id, String source) {
 		if (sources.containsKey(id)) throw new DuplicateIdentityException();
-		this.sources.put(id, new Document(id, source, sourceCorpus));
+		this.sources.put(id, new Document(id, source, source, sourceCorpus));
 	}
 	
 	public Corpus getSource() {return sourceCorpus;}
@@ -42,7 +42,7 @@ public class StringCrossMapper {
 	
 	public void addTarget(String id, String target) {
 		if (targets.containsKey(id)) throw new DuplicateIdentityException();
-		this.targets.put(id, new Document(id, target, targetCorpus));
+		this.targets.put(id, new Document(id, target, target, targetCorpus));
 	}
 	
 	public StringCrossMapper() {
