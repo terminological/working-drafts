@@ -59,7 +59,9 @@ public class WordcloudWriter extends Writer {
 	@Override
 	protected String extractData() {
 		extractData(this.getChart().getSeries().get(0));
-		if (this.getChart().getSeries().size() > 1) extractStopwords((Series<String>) this.getChart().getSeries().get(1));
+		if (this.getChart().getSeries().size() > 1) {
+			extractStopwords((Series<String>) this.getChart().getSeries().get(1));
+		}
 		return "";
 	}
 
