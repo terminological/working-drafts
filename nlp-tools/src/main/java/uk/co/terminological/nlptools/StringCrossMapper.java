@@ -228,8 +228,6 @@ public class StringCrossMapper {
 		return similarity.apply(doc.getNormalised(), target.getNormalised());
 	}
 	
-	static interface Tokeniser extends Function<String,Stream<String>> {}
-
 	public String summaryStats() {
 		return new StringBuilder("Sources: ")
 				.append("{"+sourceCorpus.summaryStats()+"}")
