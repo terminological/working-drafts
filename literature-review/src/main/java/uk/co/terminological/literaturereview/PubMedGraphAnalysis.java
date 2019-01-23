@@ -260,6 +260,10 @@ public class PubMedGraphAnalysis {
 	        		texts.addAll(r.get("titles").asList(Values.ofString()));
 	        		community = next;
 	        	}
+	        	//TODO: use mallet to identify topics
+	        	
+	        	
+	        	
 	        	plot(fig, "Community content", texts, community, textStopwords);
 	        	return true;
 	        });
