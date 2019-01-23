@@ -15,15 +15,15 @@ public class Filters {
 				.map(normaliser)
 				.flatMap(tokeniser)
 				.collect(Collectors.toSet());
-		return t -> !stopWordList.contains(t);
+		return t -> stopWordList.contains(t);
 	}
 	
 	public static Predicate<String> shorterThan(int size) {
-		return t -> t.length() >= size;
+		return t -> t.length() < size;
 	}
 	
 	public static Predicate<String> number() {
-		return t -> !t.matches("[\\-+]?[0-9]*[\\.]*[0-9]+");
+		return t -> t.matches("[\\-+]?[0-9]*[\\.]*[0-9]+");
 	}
 	
 }
