@@ -35,6 +35,8 @@ public class Corpus {
 	private int termsInCorpus;
 	//private Map<Term,Integer> termCounts = new HashMap<>();
 	
+	
+	//TODO: Generate better 
 	@SafeVarargs
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, List<String> stopwords, Predicate<String>... otherFilters) {
 		this.normaliser = normaliser;

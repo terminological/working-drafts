@@ -228,7 +228,10 @@ public class StringCrossMapper {
 		return similarity.apply(doc.getNormalised(), target.getNormalised());
 	}
 	
-	static interface Normaliser extends Function<String,String> {}
+	static interface Normaliser extends Function<String,String> {
+		
+		
+	}
 	static interface Tokeniser extends Function<String,Stream<String>> {}
 
 	public String summaryStats() {

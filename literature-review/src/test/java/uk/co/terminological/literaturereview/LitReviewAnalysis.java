@@ -31,6 +31,7 @@ import org.neo4j.driver.v1.Values;
 import org.yaml.snakeyaml.Yaml;
 
 import uk.co.terminological.datatypes.Triple;
+import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
@@ -291,7 +292,7 @@ public class LitReviewAnalysis {
 
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
 				List<Record> res = tx.run( qry ).list();
-				List<String> texts = new ArrayList<>();
+				Corpus texts = Corpus.create();
 				Integer community = null;
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
