@@ -19,6 +19,7 @@ import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 
+//TODO: integrate with https://github.com/jtablesaw/tablesaw
 public class Chart {
 
 	List<Series<?>> series = new ArrayList<>();
