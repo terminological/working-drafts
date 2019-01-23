@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import cc.mallet.types.Token;
 import uk.co.terminological.datatypes.FluentList;
 
 public class TermInstance {
@@ -83,4 +84,7 @@ public class TermInstance {
 				next.map(ti -> ti.current.tag).orElse("X");
 	}
 	
+	public Token asToken() {
+		return this.current.asToken();
+	}
 }

@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
+import cc.mallet.types.TokenSequence;
+
 /**
  * A document is an identifiable string associated with a corpus
  */
@@ -213,5 +215,8 @@ public class Document {
 		}
 	};}
 
+	public TokenSequence asTokenSequence() {
+		
+	}
 	
 }
