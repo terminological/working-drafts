@@ -296,7 +296,7 @@ public class LitReviewAnalysis {
 				Integer community = null;
 				for( Record r : res) {
 					String abstr = r.get("abstracts").asString();
-					List<String> titles = r.get("titles").asList(Values.ofString()));
+					List<String> titles = r.get("titles").asList(Values.ofString());
 					
 					/*Integer next = r.get("community").asInt();
 					if (community == null) community = next;
