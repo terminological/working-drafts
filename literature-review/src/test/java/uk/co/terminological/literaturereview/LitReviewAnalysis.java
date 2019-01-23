@@ -8,6 +8,7 @@ import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
+import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
@@ -305,6 +307,11 @@ public class LitReviewAnalysis {
 					
 				}
 
+				try {
+					TopicModelBuilder.create(texts).withTopics(10).execute(0.01, 0.01).printTopics();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				
 				return true;
 			});
