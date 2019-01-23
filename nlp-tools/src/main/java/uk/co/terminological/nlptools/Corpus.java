@@ -246,8 +246,8 @@ public class Corpus {
 						doc.getString()
 				);
 			}
-			
 		};
-		
 	}
+	
+	
 }
