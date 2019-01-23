@@ -19,7 +19,7 @@ public class Filters {
 	}
 	
 	public static Predicate<String> shorterThan(int size) {
-		return t -> t.length() => size;
+		return t -> t.length() >= size;
 	}
 	
 	public static Predicate<String> number() {
