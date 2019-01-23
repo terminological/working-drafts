@@ -17,7 +17,6 @@ import java.util.stream.Stream;
 
 import cc.mallet.types.Instance;
 import uk.co.terminological.datatypes.EavMap;
-import uk.co.terminological.nlptools.StringCrossMapper.Normaliser;
 import uk.co.terminological.nlptools.StringCrossMapper.Tokeniser;
 
 /**
