@@ -2,28 +2,7 @@ package uk.co.terminological.nlptools;
 
 public class Weighted<T> implements Comparable<Weighted<T>> {
 
-	@Override
-	public int hashCode() {
-		return thing.hashCode();
-	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		@SuppressWarnings("unchecked")
-		Weighted<T> other = (Weighted<T>) obj;
-		if (thing == null) {
-			if (other.thing != null)
-				return false;
-		} else if (!thing.equals(other.thing))
-			return false;
-		return true;
-	}
 
 	Double weight;
 	T thing;
