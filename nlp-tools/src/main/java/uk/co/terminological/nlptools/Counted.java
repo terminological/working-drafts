@@ -3,7 +3,7 @@ package uk.co.terminological.nlptools;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Counted<T> {
+public class Counted<T> implements Comparable<Counted<T>> {
 
 	
 
@@ -25,18 +25,13 @@ public class Counted<T> {
 	public String toString() {return thing.toString()+"(:"+count.toString()+")";}
 	
 	public static <X> SortedSet<Counted<X>> descending() {
-		return new TreeSet<Counted<X>>(
-				(w1,w2) -> {
-					int comp = -w1.getCount().compareTo(w2.getCount());
-					return comp == 0 ? w1.hashCode()-w2.hashCode() : comp;
-				});
+		return new TreeSet<Counted<X>>();
 	}
 	
-	public static <X> SortedSet<Counted<X>> ascending() {
-		return new TreeSet<Counted<X>>((w1,w2) -> {
-			int comp = w1.getCount().compareTo(w2.getCount());
-			return comp == 0 ? w1.hashCode()-w2.hashCode() : comp;
-		});
+	@Override
+	public int compareTo(Counted<T> o) {
+		int comp = -getCount().compareTo(o.getCount());
+		return comp == 0 ? hashCode()-o.hashCode() : comp;
 	}
 	
 }

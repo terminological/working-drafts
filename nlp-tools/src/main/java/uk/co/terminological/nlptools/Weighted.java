@@ -3,7 +3,7 @@ package uk.co.terminological.nlptools;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Weighted<T> {
+public class Weighted<T> implements Comparable<Weighted<T>> {
 
 	
 
@@ -25,18 +25,13 @@ public class Weighted<T> {
 	public String toString() {return thing.toString()+"(:"+weight.toString()+")";}
 	
 	public static <X> SortedSet<Weighted<X>> descending() {
-		return new TreeSet<Weighted<X>>(
-				(w1,w2) -> {
-					int comp = -w1.getWeight().compareTo(w2.getWeight());
-					return comp == 0 ? w1.hashCode()-w2.hashCode() : comp;
-				});
+		return new TreeSet<Weighted<X>>();
 	}
 	
-	public static <X> SortedSet<Weighted<X>> ascending() {
-		return new TreeSet<Weighted<X>>((w1,w2) -> {
-			int comp = w1.getWeight().compareTo(w2.getWeight());
-			return comp == 0 ? w1.hashCode()-w2.hashCode() : comp;
-		});
+	@Override
+	public int compareTo(Weighted<T> o) {
+		int comp = -getWeight().compareTo(o.getWeight());
+		return comp == 0 ? hashCode()-o.hashCode() : comp;
 	}
 	
 }
