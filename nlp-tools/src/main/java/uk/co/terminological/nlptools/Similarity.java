@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Similarity {
 
@@ -15,17 +16,16 @@ public class Similarity {
 	 * Move onto next term.
 	 * 
 	 */
-	public static <X> Double getEuclideanDistance(Map<X,Double> source, Map<X,Double> target) {
+	public static <X> Double getEuclideanDistance(Stream<Weighted<X>> source, Stream<Weighted<X>> target) {
 		
-		HashMap<X,Double> targetTerms = new HashMap<>(target);
+		HashMap<X,Double> tmp = new HashMap<>();
 		
-		source.forEach((k,v) -> {
-			Optional.ofNullable(targetTerms.get(k)).ifPresentOrElse(
-					tv -> targetTerms.put(k, tv-v), 
-					() -> targetTerms.put(k, -v));
-		});
+		// copy first stream to vector
+		source.forEach(kv -> tmp.put(kv.getTarget(), kv.getWeight()));
+		// subtract second stream pairwise
+		target.forEach(kv2 -> tmp.merge(kv2.getTarget(), -kv2.getWeight(), (v1,v2) -> v1-v2));
 		
-		Double subSquares = targetTerms.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
+		Double subSquares = tmp.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
 		return Math.sqrt(subSquares);
 	}
 	
@@ -37,14 +37,24 @@ public class Similarity {
 	 * Move onto next term.
 	 * 
 	 */
-	public static <X> Double getCosineDifference(Map<X,Double> source, Map<X,Double> target) {
+	public static <X> Double getCosineDifference(Stream<Weighted<X>> source, Stream<Weighted<X>> target) {
 		
-		Double dotProd = source.entrySet().stream().collect(Collectors.summingDouble(kv -> 
-			kv.getValue()*target.getOrDefault(kv.getKey(),0D)
+		HashMap<X,Double> tmpSource = new HashMap<>();
+		HashMap<X,Double> tmpTarget = new HashMap<>();
+		
+		Double sourceLengthSqrd = source.collect(Collectors.summingDouble(v -> {
+			tmpSource.put(v.getTarget(), v.getWeight());
+			return v.getWeight()*v.getWeight();
+		})); 
+		
+		Double targetLengthSqrd = target.collect(Collectors.summingDouble(v -> {
+			tmpTarget.put(v.getTarget(), v.getWeight());
+			return v.getWeight()*v.getWeight();
+		}));
+		
+		Double dotProd = tmpSource.entrySet().stream().collect(Collectors.summingDouble(kv -> 
+			kv.getValue()*tmpTarget.getOrDefault(kv.getKey(),0D)
 		));
-		
-		Double sourceLengthSqrd = source.values().stream().collect(Collectors.summingDouble(v -> v*v)); 
-		Double targetLengthSqrd = target.values().stream().collect(Collectors.summingDouble(v -> v*v));
 		
 		return 1 - dotProd / (Math.sqrt(sourceLengthSqrd*targetLengthSqrd));
 	}
