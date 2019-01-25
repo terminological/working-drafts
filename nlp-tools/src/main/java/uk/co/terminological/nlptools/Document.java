@@ -44,7 +44,6 @@ public class Document {
 		this.string = string;
 		//TODO: retain positional information
 		//TODO: prenormalisation filtering.
-		//TODO: integration of mallet etc
 		//TODO: sentence splitter
 		//TODO: sentence normaliser not document normaliser
 		this.normalised = corpus.getNormaliser().apply(string);
