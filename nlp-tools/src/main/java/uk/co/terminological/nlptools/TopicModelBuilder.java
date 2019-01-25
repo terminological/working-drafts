@@ -72,20 +72,6 @@ public class TopicModelBuilder {
 		}
 	}
 
-	/*TODO:
-	 * http://mallet.cs.umass.edu/mallet-tutorial.pdf
-	Dirichlet-multinomial Regression (DMR) The	corpus	specifies	a	vector	of	real-valued	
-	features (x) for each document, of length F. Each topic has an F-length vector of parameters.
-
-		DMRTopicModel dmr =
-		new DMRTopicModel (numTopics);
-		dmr.addInstances(training);
-		dmr.estimate();
-		dmr.writeParameters(new File("dmr.parameters"))
-	 */
-
-
-
 	public static class Result {
 
 		public Result(ParallelTopicModel model, TopicModelBuilder builder) {
