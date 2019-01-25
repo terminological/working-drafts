@@ -77,6 +77,10 @@ public class Corpus {
 		return terms.values().stream();
 	}
 	
+	public Stream<Topic> streamTopics() {
+		return topics.values().stream();
+	}
+	
 	public Collection<Document> getDocuments() {
 		return documents.values();
 	}
