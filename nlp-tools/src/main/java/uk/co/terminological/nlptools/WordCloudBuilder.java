@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.kennycason.kumo.CollisionMode;
 import com.kennycason.kumo.WordCloud;
@@ -32,6 +33,7 @@ public class WordCloudBuilder {
 	Path output;
 	ColorPalette pallette;
 	Function<Term, Integer> statisticMapper = t -> t.countOccurrences();
+	Function<Corpus,Stream<Term>> termSelector = c -> c.streamTerms();
 	Corpus corpus;
 	int maxNumber;
 	Dimension dimension;
@@ -47,6 +49,11 @@ public class WordCloudBuilder {
 		out.wordCloud.setBackground(new CircleBackground(Math.min(x, y)/2));
 		out.wordCloud.setFontScalar(new SqrtFontScalar(10, 50));
 		return out;
+	}
+	
+	public WordCloudBuilder withTermSelector(Function<Corpus,Stream<Term>> mapper) {
+		this.termSelector = mapper;
+		return this;
 	}
 	
 	public WordCloudBuilder withStatistic(Function<Term,Integer> mapper) {
@@ -76,7 +83,7 @@ public class WordCloudBuilder {
 	}
 	
 	public void execute() {
-		corpus.streamTerms().map(t -> Tuple.create(t, statisticMapper.apply(t)))
+		termSelector.apply(corpus).map(t -> Tuple.create(t, statisticMapper.apply(t)))
 	       .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
 	       .limit(maxNumber)
 	       .forEach((ti) -> {
