@@ -52,6 +52,7 @@ public class LitReviewAnalysis {
 	List<String> textStopwords;
 	Map<String,String> queries;
 	List<Integer> communityIndex = new ArrayList<>();
+	File outDir;
 	
 	private int getCommunity(int community) {
 	Integer i = communityIndex.indexOf(community);
@@ -91,7 +92,8 @@ public class LitReviewAnalysis {
 		Yaml yaml = new Yaml();
 		InputStream inputStream = PubMedGraphAnalysis.class.getClassLoader().getResourceAsStream("cypherQuery.yaml");
 		obj = yaml.load(inputStream);
-		fig = Figure.outputTo(new File(System.getProperty("user.home")+"/Dropbox/litReview/output"));
+		outDir = new File(System.getProperty("user.home")+"/Dropbox/litReview/output");
+		fig = Figure.outputTo(outDir);
 
 		affiliationStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForAffiliation").split("\n"));
 		textStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForText").split("\n"));
@@ -320,6 +322,7 @@ public class LitReviewAnalysis {
 				
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).executeDMR();
 				result.printTopics(10);
+				Corpus corpus = result.getTopicsForDocuments();
 				
 				
 				return true;

@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import cc.mallet.pipe.Pipe;
 import cc.mallet.pipe.SerialPipes;
@@ -123,7 +124,7 @@ public class TopicModelBuilder {
 			return builder.topics;
 		}
 		
-		public Corpus getTopicsForDocuments() {
+		public Stream<Topic> getTopicsForDocuments() {
 			
 			//TODO: write all the topics into the corpus as a list of weighted terms.
 			
@@ -160,7 +161,7 @@ public class TopicModelBuilder {
 	            }
 	        }
 			
-	        return builder.corpus;
+	        return builder.corpus.streamTopics();
 			
 			
 		}
