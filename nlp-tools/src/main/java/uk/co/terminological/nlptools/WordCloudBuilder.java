@@ -40,13 +40,14 @@ public class WordCloudBuilder {
 	public static WordCloudBuilder from(Corpus corpus, int maxNumber, int x, int y) {
 		WordCloudBuilder out = new WordCloudBuilder();
 		out.maxNumber = maxNumber;
-		out.withColourScheme(ColourScheme.Greys);
+		
 		out.dimension = new Dimension(x, y);
 		out.wordCloud = new WordCloud(out.dimension, CollisionMode.PIXEL_PERFECT);
 		out.wordCloud.setPadding(2);
 		out.wordCloud.setKumoFont(new KumoFont(new Font("Lucida Sans", Font.PLAIN, 14)));
 		out.wordCloud.setBackground(new CircleBackground(Math.min(x, y)/2));
 		out.wordCloud.setFontScalar(new SqrtFontScalar(10, 50));
+		out.withColourScheme(ColourScheme.Greys);
 		return out;
 	}
 	
