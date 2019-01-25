@@ -45,7 +45,7 @@ public class TestStringCrossMapper extends TestCase {
 		System.out.println("=================");
 		
 		mapper.getSource().getTermsByTotalEntropy().forEach(term -> {
-			System.out.println(term.toString() + "\t" + mapper.getSource().totalShannonEntropy(term));
+			System.out.println(term.toString());
 		});
 	}
 

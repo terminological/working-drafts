@@ -22,4 +22,6 @@ public class Weighted<T> implements Comparable<Weighted<T>> {
 		return -getWeight().compareTo(o.getWeight());
 	}
 	
+	public String toString() {return thing.toString()+"(:"+weight.toString()+")";}
+	
 }
