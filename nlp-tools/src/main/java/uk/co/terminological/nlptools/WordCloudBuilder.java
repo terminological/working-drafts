@@ -30,7 +30,7 @@ public class WordCloudBuilder {
 	
 	WordCloud wordCloud;
 	List<WordFrequency> wordFrequencies = new ArrayList<>();
-	Path output;
+	//Path output;
 	ColorPalette pallette;
 	Function<Corpus,Stream<Counted<Term>>> selector = c -> c.streamTerms().map(t -> Counted.create(t, t.countOccurrences()));
 	Corpus corpus;
@@ -55,10 +55,10 @@ public class WordCloudBuilder {
 		return this;
 	}
 	
-	public WordCloudBuilder withOutputPath(Path path) {
+	/*public WordCloudBuilder withOutputPath(Path path) {
 		this.output = path;
 		return this;
-	}
+	}*/
 	
 	public WordCloudBuilder withColourScheme(ColourScheme scheme) {
 		List<Color> colors = scheme.values(8).stream().map(c -> c.toAwt()).collect(Collectors.toList());
@@ -76,7 +76,7 @@ public class WordCloudBuilder {
 		return this;
 	}
 	
-	public void execute() {
+	public void execute(Path output) {
 		selector.apply(corpus)
 	       .sorted()
 	       .limit(maxNumber)

@@ -37,6 +37,7 @@ import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
 import uk.co.terminological.nlptools.Filters;
 import uk.co.terminological.nlptools.TopicModelBuilder;
+import uk.co.terminological.nlptools.WordCloudBuilder;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
@@ -322,7 +323,22 @@ public class LitReviewAnalysis {
 				
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).executeDMR();
 				result.printTopics(10);
-				Corpus corpus = result.getTopicsForDocuments();
+				result.getTopicsForDocuments().forEach(top -> {
+					
+					int id = top.getTopicId();
+					
+					WordCloudBuilder.from(texts, 200, 600, 600).circular()
+						.withColourScheme(ColourScheme.sequential(id))
+						.withSelector(c -> 
+							c.streamTopics()
+								.filter(t -> t.getTopicId() == id)
+								.flatMap(t -> t.streamTerms())
+								.map(wt -> wt.scale(100))
+								)
+						.execute();
+						;
+					
+				});
 				
 				
 				return true;

@@ -13,7 +13,7 @@ public class Topic {
 		this.topicId = topic;
 	}
 
-	public void addTerm(Weighted<Term> wt) {
+	protected void addTerm(Weighted<Term> wt) {
 		terms.add(wt);
 	}
 	
@@ -27,7 +27,7 @@ public class Topic {
 	
 	public int getTopicId() {return topicId;}
 
-	public void addDocument(Weighted<Document> create) {
+	protected void addDocument(Weighted<Document> create) {
 		documents.add(create);
 		create.getTarget().addTopic(Weighted.create(this, create.getWeight()));
 	}
