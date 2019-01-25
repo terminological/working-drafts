@@ -1,15 +1,9 @@
 package uk.co.terminological.nlptools;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
@@ -18,11 +12,9 @@ import cc.mallet.pipe.SerialPipes;
 import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.topics.DMRTopicModel;
 import cc.mallet.topics.ParallelTopicModel;
-import cc.mallet.topics.TopicAssignment;
 import cc.mallet.topics.TopicModelDiagnostics;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.IDSorter;
-import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.LabelSequence;
 
