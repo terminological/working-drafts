@@ -1,6 +1,7 @@
 package uk.co.terminological.nlptools;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public class StringCrossMapper {
 	
 	public void addSource(String id, String source) {
 		if (sources.containsKey(id)) throw new DuplicateIdentityException();
-		this.sources.put(id, new Document(id, source, source, sourceCorpus));
+		this.sources.put(id, new Document(id, source, sourceCorpus));
 	}
 	
 	public Corpus getSource() {return sourceCorpus;}
@@ -42,7 +43,7 @@ public class StringCrossMapper {
 	
 	public void addTarget(String id, String target) {
 		if (targets.containsKey(id)) throw new DuplicateIdentityException();
-		this.targets.put(id, new Document(id, target, target, targetCorpus));
+		this.targets.put(id, new Document(id, target, targetCorpus));
 	}
 	
 	public StringCrossMapper() {
@@ -85,7 +86,7 @@ public class StringCrossMapper {
 		Map<Term,Double> orderedTerms = doc.termsByTfIdf();
 		Iterator<Entry<Term, Double>> it = orderedTerms.entrySet().iterator();
 		
-		Set<Document> matching = targetCorpus.getDocuments();
+		Collection<Document> matching = targetCorpus.getDocuments();
 		
 		double score = 0;
 		while (it.hasNext() && matching.size() > 1) {

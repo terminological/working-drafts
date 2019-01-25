@@ -2,6 +2,7 @@ package uk.co.terminological.nlptools;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import cc.mallet.types.Alphabet;
 import cc.mallet.types.Instance;
 import uk.co.terminological.datatypes.EavMap;
 
@@ -26,7 +28,7 @@ import uk.co.terminological.datatypes.EavMap;
 public class Corpus {
 	
 	private Map<String,Term> terms = new HashMap<>();
-	private Set<Document> documents = new HashSet<>();
+	private Map<String,Document> documents = new HashMap<>();
 	private Normaliser normaliser;
 	private Tokeniser tokeniser;
 	private List<Predicate<String>> filters = new ArrayList<>();
@@ -53,28 +55,29 @@ public class Corpus {
 
 	// ============ BEAN METHODS =====================
 	
-	public void addDocument(Document doc) {
-		this.documents.add(doc);
+	public Document addDocument(Document doc) {
+		this.documents.put(doc.getIdentifier(),doc);
+		return doc;
 	}
 	
-	public void addDocument(String id, String name, String source) {
-		addDocument(new Document(id, name, source, this));
+	public Document addDocument(String id, String name, String source) {
+		return addDocument(new Document(id, source, this));
 	}
 	
-	public void addDocument(String name, String source) {
-		addDocument(new Document(UUID.randomUUID().toString(), name, source, this));
+	public Document addDocument(String name, String source) {
+		return addDocument(new Document(UUID.randomUUID().toString(), source, this));
 	}
 	
-	public void addDocument(String source) {
-		addDocument(new Document(UUID.randomUUID().toString(), source, source, this));
+	public Document addDocument(String source) {
+		return addDocument(new Document(UUID.randomUUID().toString(), source, this));
 	}
 	
 	public Stream<Term> streamTerms() {
 		return terms.values().stream();
 	}
 	
-	public Set<Document> getDocuments() {
-		return documents;
+	public Collection<Document> getDocuments() {
+		return documents.values();
 	}
 	
 	public Normaliser getNormaliser() {
@@ -87,6 +90,10 @@ public class Corpus {
 
 	public List<Predicate<String>> getFilters() {
 		return filters;
+	}
+	
+	public Optional<Document> getById(String id) {
+		return Optional.ofNullable(this.documents.getOrDefault(id,null));
 	}
 
 	
@@ -122,7 +129,7 @@ public class Corpus {
 	}
 	
 	public int countCorpusCollocations(int spanLength) {
-		return documents.stream().map(d -> d.countCollocations(spanLength)).mapToInt(i -> i).sum();
+		return documents.values().stream().map(d -> d.countCollocations(spanLength)).mapToInt(i -> i).sum();
 	}
 	
 	public int countCorpusTerms() {
@@ -206,7 +213,7 @@ public class Corpus {
 	}
 	
 	public int countCorpusCollocations(int spanLength, int sizeCollocation) {
-		return documents.stream().map(d -> d.countCollocations(spanLength, sizeCollocation)).mapToInt(i -> i).sum();
+		return documents.values().stream().map(d -> d.countCollocations(spanLength, sizeCollocation)).mapToInt(i -> i).sum();
 	}
 	
 	public double tStatisticCollocation(Set<Term> terms, int span) {
@@ -228,7 +235,7 @@ public class Corpus {
 	}
 	
 	public Iterator<Instance> tokenSequenceIterator() {
-		Iterator<Document> docIt = this.documents.iterator();
+		Iterator<Document> docIt = this.documents.values().iterator();
 		return new Iterator<Instance>() {
 
 			@Override
@@ -241,12 +248,18 @@ public class Corpus {
 				Document doc = docIt.next();
 				return new Instance(
 						doc.asTokenSequence(),
+						doc.getFeatures(),
 						doc.getIdentifier(),
-						doc.getName(),
 						doc.getString()
 				);
 			}
 		};
+	}
+
+	Alphabet keys = new Alphabet();
+	
+	public Alphabet getAlphabet() {
+		return keys;
 	}
 	
 	

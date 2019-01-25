@@ -15,6 +15,11 @@ import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Ints;
+
+import cc.mallet.types.Alphabet;
+import cc.mallet.types.FeatureVector;
 import cc.mallet.types.TokenSequence;
 
 /**
@@ -24,13 +29,13 @@ public class Document {
 	
 	private String identifier;
 	private String string;
-	private String name;
 	private String normalised;
 	private List<TermInstance> termSequence = new ArrayList<>();
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
+	private Map<String,Object> metadata = new HashMap<>();
 	
-	protected Document(String id, String name, String string, Corpus corpus) {
+	protected Document(String id, String string, Corpus corpus) {
 		this.identifier = id;
 		this.corpus = corpus;
 		this.string = string;
@@ -71,10 +76,6 @@ public class Document {
 		return identifier;
 	}
 	
-	public String getName() {
-		return name;
-	}
-
 	public String getString() {
 		return string;
 	}
@@ -222,6 +223,33 @@ public class Document {
 
 	public TokenSequence asTokenSequence() {
 		return new TokenSequence(this.termSequence.stream().map(ti -> ti.asToken()).collect(Collectors.toList()));
+	}
+
+	public FeatureVector getFeatures() {
+		Alphabet keys = corpus.getAlphabet();
+		List<Integer> features = new ArrayList<>();
+		List<Double> values = new ArrayList<>();
+		this.metadata.forEach((k,v) -> {
+			
+			Double value = null;
+			if (v != null) {
+				if (v instanceof Boolean) value = ((boolean) v) ? 1D: 0D;
+				if (v instanceof Double) value = ((double) v);
+				if (v instanceof Integer) value = ((Integer) v).doubleValue();
+			}
+			
+			int feature = keys.lookupIndex(k, true);
+			
+			features.add(feature);
+			values.add(value);
+		});
+		return new FeatureVector(keys, Ints.toArray(features), Doubles.toArray(values));
+		
+	}
+
+	public Document addMetadata(String string2, Object i) {
+		this.metadata.put(string2, i);
+		return this;
 	}
 	
 }

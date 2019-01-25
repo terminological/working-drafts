@@ -34,6 +34,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
+import uk.co.terminological.nlptools.Document;
 import uk.co.terminological.nlptools.Filters;
 import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.simplechart.ChartType;
@@ -309,17 +310,17 @@ public class LitReviewAnalysis {
 					Integer i = getCommunity(r.get("community").asInt());
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
-					texts.addDocument(i.toString(), "community "+i.toString(), title+"\n"+abstrct);
+					Document doc = texts.addDocument(i.toString(), "community "+i.toString(), title+"\n"+abstrct);
+					doc.addMetadata("community",i);
+					doc.addMetadata("community",r.get("qtr").asString());
 					
 				}
 
-				//texts.getCollocations(5).stream().forEach(System.out::println);
+				// texts.getCollocations(5).stream().forEach(System.out::println);
 				
-				try {
-					TopicModelBuilder.create(texts).withTopics(10).execute(0.01, 0.01).printTopics();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).executeDMR();
+				result.printTopics(10);
+				
 				
 				return true;
 			});
