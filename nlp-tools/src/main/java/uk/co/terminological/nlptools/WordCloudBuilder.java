@@ -39,8 +39,8 @@ public class WordCloudBuilder {
 	
 	public static WordCloudBuilder from(Corpus corpus, int maxNumber, int x, int y) {
 		WordCloudBuilder out = new WordCloudBuilder();
+		out.corpus = corpus;
 		out.maxNumber = maxNumber;
-		
 		out.dimension = new Dimension(x, y);
 		out.wordCloud = new WordCloud(out.dimension, CollisionMode.PIXEL_PERFECT);
 		out.wordCloud.setPadding(2);
