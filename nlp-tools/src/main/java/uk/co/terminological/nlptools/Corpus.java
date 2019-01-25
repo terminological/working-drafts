@@ -34,7 +34,7 @@ public class Corpus {
 	private Tokeniser tokeniser;
 	private List<Predicate<String>> filters = new ArrayList<>();
 	private int termsInCorpus;
-	private Map<Integer,Topic> topics;
+	private Map<Integer,Topic> topics = new HashMap<>();
 	//private Map<Term,Integer> termCounts = new HashMap<>();
 	
 	
