@@ -33,6 +33,7 @@ public class Corpus {
 	private Tokeniser tokeniser;
 	private List<Predicate<String>> filters = new ArrayList<>();
 	private int termsInCorpus;
+	private Map<Integer,Topic> topics;
 	//private Map<Term,Integer> termCounts = new HashMap<>();
 	
 	
@@ -260,6 +261,14 @@ public class Corpus {
 	
 	public Alphabet getAlphabet() {
 		return keys;
+	}
+
+	public Topic addTopic(int topic) {
+		if (!this.topics.containsKey(topic)) {
+			Topic tmp = new Topic(topic);
+			this.topics.put(topic, tmp);
+		}
+		return this.topics.get(topic);
 	}
 	
 	

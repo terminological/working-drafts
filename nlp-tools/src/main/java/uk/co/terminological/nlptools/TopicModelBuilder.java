@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -125,6 +126,25 @@ public class TopicModelBuilder {
 		public Corpus getTopicsForDocuments() {
 			
 			//TODO: write all the topics into the corpus as a list of weighted terms.
+			
+			ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+			Alphabet alphabet = getDataAlphabet();
+			
+	        // Print results for each topic
+	        for (int topic = 0; topic < getTopicCount(); topic++) {
+	            TreeSet<IDSorter> sortedWords = topicSortedWords.get(topic);
+	            Topic top = builder.corpus.addTopic(topic);
+	            int word = 0;
+	            for (IDSorter info: sortedWords) {
+	            	Double weight = info.getWeight();
+	                String term = alphabet.lookupObject(info.getID()).toString();
+	                word++;
+	                Term t = builder.corpus.createTermFrom(term);
+	                Weighted<Term> wt = Weighted.create(t, weight);
+	                top.addTerm(wt);
+	            }
+	        }
+			
 			
 			//out.println("#topic doc name proportion ...");
 	        
