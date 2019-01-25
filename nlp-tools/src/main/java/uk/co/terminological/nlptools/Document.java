@@ -146,10 +146,10 @@ public class Document {
 	/**
 	 * returns the terms of the document in entropy descending order.
 	 */
-	public List<Term> entropyOrder() {
+	public Stream<Term> entropyOrder() {
 		List<Term> tmp = new ArrayList<>(termCounts.keySet());
 		tmp.sort((t1,t2) -> t2.shannonEntropy().compareTo(t1.shannonEntropy()));
-		return tmp;
+		return tmp.stream();
 	}
 	
 	/**
@@ -205,14 +205,14 @@ public class Document {
 		return terms.stream().map(t -> t.tag).collect(Collectors.joining(sep));
 	}
 	
-	public Comparator<? super Term> descendingTfIdf() {return new Comparator<Term>() {
+	protected Comparator<? super Term> descendingTfIdf() {return new Comparator<Term>() {
 		@Override
 		public int compare(Term t1, Term t2) {
 			return Document.this.tfIdf(t2).compareTo(Document.this.tfIdf(t1));
 		}
 	};}
 
-	public TokenSequence asTokenSequence() {
+	protected TokenSequence asTokenSequence() {
 		return new TokenSequence(this.termSequence.stream().map(ti -> ti.asToken()).collect(Collectors.toList()));
 	}
 
