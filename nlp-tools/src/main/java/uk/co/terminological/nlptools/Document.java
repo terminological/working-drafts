@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,6 +36,7 @@ public class Document {
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
 	private Map<String,Object> metadata = new HashMap<>();
+	private SortedSet<Weighted<Topic>> topics = new TreeSet<>();
 	
 	protected Document(String id, String string, Corpus corpus) {
 		this.identifier = id;
@@ -250,6 +253,10 @@ public class Document {
 	public Document addMetadata(String string2, Object i) {
 		this.metadata.put(string2, i);
 		return this;
+	}
+
+	public void addTopic(Weighted<Topic> create) {
+		this.topics.add(create);
 	}
 	
 }

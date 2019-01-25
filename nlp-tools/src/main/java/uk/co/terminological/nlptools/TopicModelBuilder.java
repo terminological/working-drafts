@@ -128,6 +128,7 @@ public class TopicModelBuilder {
 			//TODO: write all the topics into the corpus as a list of weighted terms.
 			
 			ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+	        ArrayList<TreeSet<IDSorter>> topicSortedDocuments = model.getTopicDocuments(10.0);
 			Alphabet alphabet = getDataAlphabet();
 			
 	        // Print results for each topic
@@ -143,17 +144,9 @@ public class TopicModelBuilder {
 	                Weighted<Term> wt = Weighted.create(t, weight);
 	                top.addTerm(wt);
 	            }
-	        }
-			
-			
-			//out.println("#topic doc name proportion ...");
 	        
-	        ArrayList<TreeSet<IDSorter>> topicSortedDocuments = model.getTopicDocuments(10.0);
-
-	        for (int topic = 0; topic < getTopicCount(); topic++) {
 	            TreeSet<IDSorter> sortedDocuments = topicSortedDocuments.get(topic);
 	            
-	            int i = 0;
 	            for (IDSorter sorter: sortedDocuments) {
 	                
 	            	int doc = sorter.getID();
@@ -161,11 +154,13 @@ public class TopicModelBuilder {
 	                String name = model.data.get(doc).instance.getName().toString();
 	                
 	                Optional<Document> optDoc = builder.corpus.getById(name);
+	                optDoc.ifPresent(d -> {
+	                	top.addDocument(Weighted.create(d, proportion));
+	                });
 	                
 	                //TODO: write this info into the corpus somehow.
 	                //out.format("%d %d %s %f\n", topic, doc, name, proportion);
 	                
-	                i++;
 	            }
 	        }
 			
