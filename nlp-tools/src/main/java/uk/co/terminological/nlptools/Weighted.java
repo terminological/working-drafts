@@ -1,6 +1,6 @@
 package uk.co.terminological.nlptools;
 
-public class Weighted<T> {
+public class Weighted<T> implements Comparable<Weighted<T>> {
 
 	Double weight;
 	T thing;
@@ -15,6 +15,11 @@ public class Weighted<T> {
 	
 	public static <X> Weighted<X> create(X thing, Double d) {
 		return new Weighted<X>(thing, d);
+	}
+	
+	@Override
+	public int compareTo(Weighted<T> o) {
+		return -getWeight().compareTo(o.getWeight());
 	}
 	
 }
