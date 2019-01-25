@@ -316,7 +316,7 @@ public class LitReviewAnalysis {
 					String abstrct = r.get("abstract").asString();
 					Document doc = texts.addDocument(i.toString(), "community "+i.toString(), title+"\n"+abstrct);
 					doc.addMetadata("community",i);
-					doc.addMetadata("community",r.get("qtr").asString());
+					doc.addMetadata("qtr",r.get("qtr").asString());
 					
 				}
 
@@ -345,6 +345,8 @@ public class LitReviewAnalysis {
 				return true;
 			});
 
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
