@@ -10,6 +10,7 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -335,7 +336,7 @@ public class LitReviewAnalysis {
 								.flatMap(t -> t.streamTerms())
 								.map(wt -> wt.scale(100))
 								)
-						.execute();
+						.execute(Paths.get(outDir.getAbsolutePath(),"content "+id+".png"));
 						;
 					
 				});
