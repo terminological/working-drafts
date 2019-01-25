@@ -32,8 +32,7 @@ public class WordCloudBuilder {
 	List<WordFrequency> wordFrequencies = new ArrayList<>();
 	Path output;
 	ColorPalette pallette;
-	Function<Term, Integer> statisticMapper = t -> t.countOccurrences();
-	Function<Corpus,Stream<Term>> termSelector = c -> c.streamTerms();
+	Function<Corpus,Stream<Counted<Term>>> selector = c -> c.streamTerms().map(t -> Counted.create(t, t.countOccurrences()));
 	Corpus corpus;
 	int maxNumber;
 	Dimension dimension;
@@ -51,16 +50,11 @@ public class WordCloudBuilder {
 		return out;
 	}
 	
-	public WordCloudBuilder withTermSelector(Function<Corpus,Stream<Term>> mapper) {
-		this.termSelector = mapper;
+	public WordCloudBuilder withSelector(Function<Corpus,Stream<Counted<Term>>> mapper) {
+		this.selector = mapper;
 		return this;
 	}
 	
-	public WordCloudBuilder withStatistic(Function<Term,Integer> mapper) {
-		this.statisticMapper = mapper;
-		return this;
-	}
- 	
 	public WordCloudBuilder withOutputPath(Path path) {
 		this.output = path;
 		return this;
@@ -83,11 +77,11 @@ public class WordCloudBuilder {
 	}
 	
 	public void execute() {
-		termSelector.apply(corpus).map(t -> Tuple.create(t, statisticMapper.apply(t)))
-	       .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+		selector.apply(corpus)
+	       .sorted()
 	       .limit(maxNumber)
 	       .forEach((ti) -> {
-	    	   wordFrequencies.add(new WordFrequency(ti.getKey().tag, ti.getValue()));
+	    	   wordFrequencies.add(new WordFrequency(ti.getTarget().getTag(), ti.getCount()));
 		});
 		wordCloud.build(wordFrequencies);
 		wordCloud.writeToFile(output.toString());

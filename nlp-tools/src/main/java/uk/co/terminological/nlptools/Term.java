@@ -174,4 +174,8 @@ public class Term {
 		return new Token(tag);
 	}
 
+	public String getTag() {
+		return tag;
+	}
+
 }
