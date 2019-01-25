@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ import java.util.stream.Stream;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.Instance;
 import uk.co.terminological.datatypes.EavMap;
+import uk.co.terminological.datatypes.Tuple;
 
 /**
  * 
@@ -168,14 +171,15 @@ public class Corpus {
 		return term.shannonEntropy()*term.countOccurrences();
 	}
 	
-	public List<Term> getTermsByTotalEntropy() {
-		List<Term> out = new ArrayList<>(terms.values());
-		out.sort((t1,t2) -> totalShannonEntropy(t2).compareTo(totalShannonEntropy(t2)));
-		return out;
+	public Stream<Weighted<Term>> getTermsByTotalEntropy() {
+		SortedSet<Weighted<Term>> out = new TreeSet<>();
+		terms.values().forEach(t -> out.add(Weighted.create(t, totalShannonEntropy(t))));
+		return out.stream();
 	}
 	
-	public EavMap<Term,Term,Double> getMutualInformation() {
-		EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
+	public Stream<Weighted<Map.Entry<Term,Term>>> getMutualInformation() {
+		SortedSet<Weighted<Map.Entry<Term,Term>>> out = new TreeSet<>();
+		//EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
 		HashSet<Term> targets = new HashSet<Term>(this.terms.values());
 		this.terms.values().forEach(source -> {
 			Map<Term,Double> probs = source.cooccurenceProbablities();
@@ -185,13 +189,13 @@ public class Corpus {
 				if (probs.containsKey(target) && mis.containsKey(target)) {
 					Double prob = probs.get(target);
 					Double mi = mis.get(target);
-					out.add(source, target,  -mi / Math.log(prob)); }
-				else {
-					out.add(source, target,  -1D);
+					out.add(Weighted.create(Tuple.create(source, target),  -mi / Math.log(prob)));
+				} else {
+					out.add(Weighted.create(Tuple.create(source, target),  -1D));
 				}
 			});
 		});
-		return out;
+		return out.stream();
 	}
 	
 	public EavMap<Term,Term,Double> getCollocations(int span) {
