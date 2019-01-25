@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
@@ -97,15 +101,15 @@ public class Term {
 	/**
 	 *
 	 */
-	public Map<Term,Double> cooccurenceProbablities() {
+	public Stream<Weighted<Term>> cooccurenceProbablities() {
 		Integer total = corpus.countCorpusDocuments();
-		Map<Term,Double> out = new HashMap<>();
+		SortedSet<Weighted<Term>> out = new TreeSet<>();
 		cooccurrences.forEach((k,cooccur) -> {
 			Double p = ((double) cooccur)/total;
-			out.put(k, p);
+			out.add(Weighted.create(k, p));
 			
 		});
-		return out;
+		return out.stream();
 	}
 
 	
@@ -147,8 +151,8 @@ public class Term {
 	 * @param spanLength
 	 * @return
 	 */
-	public Map<Term,Double> chiSqCollocations(int spanLength) {
-		Map<Term,Double> out = new HashMap<>();
+	public Stream<Weighted<Term>> chiSqCollocations(int spanLength) {
+		SortedSet<Weighted<Term>> out = new TreeSet<>();
 		Integer N = this.corpus.countCorpusCollocations(spanLength);
 		Map<Term,Integer> coll = collocations(spanLength);
 		coll.forEach((term,count) -> {
@@ -158,9 +162,9 @@ public class Term {
 			Integer o22 = N-this.countOccurrences()-term.countOccurrences()+count; // neither term present
 			Double chiSq = ((double) N)*Math.pow((o11*o22-o12*o21),2)/((o11+o12)*(o11+o21)*(o12+o22)*(o21+o22));
 			Double p = csq.cumulativeProbability(chiSq);
-			out.put(term, p);
+			out.add(Weighted.create(term, p));
 		});
-		return out;
+		return out.stream();
 	}
 
 	public Set<TermInstance> getInstances() {
