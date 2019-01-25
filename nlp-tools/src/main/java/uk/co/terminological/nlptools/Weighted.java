@@ -25,11 +25,11 @@ public class Weighted<T> {
 	public String toString() {return thing.toString()+"(:"+weight.toString()+")";}
 	
 	public static <X> SortedSet<Weighted<X>> descending() {
-		return new TreeSet<Weighted<X>>((w1,w2) -> -w1.getWeight().compareTo(w2.getWeight()));
+		return new ConcurrentSkipListSet<Weighted<X>>((w1,w2) -> -w1.getWeight().compareTo(w2.getWeight()));
 	}
 	
 	public static <X> SortedSet<Weighted<X>> ascending() {
-		return new TreeSet<Weighted<X>>((w1,w2) -> w1.getWeight().compareTo(w2.getWeight()));
+		return new ConcurrentSkipListSet<Weighted<X>>((w1,w2) -> w1.getWeight().compareTo(w2.getWeight()));
 	}
 	
 }
