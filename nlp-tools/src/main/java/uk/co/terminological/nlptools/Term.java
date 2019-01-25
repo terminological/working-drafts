@@ -84,7 +84,7 @@ public class Term {
 	public Stream<Weighted<Term>> mutualInformation() {
 		
 		Integer total = corpus.countCorpusDocuments();
-		SortedSet<Weighted<Term>> out = new TreeSet<>();
+		SortedSet<Weighted<Term>> out = Weighted.descending();
 		cooccurrences.forEach((k,cooccur) -> {
 			Double mi = Math.log(((double) cooccur*total) / (this.countDocumentsWithTerm()*k.countDocumentsWithTerm()));
 			out.add(Weighted.create(k, mi));
@@ -102,7 +102,7 @@ public class Term {
 	 */
 	public Stream<Weighted<Term>> cooccurenceProbablities() {
 		Integer total = corpus.countCorpusDocuments();
-		SortedSet<Weighted<Term>> out = new TreeSet<>();
+		SortedSet<Weighted<Term>> out = Weighted.descending();
 		cooccurrences.forEach((k,cooccur) -> {
 			Double p = ((double) cooccur)/total;
 			out.add(Weighted.create(k, p));
@@ -151,7 +151,7 @@ public class Term {
 	 * @return
 	 */
 	public Stream<Weighted<Term>> chiSqCollocations(int spanLength) {
-		SortedSet<Weighted<Term>> out = new TreeSet<>();
+		SortedSet<Weighted<Term>> out = Weighted.descending();
 		Integer N = this.corpus.countCorpusCollocations(spanLength);
 		Map<Term,Integer> coll = collocations(spanLength);
 		coll.forEach((term,count) -> {

@@ -6,8 +6,8 @@ import java.util.stream.Stream;
 public class Topic {
 
 	private int topicId;
-	private SortedSet<Weighted<Term>> terms = new TreeSet<>();
-	private SortedSet<Weighted<Document>> documents = new TreeSet<>();
+	private SortedSet<Weighted<Term>> terms = Weighted.descending();
+	private SortedSet<Weighted<Document>> documents = Weighted.descending();
 
 	public Topic(int topic) {
 		this.topicId = topic;

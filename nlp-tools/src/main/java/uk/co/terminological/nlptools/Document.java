@@ -33,7 +33,7 @@ public class Document {
 	private Map<Term,Integer> termCounts = new HashMap<>();
 	private Corpus corpus;
 	private Map<String,Object> metadata = new HashMap<>();
-	private SortedSet<Weighted<Topic>> topics = new TreeSet<>();
+	private SortedSet<Weighted<Topic>> topics = Weighted.descending();
 	
 	protected Document(String id, String string, Corpus corpus) {
 		this.identifier = id;
@@ -164,13 +164,13 @@ public class Document {
 	
 	
 	public Stream<Weighted<Term>> termsByTfIdf() {
-		SortedSet<Weighted<Term>> tmp = new TreeSet<>();
+		SortedSet<Weighted<Term>> tmp = Weighted.descending();
 		termCounts.keySet().forEach(c -> tmp.add(Weighted.create(c, tfIdf(c))));
 		return tmp.stream();
 	}
 	
 	public Stream<Weighted<Term>> termsByEntropy() {
-		SortedSet<Weighted<Term>> tmp = new TreeSet<>();
+		SortedSet<Weighted<Term>> tmp = Weighted.descending();
 		termCounts.keySet().forEach(c -> tmp.add(Weighted.create(c, c.shannonEntropy())));
 		return tmp.stream();
 	}
