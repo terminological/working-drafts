@@ -83,22 +83,21 @@ public class StringCrossMapper {
 	 * looks for documents which share terms with high tfidf score 
 	 */
 	private Optional<Document> getBestMatch(Document doc) {
-		Map<Term,Double> orderedTerms = doc.termsByTfIdf();
-		Iterator<Entry<Term, Double>> it = orderedTerms.entrySet().iterator();
+		Iterator<Weighted<Term>> it = doc.termsByTfIdf().iterator();
 		
 		Collection<Document> matching = targetCorpus.getDocuments();
 		
 		double score = 0;
 		while (it.hasNext() && matching.size() > 1) {
-			Entry<Term, Double> next = it.next();
-			Term nextTerm = next.getKey();
+			Weighted<Term> next = it.next();
+			Term nextTerm = next.getTarget();
 			Optional<Term> outputTerm = targetCorpus.getMatchingTerm(nextTerm);
 			if (outputTerm.isPresent()) {
 				Set<Document> tmp = new HashSet<>(outputTerm.get().getDocumentsUsing());
 				tmp.retainAll(matching); 
 				if (tmp.size() > 0) {
 					matching = tmp;
-					score += next.getValue();
+					score += next.getWeight();
 				}
 			}
 		}
@@ -110,24 +109,28 @@ public class StringCrossMapper {
 		Double bestScore = Double.NEGATIVE_INFINITY;
 		for (Document match: matching) {
 			
-			Map<Term, Double> found = new HashMap<>(match.termsByTfIdf());
-			Map<Term, Double> orig = new HashMap<>(doc.termsByTfIdf());
+			Stream<Weighted<Term>> found = match.termsByTfIdf();
+			Stream<Weighted<Term>> orig = doc.termsByTfIdf();
 			
-			Double tmpScore = 0D;
+			Map<Term,Double> tmp = new HashMap<>();
 			
-			tmpScore += orig.entrySet().stream().collect(Collectors.summingDouble(
-				kv -> Optional.ofNullable(found.get(kv.getKey())).orElse(-kv.getValue())
-			));
+			found.forEach(wt -> tmp.put(wt.getTarget(), -wt.getWeight()));
+			orig.forEach(wt -> {
+				tmp.merge(
+						wt.getTarget(), 
+						-wt.getWeight(), 
+						(w1,w2) -> -1*(w1+w2) //if terms match then add tfidfs and change sign 
+						);
+			});
 			
-			tmpScore += found.entrySet().stream().collect(Collectors.summingDouble(
-				kv -> Optional.ofNullable(orig.get(kv.getKey())).orElse(-kv.getValue())
-			));
+			//essentially I want to do a cross join on Terms here and combine weights
+			
+			Double tmpScore = tmp.values().stream().mapToDouble(d->d).sum();
 			
 			if (tmpScore > bestScore) {
 				bestScore = tmpScore;
 				bestMatch = match;
 			}
-			
 		}
 		
 		return Optional.ofNullable(bestMatch);
