@@ -314,7 +314,7 @@ public class LitReviewAnalysis {
 					Integer i = getCommunity(r.get("community").asInt());
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
-					Document doc = texts.addDocument("community "+i.toString(), title+"\n"+abstrct);
+					Document doc = texts.addDocument(title+abstrct != null ? "\n"+abstrct : "");
 					doc.addMetadata("community",i);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 					
