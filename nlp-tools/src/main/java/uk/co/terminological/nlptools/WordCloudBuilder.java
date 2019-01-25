@@ -31,7 +31,7 @@ public class WordCloudBuilder {
 	WordCloud wordCloud;
 	List<WordFrequency> wordFrequencies = new ArrayList<>();
 	//Path output;
-	ColorPalette pallette;
+	//ColorPalette pallette;
 	Function<Corpus,Stream<Counted<Term>>> selector = c -> c.streamTerms().map(t -> Counted.create(t, t.countOccurrences()));
 	Corpus corpus;
 	int maxNumber;
