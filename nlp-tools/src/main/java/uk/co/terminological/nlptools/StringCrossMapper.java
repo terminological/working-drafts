@@ -142,7 +142,8 @@ public class StringCrossMapper {
 	 * @param minValue
 	 * @return
 	 */
-	public List<Triple<Document,Document,Double>> getAllMatchesBySimilarity(Double minValue, Function<Document,Stream<Weighted<Term>>> mapper, BiFunction<Stream<Weighted<Term>>,Stream<Weighted<Term>>,Double> algorithm) {
+	public List<Triple<Document,Document,Double>> getAllMatchesBySimilarity(Double minValue, 
+			Function<Document,Stream<Weighted<Term>>> mapper, BiFunction<Stream<Weighted<Term>>,Stream<Weighted<Term>>,Double> algorithm) {
 		//<Double> scores = new ArrayList<>(); 
 		List<Triple<Document,Document,Double>> match = new ArrayList<>();
 		Double max = 0D;
