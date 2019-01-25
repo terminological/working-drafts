@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.Instance;
-import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.Tuple;
 
 /**
@@ -171,7 +170,7 @@ public class Corpus {
 	}
 	
 	public Stream<Weighted<Term>> getTermsByTotalEntropy() {
-		SortedSet<Weighted<Term>> out = new TreeSet<>();
+		SortedSet<Weighted<Term>> out = Weighted.descending();
 		terms.values().forEach(t -> out.add(Weighted.create(t, totalShannonEntropy(t))));
 		return out.stream();
 	}
@@ -182,7 +181,7 @@ public class Corpus {
 	 * @return
 	 */
 	public Stream<Weighted<Map.Entry<Term,Term>>> getMutualInformation() {
-		SortedSet<Weighted<Map.Entry<Term,Term>>> out = new TreeSet<>();
+		SortedSet<Weighted<Map.Entry<Term,Term>>> out = Weighted.descending();
 		this.terms.values().forEach(source -> {
 			source.mutualInformation().forEach(tv -> out.add(Weighted.create(Tuple.create(source, tv.getTarget()),  tv.getWeight())));
 		});
@@ -215,7 +214,7 @@ public class Corpus {
 	}
 	
 	public Stream<Weighted<Map.Entry<Term,Term>>> getCollocations(int span) {
-		SortedSet<Weighted<Map.Entry<Term,Term>>> out = new TreeSet<>();
+		SortedSet<Weighted<Map.Entry<Term,Term>>> out = Weighted.descending();
 		this.terms.values().forEach(source -> {
 			source.chiSqCollocations(span).forEach((wt) -> {
 				out.add(Weighted.create(Tuple.create(source,wt.getTarget()), wt.getWeight()));
