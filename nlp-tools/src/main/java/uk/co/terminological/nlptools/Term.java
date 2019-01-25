@@ -16,22 +16,23 @@ import cc.mallet.types.Token;
 
 public class Term {
 
+	int id;
 	String tag;
 	Corpus corpus;
 	Set<Document> documentsUsing = new HashSet<>();
 	Map<Term,Integer> cooccurrences = new HashMap<>();
 	Set<TermInstance> instances = new HashSet<>();
 
-	protected Term(String tag, Corpus map) {
+	protected Term(String tag, Corpus map, int id) {
 		this.tag = tag;
 		this.corpus = map;
-
+		this.id = id;
 	}
 
-	public int hashCode() {return tag.hashCode();}
+	public int hashCode() {return id;}
 	public boolean equals(Object o) {
 		if (o instanceof Term) {
-			return ((Term) o).tag.equals(tag);
+			return id == ((Term) o).id;
 		} else return false;
 	}
 	public String toString() {return tag+" {idf:"+idf()+",entropy:"+shannonEntropy()+"}";} 
