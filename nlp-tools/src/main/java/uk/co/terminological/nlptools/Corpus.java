@@ -198,13 +198,14 @@ public class Corpus {
 		return out.stream();
 	}
 	
-	public EavMap<Term,Term,Double> getCollocations(int span) {
-		EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
+	public Stream<Weighted<Map.Entry<Term,Term>>> getCollocations(int span) {
+		SortedSet<Weighted<Map.Entry<Term,Term>>> out = new TreeSet<>();
 		this.terms.values().forEach(source -> {
-			Map<Term,Double> chiSq = source.chiSqCollocations(span);
-			out.add(source, chiSq);
+			source.chiSqCollocations(span).forEach((t,w) -> {
+				out.add(Weighted.create(Tuple.create(source,t), w));
+			});
 		});
-		return out;
+		return out.stream();
 	}
 	
 	public int countCollocation(Set<Term> terms, int span) {

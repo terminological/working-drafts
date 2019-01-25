@@ -82,16 +82,16 @@ public class Term {
 	 * 0 for independence, and +1 for complete co-occurrence.[2]
 	 * @return
 	 */
-	public Map<Term,Double> mutualInformation() {
+	public Stream<Weighted<Term>> mutualInformation() {
+		
 		Integer total = corpus.countCorpusDocuments();
-		Map<Term,Double> out = new HashMap<>();
+		SortedSet<Weighted<Term>> out = new TreeSet<>();
 		cooccurrences.forEach((k,cooccur) -> {
-			//Double p = ((double) cooccur)/total;
 			Double mi = Math.log(((double) cooccur*total) / (this.countDocumentsWithTerm()*k.countDocumentsWithTerm()));
-			out.put(k, mi);
-			//out.put(k, ( -mi / Math.log(p)));
+			out.add(Weighted.create(k, mi));
 		});
-		return out;
+		return out.stream();
+		
 		//r.pmi = log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) )
 	    //r.probability = toFloat(r.cooccurrences)/total
 	    //r.npmi = - log( (toFloat(r.cooccurrences)*total) / (m.occurrences*n.occurrences) ) / log ( toFloat(r.cooccurrences)/total )

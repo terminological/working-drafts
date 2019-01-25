@@ -51,7 +51,7 @@ public class TestStringCrossMapper extends TestCase {
 
 	@Test
 	public void testMutualInformation() {
-		mapper.sourceCorpus.getMutualInformation().stream().forEach(System.out::println);
+		mapper.sourceCorpus.getMutualInformation().forEach(System.out::println);
 	}
 	
 	@Test
