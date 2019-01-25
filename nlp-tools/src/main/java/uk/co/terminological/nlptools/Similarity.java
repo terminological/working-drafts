@@ -33,7 +33,7 @@ public class Similarity {
 		// copy first stream to vector
 		source.forEach(kv -> tmp.put(kv.getTarget(), kv.getWeight()));
 		// subtract second stream pairwise
-		target.forEach(kv2 -> tmp.merge(kv2.getTarget(), -kv2.getWeight(), (v1,v2) -> v1-v2));
+		target.forEach(kv2 -> tmp.merge(kv2.getTarget(), kv2.getWeight(), (v1,v2) -> v1-v2));
 		
 		Double subSquares = tmp.entrySet().stream().collect(Collectors.summingDouble(kv -> kv.getValue()*kv.getValue()));
 		return Math.sqrt(subSquares);
