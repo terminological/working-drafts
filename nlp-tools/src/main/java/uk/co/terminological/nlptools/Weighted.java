@@ -2,7 +2,6 @@ package uk.co.terminological.nlptools;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Weighted<T> {
 
@@ -26,11 +25,18 @@ public class Weighted<T> {
 	public String toString() {return thing.toString()+"(:"+weight.toString()+")";}
 	
 	public static <X> SortedSet<Weighted<X>> descending() {
-		return new ConcurrentSkipListSet<Weighted<X>>((w1,w2) -> -w1.getWeight().compareTo(w2.getWeight()));
+		return new TreeSet<Weighted<X>>(
+				(w1,w2) -> {
+					int comp = -w1.getWeight().compareTo(w2.getWeight());
+					return comp == 0 ? w1.hashCode()-w2.hashCode() : comp;
+				});
 	}
 	
 	public static <X> SortedSet<Weighted<X>> ascending() {
-		return new ConcurrentSkipListSet<Weighted<X>>((w1,w2) -> w1.getWeight().compareTo(w2.getWeight()));
+		return new TreeSet<Weighted<X>>((w1,w2) -> {
+			int comp = w1.getWeight().compareTo(w2.getWeight());
+			return comp == 0 ? w1.hashCode()-w2.hashCode() : comp;
+		});
 	}
 	
 }
