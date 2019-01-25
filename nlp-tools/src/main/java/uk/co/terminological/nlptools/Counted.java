@@ -13,12 +13,12 @@ public class Counted<T> {
 	public Integer getCount() {return count;}
 	public T getTarget() {return thing;}
 	
-	public Counted(T thing, Double d) {
+	public Counted(T thing, Integer d) {
 		this.thing = thing;
 		this.count = d;
 	}
 	
-	public static <X> Counted<X> create(X thing, Double d) {
+	public static <X> Counted<X> create(X thing, Integer d) {
 		return new Counted<X>(thing, d);
 	}
 	
