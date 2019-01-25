@@ -2,6 +2,7 @@ package uk.co.terminological.nlptools;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class Weighted<T> {
 
