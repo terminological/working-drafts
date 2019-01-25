@@ -227,7 +227,7 @@ public class Document {
 		return new TokenSequence(this.termSequence.stream().map(ti -> ti.asToken()).collect(Collectors.toList()));
 	}
 
-	public FeatureVector getFeatures() {
+	protected FeatureVector getFeatures() {
 		Alphabet keys = corpus.getAlphabet();
 		List<Integer> features = new ArrayList<>();
 		List<Double> values = new ArrayList<>();
