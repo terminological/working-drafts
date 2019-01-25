@@ -1,6 +1,5 @@
 package uk.co.terminological.nlptools;
 
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Stream;
@@ -27,6 +26,6 @@ public class Topic {
 
 	public void addDocument(Weighted<Document> create) {
 		documents.add(create);
-		create.getTarget().addTopic(Weighted.create(this, create.getWeight());
+		create.getTarget().addTopic(Weighted.create(this, create.getWeight()));
 	}
 }
