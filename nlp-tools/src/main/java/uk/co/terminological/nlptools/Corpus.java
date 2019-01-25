@@ -125,7 +125,7 @@ public class Corpus {
 	 * @return
 	 */
 	protected Term createTermFrom(String tag) {
-		Term tmp = terms.getOrDefault(tag, new Term(tag, this));
+		Term tmp = terms.getOrDefault(tag, new Term(tag, this, terms.size()));
 		terms.put(tag, tmp);
 		// termCounts.put(tmp, termCounts.getOrDefault(tmp,0)+1);
 		termsInCorpus += 1;
