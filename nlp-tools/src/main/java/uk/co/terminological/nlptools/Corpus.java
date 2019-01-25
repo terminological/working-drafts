@@ -177,23 +177,40 @@ public class Corpus {
 		return out.stream();
 	}
 	
+	/**
+	 * This is an aggregated unnormalised mutual information score for each combination of terms
+	 * in the corpus presented in descending order. Missing values are zero.
+	 * @return
+	 */
 	public Stream<Weighted<Map.Entry<Term,Term>>> getMutualInformation() {
 		SortedSet<Weighted<Map.Entry<Term,Term>>> out = new TreeSet<>();
+		this.terms.values().forEach(source -> {
+			source.mutualInformation().forEach(tv -> out.add(Weighted.create(Tuple.create(source, tv.getTarget()),  tv.getWeight())));
+		});
+		return out.stream();
+	}	
+	
+	/**
+	 * This is an aggregated normalised mutual information score for each combination of terms
+	 * in the corpus. it is presented in term order.
+	 * @return
+	 */
+	public Stream<Weighted<Map.Entry<Term,Term>>> getNormalisedMutualInformation() {
+		List<Weighted<Map.Entry<Term,Term>>> out = new ArrayList<>();
 		//EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
 		HashSet<Term> targets = new HashSet<Term>(this.terms.values());
 		this.terms.values().forEach(source -> {
-			Map<Term,Double> probs = source.cooccurenceProbablities();
-			Map<Term,Double> mis = source.mutualInformation();
+			Map<Term,Double> normMi = new HashMap<>();
+			source.mutualInformation().forEach(wt -> normMi.put(wt.getTarget(), wt.getWeight()));
+			source.cooccurenceProbablities().forEach(wt -> {
+				normMi.merge(wt.getTarget(), wt.getWeight(), (mi,prob) -> -mi / Math.log(prob)); //TODO: this only workd because the mI and cooccurence are the same length.
+			});
 			targets.remove(source);
 			targets.forEach(target -> {
-				if (probs.containsKey(target) && mis.containsKey(target)) {
-					Double prob = probs.get(target);
-					Double mi = mis.get(target);
-					out.add(Weighted.create(Tuple.create(source, target),  -mi / Math.log(prob)));
-				} else {
-					out.add(Weighted.create(Tuple.create(source, target),  -1D));
-				}
+				normMi.merge(target, -1D, (a,b) -> a); //fills in missing values with -1
 			});
+			normMi.forEach((target,weight) ->
+				out.add(Weighted.create(Tuple.create(source, target),  weight)));
 		});
 		return out.stream();
 	}
@@ -201,8 +218,8 @@ public class Corpus {
 	public Stream<Weighted<Map.Entry<Term,Term>>> getCollocations(int span) {
 		SortedSet<Weighted<Map.Entry<Term,Term>>> out = new TreeSet<>();
 		this.terms.values().forEach(source -> {
-			source.chiSqCollocations(span).forEach((t,w) -> {
-				out.add(Weighted.create(Tuple.create(source,t), w));
+			source.chiSqCollocations(span).forEach((wt) -> {
+				out.add(Weighted.create(Tuple.create(source,wt.getTarget()), wt.getWeight()));
 			});
 		});
 		return out.stream();
