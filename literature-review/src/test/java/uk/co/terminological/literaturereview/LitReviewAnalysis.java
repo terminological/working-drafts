@@ -322,7 +322,7 @@ public class LitReviewAnalysis {
 
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 				
-				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).executeDMR();
+				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(3).executeDMR();
 				result.printTopics(10);
 				result.getTopicsForDocuments().forEach(top -> {
 					
