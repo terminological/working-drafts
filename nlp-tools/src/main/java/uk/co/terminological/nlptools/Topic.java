@@ -18,8 +18,12 @@ public class Topic {
 		terms.add(wt);
 	}
 	
-	public Stream<Weighted<Term>> getTerms() {
+	public Stream<Weighted<Term>> streamTerms() {
 		return terms.stream();
+	}
+	
+	public Stream<Weighted<Document>> streamDocuments() {
+		return documents.stream();
 	}
 	
 	public int getTopicId() {return topicId;}
