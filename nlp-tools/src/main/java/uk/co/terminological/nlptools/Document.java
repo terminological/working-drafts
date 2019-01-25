@@ -159,31 +159,23 @@ public class Document {
 	 * lists the terms in the document according to descending tfidf score.
 	 * @return
 	 */
-	public List<Term> tfIdfOrder() {
+	public Stream<Term> tfIdfOrder() {
 		List<Term> orderedTerms = new ArrayList<>(termCounts.keySet());
 		orderedTerms.sort((t1,t2) -> tfIdf(t2).compareTo(tfIdf(t1)));
-		return orderedTerms;
+		return orderedTerms.stream();
 	}
 	
 	
-	public Map<Term,Double> termsByTfIdf() {
-		LinkedHashMap<Term,Double> out = new LinkedHashMap<>();
-		HashMap<Term,Double> tmp = new LinkedHashMap<>();
-		termCounts.keySet().forEach(c -> tmp.put(c, tfIdf(c)));
-		tmp.entrySet().stream()
-	    	.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-	    	.forEach(kv -> out.put(kv.getKey(), kv.getValue()));
-		return out;
+	public Stream<Weighted<Term>> termsByTfIdf() {
+		SortedSet<Weighted<Term>> tmp = new TreeSet<>();
+		termCounts.keySet().forEach(c -> tmp.add(Weighted.create(c, tfIdf(c))));
+		return tmp.stream();
 	}
 	
-	public Map<Term,Double> termsByEntropy() {
-		LinkedHashMap<Term,Double> out = new LinkedHashMap<>();
-		HashMap<Term,Double> tmp = new LinkedHashMap<>();
-		termCounts.keySet().forEach(c -> tmp.put(c, c.shannonEntropy()));
-		tmp.entrySet().stream()
-	    	.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-	    	.forEach(kv -> out.put(kv.getKey(), kv.getValue()));
-		return out;
+	public Stream<Weighted<Term>> termsByEntropy() {
+		SortedSet<Weighted<Term>> tmp = new TreeSet<>();
+		termCounts.keySet().forEach(c -> tmp.add(Weighted.create(c, c.shannonEntropy())));
+		return tmp.stream();
 	}
 	
 	/**
