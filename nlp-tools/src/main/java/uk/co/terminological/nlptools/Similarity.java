@@ -1,8 +1,18 @@
 package uk.co.terminological.nlptools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import uk.co.terminological.datatypes.Tuple;
 
 public class Similarity {
 
@@ -37,22 +47,31 @@ public class Similarity {
 	 */
 	public static <X> Double getCosineDifference(Stream<Weighted<X>> source, Stream<Weighted<X>> target) {
 		
+		//List<Weighted<X>> tmpSource = new ArrayList<>();
 		HashMap<X,Double> tmpSource = new HashMap<>();
-		HashMap<X,Double> tmpTarget = new HashMap<>();
 		
 		Double sourceLengthSqrd = source.collect(Collectors.summingDouble(v -> {
 			tmpSource.put(v.getTarget(), v.getWeight());
 			return v.getWeight()*v.getWeight();
 		})); 
 		
-		Double targetLengthSqrd = target.collect(Collectors.summingDouble(v -> {
-			tmpTarget.put(v.getTarget(), v.getWeight());
-			return v.getWeight()*v.getWeight();
-		}));
-		
-		Double dotProd = tmpSource.entrySet().stream().collect(Collectors.summingDouble(kv -> 
-			kv.getValue()*tmpTarget.getOrDefault(kv.getKey(),0D)
+		Tuple<Double,Double> targetColl = target.collect(Collector.of(  
+				  () -> Tuple.create(0D,0D),
+				  (result, wX) -> {
+					  Double lengthSqrd = result.getFirst();
+					  Double dotProd = result.getSecond();
+					  lengthSqrd += wX.getWeight()*wX.getWeight();
+					  dotProd += wX.getWeight()*tmpSource.getOrDefault(wX.getTarget(),0D);
+					  result.firstEquals(lengthSqrd);
+					  result.secondEquals(dotProd);
+				  },
+				  (r1, r2) -> {
+				    return Tuple.create(r1.getKey()+r2.getKey(), r1.getValue()+r2.getValue());
+			}
 		));
+				
+		Double targetLengthSqrd = targetColl.getFirst();
+		Double dotProd = targetColl.getSecond();
 		
 		return 1 - dotProd / (Math.sqrt(sourceLengthSqrd*targetLengthSqrd));
 	}
