@@ -62,12 +62,8 @@ public class Corpus {
 		return doc;
 	}
 	
-	public Document addDocument(String id, String name, String source) {
+	public Document addDocument(String id, String source) {
 		return addDocument(new Document(id, source, this));
-	}
-	
-	public Document addDocument(String name, String source) {
-		return addDocument(new Document(UUID.randomUUID().toString(), source, this));
 	}
 	
 	public Document addDocument(String source) {
