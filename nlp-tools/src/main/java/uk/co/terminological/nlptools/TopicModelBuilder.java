@@ -135,11 +135,10 @@ public class TopicModelBuilder {
 	        for (int topic = 0; topic < getTopicCount(); topic++) {
 	            TreeSet<IDSorter> sortedWords = topicSortedWords.get(topic);
 	            Topic top = builder.corpus.addTopic(topic);
-	            int word = 0;
+	            
 	            for (IDSorter info: sortedWords) {
 	            	Double weight = info.getWeight();
 	                String term = alphabet.lookupObject(info.getID()).toString();
-	                word++;
 	                Term t = builder.corpus.createTermFrom(term);
 	                Weighted<Term> wt = Weighted.create(t, weight);
 	                top.addTerm(wt);
@@ -158,12 +157,10 @@ public class TopicModelBuilder {
 	                	top.addDocument(Weighted.create(d, proportion));
 	                });
 	                
-	                //TODO: write this info into the corpus somehow.
-	                //out.format("%d %d %s %f\n", topic, doc, name, proportion);
-	                
 	            }
 	        }
 			
+	        return builder.corpus;
 			
 			
 		}
