@@ -259,7 +259,7 @@ public class Corpus {
 		return out.size();
 	}
 	
-	public Iterator<Instance> tokenSequenceIterator() {
+	protected Iterator<Instance> tokenSequenceIterator() {
 		Iterator<Document> docIt = this.documents.values().iterator();
 		return new Iterator<Instance>() {
 
@@ -283,11 +283,11 @@ public class Corpus {
 
 	Alphabet keys = new Alphabet();
 	
-	public Alphabet getAlphabet() {
+	protected Alphabet getAlphabet() {
 		return keys;
 	}
 
-	public Topic addTopic(int topic) {
+	protected Topic addTopic(int topic) {
 		if (!this.topics.containsKey(topic)) {
 			Topic tmp = new Topic(topic);
 			this.topics.put(topic, tmp);
