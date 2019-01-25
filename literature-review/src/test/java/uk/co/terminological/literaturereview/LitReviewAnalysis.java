@@ -314,7 +314,7 @@ public class LitReviewAnalysis {
 					Integer i = getCommunity(r.get("community").asInt());
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
-					Document doc = texts.addDocument(i.toString(), "community "+i.toString(), title+"\n"+abstrct);
+					Document doc = texts.addDocument("community "+i.toString(), title+"\n"+abstrct);
 					doc.addMetadata("community",i);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 					
@@ -322,7 +322,7 @@ public class LitReviewAnalysis {
 
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 				
-				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(3).executeDMR();
+				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).executeDMR();
 				result.printTopics(10);
 				result.getTopicsForDocuments().forEach(top -> {
 					
