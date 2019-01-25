@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 
 import uk.co.terminological.datatypes.Tuple;
 
+
+
 public class Similarity {
 
 	/*
@@ -62,8 +64,8 @@ public class Similarity {
 					  Double dotProd = result.getSecond();
 					  lengthSqrd += wX.getWeight()*wX.getWeight();
 					  dotProd += wX.getWeight()*tmpSource.getOrDefault(wX.getTarget(),0D);
-					  result.firstEquals(lengthSqrd);
-					  result.secondEquals(dotProd);
+					  result.setFirst(lengthSqrd);
+					  result.setSecond(dotProd);
 				  },
 				  (r1, r2) -> {
 				    return Tuple.create(r1.getKey()+r2.getKey(), r1.getValue()+r2.getValue());
