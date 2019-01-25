@@ -259,4 +259,7 @@ public class Document {
 		this.topics.add(create);
 	}
 	
+	public Stream<Weighted<Topic>> getTopics() {
+		return this.topics.stream();
+	}
 }
