@@ -34,4 +34,8 @@ public class Weighted<T> implements Comparable<Weighted<T>> {
 		return comp == 0 ? hashCode()-o.hashCode() : comp;
 	}
 	
+	public Counted<T> scale(int factor) {
+		return Counted.create(this.getTarget(), (int) Math.floor(this.getWeight()*factor));
+	}
+	
 }
