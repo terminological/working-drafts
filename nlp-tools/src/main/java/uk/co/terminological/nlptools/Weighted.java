@@ -1,6 +1,9 @@
 package uk.co.terminological.nlptools;
 
-public class Weighted<T> implements Comparable<Weighted<T>> {
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+public class Weighted<T> {
 
 	
 
@@ -19,11 +22,14 @@ public class Weighted<T> implements Comparable<Weighted<T>> {
 		return new Weighted<X>(thing, d);
 	}
 	
-	@Override
-	public int compareTo(Weighted<T> o) {
-		return -getWeight().compareTo(o.getWeight());
+	public String toString() {return thing.toString()+"(:"+weight.toString()+")";}
+	
+	public static <X> SortedSet<Weighted<X>> descending() {
+		return new TreeSet<Weighted<X>>((w1,w2) -> -w1.getWeight().compareTo(w2.getWeight()));
 	}
 	
-	public String toString() {return thing.toString()+"(:"+weight.toString()+")";}
+	public static <X> SortedSet<Weighted<X>> ascending() {
+		return new TreeSet<Weighted<X>>((w1,w2) -> w1.getWeight().compareTo(w2.getWeight()));
+	}
 	
 }

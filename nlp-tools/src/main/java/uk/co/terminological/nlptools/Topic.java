@@ -1,7 +1,6 @@
 package uk.co.terminological.nlptools;
 
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Stream;
 
 public class Topic {
