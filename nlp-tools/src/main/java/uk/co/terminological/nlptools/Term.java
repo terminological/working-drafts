@@ -170,7 +170,7 @@ public class Term {
 		return instances;
 	}
 	
-	public Token asToken() {
+	protected Token asToken() {
 		return new Token(tag);
 	}
 
