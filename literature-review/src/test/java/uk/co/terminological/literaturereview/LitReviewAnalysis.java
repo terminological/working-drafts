@@ -312,9 +312,10 @@ public class LitReviewAnalysis {
 				for( Record r : res) {
 					
 					Integer i = getCommunity(r.get("community").asInt());
+					String nodeId = r.get("id").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
-					Document doc = texts.addDocument(title+abstrct != null ? "\n"+abstrct : "");
+					Document doc = texts.addDocument(nodeId, title+abstrct != null ? "\n"+abstrct : "");
 					doc.addMetadata("community",i);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 					
