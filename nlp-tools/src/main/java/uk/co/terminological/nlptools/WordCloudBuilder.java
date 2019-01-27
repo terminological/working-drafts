@@ -5,9 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,7 +19,6 @@ import com.kennycason.kumo.font.KumoFont;
 import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.palette.ColorPalette;
 
-import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.ColourScheme;
 
 public class WordCloudBuilder {
