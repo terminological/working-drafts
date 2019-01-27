@@ -312,7 +312,7 @@ public class LitReviewAnalysis {
 				for( Record r : res) {
 					
 					Integer i = getCommunity(r.get("community").asInt());
-					String nodeId = r.get("id").asNumber().toString();
+					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
 					Document doc = texts.addDocument(nodeId, title+abstrct != null ? "\n"+abstrct : "");
