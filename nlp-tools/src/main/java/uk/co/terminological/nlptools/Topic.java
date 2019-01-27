@@ -34,6 +34,6 @@ public class Topic {
 	}
 	
 	public String toString() {
-		return topicId+" "+terms.stream().limit(10).map(wt -> wt.getTarget().toString()).collect(Collectors.joining(""))
+		return topicId+": "+terms.stream().limit(10).map(wt -> wt.getTarget().toString()).collect(Collectors.joining(" "));
 	}
 }
