@@ -1,6 +1,7 @@
 package uk.co.terminological.nlptools;
 
 import java.util.SortedSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Topic {
@@ -30,5 +31,9 @@ public class Topic {
 	protected void addDocument(Weighted<Document> create) {
 		documents.add(create);
 		create.getTarget().addTopic(Weighted.create(this, create.getWeight()));
+	}
+	
+	public String toString() {
+		return topicId+" "+terms.stream().limit(10).map(wt -> wt.getTarget().toString()).collect(Collectors.joining(""))
 	}
 }
