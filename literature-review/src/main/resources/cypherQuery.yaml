@@ -274,7 +274,7 @@ analyse:
     id(t) as articleId
     MATCH (t2:Article)
     WHERE id(t2)=articleId
-    RETURN 
+    RETURN
     community,
     size as authors,
     count(distinct t2) as articles, 
@@ -290,6 +290,7 @@ analyse:
     MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
     WHERE a.community = community
     RETURN DISTINCT
+    id(t) as nodeId,
     community,
     t.title as title,
     t.abstract as abstract,
