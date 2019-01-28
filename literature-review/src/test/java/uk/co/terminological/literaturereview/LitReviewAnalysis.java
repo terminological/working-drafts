@@ -173,8 +173,8 @@ public class LitReviewAnalysis {
 				try {
 					fig.withNewChart("Articles by journal", ChartType.STACKEDYBAR)
 					.withSeries(res)
-					.bind(LABEL, t -> t.get("journal"))
-					.bind(Y, t -> t.get("articles"))
+					.bind(LABEL, t -> t.get("journal").asString())
+					.bind(Y, t -> t.get("articles").asNumber().intValue())
 					.done()
 					.config()
 					.withYLabel("articles")
