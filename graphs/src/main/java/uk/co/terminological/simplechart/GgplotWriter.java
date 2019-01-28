@@ -150,7 +150,7 @@ public abstract class GgplotWriter extends Writer {
 		public List<String> getPlots() {
 			return Arrays.asList(
 					"geom_bar(stat='identity', aes(x=1, y=Y, fill=factor(LABEL, levels=rev(LABEL))))",
-					"theme(axis.line.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.y=element_blank(),legend.title=element_blank(),legend.position='bottom')",
+					"theme(axis.line.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.y=element_blank(),legend.title=element_blank(),legend.position='bottom',legend.box = 'vertical')",
 					"scale_fill_brewer(palette=schemeName, breaks=df$LABEL)",
 					"coord_flip()"
 					);
