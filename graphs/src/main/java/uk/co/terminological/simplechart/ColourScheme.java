@@ -68,6 +68,12 @@ public class ColourScheme {
 		public Color toAwt() {
 			return new Color(r,g,b,a);
 		}
+		private Colour darken(float fraction) {
+			
+		}
+		private Colour lighten(float fraction) {
+			
+		}
 	}
 	
 	private static Colour rgb(int r, int g, int b) {
@@ -109,6 +115,24 @@ public class ColourScheme {
 
 	public Colour background() {
 		return background;
+	}
+	
+	public ColourScheme darker(float ratio) {
+		for (int i = 0; i<values.length; i++) {
+			for (int j = 0; i<values[i].length; j++) {
+				values[i][j].darken(ratio);
+			}
+		}
+		return this;
+	}
+	
+	public ColourScheme lighter(float ratio) {
+		for (int i = 0; i<values.length; i++) {
+			for (int j = 0; i<values[i].length; j++) {
+				values[i][j].lighten(ratio);
+			}
+		}
+		return this;
 	}
 	
 	public Colour continuous(double zeroToOne) {
