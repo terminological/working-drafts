@@ -140,6 +140,24 @@ public abstract class GgplotWriter extends Writer {
 		}
 	}
 	
+	public static class MultiPieChart extends GgplotWriter {
+
+		public MultiPieChart(Chart chart) {
+			super(chart);
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_bar(stat='identity', aes(x=factor(X, levels=rev(X)), y=Y, fill=factor(LABEL, levels=rev(LABEL))))",
+					"theme(axis.title.y=element_blank(),legend.title=element_blank())",
+					"scale_fill_brewer(palette=schemeName, breaks=df$LABEL)",
+					"coord_flip()"
+					);
+		}
+		
+	}
+	
 	public static class PieChart extends GgplotWriter {
 
 		public PieChart(Chart chart) {
@@ -150,7 +168,7 @@ public abstract class GgplotWriter extends Writer {
 		public List<String> getPlots() {
 			return Arrays.asList(
 					"geom_bar(stat='identity', aes(x=1, y=Y, fill=factor(LABEL, levels=LABEL)))",
-					"theme(axis.line.y=element_blank(),axis.text.x = element_blank(),axis.ticks=element_blank(),axis.title=element_blank(),legend.position=\"none\",axis.line=element_blank())",
+					"theme(axis.line.y=element_blank(),axis.text.x = element_blank(),axis.ticks=element_blank(),axis.title=element_blank(),legend.position='none',axis.line=element_blank())",
 					"scale_fill_brewer(palette=schemeName, breaks=df$LABEL)",
 					"scale_y_continuous(labels=rev(df$LABEL),breaks=head(((c(0,cumsum(rev(df$Y)))+c(cumsum(rev(df$Y)),0))/2),-1))"
 					);
