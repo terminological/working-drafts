@@ -14,8 +14,8 @@ public class Config {
 
 	Chart chart;
 	String title;
-	String xLabel;
-	String yLabel;
+	String xLabel = "x";
+	String yLabel = "y";
 	String xScale;
 	String yScale;
 	OutputTarget target = OutputTarget.SCREEN;
