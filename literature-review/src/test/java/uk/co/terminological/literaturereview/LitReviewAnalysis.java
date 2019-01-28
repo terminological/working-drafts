@@ -160,6 +160,31 @@ public class LitReviewAnalysis {
 		}
 	}
 
+	@Test void plotArticlesByJournal() {
+		try ( Session session = driver.session() ) {
+
+			//Plot by age
+			session.readTransaction( tx -> {
+
+				String qry = queries.get("getArticlesByJornal");
+				List<Record> res = tx.run( qry ).list();
+
+				try {
+					fig.withNewChart("Articles by age", ChartType.STACKEDYBAR)
+					.withSeries(res)
+					.bind(LABEL, t -> t.get("journal"))
+					.bind(Y, t -> t.get("articles"))
+					.done()
+					.config()
+					.withYLabel("articles")
+					.done().render();
+				} catch (Exception e) {throw new RuntimeException(e);}
+
+				return true;
+			});
+		}
+	}
+	
 	@Test
 	public void plotCooccurrenceOfMeshCodes() {
 		try ( Session session = driver.session() ) {

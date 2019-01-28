@@ -170,9 +170,9 @@ analyse:
     RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, a.journal, a.citedByCount, collect(b.lastName) as authors
     ORDER by a.pagerank DESC
     
-  getArticleByJournal:
+  getArticlesByJournal: |
     MATCH (b:Article)
-    RETURN DISTINCT b.journal, 
+    RETURN DISTINCT b.journal as journal, 
     sum(b.pagerank) as totalPagerank, 
     count(b) as articles, 
     sum(b.pagerank)/count(b) as avgPagerank 
