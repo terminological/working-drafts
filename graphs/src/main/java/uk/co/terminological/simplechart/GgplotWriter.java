@@ -49,7 +49,9 @@ public abstract class GgplotWriter extends Writer {
 			String varName = binding.getFirst().name()+
 					(binding.getThird() == "" ? "" : "_"+binding.getThird());
 			
-			vector.append(varName+" <- c(");
+			//Object seriesType = series.getData().stream().map(binding.getSecond()).findFirst().get();
+			
+			vector.append("tmp_"+varName+" <- c(");
 			
 			vector.append(
 					series.getData().stream().map(binding.getSecond())
@@ -61,11 +63,11 @@ public abstract class GgplotWriter extends Writer {
 			vector.append(");\n");
 			
 			dfConstruct.append(",");
-			dfConstruct.append(varName);
+			dfConstruct.append(varName="tmp_"+varName);
 			
 		}
 		
-		dfConstruct.append(");\n");
+		dfConstruct.append(",stringsAsFactors = FALSE);\n");
 		
 		return vector.toString()+"\n"+dfConstruct.toString();
 	}
