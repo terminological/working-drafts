@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +89,9 @@ public class Chart {
 	public File getFile(String extension) {return new File(getWorkingDirectory(),filename+"."+extension);}
 
 
+	public <X> Series<X> withSeries(Stream<X> nodes) {
+		return withSeries(nodes.collect(Collectors.toList()));
+	}
 
 	public <X> Series<X> withSeries(List<X> nodes) {
 		Series<X> tmp = new Series<X>(nodes, this);

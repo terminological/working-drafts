@@ -33,6 +33,7 @@ import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.Values;
 import org.yaml.snakeyaml.Yaml;
 
+import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
@@ -174,6 +175,41 @@ public class LitReviewAnalysis {
 					fig.withNewChart("Articles by journal", ChartType.STACKEDYBAR)
 					.withSeries(res)
 					.bind(LABEL, t -> t.get("journal").asString())
+					.bind(Y, t -> t.get("articles").asNumber().intValue())
+					.done()
+					.config()
+					.withYLabel("articles")
+					.done().render();
+				} catch (Exception e) {throw new RuntimeException(e);}
+
+				return true;
+			});
+		}
+	}
+	
+	@Test 
+	public void plotCommunityStats() {
+		try ( Session session = driver.session() ) {
+
+			//Plot by age
+			session.readTransaction( tx -> {
+
+				String qry = queries.get("getAuthorCommunityStats");
+				List<Record> res = tx.run( qry ).list();
+
+				EavMap<String,String,Double> tmp = new EavMap<>();
+				
+				res.stream().forEach(r -> {
+					for (String key:Arrays.asList("authors","articles","avgPagerank")) {
+						tmp.add(
+							r.get("community").asNumber().toString(), key, r.get(key).asNumber().doubleValue());
+					}
+				});
+				
+				try {
+					fig.withNewChart("Community stats", ChartType.MULTISTACKEDYBAR)
+					.withSeries(tmp.stream())
+					.bind(LABEL, t -> tmp.getFirst())
 					.bind(Y, t -> t.get("articles").asNumber().intValue())
 					.done()
 					.config()
