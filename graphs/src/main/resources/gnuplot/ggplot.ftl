@@ -5,6 +5,8 @@ library(cowplot);
 
 ${data}
 
+schemeName <- "${schemeName}";
+
 plot <- ggplot(df)+
 <#list plots as plot>
 ${plot}+

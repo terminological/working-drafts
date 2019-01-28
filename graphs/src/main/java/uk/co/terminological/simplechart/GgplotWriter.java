@@ -114,7 +114,7 @@ public abstract class GgplotWriter extends Writer {
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_bar(stat='identity', aes(x=X, y=Y))"
+					"geom_bar(stat='identity', aes(x=X, y=Y))"					
 					);
 		}
 		
