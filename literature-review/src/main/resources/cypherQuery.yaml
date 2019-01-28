@@ -177,6 +177,7 @@ analyse:
     count(b) as articles, 
     sum(b.pagerank)/count(b) as avgPagerank 
     ORDER BY totalPagerank DESC
+    LIMIT 10
     
 # AUTHORS
 
