@@ -145,9 +145,10 @@ public abstract class GgplotWriter extends Writer {
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_bar(stat='identity', aes(x=X, y=1, fill=LABEL))",
+					"geom_bar(stat='identity', aes(x=1, y=Y, fill=LABEL))",
 					"theme(axis.line.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank())",
-					"scale_fill_brewer(palette=schemeName)"
+					"scale_fill_brewer(palette=schemeName)",
+					"coord_flip()"
 					);
 		}
 		
