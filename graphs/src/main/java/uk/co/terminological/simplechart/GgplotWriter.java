@@ -72,7 +72,7 @@ public abstract class GgplotWriter extends Writer {
 	private static String format(Object o) {
 		if (o == null) return "NA";
 		if (o instanceof Number) return o.toString();
-		return "'"+o.toString().replaceAll("'", "\'")+"'";
+		return "'"+o.toString().replace("'", "\'")+"'";
 	}
 	
 	@Override
