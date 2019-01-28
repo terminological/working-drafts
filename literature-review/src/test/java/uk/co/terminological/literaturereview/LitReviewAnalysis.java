@@ -45,6 +45,32 @@ import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.nlptools.Normaliser;
 import uk.co.terminological.nlptools.Tokeniser;
 
+/*
+ * TODO:
+ * What do I need to do to get this over the line.
+ * 
+ * Methods
+ * 
+ * Sample selection
+ * Stats about the collection process
+ * 
+ * 
+ * Results
+ * 
+ * Temporal composition; aticle network analysis islands / sizes - horizontal staked bar graph.
+ * Top N articles by page rank 
+ * Top N journals by aggregated page rank
+ * 
+ * Co-citation authors network
+ * 
+ * 
+ * Communities
+ * 
+ * Top Y topics based on title / abstract
+ * 
+ * 
+ */
+
 public class LitReviewAnalysis {
 
 	Driver driver;

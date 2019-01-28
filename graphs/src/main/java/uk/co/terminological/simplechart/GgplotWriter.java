@@ -80,6 +80,7 @@ public abstract class GgplotWriter extends Writer {
 		
 		getRoot().put("plots", getPlots());
 		//TODO: how to control this?
+		//TODO: colour schemes?
 		getRoot().put("output", getChart().getFile("png").getAbsolutePath());
 		
 		File f = getChart().getFile("R");
@@ -130,6 +131,22 @@ public abstract class GgplotWriter extends Writer {
 					"geom_smooth(aes(x=X, y=Y))"
 					);
 		}
+	}
+	
+	public static class PieChart extends GgplotWriter {
+
+		public PieChart(Chart chart) {
+			super(chart);
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_bar(stat='identity', aes(x=X, y=1, fill=LABEL))",
+					"theme(axis.line.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.x=element_blank())"
+					);
+		}
+		
 	}
 	
 }

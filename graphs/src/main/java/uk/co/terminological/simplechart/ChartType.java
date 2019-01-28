@@ -10,6 +10,7 @@ public enum ChartType {
 	WORDCLOUD(null,WordcloudWriter.class), 
 	XYBAR("ggplot.ftl",GgplotWriter.BarChart.class), 
 	XYSCATTER("ggplot.ftl",GgplotWriter.Scatter.class),
+	STACKEDYBAR("ggplot.ftl",GgplotWriter.BarChart.class),
 	;
 
 	String templateFilename;
