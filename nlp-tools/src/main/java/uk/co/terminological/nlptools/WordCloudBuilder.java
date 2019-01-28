@@ -44,6 +44,7 @@ public class WordCloudBuilder {
 		out.wordCloud.setKumoFont(new KumoFont(new Font("Lucida Sans", Font.PLAIN, 14)));
 		out.wordCloud.setBackground(new CircleBackground(Math.min(x, y)/2));
 		out.wordCloud.setFontScalar(new SqrtFontScalar(10, 50));
+		out.wordCloud.setBackgroundColor(new Color(0,0,0,0)); //transparent black
 		out.withColourScheme(ColourScheme.Greys);
 		return out;
 	}

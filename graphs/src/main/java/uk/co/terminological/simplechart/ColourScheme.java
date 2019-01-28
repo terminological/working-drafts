@@ -52,9 +52,12 @@ public class ColourScheme {
 	}
 	
 	public static class Colour {
-		int r; int g; int b;
+		int r; int g; int b; int a;
 		public Colour(int r, int g, int b) {
-			this.r = r; this.g= g; this.b=b;
+			this.r = r; this.g= g; this.b=b; this.a = 255;
+		}
+		public Colour(int r, int g, int b, int a) {
+			this.r = r; this.g= g; this.b=b; this.a=a;
 		}
 		public String toHex() {
 			return "#"+hex(r)+hex(g)+hex(b);
@@ -63,7 +66,7 @@ public class ColourScheme {
 			return (i<16 ? "0" : "")+Integer.toHexString(i);
 		}
 		public Color toAwt() {
-			return new Color(r,g,b);
+			return new Color(r,g,b,a);
 		}
 	}
 	
@@ -71,16 +74,26 @@ public class ColourScheme {
 		return new Colour(r,g,b);
 	}
 	
+	private static Colour rgba(int r, int g, int b, int a) {
+		return new Colour(r,g,b,a);
+	}
+	
 	
 	
 	String name;
 	Colour[][] values;
 	String usage;
+	Colour background;
 	
 	public ColourScheme(String name, Colour[][] values, String usage) {
+		this(name,  rgba(0,0,0,0), values, usage);
+	}
+	
+	public ColourScheme(String name, Colour background, Colour[][] values, String usage) {
 		this.name = name;
 		this.values = values;
 		this.usage = usage;
+		this.background = background;
 	}
 	
 	public List<Colour> values(int size) {
@@ -94,6 +107,10 @@ public class ColourScheme {
 		return Arrays.asList(out);
 	}
 
+	public Colour background() {
+		return background;
+	}
+	
 	public Colour continuous(double zeroToOne) {
 		Colour[] tmp = values[values.length-1];
 		double position = zeroToOne*(tmp.length-1);
