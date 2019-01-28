@@ -199,21 +199,33 @@ public class LitReviewAnalysis {
 
 				EavMap<String,String,Double> tmp = new EavMap<>();
 				
-				res.stream().forEach(r -> {
-					for (String key:Arrays.asList("authors","articles","avgPagerank")) {
+				for (String key:Arrays.asList("authors","articles","avgPagerank")) {
+				
+					Double[] sum = {0D};
+					
+					res.stream().forEach(r -> {
 						tmp.add(
 							r.get("community").asNumber().toString(), key, r.get(key).asNumber().doubleValue());
-					}
-				});
+							sum[0] += r.get(key).asNumber().doubleValue();
+					});
+				
+					//Convert to percentage
+					tmp.getEntitySet().forEach(e -> {
+						tmp.put(e, key, tmp.get(e, key)/sum[0]*100);
+					});
+					
+				}
 				
 				try {
 					fig.withNewChart("Community stats", ChartType.MULTISTACKEDYBAR)
 					.withSeries(tmp.stream())
-					.bind(LABEL, t -> tmp.getFirst())
-					.bind(Y, t -> t.get("articles").asNumber().intValue())
+					.bind(LABEL, t -> t.getFirst())
+					.bind(X, t -> t.getSecond())
+					.bind(Y, t -> t.getThird())
 					.done()
 					.config()
 					.withYLabel("articles")
+					.withXLabel("facet")
 					.done().render();
 				} catch (Exception e) {throw new RuntimeException(e);}
 
