@@ -40,6 +40,11 @@ public abstract class GgplotWriter extends Writer {
 		StringBuilder dfConstruct = new StringBuilder();
 		StringBuilder vector = new StringBuilder();
 		
+		int size = series.getData().size();
+		dfConstruct.append("order <- seq(0,"+(size-1)+");\n");
+		dfConstruct.append("df <- data.frame(order");
+		
+		
 		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
 			String varName = binding.getFirst().name()+
 					(binding.getThird() == "" ? "" : "_"+binding.getThird());
@@ -55,10 +60,7 @@ public abstract class GgplotWriter extends Writer {
 			
 			vector.append(");\n");
 			
-			if (dfConstruct.length()>0) 
-				dfConstruct.append(",");
-			else 
-				dfConstruct.append("df <- data.frame(");
+			dfConstruct.append(",");
 			dfConstruct.append(varName);
 			
 		}
