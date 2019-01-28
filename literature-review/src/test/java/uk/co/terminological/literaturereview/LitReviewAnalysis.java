@@ -330,7 +330,7 @@ public class LitReviewAnalysis {
 					int id = top.getTopicId();
 					
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
-						.withColourScheme(ColourScheme.sequential(id))
+						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						.withSelector(c -> 
 							c.streamTopics()
 								.filter(t -> t.getTopicId() == id)
