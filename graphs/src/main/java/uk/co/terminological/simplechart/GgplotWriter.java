@@ -151,7 +151,7 @@ public abstract class GgplotWriter extends Writer {
 			return Arrays.asList(
 					"geom_bar(stat='identity', aes(x=1, y=Y, fill=factor(LABEL, levels=rev(LABEL))))+",
 					"theme(axis.line.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.y=element_blank())",
-					"scale_fill_brewer(palette=schemeName, breaks=LABEL))",
+					"scale_fill_brewer(palette=schemeName, breaks=LABEL)",
 					"coord_flip()"
 					);
 		}
