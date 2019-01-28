@@ -69,15 +69,15 @@ public class ColourScheme {
 			return new Color(r,g,b,a);
 		}
 		private Colour darken(float fraction) {
-			r = (int) ((1-fraction)*r/255);
-			g = (int) ((1-fraction)*g/255);
-			b = (int) ((1-fraction)*b/255);
+			r = (int) ((1-fraction)*r/255.0);
+			g = (int) ((1-fraction)*g/255.0);
+			b = (int) ((1-fraction)*b/255.0);
 			return this;
 		}
 		private Colour lighten(float fraction) {
-			r = (int) ((1-fraction)*r/255+fraction*255);
-			g = (int) ((1-fraction)*g/255+fraction*255);
-			b = (int) ((1-fraction)*b/255+fraction*255);
+			r = (int) ((1-fraction)*r/255.0+fraction*255);
+			g = (int) ((1-fraction)*g/255.0+fraction*255);
+			b = (int) ((1-fraction)*b/255.0+fraction*255);
 			return this;
 		}
 	}
