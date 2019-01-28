@@ -149,10 +149,10 @@ public abstract class GgplotWriter extends Writer {
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_bar(stat='identity', aes(x=1, y=Y, fill=factor(LABEL, levels=rev(LABEL))))",
-					"theme(axis.line.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank(),axis.title.y=element_blank(),legend.title=element_blank(),legend.position='bottom',legend.box = 'vertical')",
+					"geom_bar(stat='identity', aes(x=1, y=Y, fill=factor(LABEL, levels=LABEL)))",
+					"theme(axis.line.y=element_blank(),axis.text.x = element_blank(),axis.ticks=element_blank(),axis.title=element_blank(),legend.position=\"none\",axis.line=element_blank())",
 					"scale_fill_brewer(palette=schemeName, breaks=df$LABEL)",
-					"coord_flip()"
+					"scale_y_continuous(labels=rev(df$LABEL),breaks=head(((c(0,cumsum(rev(df$Y)))+c(cumsum(rev(df$Y)),0))/2),-1))"
 					);
 		}
 		
