@@ -160,7 +160,8 @@ public class LitReviewAnalysis {
 		}
 	}
 
-	@Test void plotArticlesByJournal() {
+	@Test 
+	public void plotArticlesByJournal() {
 		try ( Session session = driver.session() ) {
 
 			//Plot by age
