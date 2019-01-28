@@ -134,7 +134,7 @@ public class ColourScheme {
 	
 	public ColourScheme lighter(float ratio) {
 		for (int i = 0; i<values.length; i++) {
-			for (int j = 0; i<values[i].length; j++) {
+			for (int j = 0; j<values[i].length; j++) {
 				values[i][j].lighten(ratio);
 			}
 		}
