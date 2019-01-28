@@ -63,7 +63,7 @@ public abstract class GgplotWriter extends Writer {
 			vector.append(");\n");
 			
 			dfConstruct.append(",");
-			dfConstruct.append(varName="tmp_"+varName);
+			dfConstruct.append(varName+"=tmp_"+varName);
 			
 		}
 		
