@@ -167,11 +167,11 @@ public class LitReviewAnalysis {
 			//Plot by age
 			session.readTransaction( tx -> {
 
-				String qry = queries.get("getArticlesByJornal");
+				String qry = queries.get("getArticlesByJournal");
 				List<Record> res = tx.run( qry ).list();
 
 				try {
-					fig.withNewChart("Articles by age", ChartType.STACKEDYBAR)
+					fig.withNewChart("Articles by journal", ChartType.STACKEDYBAR)
 					.withSeries(res)
 					.bind(LABEL, t -> t.get("journal"))
 					.bind(Y, t -> t.get("articles"))
