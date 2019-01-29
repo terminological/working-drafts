@@ -72,6 +72,7 @@ public class PubMedGraphSchema {
 		public static final String YEAR = "year";
 		public static final String PAGE = "page";
 		public static final String FULL_NAME = "fullName";
+		public static final String FIRST_AUTHOR = "firstAuthor";
 	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {

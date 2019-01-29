@@ -183,7 +183,14 @@ public class PubMedGraphUtils {
 				});
 				entry.getAuthors().forEach(au -> {
 					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);
-					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_AUTHOR));
+					targetNode.ifPresent(target -> {
+						Relationship r = node.createRelationshipTo(target, Rel.HAS_AUTHOR);
+						if (entry.getFirstAuthor().get().equals(au)) {
+							r.setProperty(Prop.FIRST_AUTHOR, true);
+						} else {
+							r.setProperty(Prop.FIRST_AUTHOR, false);
+						}
+					});
 				});
 				entry.getMeshHeadings().forEach(mh -> {
 					Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph, tx);
@@ -342,7 +349,14 @@ public class PubMedGraphUtils {
 				work.getTitle().ifPresent(title -> node.setProperty(Prop.TITLE, title));
 				work.getAuthors().forEach(as -> {
 					Optional<Node> targetNode = mapAuthorToNode(as, graph, tx);
-					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_AUTHOR));
+					targetNode.ifPresent(target -> {
+						Relationship r = node.createRelationshipTo(target, Rel.HAS_AUTHOR);
+						if (work.getFirstAuthor().get().equals(as)) {
+							r.setProperty(Prop.FIRST_AUTHOR, true);
+						} else {
+							r.setProperty(Prop.FIRST_AUTHOR, false);
+						}
+					});
 				});
 				work.getAbstract().ifPresent(abs -> node.setProperty(Prop.ABSTRACT, abs));
 				work.getDate().ifPresent(date -> node.setProperty(Prop.DATE,date));
