@@ -112,8 +112,8 @@ public class Shim {
 	}
 	
 	
-	public static Record recordFacade(Node node) {
-		return new Record() {
+	public static PrintRecord recordFacade(Node node) {
+		return new PrintRecord() {
 			@Override
 			public Optional<String> getIdentifier() {
 				return Optional.ofNullable(node.getProperty(Prop.DOI,null).toString());
@@ -195,6 +195,31 @@ public class Shim {
 			@Override
 			public Optional<URI> getPdfUri() {
 				return Optional.ofNullable(node.getProperty(Prop.PDF_URL,null)).map(o -> URI.create(o.toString()));
+			}
+
+			@Override
+			public Optional<String> getFirstAuthorName() {
+				return Optional.ofNullable(node.getProperty(Prop.FULL_NAME,null).toString());
+			}
+
+			@Override
+			public Optional<String> getVolume() {
+				return Optional.ofNullable(node.getProperty(Prop.VOLUME,null).toString());
+			}
+
+			@Override
+			public Optional<String> getIssue() {
+				return Optional.ofNullable(node.getProperty(Prop.ISSUE,null).toString());
+			}
+
+			@Override
+			public Optional<Long> getYear() {
+				return Optional.ofNullable(node.getProperty(Prop.YEAR,null)).map(o -> (Long) o);
+			}
+
+			@Override
+			public Optional<String> getPage() {
+				return Optional.ofNullable(node.getProperty(Prop.PAGE,null).toString());
 			}
 			
 		};
