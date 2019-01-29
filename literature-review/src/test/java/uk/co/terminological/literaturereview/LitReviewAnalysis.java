@@ -139,6 +139,24 @@ public class LitReviewAnalysis {
 		driver.close();
 	}
 
+	@Test
+	public void articlesCSL() {
+		try ( Session session = driver.session() ) {
+
+			//Plot by age
+			session.readTransaction( tx -> {
+
+				String qry = queries.get("getArticlesByAge");
+				List<Record> res = tx.run( qry ).list();
+				
+				res.forEach(r -> {
+					Record rec = PubMedGraphUtils.recordFacade(r.get("node").asNode());
+				});
+				
+				return true;
+			});
+		}
+	}
 	
 	@Test
 	public void writeToCsv() {

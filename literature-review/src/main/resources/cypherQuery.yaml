@@ -167,8 +167,9 @@ analyse:
 # TODO: Ordered authors + journal name
   getArticlesByPagerank: |
     MATCH (a:Article)-[r:HAS_AUTHOR]->(b:Author)
-    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, a.journal, a.citedByCount, collect(b.lastName) as authors
+    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, a.journal, a.citedByCount, collect(b.lastName) as authors, a as node
     ORDER by a.pagerank DESC
+    LIMIT 50
     
   getArticlesByJournal: |
     MATCH (b:Article)

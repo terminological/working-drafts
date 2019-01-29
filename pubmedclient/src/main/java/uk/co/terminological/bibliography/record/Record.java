@@ -18,7 +18,14 @@ public interface Record extends RecordReference {
 	public Optional<String> getJournal();
 	public Optional<LocalDate> getDate();
 		
+	public Optional<URI> getPdfUri();
 	
-	public Optional<URI> getPdfUri(); 
+	public default Optional<String> getFirstAuthorLastName() {
+		return getAuthors().findFirst().map(a -> a.getLastName());
+	}
+	
+	public default Optional<String> getFirstAuthorFirstName() {
+		return getAuthors().findFirst().flatMap(a -> a.getFirstName());
+	}
 	
 }
