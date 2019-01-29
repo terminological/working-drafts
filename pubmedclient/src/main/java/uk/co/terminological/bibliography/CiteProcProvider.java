@@ -52,7 +52,7 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
 	        	 }
 	         }
 	         
-	         record.getDate().ifPresent(d -> builder.originalDate(
+	         record.getDate().ifPresent(d -> builder.issued(
 	        		 d.getYear(),
 	        		 d.getMonthValue(),
 	        		 d.getDayOfMonth()));
@@ -70,7 +70,7 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
 	        	 print.getIssue().ifPresent(i -> builder.issue(i));
 	        	 print.getPage().ifPresent(p -> builder.page(p));
 	        	 print.getVolume().ifPresent(v -> builder.volume(v));
-	        	 print.getYear().ifPresent(y -> builder.originalDate(y.intValue()));
+	        	 print.getYear().ifPresent(y -> builder.issued(y.intValue()));
 	         }
 	         
 	         return builder.build();
