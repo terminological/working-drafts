@@ -37,6 +37,8 @@ import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Values;
 import org.yaml.snakeyaml.Yaml;
 
+import uk.co.terminological.bibliography.CiteProcProvider;
+import uk.co.terminological.bibliography.CiteProcProvider.Output;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.Triple;
@@ -152,6 +154,11 @@ public class LitReviewAnalysis {
 				res.forEach(r -> {
 					uk.co.terminological.bibliography.record.Record rec = 
 							Shim.recordFacade(r.get("node").asNode());
+					try {
+						System.out.println(CiteProcProvider.convert("ieee", Output.text, rec));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				});
 				
 				return true;
