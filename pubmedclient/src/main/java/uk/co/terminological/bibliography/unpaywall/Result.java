@@ -4,8 +4,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,7 +24,7 @@ public class Result extends ExtensibleJson implements Record {
 	public Optional<String> getTitle() {return this.streamPath("title").findFirst().map(
 			n -> n.asString()).or(() -> getJournal());}
 	public String getFirstAuthorName() {
-		return this.getAuthors().findFirst().map(o -> o.getLastName()).orElse("n/a");
+		return this.getFirstAuthor().map(o -> o.getLastName()).orElse("n/a");
 	}
 	public Optional<String> getJournal() {return this.asString("journal_name");}
 	public Optional<Long> getYear() {return getDate().map(d -> (long) d.getYear());}
@@ -36,7 +38,7 @@ public class Result extends ExtensibleJson implements Record {
 	
 	//public Optional<Double> getScore() {return this.asDouble("score");}
 	
-	public Stream<Author> getAuthors() {return this.streamPath(Author.class, "z_authors");}
+	public List<Author> getAuthors() {return this.streamPath(Author.class, "z_authors").collect(Collectors.toList());}
 	public Optional<String> getAbstract() {return this.asString("abstract");}
 	
 	public Optional<URI> getTextMiningUri() {
