@@ -19,24 +19,23 @@ import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.datatypes.FluentList;
 
-public class CiteProcProvider extends FluentList<Record> implements ItemDataProvider  {
+public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDataProvider  {
     
 	@Override
     public CSLItemData retrieveItem(String id) {
 		try {
-		Record record = this.stream()
-				.filter(r -> r.getIdentifier().orElse("").equals(id))
-				.findFirst()
-				.orElse(this.get(Integer.parseInt(id)));
-		CSLItemData out = fromRecord(record, id);
-		return out;
+			CSLItemData out = this.get(Integer.parseInt(id));
+			return out;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-		
     }
     
+	public void add(Record rec) {
+		add(fromRecord(rec,Integer.toString(size())));
+	}
+	
 	public static CSLItemData fromRecord(Record record) {
 		return fromRecord(record, record.getIdentifier().orElse(UUID.randomUUID().toString()));
 	}
