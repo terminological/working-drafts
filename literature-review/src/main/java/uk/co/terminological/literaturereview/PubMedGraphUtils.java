@@ -82,7 +82,7 @@ public class PubMedGraphUtils {
 				if (tmp != null) {	
 					tmp.addLabel(newLabel);
 				} else {
-					logger.warn("No {} found for {} with value of {}", existingLabel.name(),indexProp,v.toString());
+					logger.debug("No {} found for {} with value of {}", existingLabel.name(),indexProp,v.toString());
 				}
 			});
 			tx.success();
@@ -310,7 +310,7 @@ public class PubMedGraphUtils {
 	}
 	
 	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
-		logger.info("Adding {} entries {}:{} <-{}- {}:{}",links.size(), outIdType, outLabel, relType, inIdType, inLabel);
+		logger.debug("Adding {} entries {}:{} <-{}- {}:{}",links.size(), outIdType, outLabel, relType, inIdType, inLabel);
 		List<Relationship> out = new ArrayList<>();
 		try (Transaction tx = graph.get().beginTx()) {
 			tx.acquireWriteLock(lockNode);

@@ -195,7 +195,7 @@ public class PubMedGraphExperiment2 {
 						log.debug("Found {} references for {}", refs.size(), doi);
 						
 						Set<Work> works = refs.stream().flatMap(ref -> {
-							log.info(ref);
+							log.debug(ref);
 							return biblioApi.getCrossref().findWorkByCitationString(ref).stream();
 						}).collect(Collectors.toSet());
 						
