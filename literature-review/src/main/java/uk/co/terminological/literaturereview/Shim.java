@@ -14,6 +14,7 @@ import org.neo4j.graphdb.Node;
 
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
@@ -21,8 +22,8 @@ import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 
 public class Shim {
 
-	public static Record recordFacade(org.neo4j.driver.v1.types.Node node) {
-		return new class implements Record,PaperRecord {
+	public static PrintRecord recordFacade(org.neo4j.driver.v1.types.Node node) {
+		return new PrintRecord() {
 			@Override
 			public Optional<String> getIdentifier() {
 				return Optional.ofNullable(node.get(Prop.DOI).asString(null));
@@ -79,6 +80,31 @@ public class Shim {
 			
 			public Optional<String> getFirstAuthorFirstName() {
 				return Optional.ofNullable(node.get(Prop.LAST_NAME).asString(null));
+			}
+
+			@Override
+			public Optional<String> getFirstAuthorName() {
+				return Optional.ofNullable(node.get(Prop.FULL_NAME).asString(null));
+			}
+
+			@Override
+			public Optional<String> getVolume() {
+				return Optional.ofNullable(node.get(Prop.VOLUME).asString(null));
+			}
+
+			@Override
+			public Optional<String> getIssue() {
+				return Optional.ofNullable(node.get(Prop.ISSUE).asString(null));
+			}
+
+			@Override
+			public Optional<Long> getYear() {
+				return node.get(Prop.YEAR).isNull() ? Optional.empty() : Optional.of(node.get(Prop.YEAR).asLong());
+			}
+
+			@Override
+			public Optional<String> getPage() {
+				return Optional.ofNullable(node.get(Prop.PAGE).asString(null));
 			}
 			
 		};
