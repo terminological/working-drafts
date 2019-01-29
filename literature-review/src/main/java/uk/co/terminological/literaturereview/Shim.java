@@ -39,8 +39,8 @@ public class Shim {
 			}
 
 			@Override
-			public Stream<? extends Author> getAuthors() {
-				return Stream.empty();
+			public List<? extends Author> getAuthors() {
+				return Collections.emptyList();
 			}
 
 			@Override
@@ -130,7 +130,7 @@ public class Shim {
 			}
 
 			@Override
-			public Stream<? extends Author> getAuthors() {
+			public List<? extends Author> getAuthors() {
 				List<Author> authors = new ArrayList<>();
 				node.getRelationships(Rel.HAS_AUTHOR, Direction.OUTGOING).forEach(r -> {
 					Node author = r.getEndNode();
@@ -163,7 +163,7 @@ public class Shim {
 						
 					});
 				});
-				return authors.stream();
+				return authors;
 			}
 
 			@Override
