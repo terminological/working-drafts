@@ -35,7 +35,7 @@ build:
     AND n.authorLabel = o.authorLabel 
     AND n<>o 
     CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
-    YIELD node RETURN *
+    YIELD node;
 
 - deleteCircularCoauthor: | # Delete any that have been merged together
     MATCH (n:Author) -[r:CO_AUTHOR]-> (n:Author) DELETE r
