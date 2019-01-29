@@ -101,8 +101,8 @@ public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDat
 	public Bibliography orderedCitations(String style, Output format) throws IOException {
 		CSL citeproc = new CSL(this, style);
 		citeproc.setOutputFormat(format.toString());
-		citeproc.makeCitation(getIds());
-		//citeproc.registerCitationItems(getIds());
+		//citeproc.makeCitation(getIds());
+		citeproc.registerCitationItems(getIds());
 		return citeproc.makeBibliography();
 	}
 	
