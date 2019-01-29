@@ -80,6 +80,12 @@ import uk.co.terminological.nlptools.Tokeniser;
  */
 
 public class LitReviewAnalysis {
+	
+	public static void main(String[] args) throws Exception {
+		LitReviewAnalysis tmp = new LitReviewAnalysis();
+		tmp.setUpBeforeClass();
+		tmp.articlesCSL();
+	}
 
 	Driver driver;
 	Map<String, Object> obj;
