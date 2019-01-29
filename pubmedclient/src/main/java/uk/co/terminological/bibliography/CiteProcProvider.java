@@ -23,11 +23,18 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
     
 	@Override
     public CSLItemData retrieveItem(String id) {
+		try {
 		Record record = this.stream()
 				.filter(r -> r.getIdentifier().orElse("").equals(id))
 				.findFirst()
 				.orElse(this.get(Integer.parseInt(id)));
-		return fromRecord(record, id);
+		CSLItemData out = fromRecord(record, id);
+		return out;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
     }
     
 	public static CSLItemData fromRecord(Record record) {
