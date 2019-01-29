@@ -25,7 +25,7 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 	public IdType getIdentifierType() {return IdType.DOI;}
 	public Optional<String> getTitle() {return this.streamPath("title").findFirst().map(n -> n.asString());}
 	public Optional<String> getFirstAuthorName() {
-		return this.getAuthors().findFirst().map(o -> o.getLastName());
+		return this.getFirstAuthor().map(o -> o.getLastName());
 	}
 	public Optional<String> getJournal() {return this.streamNode("container-title").map(n -> n.asString()).findFirst();}
 	public Optional<String> getVolume() {return this.asString("volume");}
