@@ -150,7 +150,8 @@ public class LitReviewAnalysis {
 				List<Record> res = tx.run( qry ).list();
 				
 				res.forEach(r -> {
-					Record rec = Shim.recordFacade(r.get("node").asNode());
+					uk.co.terminological.bibliography.record.Record rec = 
+							Shim.recordFacade(r.get("node").asNode());
 				});
 				
 				return true;

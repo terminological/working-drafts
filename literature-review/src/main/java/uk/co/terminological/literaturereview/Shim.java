@@ -22,7 +22,7 @@ import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 public class Shim {
 
 	public static Record recordFacade(org.neo4j.driver.v1.types.Node node) {
-		return new Record() {
+		return new class implements Record,PaperRecord {
 			@Override
 			public Optional<String> getIdentifier() {
 				return Optional.ofNullable(node.get(Prop.DOI).asString(null));
@@ -74,11 +74,11 @@ public class Shim {
 			}
 			
 			public Optional<String> getFirstAuthorLastName() {
-				return getAuthors().findFirst().map(a -> a.getLastName());
+				return Optional.ofNullable(node.get(Prop.FIRST_NAME).asString(null));
 			}
 			
 			public Optional<String> getFirstAuthorFirstName() {
-				return getAuthors().findFirst().flatMap(a -> a.getFirstName());
+				return Optional.ofNullable(node.get(Prop.LAST_NAME).asString(null));
 			}
 			
 		};
