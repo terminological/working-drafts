@@ -83,8 +83,8 @@ build:
 - flattenFirstAuthorName: |
     MATCH (a:Article) -[r:HAS_AUTHOR]-> (b:Author) 
     WHERE r.isFirstAuthor = true
-    SET a.fullName = b.lastName+", "+b.firstName
-    a.firstName = b.firstName
+    SET a.fullName = b.lastName+", "+b.firstName,
+    a.firstName = b.firstName,
     a.lastName = b.lastName
 
 # MESH_CODES

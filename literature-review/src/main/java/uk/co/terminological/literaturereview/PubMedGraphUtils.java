@@ -181,17 +181,20 @@ public class PubMedGraphUtils {
 					Node target = doMerge(Labels.KEYWORD, Prop.TERM, kw, graph.get());
 					node.createRelationshipTo(target, Rel.HAS_KEYWORD);
 				});
-				entry.getAuthors().forEach(au -> {
+				boolean first = true;
+				for (Author au:entry.getAuthors()) {
 					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);
-					targetNode.ifPresent(target -> {
-						Relationship r = node.createRelationshipTo(target, Rel.HAS_AUTHOR);
-						if (entry.getFirstAuthor().get().equals(au)) {
+					if (targetNode.isPresent()) {
+						Relationship r = node.createRelationshipTo(targetNode.get(), Rel.HAS_AUTHOR);
+						if (first) {
 							r.setProperty(Prop.FIRST_AUTHOR, true);
+							
 						} else {
 							r.setProperty(Prop.FIRST_AUTHOR, false);
 						}
-					});
-				});
+					}
+					first = false;
+				}
 				entry.getMeshHeadings().forEach(mh -> {
 					Optional<Node> targetNode = mapMeshCodeToNode(mh.getDescriptor(),graph, tx);
 					targetNode.ifPresent(target -> node.createRelationshipTo(target, Rel.HAS_MESH));
@@ -347,17 +350,20 @@ public class PubMedGraphUtils {
 
 				Node node = doMerge(Labels.ARTICLE, Prop.DOI, work.getIdentifier().get().toLowerCase(), graph.get());
 				work.getTitle().ifPresent(title -> node.setProperty(Prop.TITLE, title));
-				work.getAuthors().forEach(as -> {
-					Optional<Node> targetNode = mapAuthorToNode(as, graph, tx);
-					targetNode.ifPresent(target -> {
-						Relationship r = node.createRelationshipTo(target, Rel.HAS_AUTHOR);
-						if (work.getFirstAuthor().get().equals(as)) {
+				boolean first = true;
+				for (Author au:work.getAuthors()) {
+					Optional<Node> targetNode = mapAuthorToNode(au,graph, tx);
+					if (targetNode.isPresent()) {
+						Relationship r = node.createRelationshipTo(targetNode.get(), Rel.HAS_AUTHOR);
+						if (first) {
 							r.setProperty(Prop.FIRST_AUTHOR, true);
+							
 						} else {
 							r.setProperty(Prop.FIRST_AUTHOR, false);
 						}
-					});
-				});
+					}
+					first = false;
+				}
 				work.getAbstract().ifPresent(abs -> node.setProperty(Prop.ABSTRACT, abs));
 				work.getDate().ifPresent(date -> node.setProperty(Prop.DATE,date));
 				work.getJournal().ifPresent(journal -> node.setProperty(Prop.JOURNAL,journal));
