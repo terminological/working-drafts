@@ -89,6 +89,7 @@ public class PubMedGraphSchema {
 		    schema.indexFor( Labels.KEYWORD ).on( Prop.TERM ).create();
 		    schema.constraintFor( Labels.KEYWORD ).assertPropertyIsUnique( Prop.TERM );
 		    schema.indexFor( Labels.AUTHOR ).on( Prop.AUTHOR_LABEL ).create();
+		    schema.indexFor( Labels.AUTHOR ).on( Prop.LAST_NAME ).create();
 		    schema.indexFor( Labels.MESH_CODE ).on( Prop.MESH_CODE ).create();
 		    schema.constraintFor( Labels.MESH_CODE ).assertPropertyIsUnique( Prop.MESH_CODE );
 		    tx.success();
