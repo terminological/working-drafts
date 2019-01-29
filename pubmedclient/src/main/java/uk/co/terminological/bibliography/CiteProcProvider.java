@@ -1,7 +1,6 @@
 package uk.co.terminological.bibliography;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
