@@ -348,27 +348,8 @@ public class PubMedGraphUtils {
 							doMerge(Labels.ARTICLE, outIdType, toId, graph.get(), outLabel);
 					Relationship tmp = null;
 					if (invert) {
-						/*
-						for (Relationship r :end.getRelationships(Direction.OUTGOING,relType)) {
-							if (r.getEndNode().equals(start)) {
-								tmp=r;
-								break;
-							}
-						};
-						if (tmp == null) {
-							tmp = end.createRelationshipTo(start, relType);						
-						}*/
 						tmp = doMerge(Labels.ARTICLE, outIdType, toId, relType, Labels.ARTICLE, inIdType, link.fromId, graph.get());
 					} else {
-						/*for (Relationship r :start.getRelationships(Direction.OUTGOING,relType)) {
-							if (r.getEndNode().equals(end)) {
-								tmp=r;
-								break;
-							}
-						};
-						if (tmp == null) {
-							tmp = start.createRelationshipTo(end, relType);						
-						}*/
 						tmp = doMerge(Labels.ARTICLE, inIdType, link.fromId, relType, Labels.ARTICLE, outIdType, toId, graph.get());
 					}
 					if (link.score.isPresent()) tmp.setProperty(Prop.RELATEDNESS, link.score.get());
