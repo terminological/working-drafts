@@ -67,6 +67,11 @@ public class PubMedGraphSchema {
 		public static final String JOURNAL = "journal";
 		public static final String CITED_BY = "citedByCount";
 		public static final String REFERENCE_COUNT = "referencesCount";
+		public static final String VOLUME = "volume";
+		public static final String ISSUE = "issue";
+		public static final String YEAR = "year";
+		public static final String PAGE = "page";
+		public static final String FULL_NAME = "fullName";
 	}
 	
 	public static void setupSchema(GraphDatabaseApi graph) {
