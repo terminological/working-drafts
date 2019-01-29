@@ -10,6 +10,9 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,10 +33,12 @@ import org.neo4j.driver.v1.Driver;
 import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.StatementResult;
 import org.neo4j.driver.v1.Values;
 import org.yaml.snakeyaml.Yaml;
 
 import uk.co.terminological.datatypes.EavMap;
+import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
@@ -128,12 +133,43 @@ public class LitReviewAnalysis {
 		textStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForText").split("\n"));
 		queries = (Map<String,String> ) obj.get("analyse");
 	}
-
+	
 	@After
 	public void tearDownAfterClass() throws Exception {
 		driver.close();
 	}
 
+	
+	@Test
+	public void writeToCsv() {
+		try ( Session session = driver.session() ) {
+			queries.forEach((name,qry) -> {
+				System.out.println("Executing query: "+qry);
+				session.readTransaction( tx -> {
+					
+					StatementResult qryR = tx.run( qry );
+					List<Record> res = qryR.list();
+					
+					Path path = Paths.get(outDir.getAbsolutePath(), name+".tsv");
+					try {
+						OutputStream writer = Files.newOutputStream(path);
+						writer.write(qryR.keys().stream().collect(Collectors.joining("\t")).getBytes());
+						for (Record r:res) {
+							writer.write(
+								r.values().stream().map(v -> v.toString()).collect(Collectors.joining("\t")).getBytes()
+							);
+						}
+					} catch (Exception e) {
+						e.printStackTrace(System.out);
+					}
+					
+					return true;
+				});
+			});
+		}
+		
+	}
+	
 	@Test
 	public void plotAgeOfArticles() {
 		try ( Session session = driver.session() ) {
