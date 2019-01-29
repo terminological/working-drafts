@@ -19,9 +19,7 @@ public class Contributor extends ExtensibleJson implements Author {
 	public Stream<String> getAffiliations() {return this.streamNode("affiliation").flatMap(n -> n.asString("name").stream());}
 	public Optional<String> getFirstName() {return this.asString("given");}
 	public boolean isFirst() {return this.asString("sequence").filter(s -> s.equals("first")).isPresent();}
-	public String getLabel() {
-		return (getFirstName().orElse("Unknown")+", "+getLastName().substring(0, 1)).toLowerCase();
-	}
+	
 	@Override
 	public Optional<String> getInitials() {
 		return getFirstName().map(o -> o.substring(0, 1));
