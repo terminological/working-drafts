@@ -1,13 +1,16 @@
 package uk.co.terminological.bibliography;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
+import de.undercouch.citeproc.output.Bibliography;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.Record;
@@ -72,4 +75,11 @@ public class CiteProcProvider extends ArrayList<Record> implements ItemDataProvi
         return this.stream().flatMap(r -> r.getIdentifier().stream())
         		.collect(Collectors.toList()).toArray(new String[] {});
     }
+	
+	public Bibliography orderedCitations(String style, String format) throws IOException {
+		CSL citeproc = new CSL(this, style);
+		citeproc.setOutputFormat(format);
+		citeproc.registerCitationItems(getIds());
+		return citeproc.makeBibliography();
+	}
 }
