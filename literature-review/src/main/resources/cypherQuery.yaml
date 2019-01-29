@@ -176,14 +176,14 @@ analyse:
     MATCH (a:Article)
     WHERE a.date IS NOT NULL
     RETURN floor(duration.inMonths(a.date,date()).months/3) as qtr, 
-    count(a) as articles,
-    a as node
+    count(a) as articles
     ORDER BY qtr ASC
 
 # TODO: Ordered authors + journal name
   getArticlesByPagerank: |
     MATCH (a:Article)-[r:HAS_AUTHOR]->(b:Author)
-    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, a.journal, a.citedByCount, collect(b.lastName) as authors, a as node
+    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, a.journal, a.citedByCount, collect(b.lastName) as authors, 
+    a as node
     ORDER by a.pagerank DESC
     LIMIT 50
     
