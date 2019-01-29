@@ -155,10 +155,11 @@ public class LitReviewAnalysis {
 						OutputStream writer = Files.newOutputStream(path);
 						writer.write(qryR.keys().stream().collect(Collectors.joining("\t")).getBytes());
 						for (Record r:res) {
-							writer.write(
-								r.values().stream().map(v -> v.toString()).collect(Collectors.joining("\t")).getBytes()
+							writer.write(("\n"+
+								r.values().stream().map(v -> v.toString()).collect(Collectors.joining("\t"))).getBytes()
 							);
 						}
+						writer.close();
 					} catch (Exception e) {
 						e.printStackTrace(System.out);
 					}
