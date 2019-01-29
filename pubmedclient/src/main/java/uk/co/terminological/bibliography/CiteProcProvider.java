@@ -1,7 +1,6 @@
 package uk.co.terminological.bibliography;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import de.undercouch.citeproc.ItemDataProvider;
@@ -12,13 +11,14 @@ import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.Record;
 
-public class CiteProcProvider implements ItemDataProvider {
+public class CiteProcProvider extends ArrayList<Record> implements ItemDataProvider  {
     
-	Map<String, Record> records = new HashMap<>();
-	
 	@Override
     public CSLItemData retrieveItem(String id) {
-		Record record = records.get(id);
+		Record record = this.stream()
+				.filter(r -> r.getIdentifier().orElse("").equals(id))
+				.findFirst()
+				.orElseThrow(() -> new RuntimeException("CLS item not found"));
 		CSLItemDataBuilder builder = new CSLItemDataBuilder()
             .id(id)
             .type(CSLType.ARTICLE_JOURNAL);
@@ -47,7 +47,7 @@ public class CiteProcProvider implements ItemDataProvider {
         	 print.getIssue().ifPresent(i -> builder.issue(i));
         	 print.getPage().ifPresent(p -> builder.page(p));
         	 print.getVolume().ifPresent(v -> builder.volume(v));
-        	 print.getYear().ifPresent(y -> builder.originalDate((int) y));
+        	 print.getYear().ifPresent(y -> builder.originalDate(y.intValue()));
          }
          
          return builder.build();
@@ -64,6 +64,6 @@ public class CiteProcProvider implements ItemDataProvider {
 	}
 	
 	public String[] getIds() {
-        return records.keySet().toArray(new String[] {});
+        return this.toArray(new String[] {});
     }
 }
