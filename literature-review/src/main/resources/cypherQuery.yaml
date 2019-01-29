@@ -32,7 +32,7 @@ build:
     MATCH (n:Author), (o:Author) 
     WHERE n.authorLabel = o.authorLabel AND n<>o 
     WITH n,o
-    MATCH (n)-[:CO_AUTHOR]-> () <-[:CO_AUTHOR]-(o) 
+    MATCH (n)-[:CO_AUTHOR]-> (:Author) <-[:CO_AUTHOR]-(o) 
     CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
     YIELD node RETURN COUNT(*);
 
