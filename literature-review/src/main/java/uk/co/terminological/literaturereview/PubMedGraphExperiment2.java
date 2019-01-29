@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.QueryStatistics;
@@ -123,7 +124,15 @@ public class PubMedGraphExperiment2 {
 		latest = LocalDate.parse(prop.getProperty("latest"));
 
 		FileAppender fa = new FileAppender();
+		fa.setName("FileLogger");
 		fa.setFile(outputDir.resolve("actions.log").toString());
+		fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
+		fa.setThreshold(Level.INFO);
+		fa.setAppend(false);
+		fa.activateOptions();
+
+		//add appender to any Logger (here is root)
+		
 		org.apache.log4j.Logger.getRootLogger().addAppender(fa);
 	}
 
