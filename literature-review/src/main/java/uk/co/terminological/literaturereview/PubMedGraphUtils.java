@@ -6,14 +6,20 @@ import uk.co.terminological.bibliography.crossref.Work;
 import uk.co.terminological.bibliography.entrez.Link;
 import uk.co.terminological.bibliography.entrez.MeshCode;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.record.Author;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.bibliography.unpaywall.Result;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -133,31 +139,7 @@ public class PubMedGraphUtils {
 						tmp = mergeNodes(tmp1,tmp2,tx);
 					} 
 					
-					/*
-					//Merge pubmed and pmc stubs
-					if (tmp1 != null && tmp3 != null && tmp1.getId() != tmp3.getId()) {
-						logger.debug("Merging article pubmed: "+entry.getPMID().get()+" with PMCID: "+entry.getPMCID().get());
-						//merge tmp1 and tmp2
-						tmp3.getAllProperties().forEach((k,v) -> tmp1.setProperty(k, v));
-						tmp3.getRelationships(Direction.INCOMING).forEach(r -> {
-							Node other = r.getOtherNode(tmp3);
-							Relationship r2 = other.createRelationshipTo(tmp1, r.getType());
-							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
-							r.delete();
-						});
-						tmp3.getRelationships(Direction.OUTGOING).forEach(r -> {
-							Node other = r.getOtherNode(tmp3);
-							Relationship r2 = tmp1.createRelationshipTo(other, r.getType());
-							r.getAllProperties().forEach((k,v) -> r2.setProperty(k, v));
-							r.delete();
-						});
-						entry.getDOI().ifPresent(pmcid -> tmp1.setProperty(Prop.PMCID, pmcid));
-						tmp3.getLabels().forEach(l -> tmp1.addLabel(l));
-						tmp3.delete();
-						tmp = tmp1;
-					}
-					*/
-					
+				
 					if (tmp == null) {
 						if (tmp1!=null) {
 							logger.debug("Updating pubmed article: "+entry.getPMID().get());
@@ -169,11 +151,6 @@ public class PubMedGraphUtils {
 							entry.getPMID().ifPresent(pmid -> tmp2.setProperty(Prop.PMID, pmid));
 							entry.getPMCID().ifPresent(pmcid -> tmp2.setProperty(Prop.PMCID, pmcid));
 							tmp = tmp2;
-						/*} else if (tmp3!=null) {
-							logger.debug("Updating pmc article: "+entry.getPMCID().get());
-							entry.getDoi().ifPresent(doi -> tmp3.setProperty(Prop.DOI, doi));
-							entry.getPMID().ifPresent(pmid -> tmp3.setProperty(Prop.PMID, pmid));
-							tmp = tmp3;*/
 						} else {
 							//cannot happen because of check at beginning
 						}
@@ -222,6 +199,95 @@ public class PubMedGraphUtils {
 
 	}
 
+	public static Record recordFacade(Node node) {
+		return new Record() {
+			@Override
+			public Optional<String> getIdentifier() {
+				return Optional.ofNullable(node.getProperty(Prop.DOI,null).toString());
+			}
+
+			@Override
+			public IdType getIdentifierType() {
+				return IdType.DOI;
+			}
+
+			@Override
+			public Set<RecordReference> getOtherIdentifiers() {
+				// TODO Could look up the others
+				return Collections.emptySet();
+			}
+
+			@Override
+			public Stream<? extends Author> getAuthors() {
+				List<Author> authors = new ArrayList<>();
+				node.getRelationships(Rel.HAS_AUTHOR, Direction.OUTGOING).forEach(r -> {
+					Node author = r.getEndNode();
+					authors.add(new Author() {
+
+						@Override
+						public Optional<String> getORCID() {
+							return Optional.ofNullable(author.getProperty(Prop.ORCID,null).toString());
+						}
+
+						@Override
+						public Optional<String> getFirstName() {
+							return Optional.ofNullable(author.getProperty(Prop.FIRST_NAME,null).toString());
+						}
+
+						@Override
+						public String getLastName() {
+							return author.getProperty(Prop.LAST_NAME).toString();
+						}
+
+						@Override
+						public Optional<String> getInitials() {
+							return Optional.ofNullable(author.getProperty(Prop.INITIALS,null).toString());
+						}
+
+						@Override
+						public Stream<String> getAffiliations() {
+							return Stream.empty();
+						}
+						
+					});
+				});
+				return null;
+			}
+
+			@Override
+			public Stream<String> getLicenses() {
+				return Stream.empty();
+			}
+
+			@Override
+			public Optional<String> getAbstract() {
+				return Optional.ofNullable(node.getProperty(Prop.ABSTRACT,null).toString());
+			}
+
+			@Override
+			public Optional<String> getTitle() {
+				return Optional.ofNullable(node.getProperty(Prop.TITLE,null).toString());
+			}
+
+			@Override
+			public Optional<String> getJournal() {
+				return Optional.ofNullable(node.getProperty(Prop.JOURNAL,null).toString());
+			}
+
+			@Override
+			public Optional<LocalDate> getDate() {
+				return Optional.ofNullable(node.getProperty(Prop.DATE,null)).map(o -> (LocalDate) o);
+			}
+
+			@Override
+			public Optional<URI> getPdfUri() {
+				return Optional.ofNullable(node.getProperty(Prop.PDF_URL,null)).map(o -> URI.create(o.toString()));
+			}
+			
+		};
+		
+	}
+	
 	/*public static Optional<Node> mapAuthorToNode(Author author, GraphDatabaseApi graph, Transaction tx) {
 		return mapAuthorToNode(
 				author.getLabel(),
@@ -252,6 +318,8 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 
 	}
+	
+	
 
 	public static Optional<Node> mapMeshCodeToNode(MeshCode meshCode, GraphDatabaseApi graph, Transaction tx) {
 		Node out = null;
