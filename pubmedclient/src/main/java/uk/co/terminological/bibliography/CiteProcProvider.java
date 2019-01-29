@@ -11,6 +11,7 @@ import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
+import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.Record;
@@ -32,12 +33,20 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
 	            .id(record.getIdentifier().get())
 	            .type(CSLType.ARTICLE_JOURNAL);
 	         record.getTitle().ifPresent(t -> builder.title(t));
-	         record.getFirstAuthor().ifPresent(a -> {
-	        	builder.author(
+	         if (record.getFirstAuthor().isPresent()) {
+	        	 Author a = record.getFirstAuthor().get();
+	        	 builder.author(
 	        		a.getFirstName().or(() -> a.getInitials()).orElse(""),
 	        		a.getLastName()
 	        	); 
-	         });
+	         } else if (record.getFirstAuthorLastName().isPresent()) {
+	        	 if (record.getFirstAuthorFirstName().isPresent()) {
+	        		 builder.author(
+	        				 record.getFirstAuthorFirstName().get(), 
+	        				 record.getFirstAuthorLastName().get());
+	        	 }
+	         }
+	         
 	         record.getDate().ifPresent(d -> builder.originalDate(
 	        		 d.getYear(),
 	        		 d.getMonthValue(),
