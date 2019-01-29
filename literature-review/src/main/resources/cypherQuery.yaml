@@ -16,6 +16,13 @@ build:
     CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
     YIELD node RETURN COUNT(*)
 
+- mergeDuplicateAuthorsOnArticle: |     # Exact fullname match
+    MATCH (n:Author) <-[:HAS_AUTHOR]- (:Article) -[:HAS_AUTHOR]-> (o:Author) 
+    WHERE n.authorLabel = o.authorLabel 
+    AND n<>o 
+    CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
+    YIELD node RETURN COUNT(*)
+
 - mergeAuthorsWithSimilarNameAndAffiliation: | # Short name match plus similar affiliation
     MATCH (n:Author) -[:HAS_AFFILIATION]-> () -[:SIMILAR_TO]-> () <-[:HAS_AFFILIATION]- (o:Author) 
     WHERE n.authorLabel = o.authorLabel 
