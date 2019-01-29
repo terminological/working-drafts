@@ -12,6 +12,7 @@ public interface Record extends RecordReference {
 	public Set<RecordReference> getOtherIdentifiers();
 	
 	public default Optional<? extends Author> getFirstAuthor() {
+		if (getAuthors().isEmpty()) return Optional.empty();
 		return Optional.ofNullable(getAuthors().get(0));
 	};
 	
