@@ -6,12 +6,12 @@ public interface Citation {
 
 	Optional<RecordReference> getIdentifier();
 	Optional<String> getTitle();
-	Optional<PrintRecord> getBibliographicId();
+	Optional<Print> getBibliographicId();
 	
 	public static Citation create(
 			final RecordReference identifier,
 			final String title,
-			final PrintRecord bibliographicInfo) {
+			final Print bibliographicInfo) {
 		return new Citation() {
 
 			@Override
@@ -25,7 +25,7 @@ public interface Citation {
 			}
 
 			@Override
-			public Optional<PrintRecord> getBibliographicId() {
+			public Optional<Print> getBibliographicId() {
 				return Optional.ofNullable(bibliographicInfo);
 			}
 			

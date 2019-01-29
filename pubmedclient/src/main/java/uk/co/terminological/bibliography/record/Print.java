@@ -2,7 +2,7 @@ package uk.co.terminological.bibliography.record;
 
 import java.util.Optional;
 
-public interface PrintRecord {
+public interface Print {
 
 	public Optional<String> getFirstAuthorName();
 	public Optional<String> getJournal();

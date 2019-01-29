@@ -12,11 +12,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.PrintRecord;
+import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.bibliography.record.RecordWithCitations;
 
-public class Work extends ExtensibleJson implements PrintRecord, RecordWithCitations {
+public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 	public Work(JsonNode node) {super(node);}
 	
 	public Optional<String> getIdentifier() {return this.asString("DOI");}

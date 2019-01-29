@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.PrintRecord;
+import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class Reference extends ExtensibleJson implements RecordReference, PrintRecord {
+public class Reference extends ExtensibleJson implements RecordReference, Print {
 	
 	public Reference(JsonNode node) { super(node); }
 	

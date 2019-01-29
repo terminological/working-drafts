@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.PrintRecord;
+import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlList;
 
-public class PubMedEntry implements Record, PrintRecord {
+public class PubMedEntry implements Record, Print {
 
 	private XmlElement raw; //PubmedArticle
 

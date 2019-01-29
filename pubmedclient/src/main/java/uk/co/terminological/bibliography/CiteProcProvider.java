@@ -13,7 +13,7 @@ import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLType;
 import de.undercouch.citeproc.output.Bibliography;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.record.PrintRecord;
+import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.datatypes.FluentList;
 
@@ -51,8 +51,8 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
 	         record.getAbstract().ifPresent(a -> builder.abstrct(a));
 	         record.getPdfUri().ifPresent(p -> builder.URL(p.toString()));
 	         
-	         if (record instanceof PrintRecord) {
-	        	 PrintRecord print = (PrintRecord) record;
+	         if (record instanceof Print) {
+	        	 Print print = (Print) record;
 	        	 
 	        	 print.getIssue().ifPresent(i -> builder.issue(i));
 	        	 print.getPage().ifPresent(p -> builder.page(p));
