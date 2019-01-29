@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
@@ -14,8 +15,9 @@ import de.undercouch.citeproc.output.Bibliography;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.datatypes.FluentList;
 
-public class CiteProcProvider extends ArrayList<Record> implements ItemDataProvider  {
+public class CiteProcProvider extends FluentList<Record> implements ItemDataProvider  {
     
 	@Override
     public CSLItemData retrieveItem(String id) {
@@ -76,10 +78,20 @@ public class CiteProcProvider extends ArrayList<Record> implements ItemDataProvi
         		.collect(Collectors.toList()).toArray(new String[] {});
     }
 	
-	public Bibliography orderedCitations(String style, String format) throws IOException {
+	public Bibliography orderedCitations(String style, Output format) throws IOException {
 		CSL citeproc = new CSL(this, style);
-		citeproc.setOutputFormat(format);
+		citeproc.setOutputFormat(format.toString());
 		citeproc.registerCitationItems(getIds());
 		return citeproc.makeBibliography();
+	}
+	
+	public static String convert(String style, Output format, Record... record) throws IOException {
+		return CSL.makeAdhocBibliography(style, format.toString(), 
+				Stream.of(record).map(r -> fromRecord(r)).collect(Collectors.toList()).toArray(new CSLItemData[] {}))
+				.makeString();
+	}
+	
+	public static enum Output {
+		html, text, asciidoc, fo, rtf
 	}
 }
