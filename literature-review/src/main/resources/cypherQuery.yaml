@@ -18,24 +18,23 @@ build:
 
 - mergeAuthorsWithSimilarNameAndAffiliation: | # Short name match plus similar affiliation
     MATCH (n:Author) -[:HAS_AFFILIATION]-> () -[:SIMILAR_TO]-> () <-[:HAS_AFFILIATION]- (o:Author) 
-    WHERE NOT (n)-[:SAME_AS]-(o) 
-    AND n.authorLabel = o.authorLabel 
+    WHERE n.authorLabel = o.authorLabel 
     AND n<>o 
     CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
     YIELD node RETURN *
 
 - createAuthorCoauthor: | # Create coauthor network
     MATCH (n:Author) <-[:HAS_AUTHOR]- (m:Article) -[:HAS_AUTHOR]-> (o:Author) 
-    WHERE NOT (n)-[:SAME_AS]-(o) 
+    WHERE n<>o 
     CREATE (n)-[r:CO_AUTHOR]->(o)
 
 - mergeAuthorsWithSimilarNameAndCoauthors: | # Merge co-authors with same name
-    MATCH (n:Author) -[:CO_AUTHOR]-> () <-[:CO_AUTHOR]- (o:Author) 
-    WHERE NOT (n)-[:SAME_AS]-(o) 
-    AND n.authorLabel = o.authorLabel 
-    AND n<>o 
+    MATCH (n:Author), (o:Author) 
+    WHERE n.lastName = o.lastName AND n<>o 
+    WITH n,o
+    MATCH (n)-[:CO_AUTHOR]-> () <-[:CO_AUTHOR]-(o) 
     CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
-    YIELD node;
+    YIELD node RETURN *;
 
 - deleteCircularCoauthor: | # Delete any that have been merged together
     MATCH (n:Author) -[r:CO_AUTHOR]-> (n:Author) DELETE r
