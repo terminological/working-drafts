@@ -4,8 +4,10 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,9 +51,8 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 	public Optional<Double> getScore() {return this.asDouble("score");}
 	public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 	
-	public Stream<Contributor> getAuthors() {
-		return this.streamPath(Contributor.class, "author"
-	);}
+	public List<Contributor> getAuthors() {
+		return this.streamPath(Contributor.class, "author").collect(Collectors.toList());}
 	public Stream<Reference> getCitations() {return this.streamPath(Reference.class, "reference");}
 	public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 	public Optional<Long> getReferencesCount() {return this.asLong("references-count");}
