@@ -148,7 +148,7 @@ public class LitReviewAnalysis {
 			//Plot by age
 			session.readTransaction( tx -> {
 
-				String qry = queries.get("getArticlesByAge");
+				String qry = queries.get("getArticlesByPageRank");
 				List<Record> res = tx.run( qry ).list();
 				
 				res.forEach(r -> {
