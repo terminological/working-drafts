@@ -30,8 +30,12 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
     }
     
 	public static CSLItemData fromRecord(Record record) {
+		retun fromRecord(record, record.getIdentifier().orElse(UUID.randomUUID().toString());
+	}
+	
+	public static CSLItemData fromRecord(Record record, String id) {
 		CSLItemDataBuilder builder = new CSLItemDataBuilder()
-	            .id(record.getIdentifier().orElse(UUID.randomUUID().toString()))
+	            .id(id)
 	            .type(CSLType.ARTICLE_JOURNAL);
 	         record.getTitle().ifPresent(t -> builder.title(t));
 	         if (record.getFirstAuthor().isPresent()) {
