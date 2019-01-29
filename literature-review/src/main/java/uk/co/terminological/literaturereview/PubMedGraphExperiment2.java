@@ -74,7 +74,7 @@ public class PubMedGraphExperiment2 {
 
 	public static void main(String args[]) throws IOException, BibliographicApiException, AnalysisException {
 		BasicConfigurator.configure();
-		org.apache.log4j.Logger.getRootLogger().setLevel(Level.DEBUG);
+		org.apache.log4j.Logger.getRootLogger().setLevel(Level.INFO);
 
 		String propFilename = args.length ==1? args[0]: "~/Dropbox/litReview/project.prop";
 		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
@@ -147,20 +147,25 @@ public class PubMedGraphExperiment2 {
 		// and write the result into the graph
 		
 		Set<PubMedEntry> ent = fetchPubMedEntries(broadSearch.getIds().collect(Collectors.toSet()), EXPAND);
-		log.info("Of broad search pubmed found {} articles with metadata",ent.size());
+		log.info("Of broad search pubmed found {} articles with metadata in pubmed",ent.size());
 		// At this stage we have search result + metadata
 		
 		// Next for everything with a doi, we update metadata and expand one level using xRef
 		Set<String> xrefDois = lookupDoisForUnreferenced(graphApi);
+		log.info("Looking up {} articles with a doi in xRef", xrefDois.size());
 		Set<String> toDois = findCrossRefReferencesFromNodes(xrefDois);
+		log.info("Found {} sibling articles using xRef", toDois.size());
 		
 		// focussing just on those that have been added as a reference - i.e. the new ones from xref
 		toDois.removeAll(xrefDois);
+		log.info("Of which {} xRef articles are new", toDois.size());
 		
 		// link back out using pubmed this time from the set, create the links and fill in metadata from 
 		// pubmed for the new articles... If there was a hit on the doi then remove it from the list of dois
 		Set<String> pmidsLeftInBroaderSet = PubMedGraphUtils.lookupPMIDSForUnreferenced(graphApi);
+		log.info("{} articles without references have pubmedids", pmidsLeftInBroaderSet.size());
 		List<Link> links2 = findPMCReferencesFromPMIDs(pmidsLeftInBroaderSet);
+		log.info("{} individual references found in PMC (not articles though)", links2.stream().flatMap(l -> l.toId.stream()).collect(Collectors.toSet()).size();
 		Set<String> pmidStubs = PubMedGraphUtils.lookupPmidStubs(graphApi);
 		Set<PubMedEntry> entries5 = fetchPubMedEntries(pmidStubs);
 		//entries5.forEach(e -> e.getDoi().ifPresent(d -> toDois.remove(d)));
