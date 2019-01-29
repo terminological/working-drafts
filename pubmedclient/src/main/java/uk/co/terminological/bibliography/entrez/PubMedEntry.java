@@ -121,11 +121,11 @@ public class PubMedEntry implements PrintRecord {
 		}
 	}
 
-	public Stream<Author> getAuthors() {
+	public List<Author> getAuthors() {
 		try {
-			return raw.doXpath(".//Author").getManyAsStream(XmlElement.class).map(o -> new Author(o));
+			return raw.doXpath(".//Author").getManyAsStream(XmlElement.class).map(o -> new Author(o)).collect(Collectors.toList());
 		} catch (XmlException e) {
-			return Stream.empty();
+			return Collections.emptyList();
 		}
 	}
 
