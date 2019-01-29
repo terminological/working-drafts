@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import de.undercouch.citeproc.CSL;
@@ -25,8 +26,8 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
 		Record record = this.stream()
 				.filter(r -> r.getIdentifier().orElse("").equals(id))
 				.findFirst()
-				.orElseThrow(() -> new RuntimeException("CSL item not found"));
-		return fromRecord(record);
+				.orElse(this.get(Integer.parseInt(id)));
+		return fromRecord(record, id);
     }
     
 	public static CSLItemData fromRecord(Record record) {
@@ -87,7 +88,7 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
 	}
 	
 	public String[] getIds() {
-        return this.stream().flatMap(r -> r.getIdentifier().stream())
+        return IntStream.range(0, size()).mapToObj(r -> Integer.toString(r))
         		.collect(Collectors.toList()).toArray(new String[] {});
     }
 	
