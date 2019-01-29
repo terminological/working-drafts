@@ -150,16 +150,20 @@ public class LitReviewAnalysis {
 
 				String qry = queries.get("getArticlesByPagerank");
 				List<Record> res = tx.run( qry ).list();
+				CiteProcProvider out = new CiteProcProvider();
 				
 				res.forEach(r -> {
 					uk.co.terminological.bibliography.record.Record rec = 
 							Shim.recordFacade(r.get("node").asNode());
-					try {
-						System.out.println(CiteProcProvider.convert("ieee", Output.text, rec));
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+					out.add(rec);
+					
 				});
+				
+				try {
+					System.out.println(out.orderedCitations("ieee", Output.text).makeString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				
 				return true;
 			});
