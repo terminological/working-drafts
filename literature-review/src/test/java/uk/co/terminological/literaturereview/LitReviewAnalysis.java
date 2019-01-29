@@ -144,7 +144,7 @@ public class LitReviewAnalysis {
 	public void writeToCsv() {
 		try ( Session session = driver.session() ) {
 			queries.forEach((name,qry) -> {
-				System.out.println("Executing query: "+qry);
+				System.out.println("Executing query: "+name);
 				session.readTransaction( tx -> {
 					
 					StatementResult qryR = tx.run( qry );
