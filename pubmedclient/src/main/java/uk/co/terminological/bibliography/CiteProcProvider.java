@@ -30,7 +30,7 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
     }
     
 	public static CSLItemData fromRecord(Record record) {
-		return fromRecord(record, record.getIdentifier().orElse(UUID.randomUUID().toString());
+		return fromRecord(record, record.getIdentifier().orElse(UUID.randomUUID().toString()));
 	}
 	
 	public static CSLItemData fromRecord(Record record, String id) {
