@@ -175,7 +175,9 @@ analyse:
   getArticlesByAge: |
     MATCH (a:Article)
     WHERE a.date IS NOT NULL
-    RETURN floor(duration.inMonths(a.date,date()).months/3) as qtr, count(a) as articles
+    RETURN floor(duration.inMonths(a.date,date()).months/3) as qtr, 
+    count(a) as articles,
+    a as node
     ORDER BY qtr ASC
 
 # TODO: Ordered authors + journal name
