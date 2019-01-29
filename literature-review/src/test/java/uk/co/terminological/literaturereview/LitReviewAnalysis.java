@@ -150,7 +150,7 @@ public class LitReviewAnalysis {
 				List<Record> res = tx.run( qry ).list();
 				
 				res.forEach(r -> {
-					Record rec = PubMedGraphUtils.recordFacade(r.get("node").asNode());
+					Record rec = Shim.recordFacade(r.get("node").asNode());
 				});
 				
 				return true;
