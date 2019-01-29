@@ -161,7 +161,7 @@ public class PubMedEntry implements PrintRecord {
 
 	@Override
 	public Optional<String> getFirstAuthorName() {
-		return this.getAuthors().findFirst().map(o -> o.getLastName());
+		return this.getFirstAuthor().map(o -> o.getLastName());
 	}
 
 	@Override
