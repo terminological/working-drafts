@@ -32,7 +32,7 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
 	            .id(record.getIdentifier().get())
 	            .type(CSLType.ARTICLE_JOURNAL);
 	         record.getTitle().ifPresent(t -> builder.title(t));
-	         record.getAuthors().findFirst().ifPresent(a -> {
+	         record.getFirstAuthor().ifPresent(a -> {
 	        	builder.author(
 	        		a.getFirstName().or(() -> a.getInitials()).orElse(""),
 	        		a.getLastName()
