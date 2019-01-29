@@ -10,6 +10,10 @@ public interface Record extends RecordReference {
 
 	public Set<RecordReference> getOtherIdentifiers();
 	
+	public default Optional<? extends Author> getFirstAuthor() {
+		return getAuthors().findFirst();
+	};
+	
 	public Stream<? extends Author> getAuthors();
 	public Stream<String> getLicenses();
 	
@@ -21,11 +25,11 @@ public interface Record extends RecordReference {
 	public Optional<URI> getPdfUri();
 	
 	public default Optional<String> getFirstAuthorLastName() {
-		return getAuthors().findFirst().map(a -> a.getLastName());
+		return getFirstAuthor().map(a -> a.getLastName());
 	}
 	
 	public default Optional<String> getFirstAuthorFirstName() {
-		return getAuthors().findFirst().flatMap(a -> a.getFirstName());
+		return getFirstAuthor().flatMap(a -> a.getFirstName());
 	}
 	
 }

@@ -73,6 +73,16 @@ build:
     SET a.age=duration.inDays(a.date,date()).days,
     a.timeWeightedPagerank=a.pagerank*365/(duration.inDays(a.date,date()).days)
 
+# AUTHOR
+
+- mergeKeywordsIgnoreCase: |
+    MATCH (a:Article) -[r:HAS_AUTHOR]-> (b:Author) 
+    WHERE lower(n.term) = lower(o.term) 
+    AND n<>o 
+    CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
+    YIELD node RETURN *
+
+
 # MESH_CODES
 - deleteMeshCooccur: | # MESH terms
     MATCH (:MeshCode)-[u:CO_OCCUR]->(:MeshCode) DELETE u
