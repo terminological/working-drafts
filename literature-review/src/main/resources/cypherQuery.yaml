@@ -30,7 +30,7 @@ build:
 
 - mergeAuthorsWithSimilarNameAndCoauthors: | # Merge co-authors with same name
     MATCH (n:Author), (o:Author) 
-    WHERE n.lastName = o.lastName AND n<>o 
+    WHERE n.authorLabel = o.authorLabel AND n<>o 
     WITH n,o
     MATCH (n)-[:CO_AUTHOR]-> () <-[:CO_AUTHOR]-(o) 
     CALL apoc.refactor.mergeNodes([n,o],{mergeRels:true}) 
