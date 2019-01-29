@@ -15,7 +15,6 @@ import org.neo4j.graphdb.Node;
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
-import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
