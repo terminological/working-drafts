@@ -99,11 +99,13 @@ public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDat
     }
 	
 	public Bibliography orderedCitations(String style, Output format) throws IOException {
-		CSL citeproc = new CSL(this, style);
+		/*CSL citeproc = new CSL(this, style);
 		citeproc.setOutputFormat(format.toString());
+		
 		//citeproc.makeCitation(getIds());
 		citeproc.registerCitationItems(getIds());
-		return citeproc.makeBibliography();
+		return citeproc.makeBibliography();*/
+		return CSL.makeAdhocBibliography(style, format.toString(), this.toArray(new CSLItemData[] {}));
 	}
 	
 	public static String convert(String style, Output format, Record... record) throws IOException {
