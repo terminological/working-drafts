@@ -2,6 +2,7 @@ package uk.co.terminological.bibliography;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +31,7 @@ public class CiteProcProvider extends FluentList<Record> implements ItemDataProv
     
 	public static CSLItemData fromRecord(Record record) {
 		CSLItemDataBuilder builder = new CSLItemDataBuilder()
-	            .id(record.getIdentifier().get())
+	            .id(record.getIdentifier().orElse(UUID.randomUUID().toString()))
 	            .type(CSLType.ARTICLE_JOURNAL);
 	         record.getTitle().ifPresent(t -> builder.title(t));
 	         if (record.getFirstAuthor().isPresent()) {
