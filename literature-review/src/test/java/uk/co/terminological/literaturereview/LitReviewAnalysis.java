@@ -543,8 +543,8 @@ public class LitReviewAnalysis {
 						.withSelector(c -> 
 							c.streamTopics()
 							.filter(t -> t.getTopicId() == id)
-							.flatMap(t -> t.streamTerms()) //TODO: This streams only by count rather than by the probability / weight
-							.map(wt -> wt.scale(1)))
+							.flatMap(t -> t.streamTerms())
+							.map(wt -> wt.scale(100)))
 						.execute(outDir.resolve("TopicContent"+id+".png"));
 					});
 
