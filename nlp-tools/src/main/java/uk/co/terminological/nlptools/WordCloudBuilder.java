@@ -79,7 +79,7 @@ public class WordCloudBuilder {
 	public void execute(Path output) {
 		selector.apply(corpus)
 	       .sorted()
-	       .filter(ct -> ct.getCount() > 0)
+	       //.filter(ct -> ct.getCount() > 0)
 	       .limit(maxNumber)
 	       .forEach((ti) -> {
 	    	   wordFrequencies.add(new WordFrequency(ti.getTarget().getTag(), ti.getCount()));
