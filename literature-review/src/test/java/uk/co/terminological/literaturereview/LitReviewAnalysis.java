@@ -545,7 +545,7 @@ public class LitReviewAnalysis {
 	}
 
 	@Test
-	public void plotCommunityContent() {
+	public void plotTopicContent() {
 		try ( Session session = driver.session() ) {
 			session.readTransaction( tx -> {
 
