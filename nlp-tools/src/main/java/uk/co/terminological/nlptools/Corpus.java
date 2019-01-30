@@ -191,28 +191,29 @@ public class Corpus {
 	public Stream<Weighted<Term>> getTermsByMutualInforation(Predicate<Document> featureDetector) {
 		SortedSet<Weighted<Term>> out = Weighted.descending();
 		
-		int featurePresent = 0;
-		//Map<Document,Boolean> features = new HashMap<>();
-		for (Document doc: this.documents.values()) {
-			Boolean isPresent = featureDetector.test(doc);
-			//features.put(doc, isPresent);
-			if (isPresent) featurePresent += 1;
-		}
+		//unit here is the document.
+		
+		Set<Document> withFeatures = new HashSet<>();
+		this.documents.values().stream().filter(featureDetector).forEach(withFeatures::add);
+		int documentsInWhichFeatureOccurs = withFeatures.size();
+		int totalDocuments = this.countCorpusDocuments();
 		
 		terms.values().forEach(term -> {
-			int cooccursWithFeature = 0;
-			int occursWithoutFeature = 0;
-			int totalOccurs = term.countOccurrences();
-			for (Document doc: term.getDocumentsUsing()) {
-				if (featureDetector.test(doc)) {
-					cooccursWithFeature += doc.countOccurencesInDocument(term);
-				} else {
-					occursWithoutFeature += doc.countOccurencesInDocument(term);
-				}
-			}
-			 
+			Set<Document> containingTerm = term.getDocumentsUsing();
+			int documentsInWhichTermOccurs = containingTerm.size();
 			
+			HashSet<Document> tmp = new HashSet<>(withFeatures);
+			tmp.retainAll(containingTerm);
+			int documentsInWhichTermCooccursWithFeature = tmp.size();
+			
+			out.add(Weighted.create(term, Calculation.mi(
+					documentsInWhichTermCooccursWithFeature, 
+					documentsInWhichTermOccurs, 
+					documentsInWhichFeatureOccurs, 
+					totalDocuments)));
 		});
+		
+		return out.stream();
 	}
 	
 	/**
