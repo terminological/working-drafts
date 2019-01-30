@@ -104,43 +104,43 @@ public class TopicModelBuilder {
 		
 		public Stream<Topic> getTopicsForDocuments() {
 			
-			//TODO: write all the topics into the corpus as a list of weighted terms.
-			
-			ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
-	        ArrayList<TreeSet<IDSorter>> topicSortedDocuments = model.getTopicDocuments(10.0);
-			Alphabet alphabet = getDataAlphabet();
-			
-			int[] tokensPerTopic = model.tokensPerTopic;
-			
-	        // Print results for each topic
-	        for (int topic = 0; topic < getTopicCount(); topic++) {
-	            TreeSet<IDSorter> sortedWords = topicSortedWords.get(topic);
-	            Topic top = builder.corpus.addTopic(topic);
-	            
-	            for (IDSorter info: sortedWords) {
-	            	//Double weight = info.getWeight();
-	            	Double probability = info.getWeight() / tokensPerTopic[topic];
-	                String term = alphabet.lookupObject(info.getID()).toString();
-	                Term t = builder.corpus.createTermFrom(term);
-	                Weighted<Term> wt = Weighted.create(t, probability);
-	                top.addTerm(wt);
-	            }
-	        
-	            TreeSet<IDSorter> sortedDocuments = topicSortedDocuments.get(topic);
-	            
-	            for (IDSorter sorter: sortedDocuments) {
-	                
-	            	int doc = sorter.getID();
-	                double proportion = sorter.getWeight();
-	                String name = model.data.get(doc).instance.getName().toString();
-	                
-	                Optional<Document> optDoc = builder.corpus.getById(name);
-	                optDoc.ifPresent(d -> {
-	                	top.addDocument(Weighted.create(d, proportion));
-	                });
-	                
-	            }
-	        }
+			if (!builder.corpus.hasTopics()) {
+				ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
+		        ArrayList<TreeSet<IDSorter>> topicSortedDocuments = model.getTopicDocuments(10.0);
+				Alphabet alphabet = getDataAlphabet();
+				
+				int[] tokensPerTopic = model.tokensPerTopic;
+				
+		        // Print results for each topic
+		        for (int topic = 0; topic < getTopicCount(); topic++) {
+		            TreeSet<IDSorter> sortedWords = topicSortedWords.get(topic);
+		            Topic top = builder.corpus.addTopic(topic);
+		            
+		            for (IDSorter info: sortedWords) {
+		            	//Double weight = info.getWeight();
+		            	Double probability = info.getWeight() / tokensPerTopic[topic];
+		                String term = alphabet.lookupObject(info.getID()).toString();
+		                Term t = builder.corpus.createTermFrom(term);
+		                Weighted<Term> wt = Weighted.create(t, probability);
+		                top.addTerm(wt);
+		            }
+		        
+		            TreeSet<IDSorter> sortedDocuments = topicSortedDocuments.get(topic);
+		            
+		            for (IDSorter sorter: sortedDocuments) {
+		                
+		            	int doc = sorter.getID();
+		                double proportion = sorter.getWeight();
+		                String name = model.data.get(doc).instance.getName().toString();
+		                
+		                Optional<Document> optDoc = builder.corpus.getById(name);
+		                optDoc.ifPresent(d -> {
+		                	top.addDocument(Weighted.create(d, proportion));
+		                });
+		                
+		            }
+		        }
+			}
 			
 	        return builder.corpus.streamTopics();
 			
