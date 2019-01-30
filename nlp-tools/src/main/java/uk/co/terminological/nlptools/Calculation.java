@@ -2,11 +2,11 @@ package uk.co.terminological.nlptools;
 
 public class Calculation {
 
-	public static double pmi(int x1y1, int x1, int occurrencesOfB, int totalOccurrences) {
+	public static double pmi(int x1y1, int x1, int y1, int totalOccurrences) {
 		return pmi(
 				((double) x1y1)/totalOccurrences,
 				((double) x1)/totalOccurrences,
-				((double) occurrencesOfB)/totalOccurrences);
+				((double) y1)/totalOccurrences);
 	}
 
 	public static double npmi(int cooccurAB, int occurrencesOfA, int occurrencesOfB, int totalOccurrences) {
