@@ -9,9 +9,9 @@ public class Calculation {
 				((double) y1)/total);
 	}
 
-	public static double npmi(int cooccurAB, int occurrencesOfA, int occurrencesOfB, int totalOccurrences) {
+	public static double npmi(int x1y1, int occurrencesOfA, int occurrencesOfB, int totalOccurrences) {
 		return npmi(
-				((double) cooccurAB)/totalOccurrences,
+				((double) x1y1)/totalOccurrences,
 				((double) occurrencesOfA)/totalOccurrences,
 				((double) occurrencesOfB)/totalOccurrences);
 	}
