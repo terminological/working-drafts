@@ -91,6 +91,7 @@ public class Term {
 		return out.stream();
 	}
 	
+	//TODO: this is mutual information for cooccurrence of terms within the document set we need to clarify this.
 	public Stream<Weighted<Term>> mutualInformation() {
 		
 		Integer total = corpus.countCorpusDocuments();
