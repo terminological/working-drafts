@@ -126,7 +126,7 @@ public class LitReviewAnalysis {
 	};*/
 
 	@SuppressWarnings("unchecked")
-	@BeforeClass
+	@Before
 	public void setUpBeforeClass() throws Exception {
 		BasicConfigurator.configure();
 
@@ -149,7 +149,7 @@ public class LitReviewAnalysis {
 		queries = (Map<String,String> ) obj.get("analyse");
 	}
 
-	@AfterClass
+	@After
 	public void tearDownAfterClass() throws Exception {
 		driver.close();
 	}
