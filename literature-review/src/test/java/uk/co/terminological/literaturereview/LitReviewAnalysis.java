@@ -454,8 +454,8 @@ public class LitReviewAnalysis {
 	private void plotCommunityWordcloud(Corpus texts, int community, String type) {
 		WordCloudBuilder.from(texts, 200, 600, 600)
 		.withSelector(c -> c.getTermsByTotalEntropy().map(wt -> wt.scale(100)))
-		.withColourScheme(ColourScheme.sequential(getCommunityIndex(community)))
-		.execute(outDir.resolve("Community"+type+this.getCommunityName(community)+".png"));
+		.withColourScheme(ColourScheme.sequential(community))
+		.execute(outDir.resolve("Community"+type+community+".png"));
 	}
 	
 	/*@Test
