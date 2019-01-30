@@ -509,12 +509,11 @@ public class LitReviewAnalysis {
 					int id = communities.indexOf(community);
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
-						.withSelector(c -> 
-							c.getTermsByMutualInforation(d -> d.getMetadata("community").equals(community))
-								.map(wt -> wt.scale(100)))
+						.withSelector(c -> c.getTermsByMutualInforation(d -> community.equals(d.getMetadata("community").orElse(null)))
+						.map(wt -> wt.scale(100)))
 						.execute(outDir.resolve("CommunityAffiliations"+id+".png"));
 				}
-				plotCommunityWordcloud(texts,community,"Affiliations");
+				//plotCommunityWordcloud(texts,community,"Affiliations");
 				return true;
 			});
 		}
@@ -555,7 +554,7 @@ public class LitReviewAnalysis {
 				Corpus texts = textCorpus();
 				for( Record r : res) {
 
-					Integer i = getCommunityIndex(r.get("community").asInt());
+					Integer i = r.get("community").asInt();
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
