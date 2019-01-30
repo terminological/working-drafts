@@ -25,7 +25,9 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
@@ -124,7 +126,7 @@ public class LitReviewAnalysis {
 	};*/
 
 	@SuppressWarnings("unchecked")
-	@Before
+	@BeforeClass
 	public void setUpBeforeClass() throws Exception {
 		BasicConfigurator.configure();
 
@@ -147,7 +149,7 @@ public class LitReviewAnalysis {
 		queries = (Map<String,String> ) obj.get("analyse");
 	}
 
-	@After
+	@AfterClass
 	public void tearDownAfterClass() throws Exception {
 		driver.close();
 	}
@@ -522,7 +524,7 @@ public class LitReviewAnalysis {
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
-					Document doc = texts.addDocument(nodeId, title+abstrct != null ? "\n"+abstrct : "");
+					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
 					doc.addMetadata("community",i);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 
