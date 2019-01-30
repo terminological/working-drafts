@@ -9,11 +9,11 @@ public class Calculation {
 				((double) y1)/total);
 	}
 
-	public static double npmi(int x1y1, int x1, int y1, int totalOccurrences) {
+	public static double npmi(int x1y1, int x1, int y1, int total) {
 		return npmi(
-				((double) x1y1)/totalOccurrences,
-				((double) x1)/totalOccurrences,
-				((double) y1)/totalOccurrences);
+				((double) x1y1)/total,
+				((double) x1)/total,
+				((double) y1)/total);
 	}
 	
 	public static double pmi(double pxy, double px, double py) {
