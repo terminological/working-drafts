@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -187,6 +188,25 @@ public class Corpus {
 		return out.stream();
 	}
 	
+	public Stream<Weighted<Term>> getTermsByMutualInforation(Function<Document,Boolean> feature) {
+		SortedSet<Weighted<Term>> out = Weighted.descending();
+		
+		terms.values().forEach(term -> {
+			int cooccursWithFeature = 0;
+			int occursWithoutFeature = 0;
+			for (Document doc: term.getDocumentsUsing()) {
+				boolean featurePresent = feature.apply(doc);
+				if (featurePresent) {
+					cooccursWithFeature += doc.countOccurencesInDocument(term);
+				} else {
+					occursWithoutFeature += doc.countOccurencesInDocument(term);
+				}
+			}
+			Double mutualInfo = 
+			
+		});
+	}
+	
 	/**
 	 * This is an aggregated unnormalised mutual information score for each combination of terms
 	 * in the corpus presented in descending order. Missing values are zero.
@@ -211,10 +231,7 @@ public class Corpus {
 		HashSet<Term> targets = new HashSet<Term>(this.terms.values());
 		this.terms.values().forEach(source -> {
 			Map<Term,Double> normMi = new HashMap<>();
-			source.mutualInformation().forEach(wt -> normMi.put(wt.getTarget(), wt.getWeight()));
-			source.cooccurenceProbablities().forEach(wt -> {
-				normMi.merge(wt.getTarget(), wt.getWeight(), (mi,prob) -> -mi / Math.log(prob)); //TODO: this only workd because the mI and cooccurence are the same length.
-			});
+			source.normalisedMutualInformation().forEach(wt -> normMi.put(wt.getTarget(), wt.getWeight()));
 			targets.remove(source);
 			targets.forEach(target -> {
 				normMi.merge(target, -1D, (a,b) -> a); //fills in missing values with -1

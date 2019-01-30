@@ -80,12 +80,23 @@ public class Term {
 	 * 0 for independence, and +1 for complete co-occurrence.[2]
 	 * @return
 	 */
+	public Stream<Weighted<Term>> normalisedMutualInformation() {
+		
+		Integer total = corpus.countCorpusDocuments();
+		SortedSet<Weighted<Term>> out = Weighted.descending();
+		cooccurrences.forEach((k,cooccur) -> {
+			Double mi = Calculation.normalisedPointwiseMutualInformation(cooccur, this.countDocumentsWithTerm(), k.countDocumentsWithTerm(), total);
+			out.add(Weighted.create(k, mi));
+		});
+		return out.stream();
+	}
+	
 	public Stream<Weighted<Term>> mutualInformation() {
 		
 		Integer total = corpus.countCorpusDocuments();
 		SortedSet<Weighted<Term>> out = Weighted.descending();
 		cooccurrences.forEach((k,cooccur) -> {
-			Double mi = Math.log(((double) cooccur*total) / (this.countDocumentsWithTerm()*k.countDocumentsWithTerm()));
+			Double mi = Calculation.pointwiseMutualInformation(cooccur, this.countDocumentsWithTerm(), k.countDocumentsWithTerm(), total);
 			out.add(Weighted.create(k, mi));
 		});
 		return out.stream();
@@ -96,9 +107,6 @@ public class Term {
 	}
 	
 
-	/**
-	 *
-	 */
 	public Stream<Weighted<Term>> cooccurenceProbablities() {
 		Integer total = corpus.countCorpusDocuments();
 		SortedSet<Weighted<Term>> out = Weighted.descending();
