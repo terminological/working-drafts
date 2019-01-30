@@ -587,7 +587,7 @@ public class LitReviewAnalysis {
 							c.streamTopics()
 							.filter(t -> t.getTopicId() == id)
 							.flatMap(t -> t.streamTerms())
-							.map(wt -> wt.scale(100)))
+							.map(wt -> wt.scale(10000)))
 						.execute(outDir.resolve("TopicContent"+id+".png"));
 					});
 
