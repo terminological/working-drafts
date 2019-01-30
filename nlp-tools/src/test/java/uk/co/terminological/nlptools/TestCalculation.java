@@ -17,7 +17,7 @@ public class TestCalculation {
 	public void testMI() {
 		double mi = Calculation.mi(0.05, 0.15, 0.7, 0.1);
 		System.out.println(mi);
-		assert(Math.abs(mi-0.2141709D) < 0.0001 );
+		assert(Math.abs(mi - Math.log(Math.pow(2.0, 0.2141709D))) < 0.0001 );
 	}
 	
 }
