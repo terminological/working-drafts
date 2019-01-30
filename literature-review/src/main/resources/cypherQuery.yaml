@@ -51,7 +51,7 @@ build:
     MATCH (n:Author)-[r]-() WHERE n.lastName IS NULL DELETE r,n
 
 - createAuthorCoauthorCommunity: | # Community
-    CALL algo.louvain('Author', 'CO_AUTHOR', {direction:'out', write:true, writeProperty:'community'}) 
+    CALL algo.louvain('Author', 'CO_AUTHOR', {direction:'both', write:true, writeProperty:'community'}) 
     YIELD nodes, communityCount, iterations, loadMillis, computeMillis, writeMillis;
 
 # as co-author community graph is disconnected we look at harmonic centrality
@@ -319,7 +319,7 @@ analyse:
     WHERE a.community = community
     RETURN DISTINCT
     id(t) as nodeId,
-    community,
+    a.community as community,
     t.title as title,
     t.abstract as abstract,
     floor(duration.inMonths(t.date,date()).months/3) as qtr
