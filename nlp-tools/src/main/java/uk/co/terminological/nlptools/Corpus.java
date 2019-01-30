@@ -187,7 +187,7 @@ public class Corpus {
 		return out.stream();
 	}
 	
-	public Stream<Weighted<Term>> getTermsByMutualInforation(Predicate<Document> featureDetector) {
+	public Stream<Weighted<Term>> getTermsByMutualInformation(Predicate<Document> featureDetector) {
 		SortedSet<Weighted<Term>> out = Weighted.descending();
 		
 		//unit here is the document.
