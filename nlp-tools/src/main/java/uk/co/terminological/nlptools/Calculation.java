@@ -23,7 +23,7 @@ public class Calculation {
 	}
 	
 	public static double npmi(double pxy, double px, double py) {
-		return Math.log(pxy/(px*py))/(-Math.log(pxy));
+		return pmi(pxy,px,py)/(-Math.log(pxy));
 	}
 	
 	public static double mi(int x1y1, int x0y1, int x1y0, int total) {
