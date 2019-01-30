@@ -575,7 +575,7 @@ public class LitReviewAnalysis {
 
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 
-				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).executeDMR();
+				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
 				result.printTopics(10);
 				result.getTopicsForDocuments().forEach(top -> {
 
