@@ -97,7 +97,7 @@ public class Term {
 		Integer total = corpus.countCorpusDocuments();
 		SortedSet<Weighted<Term>> out = Weighted.descending();
 		cooccurrences.forEach((k,cooccur) -> {
-			Double mi = Calculation.pointwiseMutualInformation(cooccur, this.countDocumentsWithTerm(), k.countDocumentsWithTerm(), total);
+			Double mi = Calculation.mi(cooccur, this.countDocumentsWithTerm(), k.countDocumentsWithTerm(), total);
 			out.add(Weighted.create(k, mi));
 		});
 		return out.stream();
