@@ -245,7 +245,8 @@ analyse:
     WHERE a.community = community
     RETURN
     a.community as community, 
-    size, collect(b.organisationName) as affiliations
+    size, 
+    collect(b.organisationName) as affiliations
 
   getAuthorCommunityMeshCodes: |
     MATCH (a:Author)
@@ -406,6 +407,8 @@ config:
     department
     division
     research
+    centre
+    center
   stopwordsForText: |
     i
     me
