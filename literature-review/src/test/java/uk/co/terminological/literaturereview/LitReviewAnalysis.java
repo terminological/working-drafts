@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -573,10 +574,15 @@ public class LitReviewAnalysis {
 
 				}
 
+				
+				
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
 				result.printTopics(10);
+				
+				EavMap<String,String,Double> topicCommunityCorrelation = new EavMap<>();
+				
 				result.getTopicsForDocuments().forEach(top -> {
 
 					int id = top.getTopicId();
@@ -589,8 +595,29 @@ public class LitReviewAnalysis {
 							.flatMap(t -> t.streamTerms())
 							.map(wt -> wt.scale(10000)))
 						.execute(outDir.resolve("TopicContent"+id+".png"));
+				
+					top.streamDocuments().forEach(wd -> {
+						Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
+						commId.ifPresent( cid -> {
+							Double score = topicCommunityCorrelation.get("Topic "+id, "Community "+cid);
+							if (score == null) { score = 0D; }
+							score += wd.getWeight();
+							topicCommunityCorrelation.put("Topic "+id, "Community "+cid, score);
+							topicCommunityCorrelation.put("Community "+cid, "Topic "+id, score);
+						});
 					});
-
+				});
+				
+				try {
+				fig.withNewChart("Topic community relationships", ChartType.CHORD)
+				.withSeries(topicCommunityCorrelation.stream())
+				.bind(ID, t -> t.getFirst(), "source")
+				.bind(STRENGTH, t -> t.getThird())
+				.bind(ID, t -> t.getSecond(), "target")
+				.withColourScheme(ColourScheme.Set2)
+				.done()
+				.render();
+				} catch (Exception e) {throw new RuntimeException(e);}
 				//TODO: find meaningful export format for topic and corpus data e.g. some sort of CSV
 
 				return true;
