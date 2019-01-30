@@ -110,16 +110,19 @@ public class TopicModelBuilder {
 	        ArrayList<TreeSet<IDSorter>> topicSortedDocuments = model.getTopicDocuments(10.0);
 			Alphabet alphabet = getDataAlphabet();
 			
+			int[] tokensPerTopic = model.tokensPerTopic;
+			
 	        // Print results for each topic
 	        for (int topic = 0; topic < getTopicCount(); topic++) {
 	            TreeSet<IDSorter> sortedWords = topicSortedWords.get(topic);
 	            Topic top = builder.corpus.addTopic(topic);
 	            
 	            for (IDSorter info: sortedWords) {
-	            	Double weight = info.getWeight();
+	            	//Double weight = info.getWeight();
+	            	Double probability = info.getWeight() / tokensPerTopic[topic];
 	                String term = alphabet.lookupObject(info.getID()).toString();
 	                Term t = builder.corpus.createTermFrom(term);
-	                Weighted<Term> wt = Weighted.create(t, weight);
+	                Weighted<Term> wt = Weighted.create(t, probability);
 	                top.addTerm(wt);
 	            }
 	        
