@@ -188,6 +188,10 @@ public class Corpus {
 	}
 	
 	public Stream<Weighted<Term>> getTermsByMutualInformation(Predicate<Document> featureDetector) {
+		return getTermsByMutualInformation(featureDetector,5);
+	}
+	
+	public Stream<Weighted<Term>> getTermsByMutualInformation(Predicate<Document> featureDetector, int minSize) {
 		SortedSet<Weighted<Term>> out = Weighted.descending();
 		
 		//unit here is the document.
@@ -197,7 +201,9 @@ public class Corpus {
 		int documentsInWhichFeatureOccurs = withFeatures.size();
 		int totalDocuments = this.countCorpusDocuments();
 		
-		terms.values().forEach(term -> {
+		terms.values().stream()
+			.filter(ter -> ter.countOccurrences() > minSize)
+			.forEach(term -> {
 			Set<Document> containingTerm = term.getDocumentsUsing();
 			int documentsInWhichTermOccurs = containingTerm.size();
 			
