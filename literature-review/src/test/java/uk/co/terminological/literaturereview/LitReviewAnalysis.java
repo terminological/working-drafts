@@ -509,7 +509,7 @@ public class LitReviewAnalysis {
 					int id = communities.indexOf(community);
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
-						.withSelector(c -> c.getTermsByMutualInforation(d -> community.equals(d.getMetadata("community").orElse(null)))
+						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.map(wt -> wt.scale(100)))
 						.execute(outDir.resolve("CommunityAffiliations"+id+".png"));
 				}
@@ -520,25 +520,34 @@ public class LitReviewAnalysis {
 	}
 
 	@Test
-	public void plotCommunityKeywords() {
+	public void plotCommunityContent() {
 		try ( Session session = driver.session() ) {
 
 			session.readTransaction( tx -> {
-				String qry = queries.get("getAuthorCommunityKeywords");
+				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
-				Integer community = null;
+				List<Integer> communities = new ArrayList<>();
+ 				
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
-					if (community == null) community = next;
-					if (community != next) {
-						plotCommunityWordcloud(texts,community,"Keywords");
-						texts = textCorpus();
-					}
-					r.get("terms").asList(Values.ofString()).forEach(texts::addDocument);;
-					community = next;
+					if (!communities.contains(next)) communities.add(next);
+					String nodeId = r.get("nodeId").asNumber().toString();
+					String title = r.get("title").asString();
+					String abstrct = r.get("abstract").asString();
+					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
+					doc.addMetadata("community",next);
 				}
-				plotCommunityWordcloud(texts,community,"Keywords");
+				
+				for (Integer community: communities) {
+					int id = communities.indexOf(community);
+					WordCloudBuilder.from(texts, 200, 600, 600).circular()
+						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
+						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
+						.map(wt -> wt.scale(100)))
+						.execute(outDir.resolve("CommunityContent"+id+".png"));
+				}
+				
 				return true;
 			});
 		}
