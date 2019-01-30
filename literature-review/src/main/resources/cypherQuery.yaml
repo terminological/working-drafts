@@ -180,9 +180,17 @@ analyse:
     ORDER BY qtr ASC
 
 # TODO: Ordered authors + journal name
-  getArticlesByPagerank: |
+# collect(b.lastName) as authors,
+  listArticlesByPagerank: |
     MATCH (a:Article)-[r:HAS_AUTHOR]->(b:Author)
-    RETURN a.title, a.doi, a.pmid, a.date, a.pagerank, a.journal, a.citedByCount, collect(b.lastName) as authors, 
+    RETURN 
+    a.title as title, 
+    a.doi as doi, 
+    a.pmid as pmid, 
+    a.date as date, 
+    a.pagerank as pagerank, 
+    a.journal as journal, 
+    a.citedByCount as citedByCount,  
     a as node
     ORDER by a.pagerank DESC
     LIMIT 50
