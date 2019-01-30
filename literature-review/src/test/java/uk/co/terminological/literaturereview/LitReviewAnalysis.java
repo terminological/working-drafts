@@ -95,10 +95,10 @@ public class LitReviewAnalysis {
 	List<String> affiliationStopwords;
 	List<String> textStopwords;
 	Map<String,String> queries;
-	List<Integer> communityIndex = new ArrayList<>();
+	// List<Integer> communityIndex = new ArrayList<>();
 	Path outDir;
 
-	private String getCommunityName(int community) {
+	/*private String getCommunityName(int community) {
 		int i = getCommunityIndex(community);
 		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(i % 26, i % 26 + 1);
 	}
@@ -110,7 +110,7 @@ public class LitReviewAnalysis {
 			communityIndex.add(community);
 		}
 		return i;
-	}
+	}*/
 	
 	/*void plot(Figure fig, String name, List<String> list, Integer community, List<String> stopwords) {
 		try {
@@ -458,7 +458,7 @@ public class LitReviewAnalysis {
 		.execute(outDir.resolve("Community"+type+this.getCommunityName(community)+".png"));
 	}
 	
-	@Test
+	/*@Test
 	public void plotCommunityAffiliations() {
 		try ( Session session = driver.session() ) {
 
@@ -478,6 +478,41 @@ public class LitReviewAnalysis {
 					}
 					r.get("affiliations").asList(Values.ofString()).forEach(texts::addDocument);
 					community = next;
+				}
+				plotCommunityWordcloud(texts,community,"Affiliations");
+				return true;
+			});
+		}
+	}*/
+	
+	@Test
+	public void plotCommunityAffiliations() {
+		try ( Session session = driver.session() ) {
+
+			session.readTransaction( tx -> {
+
+				String qry = queries.get("getAuthorCommunityAffiliations");
+				List<Record> res = tx.run( qry ).list();
+				Corpus texts = affiliationCorpus();
+				List<Integer> communities = new ArrayList<>();
+ 				
+				for( Record r : res) {
+					Integer next = r.get("community").asInt();
+					if (!communities.contains(next)) communities.add(next);
+					r.get("affiliations").asList(Values.ofString()).forEach(aff -> { 
+						Document doc = texts.addDocument(aff);
+						doc.addMetadata("community", next);
+					});
+				}
+				
+				for (Integer community: communities) {
+					int id = communities.indexOf(community);
+					WordCloudBuilder.from(texts, 200, 600, 600).circular()
+						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
+						.withSelector(c -> 
+							c.getTermsByMutualInforation(d -> d.getMetadata("community").equals(community))
+								.map(wt -> wt.scale(100)))
+						.execute(outDir.resolve("CommunityAffiliations"+id+".png"));
 				}
 				plotCommunityWordcloud(texts,community,"Affiliations");
 				return true;

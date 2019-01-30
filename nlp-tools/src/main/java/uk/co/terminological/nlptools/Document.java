@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.function.Predicate;
@@ -249,6 +250,10 @@ public class Document {
 	
 	public Stream<Weighted<Topic>> streamTerms() {
 		return topics.stream();
+	}
+
+	public Optional<Object> getMetadata(String string2) {
+		return Optional.ofNullable(this.metadata.get(string2));
 	}
 	
 }
