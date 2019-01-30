@@ -17,6 +17,8 @@ public class Calculation {
 	}
 	
 	public static double pmi(double pxy, double px, double py) {
+		if (px==0 || py==0) return 0D; //pxy must also be zero at this point. could return NaN...
+		if (pxy == 0) return Double.NEGATIVE_INFINITY;
 		return Math.log(pxy/(px*py));
 	}
 	
