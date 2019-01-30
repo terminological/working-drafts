@@ -35,7 +35,7 @@ public class Weighted<T> implements Comparable<Weighted<T>> {
 	}
 	
 	public Counted<T> scale(int factor) {
-		return Counted.create(this.getTarget(), (int) Math.floor(this.getWeight()*factor));
+		return Counted.create(this.getTarget(), (int) Math.ceil(this.getWeight()*factor));
 	}
 	
 }
