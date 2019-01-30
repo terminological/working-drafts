@@ -26,7 +26,9 @@ public class Calculation {
 		return pmi(pxy,px,py)/(-Math.log(pxy));
 	}
 	
-	public static double mi(int x1y1, int x0y1, int x1y0, int total) {
+	public static double mi(int x1y1, int x1, int y1, int total) {
+		int x1y0 = x1-x1y1;
+		int x0y1 = y1-x1y1;
 		double px1y1 = ((double) x1y1)/total;
 		double px0y1 = ((double) x0y1)/total;
 		double px1y0 = ((double) x1y0)/total;
