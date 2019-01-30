@@ -7,8 +7,9 @@ import org.junit.Test;
 public class TestCalculation {
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testPMI() {
+		double pmi = Calculation.pmi(1159, 1938, 1311, 50000952);
+		assert(Math.abs(pmi-10.0349081703D) < 0.0001 );
 	}
 
 }

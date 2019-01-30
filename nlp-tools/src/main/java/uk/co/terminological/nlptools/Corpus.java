@@ -188,21 +188,29 @@ public class Corpus {
 		return out.stream();
 	}
 	
-	public Stream<Weighted<Term>> getTermsByMutualInforation(Function<Document,Boolean> feature) {
+	public Stream<Weighted<Term>> getTermsByMutualInforation(Predicate<Document> featureDetector) {
 		SortedSet<Weighted<Term>> out = Weighted.descending();
+		
+		int featurePresent = 0;
+		//Map<Document,Boolean> features = new HashMap<>();
+		for (Document doc: this.documents.values()) {
+			Boolean isPresent = featureDetector.test(doc);
+			//features.put(doc, isPresent);
+			if (isPresent) featurePresent += 1;
+		}
 		
 		terms.values().forEach(term -> {
 			int cooccursWithFeature = 0;
 			int occursWithoutFeature = 0;
+			int totalOccurs = term.countOccurrences();
 			for (Document doc: term.getDocumentsUsing()) {
-				boolean featurePresent = feature.apply(doc);
-				if (featurePresent) {
+				if (featureDetector.test(doc)) {
 					cooccursWithFeature += doc.countOccurencesInDocument(term);
 				} else {
 					occursWithoutFeature += doc.countOccurencesInDocument(term);
 				}
 			}
-			Double mutualInfo = 
+			 
 			
 		});
 	}
