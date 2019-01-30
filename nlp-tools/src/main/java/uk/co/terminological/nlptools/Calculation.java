@@ -25,19 +25,21 @@ public class Calculation {
 	}
 	
 	public static double mi(int x1y1, int x0y1, int x1y0, int total) {
-		int x0y0 = total-(x1y0+x0y1+x1y1);
-		double px1 = ((double) x1y0+x1y1)/total;
-		double px0 = 1.0-px1;
-		double py1 = ((double) x1y1+x0y1)/total;
-		double py0 = 1.0-py1;
 		double px1y1 = ((double) x1y1)/total;
 		double px0y1 = ((double) x0y1)/total;
 		double px1y0 = ((double) x1y0)/total;
-		double px0y0 = ((double) x0y0)/total;
+		double px0y0 = 1.0-(px1y1+px0y1+px1y0);
+		return mi(px1y1,px0y1,px1y0,px0y0);
+	}
+	
+	public static double mi(double px1y1, double px0y1, double px1y0, double px0y0) {
+		double px1 = px1y0+px1y1;
+		double px0 = 1.0-px1;
+		double py1 = px1y1+px0y1;
+		double py0 = 1.0-py1;
 		return px1y1*pmi(px1y1,px1,py1)
 				+px0y1*pmi(px0y1,px0,py1)
 				+px1y0*pmi(px1y0,px1,py0)
 				+px0y0*pmi(px0y0,px0,py0);
-		
 	}
 }
