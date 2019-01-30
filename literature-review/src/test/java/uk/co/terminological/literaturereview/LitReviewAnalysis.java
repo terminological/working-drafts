@@ -80,7 +80,7 @@ import uk.co.terminological.nlptools.Tokeniser;
  */
 
 public class LitReviewAnalysis {
-	
+
 	public static void main(String[] args) throws Exception {
 		LitReviewAnalysis tmp = new LitReviewAnalysis();
 		tmp.setUpBeforeClass();
@@ -94,18 +94,23 @@ public class LitReviewAnalysis {
 	List<String> textStopwords;
 	Map<String,String> queries;
 	List<Integer> communityIndex = new ArrayList<>();
-	File outDir;
-	
-	private int getCommunity(int community) {
-	Integer i = communityIndex.indexOf(community);
-	if (i == -1) {
-		i = communityIndex.size();
-		communityIndex.add(community);
-	}
-	return i;
+	Path outDir;
+
+	private String getCommunityName(int community) {
+		int i = getCommunityIndex(community);
+		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(i % 26, i % 26 + 1);
 	}
 
-	void plot(Figure fig, String name, List<String> list, Integer community, List<String> stopwords) {
+	private int getCommunityIndex(int community) {
+		Integer i = communityIndex.indexOf(community);
+		if (i == -1) {
+			i = communityIndex.size();
+			communityIndex.add(community);
+		}
+		return i;
+	}
+	
+	/*void plot(Figure fig, String name, List<String> list, Integer community, List<String> stopwords) {
 		try {
 			Integer i = getCommunity(community);
 			fig.withNewChart(name+" "+i, ChartType.WORDCLOUD)
@@ -116,7 +121,7 @@ public class LitReviewAnalysis {
 			.withSeries(stopwords).bind(TEXT, t -> t).done()
 			.render();
 		} catch (Exception e) {throw new RuntimeException(e);}
-	};
+	};*/
 
 	@SuppressWarnings("unchecked")
 	@Before
@@ -134,14 +139,14 @@ public class LitReviewAnalysis {
 		Yaml yaml = new Yaml();
 		InputStream inputStream = PubMedGraphAnalysis.class.getClassLoader().getResourceAsStream("cypherQuery.yaml");
 		obj = yaml.load(inputStream);
-		outDir = new File(System.getProperty("user.home")+"/Dropbox/litReview/output");
-		fig = Figure.outputTo(outDir);
+		outDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/output");
+		fig = Figure.outputTo(outDir.toFile());
 
 		affiliationStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForAffiliation").split("\n"));
 		textStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForText").split("\n"));
 		queries = (Map<String,String> ) obj.get("analyse");
 	}
-	
+
 	@After
 	public void tearDownAfterClass() throws Exception {
 		driver.close();
@@ -154,60 +159,66 @@ public class LitReviewAnalysis {
 			//Plot by age
 			session.readTransaction( tx -> {
 
-				String qry = queries.get("getArticlesByPagerank");
+				String qry = queries.get("listArticlesByPagerank");
 				List<Record> res = tx.run( qry ).list();
 				CiteProcProvider out = new CiteProcProvider();
-				
+
 				res.forEach(r -> {
 					uk.co.terminological.bibliography.record.Record rec = 
 							Shim.recordFacade(r.get("node").asNode());
 					out.add(rec);
-					
+
 				});
-				
+
 				try {
 					System.out.println(out.orderedCitations("ieee", Output.text).makeString());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
+
 				return true;
 			});
 		}
 	}
-	
+
 	@Test
 	public void writeToCsv() {
 		try ( Session session = driver.session() ) {
 			queries.forEach((name,qry) -> {
-				System.out.println("Executing query: "+name);
-				session.readTransaction( tx -> {
-					
-					StatementResult qryR = tx.run( qry );
-					List<Record> res = qryR.list();
-					
-					Path path = Paths.get(outDir.getAbsolutePath(), name+".tsv");
-					try {
-						OutputStream writer = Files.newOutputStream(path);
-						writer.write(qryR.keys().stream().collect(Collectors.joining("\t")).getBytes());
-						for (Record r:res) {
-							writer.write(("\n"+
-								r.values().stream().map(v -> v.toString()).collect(Collectors.joining("\t"))).getBytes()
-							);
+				if (name.startsWith("get")) {
+					System.out.println("Executing query: "+name);
+					session.readTransaction( tx -> {
+
+						StatementResult qryR = tx.run( qry );
+						List<Record> res = qryR.list();
+
+						Path path = outDir.resolve(name+".tsv");
+						try {
+
+							OutputStream writer = Files.newOutputStream(path);
+							writer.write(qryR.keys().stream().collect(Collectors.joining("\t")).getBytes());
+							for (Record r:res) {
+								writer.write(("\n"+
+										r.values().stream().map(v -> v.toString()).collect(Collectors.joining("\t"))).getBytes()
+										);
+							}
+							writer.close();
+
+						} catch (Exception e) {
+							e.printStackTrace(System.out);
 						}
-						writer.close();
-					} catch (Exception e) {
-						e.printStackTrace(System.out);
-					}
-					
-					return true;
-				});
+
+						return true;
+					});
+				}
 			});
 		}
-		
+
 	}
-	
+
 	@Test
+	@Deprecated
+	// Probably better to export and do in R
 	public void plotAgeOfArticles() {
 		try ( Session session = driver.session() ) {
 
@@ -259,8 +270,10 @@ public class LitReviewAnalysis {
 			});
 		}
 	}
-	
-	@Test 
+
+	@Test
+	@Deprecated
+	//Export and do in R
 	public void plotCommunityStats() {
 		try ( Session session = driver.session() ) {
 
@@ -271,24 +284,24 @@ public class LitReviewAnalysis {
 				List<Record> res = tx.run( qry ).list();
 
 				EavMap<String,String,Double> tmp = new EavMap<>();
-				
+
 				for (String key:Arrays.asList("authors","articles","avgPagerank")) {
-				
+
 					Double[] sum = {0D};
-					
+
 					res.stream().forEach(r -> {
 						tmp.add(
-							r.get("community").asNumber().toString(), key, r.get(key).asNumber().doubleValue());
-							sum[0] += r.get(key).asNumber().doubleValue();
+								r.get("community").asNumber().toString(), key, r.get(key).asNumber().doubleValue());
+						sum[0] += r.get(key).asNumber().doubleValue();
 					});
-				
+
 					//Convert to percentage
 					tmp.getEntitySet().forEach(e -> {
 						tmp.put(e, key, tmp.get(e, key)/sum[0]*100);
 					});
-					
+
 				}
-				
+
 				try {
 					fig.withNewChart("Community stats", ChartType.MULTISTACKEDYBAR)
 					.withSeries(tmp.stream())
@@ -306,7 +319,7 @@ public class LitReviewAnalysis {
 			});
 		}
 	}
-	
+
 	@Test
 	public void plotCooccurrenceOfMeshCodes() {
 		try ( Session session = driver.session() ) {
@@ -391,7 +404,7 @@ public class LitReviewAnalysis {
 					}	
 				});
 
-				
+
 				try {
 					fig.withNewChart("Keywords by npmi", ChartType.CHORD)
 					.withSeries(new ArrayList<>(nodes))
@@ -422,6 +435,27 @@ public class LitReviewAnalysis {
 		}
 	}
 
+	private Corpus affiliationCorpus() {return 
+			Corpus.create()
+			.withStopwordFilter(affiliationStopwords)
+			.withTokenFilter(Filters.number())
+			.withTokenFilter(Filters.shorterThan(4));
+	}
+	
+	private Corpus textCorpus() {return 
+			Corpus.create()
+			.withStopwordFilter(textStopwords)
+			.withTokenFilter(Filters.number())
+			.withTokenFilter(Filters.shorterThan(4));
+	}
+	
+	private void plotCommunityWordcloud(Corpus texts, int community, String type) {
+		WordCloudBuilder.from(texts, 200, 600, 600)
+		.withSelector(c -> c.getTermsByTotalEntropy().map(wt -> wt.scale(100)))
+		.withColourScheme(ColourScheme.sequential(getCommunityIndex(community)))
+		.execute(outDir.resolve("Community"+type+this.getCommunityName(community)+".png"));
+	}
+	
 	@Test
 	public void plotCommunityAffiliations() {
 		try ( Session session = driver.session() ) {
@@ -430,19 +464,20 @@ public class LitReviewAnalysis {
 
 				String qry = queries.get("getAuthorCommunityAffiliations");
 				List<Record> res = tx.run( qry ).list();
-				List<String> texts = new ArrayList<>();
+				Corpus texts = affiliationCorpus();
+				
 				Integer community = null;
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
 					if (community == null) community = next;
 					if (community != next) {
-						plot(fig, "Community affiliations", texts, community, affiliationStopwords);
-						texts = new ArrayList<>();
+						plotCommunityWordcloud(texts,community,"Affiliations");
+						texts = affiliationCorpus();
 					}
-					texts.addAll(r.get("affiliations").asList(Values.ofString()));
+					r.get("affiliations").asList(Values.ofString()).forEach(texts::addDocument);
 					community = next;
 				}
-				plot(fig, "Community affiliations", texts, community, affiliationStopwords);
+				plotCommunityWordcloud(texts,community,"Affiliations");
 				return true;
 			});
 		}
@@ -450,24 +485,24 @@ public class LitReviewAnalysis {
 
 	@Test
 	public void plotCommunityKeywords() {
-		try ( Session session = driver.session() ) {			// 
+		try ( Session session = driver.session() ) {
 
 			session.readTransaction( tx -> {
 				String qry = queries.get("getAuthorCommunityKeywords");
 				List<Record> res = tx.run( qry ).list();
-				List<String> texts = new ArrayList<>();
+				Corpus texts = textCorpus();
 				Integer community = null;
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
 					if (community == null) community = next;
 					if (community != next) {
-						plot(fig, "Community keywords", texts, community, textStopwords);
-						texts = new ArrayList<>();
+						plotCommunityWordcloud(texts,community,"Keywords");
+						texts = textCorpus();
 					}
-					texts.addAll(r.get("terms").asList(Values.ofString()));
+					r.get("terms").asList(Values.ofString()).forEach(texts::addDocument);;
 					community = next;
 				}
-				plot(fig, "Community keywords", texts, community, textStopwords);
+				plotCommunityWordcloud(texts,community,"Keywords");
 				return true;
 			});
 		}
@@ -480,43 +515,39 @@ public class LitReviewAnalysis {
 
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
-				Corpus texts = new Corpus(Normaliser.DEFAULT, Tokeniser.DEFAULT, textStopwords, Filters.shorterThan(3), Filters.number());
-				
+				Corpus texts = textCorpus();
 				for( Record r : res) {
-					
-					Integer i = getCommunity(r.get("community").asInt());
+
+					Integer i = getCommunityIndex(r.get("community").asInt());
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
 					Document doc = texts.addDocument(nodeId, title+abstrct != null ? "\n"+abstrct : "");
 					doc.addMetadata("community",i);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
-					
+
 				}
 
 				// texts.getCollocations(5).stream().forEach(System.out::println);
-				
+
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).executeDMR();
 				result.printTopics(10);
 				result.getTopicsForDocuments().forEach(top -> {
-					
+
 					int id = top.getTopicId();
-					
+
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						.withSelector(c -> 
 							c.streamTopics()
-								.filter(t -> t.getTopicId() == id)
-								.flatMap(t -> t.streamTerms())
-								.map(wt -> wt.scale(100))
-								)
-						.execute(Paths.get(outDir.getAbsolutePath(),"content "+id+".png"));
-						;
-					
-				});
-				
-				//TODO: find meaningful export format for topic and corpus data 
-				
+							.filter(t -> t.getTopicId() == id)
+							.flatMap(t -> t.streamTerms()) //TODO: This streams only by count rather than by the probability / weight
+							.map(wt -> wt.scale(1)))
+						.execute(outDir.resolve("TopicContent"+id+".png"));
+					});
+
+				//TODO: find meaningful export format for topic and corpus data e.g. some sort of CSV
+
 				return true;
 			});
 

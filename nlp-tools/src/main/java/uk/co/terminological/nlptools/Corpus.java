@@ -37,8 +37,10 @@ public class Corpus {
 	private Map<Integer,Topic> topics = new HashMap<>();
 	//private Map<Term,Integer> termCounts = new HashMap<>();
 	
+	//TODO: create a subset of this corpus
+	//TODO: comparative analysis of different corpus - will need some form of Term mapping
 	
-	//TODO: Generate better 
+	
 	@SafeVarargs
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, List<String> stopwords, Predicate<String>... otherFilters) {
 		this.normaliser = normaliser;
@@ -53,6 +55,16 @@ public class Corpus {
 			string -> Stream.of(string.split("\\s+")).filter(s -> !s.equals("-")),
 			Collections.emptyList()
 		);
+	}
+	
+	public Corpus withTokenFilter(Predicate<String> filter) {
+		this.filters.add(filter);
+		return this;
+	}
+	
+	public Corpus withStopwordFilter(List<String> stopwords) {
+		this.filters.add(Filters.stopwords(stopwords, normaliser, tokeniser));
+		return this;
 	}
 
 	// ============ BEAN METHODS =====================
