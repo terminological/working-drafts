@@ -47,8 +47,16 @@ public class ColourScheme {
 		Blues,Greens,Oranges,Reds,Purples,Greys	
 	);
 	
+	private static List<ColourScheme> sequence2 = Arrays.asList(
+		YlGn, RdPu, PuBu, OrRd, GnBu, BuPu 
+	);
+	
 	public static ColourScheme sequential(int number) {
 		return sequence.get(number % sequence.size());
+	}
+	
+	public static ColourScheme sequential2(int number) {
+		return sequence2.get(number % sequence2.size());
 	}
 	
 	public static class Colour {
