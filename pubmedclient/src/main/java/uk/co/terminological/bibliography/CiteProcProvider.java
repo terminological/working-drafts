@@ -108,10 +108,10 @@ public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDat
 		return CSL.makeAdhocBibliography(style, format.toString(), this.toArray(new CSLItemData[] {}));
 	}
 	
-	public static String convert(String style, Output format, Record... record) throws IOException {
+	public static Bibliography convert(String style, Output format, Record... record) throws IOException {
 		return CSL.makeAdhocBibliography(style, format.toString(), 
 				Stream.of(record).map(r -> fromRecord(r)).collect(Collectors.toList()).toArray(new CSLItemData[] {}))
-				.makeString();
+				;
 	}
 	
 	public static enum Output {

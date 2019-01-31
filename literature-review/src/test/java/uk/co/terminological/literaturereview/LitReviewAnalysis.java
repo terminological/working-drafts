@@ -3,11 +3,9 @@ package uk.co.terminological.literaturereview;
 import static uk.co.terminological.simplechart.Chart.Dimension.ID;
 import static uk.co.terminological.simplechart.Chart.Dimension.LABEL;
 import static uk.co.terminological.simplechart.Chart.Dimension.STRENGTH;
-import static uk.co.terminological.simplechart.Chart.Dimension.TEXT;
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,9 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
@@ -37,13 +33,15 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.Values;
+import org.neo4j.driver.v1.types.Node;
 import org.yaml.snakeyaml.Yaml;
 
 import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Output;
+import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.datatypes.EavMap;
-import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
@@ -53,8 +51,6 @@ import uk.co.terminological.nlptools.WordCloudBuilder;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
-import uk.co.terminological.nlptools.Normaliser;
-import uk.co.terminological.nlptools.Tokeniser;
 
 /*
  * TODO:
@@ -162,7 +158,7 @@ public class LitReviewAnalysis {
 			//Plot by age
 			session.readTransaction( tx -> {
 
-				String qry = queries.get("listArticlesByPagerank");
+				String qry = queries.get("getArticlesByPagerank");
 				List<Record> res = tx.run( qry ).list();
 				CiteProcProvider out = new CiteProcProvider();
 
@@ -198,16 +194,44 @@ public class LitReviewAnalysis {
 
 						StatementResult qryR = tx.run( qry );
 						List<Record> res = qryR.list();
-
+						
+						CiteProcProvider prov = new CiteProcProvider();
+						res.forEach(r -> {
+							r.values().forEach(f -> {
+								try {
+									Node n = f.asNode();
+									PrintRecord tmp = Shim.recordFacade(n);
+									prov.add(tmp);
+								} catch (Exception e) {}
+							});
+						});
+						
+						
 						Path path = outDir.resolve(name+".tsv");
 						try {
-
+							List<String> cits = new ArrayList<>();
+							if (!prov.isEmpty()) {
+								cits = Arrays.asList(
+										prov.orderedCitations("ieee", Output.text).getEntries());
+							}
+							
 							OutputStream writer = Files.newOutputStream(path);
 							writer.write(qryR.keys().stream().collect(Collectors.joining("\t")).getBytes());
+							int i = 0;
 							for (Record r:res) {
-								writer.write(("\n"+
-										r.values().stream().map(v -> v.toString()).collect(Collectors.joining("\t"))).getBytes()
-										);
+								StringBuilder line = new StringBuilder();
+								for (Value v :r.values()) {
+									if (line.length() != 0) line.append("\t");
+									try {
+										v.asNode();
+										String s = cits.get(i).trim();
+										line.append(s);
+									} catch (Exception e) {
+										line.append(v.toString());
+									}
+								}
+								writer.write(("\n"+line.toString()).getBytes());
+								i++;
 							}
 							writer.close();
 
