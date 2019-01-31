@@ -184,6 +184,10 @@ public class LitReviewAnalysis {
 		}
 	}
 
+	//TODO: Top N articles plus scores
+	//TODO: Top N Articles in community
+	//TODO: Top N Articles in topic
+	
 	@Test
 	public void writeToCsv() {
 		try ( Session session = driver.session() ) {
