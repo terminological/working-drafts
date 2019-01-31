@@ -63,7 +63,9 @@ build:
     MATCH (:Author) -[r:CITES]-> (:Author) DELETE r
 
 - createAuthorCites: | # The CITES graph is disconnected. 
-    MATCH (n:Author) <-[:HAS_AUTHOR]- () -[:HAS_REFERENCE]-> () -[:HAS_AUTHOR]-> (o:Author) CREATE (n)-[r:CITES]->(o)
+    MATCH (n:Author) <-[:HAS_AUTHOR]- () -[:HAS_REFERENCE]-> () -[:HAS_AUTHOR]-> (o:Author) 
+    WHERE n<>o
+    CREATE (n)-[r:CITES]->(o)
 
 - createAuthorCitesClosenessCentrality: | # closeness algorithm
     CALL algo.closeness.harmonic('Author','CITES',{direction:'both',write:true, writeProperty:'citesHarmonic'})
@@ -181,28 +183,28 @@ analyse:
 
 # TODO: Ordered authors + journal name
 # collect(b.lastName) as authors,
-  listArticlesByPagerank: |
+  getArticlesByPagerank: |
     MATCH (a:Article)-[r:HAS_AUTHOR]->(b:Author)
-    RETURN 
+    RETURN DISTINCT
     a.title as title, 
     a.doi as doi, 
     a.pmid as pmid, 
     a.date as date, 
     a.pagerank as pagerank, 
     a.journal as journal, 
-    a.citedByCount as citedByCount,  
+    a.citedByCount as citedByCount,
+    id(a) as nodeId,  
     a as node
     ORDER by a.pagerank DESC
-    LIMIT 50
     
   getArticlesByJournal: |
     MATCH (b:Article)
     RETURN DISTINCT b.journal as journal, 
     sum(b.pagerank) as totalPagerank, 
-    count(b) as articles, 
-    sum(b.pagerank)/count(b) as avgPagerank 
+    count(b) as articles,
+    sum(b.pagerank)/count(b) as avgPagerank,
+    collect(id(b)) as ids 
     ORDER BY totalPagerank DESC
-    LIMIT 10
     
 # AUTHORS
 
@@ -224,23 +226,19 @@ analyse:
     a.community AS community,
     count(a) AS size
     ORDER BY size DESC
-    LIMIT 10
     MATCH (a:Author)<-[:HAS_AUTHOR]-(b:Article)
     WHERE a.community = community
     RETURN
     a.community as community, 
     size as authors, 
     count(distinct b) as articles,
-    count(b) as articles2,
-    sum(distinct b.pagerank)/count(distinct b) as avgPagerank,
-    sum(b.pagerank)/count(b) as avgPagerank2
-
+    sum(distinct b.pagerank)/count(distinct b) as avgPagerank
+    
   getAuthorCommunityAffiliations: |
     MATCH (a:Author)
     WITH 
     a.community AS community,
     count(a) AS size
-    ORDER BY size DESC LIMIT 10 
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
     WHERE a.community = community
     RETURN
@@ -253,7 +251,6 @@ analyse:
     WITH 
     a.community AS community,
     count(a) AS size
-    ORDER BY size DESC LIMIT 10 
     MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
     WHERE a.community = community
     WITH DISTINCT
@@ -273,43 +270,34 @@ analyse:
     WITH 
     a.community AS community,
     count(a) AS size
-    ORDER BY size DESC LIMIT 10 
     MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
     WHERE a.community = community
     WITH DISTINCT
     community,
     size,
     id(t) as articleId
-    MATCH (t2:Article) -[:HAS_KEYWORD]-> (k:Keyword)
+    MATCH (t2:Article) -[:HAS_MESH]-> (k:MeshCode)
     WHERE id(t2)=articleId
     RETURN 
     community,
     size as authors,
     count(distinct t2) as articles, 
     collect(k.term) as terms
-
-  getAuthorCommunityTitlesAbstracts: |
+    
+  getAuthorCommunityArticles: |
     MATCH (a:Author)
     WITH 
     a.community AS community,
     count(a) AS size
-    ORDER BY size DESC LIMIT 10 
     MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
     WHERE a.community = community
     WITH DISTINCT
     community,
     size,
-    id(t) as articleId
-    MATCH (t2:Article)
-    WHERE id(t2)=articleId
-    RETURN
-    community,
-    size as authors,
-    count(distinct t2) as articles, 
-    collect(t2.title) as titles,
-    collect(t2.abstract) as abstracts
+    id(t) as articleId,
+    t.pagerank as pagerank
 
-  getAuthorCommunityTitlesAbstracts2: |
+  getAuthorCommunityTitlesAbstracts: |
     MATCH (a:Author)
     WITH 
     a.community AS community,
@@ -321,18 +309,20 @@ analyse:
     id(t) as nodeId,
     a.community as community,
     t.title as title,
-    t.abstract as abstract,
-    floor(duration.inMonths(t.date,date()).months/3) as qtr
-
+    t.abstract as abstract
+    
   getAuthorCoauthorHarmonicCentrality: | # closeness
     MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
-    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.harmonic, a.community
+    RETURN 
+    a.authorLabel, 
+    a.lastName as lastName,
+    a.firstName as firstName,
+    a.initials as initials,
+    collect(b.organisationName) AS affiliations, 
+    a.harmonic as harmonic,
+    a.citesHarmonic as citesHarmonic, 
+    a.community as community
     ORDER BY a.harmonic DESC;
-
-  getAuthorCitesHarmonicCentrality: | # 
-    MATCH (a:Author)-[:HAS_AFFILIATION]->(b:Affiliation)
-    RETURN a.authorLabel, a.lastName, collect(b.organisationName) AS affiliations, a.citesHarmonic, a.community
-    ORDER BY a.citesHarmonic DESC;
 
 # KEYWORDS
   getKeywordCooccurConnectedness: | # Check connectedness
