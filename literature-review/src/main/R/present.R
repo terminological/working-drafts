@@ -35,6 +35,12 @@ plotArticlesByPagerank_DateCitedBy <- ggplot(getArticlesByPagerank %>%
   geom_point()+
   geom_smooth(method='lm',formula=y~x)+
   xlab("date")+ylab("count of citing articles")+scale_y_log10()
+
+plotArticlesByPagerank_DateDomainCitedBy <- ggplot(getArticlesByPagerank,
+  aes(x=as.Date(date),y=domainCitedByCount))+
+  geom_point()+
+  geom_smooth(method='lm',formula=y~x)+
+  xlab("date")+ylab("count of citing articles")+scale_y_log10()
 #Could fit linear model to log of citedByCount, and determine residuals
 
   
