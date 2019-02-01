@@ -804,17 +804,17 @@ public class LitReviewAnalysis {
 				});
 				
 				doChordDiagram(topicCommunityCorrelation,
-						i -> "Topic "+letter(i),
-						j -> "Community "+top10community.indexOf(j),
+						i -> "Topic "+i,
+						j -> "Community "+letter(top10community.indexOf(j)),
 						"Topic author community relationships");
 				
 				doChordDiagram(articleCommunityCorrelation,
-						i -> "Topic "+letter(i),
+						i -> "Topic "+i,
 						j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
 						"Topic article group relationships");
 				
 				doChordDiagram(authorArticleCorrelation,
-						i -> "Community "+top10community.indexOf(i),
+						i -> "Community "+letter(top10community.indexOf(i)),
 						j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
 						"Author community article group relationships");
 				
@@ -824,7 +824,7 @@ public class LitReviewAnalysis {
 				out2.write("topic\tcommunity\ttotalScore\n".getBytes());
 				topicCommunityCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
-							(""+letter(t.getFirst())+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
+							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out2::write
 					));
 				
@@ -832,7 +832,7 @@ public class LitReviewAnalysis {
 				out3.write("topic\tarticleCommunity\ttotalScore\n".getBytes());
 				articleCommunityCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
-							(""+letter(t.getFirst())+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
+							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out3::write
 					));
 				
@@ -840,7 +840,7 @@ public class LitReviewAnalysis {
 				out3.write("authorCommunity\tarticleCommunity\ttotalScore\n".getBytes());
 				articleCommunityCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
-							(""+letter(t.getFirst())+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
+							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out4::write
 					));
 				
