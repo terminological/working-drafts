@@ -628,7 +628,7 @@ public class LitReviewAnalysis {
 				
 				EavMap<String,String,Double> topicCommunityCorrelation = new EavMap<>();
 				
-				Optional<OutputStream> out = StreamExceptions.rethrow(() -> Files.newOutputStream(outDir.resolve("getTopicDocuments.tsv")));
+				Optional<OutputStream> out = StreamExceptions.tryRethrow(() -> Files.newOutputStream(outDir.resolve("getTopicDocuments.tsv")));
 				
 				
 				result.getTopicsForDocuments().forEach(top -> {
