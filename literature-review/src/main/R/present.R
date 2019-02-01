@@ -66,15 +66,42 @@ plotArticlesByPagerank_DatePagerank
 top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
   select(reference = node,pagerank) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
-ht <- as_huxtable(top10articles, add_colnames = TRUE) %>%
+htTop10Articles <- as_huxtable(top10articles, add_colnames = TRUE) %>%
   set_bold(1, 1:2, TRUE) %>% 
   set_bottom_border(1, 1:2, 1) %>%
   set_align(1, 2, 'right') %>%
   set_width("400pt") %>%
   set_wrap(TRUE) %>%
-  set_col_width(c(.7, .3)) %>%
-  # set_align(1:4, 2, '.') %>%
+  set_col_width(c(.8, .2)) %>%
   set_caption('Top 10 articles by page rank')
-quick_html(ht, file="~/Dropbox/litReview/output/top10Refs.html")
-# quick_html(ht)
-quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
+quick_html(htTop10Articles, file="~/Dropbox/litReview/output/top10Refs.html")
+# quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
+
+top5ByTopic <- getTopicDocuments %>% left_join(getArticlesByPagerank, by="nodeId") %>% group_by(topic) %>%
+  top_n(5,weight) %>%
+  mutate(reference = sub("\\[[0-9]+\\]","",node)) # %>% select(topic,reference,weight) 
+
+htTop5ByTopic <- as_huxtable(top5ByTopic, add_colnames = TRUE) %>% 
+  set_bold(1, 1:3, TRUE) %>% 
+  set_top_border(1, 1:3, 2) %>%
+  set_bottom_border(1, 1:3, 2) %>%
+  set_bottom_border(nrow(top5ByTopic)+1, 1:3, 1) %>%
+  set_align(1, 3, 'right') %>%
+  set_width("400pt") %>%
+  set_wrap(TRUE) %>%
+  set_col_width(c(.1, .7, .2)) %>%
+  set_caption('Top 5 articles by topic')
+
+for (tt in (top5ByTopic %>% distinct(topic))$topic ) {
+  print(tt)
+  tmp = seq(2,nrow(top5ByTopic)+1)
+  print(tmp)
+  l = min(tmp[top5ByTopic$topic == tt])
+  r = max(tmp[top5ByTopic$topic == tt])
+  print(l)
+  print(r)
+  htTop5ByTopic <- merge_cells(htTop5ByTopic, l:r, 1)
+  htTop5ByTopic <- htTop5ByTopic %>% set_top_border(l, 1:3, 1)
+}
+
+quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
