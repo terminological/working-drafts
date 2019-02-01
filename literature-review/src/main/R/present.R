@@ -113,20 +113,19 @@ authorCommunityByMember <- getAuthorCommunityLabels %>%
   mutate(community = authorCommunity) %>% 
   left_join(getAuthorCoauthorHarmonicCentrality) %>%
   mutate(name = paste0(lastName,", ",firstName)) %>%
-  mutate(affil = affiliations)
   group_by(label) %>% top_n(5,pagerank) %>%
   arrange(desc(pagerank), .by_group = TRUE) %>%
-  select(community = label, name, pagerank)
+  select(community = label, name, affiliation, pagerank)
 
 htAuthorsByCommunity <- as_huxtable(authorCommunityByMember, add_colnames = TRUE) %>% 
-  set_bold(1, 1:3, TRUE) %>% 
-  set_top_border(1, 1:3, 2) %>%
-  set_bottom_border(1, 1:3, 2) %>%
-  set_bottom_border(nrow(top5ByTopic)+1, 1:3, 1) %>%
-  set_align(1, 3, 'right') %>%
+  set_bold(1, 1:4, TRUE) %>% 
+  set_top_border(1, 1:4, 2) %>%
+  set_bottom_border(1, 1:4, 2) %>%
+  set_bottom_border(nrow(top5ByTopic)+1, 1:4, 1) %>%
+  set_align(1, 4, 'right') %>%
   set_width("400pt") %>%
   set_wrap(TRUE) %>%
-  set_col_width(c(.1, .7, .2)) %>%
+  set_col_width(c(.1, .3, .5, .1)) %>%
   set_caption('Top 5 pageranked researchers in community')
   
 for (tt in getAuthorCommunityLabels$label ) {
