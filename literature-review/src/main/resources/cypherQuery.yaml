@@ -292,7 +292,7 @@ analyse:
     count(a) AS size
     MATCH (a:Author)-[:HAS_AUTHOR]-(t:Article)
     WHERE a.community = community
-    WITH DISTINCT
+    RETURN DISTINCT
     community,
     size,
     id(t) as articleId,
