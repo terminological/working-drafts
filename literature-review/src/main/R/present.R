@@ -90,6 +90,7 @@ htTop5ByTopic <- as_huxtable(top5ByTopic, add_colnames = TRUE) %>%
   set_bottom_border(1, 1:3, 2) %>%
   set_bottom_border(nrow(top5ByTopic)+1, 1:3, 1) %>%
   set_align(1, 3, 'right') %>%
+  set_align(1:nrow(top5ByTopic)+1, 1, 'left') %>%
   set_width("400pt") %>%
   set_wrap(TRUE) %>%
   set_col_width(c(.1, .7, .2)) %>%
@@ -135,4 +136,11 @@ for (tt in getAuthorCommunityLabels$label ) {
 
 quick_html(htAuthorsByCommunity, file="~/Dropbox/litReview/output/top5AuthorsByCommunity.html")
 
+# confusion matrices
 
+topicArticleGroupXmap = getTopicArticleCommunity %>% mutate(articleGroup = articleCommunity) %>% left_join(getArticleGroupLabels) %>%
+  select(topic,articleGroup=label,totalScore)
+
+ggplot(topicArticleGroupXmap, aes(x=topic, y=articleGroup, fill=totalScore)) +
+  geom_tile(colour = "white") +
+  scale_fill_gradient(low = "white",high = "steelblue"))
