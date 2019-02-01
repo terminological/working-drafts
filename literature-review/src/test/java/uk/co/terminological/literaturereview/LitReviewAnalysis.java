@@ -703,7 +703,7 @@ public class LitReviewAnalysis {
 				try {
 					OutputStream out2 = Files.newOutputStream(outDir.resolve("getAuthorCommunityLabels.tsv"));
 					out2.write("authorCommunity\tlabel\n".getBytes());
-					article.stream().forEach(t -> 
+					author.stream().forEach(t -> 
 						StreamExceptions.tryIgnore(
 							(""+t+"\t"+letter(author.indexOf(t))+"\n").getBytes(),
 							out2::write)
