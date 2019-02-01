@@ -102,6 +102,11 @@ build:
     a.firstName = b.firstName,
     a.lastName = b.lastName
 
+- createArticleReferencedCommunity: | # Community
+    CALL algo.louvain('Article', 'HAS_REFERENCE', {direction:'both', write:true, writeProperty:'articleCommunity'}) 
+    YIELD nodes, communityCount, iterations, loadMillis, computeMillis, writeMillis;
+
+
 # MESH_CODES
 - deleteMeshCooccur: | # MESH terms
     MATCH (:MeshCode)-[u:CO_OCCUR]->(:MeshCode) DELETE u
@@ -204,7 +209,8 @@ analyse:
     a.pmid as pmid, 
     a.date as date, 
     a.pagerank as pagerank, 
-    a.journal as journal, 
+    a.journal as journal,
+    a.articleCommunity as articleCommunity,  
     a.citedByCount as citedByCount,
     count(r) as domainCitedByCount,
     id(a) as nodeId,  
