@@ -348,7 +348,7 @@ analyse:
     a.lastName as lastName,
     a.firstName as firstName,
     a.initials as initials,
-    collect(b.organisationName) AS affiliations, 
+    head(collect(b.organisationName)) AS affiliation, 
     a.harmonic as harmonic,
     a.citesHarmonic as citesHarmonic,
     a.pagerank as pagerank, 
