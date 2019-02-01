@@ -614,6 +614,9 @@ public class LitReviewAnalysis {
 		}
 	}
 
+	private String letter(int id) {
+		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(id % 26, id % 26+1);
+	}
 	@Test
 	public void plotTopicContent() {
 		try ( Session session = driver.session() ) {
@@ -659,12 +662,12 @@ public class LitReviewAnalysis {
 							.filter(t -> t.getTopicId() == id)
 							.flatMap(t -> t.streamTerms())
 							.map(wt -> wt.scale(10000)))
-						.execute(outDir.resolve("TopicContent"+id+".png"));
+						.execute(outDir.resolve("TopicContent"+letter(id)+".png"));
 				
 					top.streamDocuments().forEach(wd -> {
 						
 						StreamExceptions.tryLogWarn(
-								(id+"\t"+wd.getTarget().getIdentifier()+"\t"+wd.getWeight()+"\n").getBytes(),
+								(letter(id)+"\t"+wd.getTarget().getIdentifier()+"\t"+wd.getWeight()+"\n").getBytes(),
 								out::write);
 						
 						Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
@@ -682,13 +685,13 @@ public class LitReviewAnalysis {
 				Streams.concat(
 						topicCommunityCorrelation.stream().map(t -> 
 							Triple.create(
-									"Topic "+t.getFirst(),
+									"Topic "+letter(t.getFirst()),
 									"Community "+t.getSecond(),
 									t.getThird())),
 						topicCommunityCorrelation.stream().map(t -> 
 							Triple.create(
 									"Community "+t.getSecond(),
-									"Topic "+t.getFirst(),
+									"Topic "+letter(t.getFirst()),
 									t.getThird()))
 						);
 				
@@ -710,7 +713,7 @@ public class LitReviewAnalysis {
 				out2.write("topic\tcommunity\ntotalScore\n".getBytes());
 				topicCommunityCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
-							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
+							(""+letter(t.getFirst())+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out2::write
 					));
 				
