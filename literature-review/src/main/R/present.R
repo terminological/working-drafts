@@ -68,7 +68,9 @@ top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
 htTop10Articles <- as_huxtable(top10articles, add_colnames = TRUE) %>%
   set_bold(1, 1:2, TRUE) %>% 
-  set_bottom_border(1, 1:2, 1) %>%
+  set_top_border(1, 1:2, 2) %>%
+  set_bottom_border(1, 1:2, 2) %>%
+  set_bottom_border(nrow(top10articles)+1, 1:2, 1) %>%
   set_align(1, 2, 'right') %>%
   set_width("400pt") %>%
   set_wrap(TRUE) %>%
@@ -106,3 +108,5 @@ for (tt in (top5ByTopic %>% distinct(topic))$topic ) {
 }
 
 quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
+
+
