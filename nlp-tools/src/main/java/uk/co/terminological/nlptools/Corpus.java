@@ -227,26 +227,10 @@ public class Corpus {
 		
 		Map<Term,Integer> termCount = new HashMap<>();
 		for (Document doc: withFeatures) {
-			doc.getTermCounts()
+			doc.getTermCounts().forEach((k,v) -> termCount.merge(k, v, (v1,v2)->v1+v2)); 
 		}
 		
-		terms.values().stream()
-			.filter(ter -> ter.countOccurrences() > minSize)
-			.forEach(term -> {
-				Set<Document> containingTerm = term.getDocumentsUsing();
-				int documentsInWhichTermOccurs = containingTerm.size();
-				
-				HashSet<Document> tmp = new HashSet<>(withFeatures);
-				tmp.retainAll(containingTerm);
-				int documentsInWhichTermCooccursWithFeature = tmp.size();
-				
-				out.add(Weighted.create(term, Calculation.mi(
-						documentsInWhichTermCooccursWithFeature, 
-						documentsInWhichTermOccurs, 
-						documentsInWhichFeatureOccurs, 
-						totalDocuments)));
-			});
-		
+		termCount.forEach((k,v) -> out.add(Counted.create(k, v)));
 		return out.stream();
 	}
 	
