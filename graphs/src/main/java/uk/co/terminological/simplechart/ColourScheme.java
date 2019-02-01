@@ -51,12 +51,20 @@ public class ColourScheme {
 		YlGn, RdPu, PuBu, OrRd, GnBu, BuPu 
 	);
 	
+	private static List<ColourScheme> sequence3 = Arrays.asList(
+		RdYlGn, YlOrBr, PuBuGn, YlGnBu, RdYlBu, YlOrRd 
+	);
+	
 	public static ColourScheme sequential(int number) {
 		return sequence.get(number % sequence.size());
 	}
 	
 	public static ColourScheme sequential2(int number) {
 		return sequence2.get(number % sequence2.size());
+	}
+	
+	public static ColourScheme sequential3(int number) {
+		return sequence3.get(number % sequence2.size());
 	}
 	
 	public static class Colour {
