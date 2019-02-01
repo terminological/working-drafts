@@ -535,7 +535,7 @@ public class LitReviewAnalysis {
 					});
 				}
 				
-				for (Integer community: communities) {
+				for (Integer community: communities.subList(0, 10)) {
 					int id = communities.indexOf(community);
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
@@ -569,7 +569,7 @@ public class LitReviewAnalysis {
 					doc.addMetadata("community",next);
 				}
 				
-				for (Integer community: communities) {
+				for (Integer community: communities.subList(0, 10)) {
 					int id = communities.indexOf(community);
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
@@ -591,9 +591,12 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
+				List<Integer> top10community = new ArrayList<>();
+				
 				for( Record r : res) {
 
 					Integer i = r.get("community").asInt();
+					if (top10community.size() < 10 && !top10community.contains(i)) top10community.add(i);
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
@@ -628,24 +631,26 @@ public class LitReviewAnalysis {
 					top.streamDocuments().forEach(wd -> {
 						Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
 						commId.ifPresent( cid -> {
-							Double score = topicCommunityCorrelation.get("Topic "+id, "Community "+cid);
-							if (score == null) { score = 0D; }
-							score += wd.getWeight();
-							topicCommunityCorrelation.put("Topic "+id, "Community "+cid, score);
-							topicCommunityCorrelation.put("Community "+cid, "Topic "+id, score);
+							if (top10community.contains(cid)) {
+								Double score = topicCommunityCorrelation.get("Topic "+id, "Community "+cid);
+								if (score == null) { score = 0D; }
+								score += wd.getWeight();
+								topicCommunityCorrelation.put("Topic "+id, "Community "+cid, score);
+								topicCommunityCorrelation.put("Community "+cid, "Topic "+id, score);
+							}
 						});
 					});
 				});
 				
 				try {
-				fig.withNewChart("Topic community relationships", ChartType.CHORD)
-				.withSeries(topicCommunityCorrelation.stream())
-				.bind(ID, t -> t.getFirst(), "source")
-				.bind(STRENGTH, t -> t.getThird())
-				.bind(ID, t -> t.getSecond(), "target")
-				.withColourScheme(ColourScheme.Set2)
-				.done()
-				.render();
+					fig.withNewChart("Topic community relationships", ChartType.CHORD)
+						.withSeries(topicCommunityCorrelation.stream())
+						.bind(ID, t -> t.getFirst(), "source")
+						.bind(STRENGTH, t -> t.getThird())
+						.bind(ID, t -> t.getSecond(), "target")
+						.withColourScheme(ColourScheme.Set2)
+						.done()
+						.render();
 				} catch (Exception e) {throw new RuntimeException(e);}
 				//TODO: find meaningful export format for topic and corpus data e.g. some sort of CSV
 
