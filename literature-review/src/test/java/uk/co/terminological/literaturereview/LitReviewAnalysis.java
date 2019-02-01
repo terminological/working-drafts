@@ -779,7 +779,7 @@ public class LitReviewAnalysis {
 					top.streamDocuments().forEach(wd -> {
 						
 						StreamExceptions.tryLogWarn(
-								(letter(id)+"\t"+wd.getTarget().getIdentifier()+"\t"+wd.getWeight()+"\n").getBytes(),
+								(id+"\t"+wd.getTarget().getIdentifier()+"\t"+wd.getWeight()+"\n").getBytes(),
 								out::write);
 						
 						Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
