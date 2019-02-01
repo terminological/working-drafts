@@ -51,7 +51,8 @@ public class Counted<T> implements Comparable<Counted<T>> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Counted other = (Counted) obj;
+		@SuppressWarnings("unchecked")
+		Counted<T> other = (Counted<T>) obj;
 		if (count == null) {
 			if (other.count != null)
 				return false;
