@@ -712,7 +712,7 @@ public class LitReviewAnalysis {
 				out.close();
 				
 				OutputStream out2 = Files.newOutputStream(outDir.resolve("getTopicCommunity.tsv"));
-				out2.write("topic\tcommunity\ntotalScore\n".getBytes());
+				out2.write("topic\tcommunity\ttotalScore\n".getBytes());
 				topicCommunityCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
 							(""+letter(t.getFirst())+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
