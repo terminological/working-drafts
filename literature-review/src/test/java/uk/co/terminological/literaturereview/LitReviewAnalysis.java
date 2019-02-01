@@ -45,6 +45,7 @@ import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Output;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.datatypes.EavMap;
+import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
@@ -626,6 +627,9 @@ public class LitReviewAnalysis {
 				result.printTopics(10);
 				
 				EavMap<String,String,Double> topicCommunityCorrelation = new EavMap<>();
+				
+				Optional<OutputStream> out = StreamExceptions.rethrow(() -> Files.newOutputStream(outDir.resolve("getTopicDocuments.tsv")));
+				
 				
 				result.getTopicsForDocuments().forEach(top -> {
 
