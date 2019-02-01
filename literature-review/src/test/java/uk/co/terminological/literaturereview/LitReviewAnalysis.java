@@ -676,6 +676,7 @@ public class LitReviewAnalysis {
 				} catch (Exception e) {throw new RuntimeException(e);}
 				//TODO: find meaningful export format for topic and corpus data e.g. some sort of CSV
 
+				out.close();
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
