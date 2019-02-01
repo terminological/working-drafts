@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -584,7 +586,7 @@ public class LitReviewAnalysis {
 	}
 
 	@Test
-	public void plotCommunityContent() {
+	public void plotAuthorCommunityContent() {
 		try ( Session session = driver.session() ) {
 
 			session.readTransaction( tx -> {
@@ -617,6 +619,46 @@ public class LitReviewAnalysis {
 		}
 	}
 
+	@Test
+	public void plotArticleCommunityContent() {
+		try ( Session session = driver.session() ) {
+
+			session.readTransaction( tx -> {
+				String qry = queries.get("getArticleCommunityTitlesAbstracts");
+				List<Record> res = tx.run( qry ).list();
+				Corpus texts = textCorpus();
+				
+				Map<Integer,Integer> communityCount = new HashMap<>();
+				for( Record r : res) {
+					Integer next = r.get("articleCommunity").asInt();
+					//Integer size = r.get("size").asInt();
+					String nodeId = r.get("nodeId").asNumber().toString();
+					String title = r.get("title").asString();
+					String abstrct = r.get("abstract").asString();
+					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
+					doc.addMetadata("articleCommunity",next);
+					communityCount.merge(next, 1, (v1,v2)->v1+v2);
+				}
+				
+				int id=0;
+				List<Integer> topN = communityCount.entrySet().stream()
+			       .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+			       .limit(MAX).map((kv) -> kv.getKey()).collect(Collectors.toList());
+				
+				for (Integer community: topN) {
+					id++;
+					WordCloudBuilder.from(texts, 200, 600, 600).circular()
+						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
+						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
+						.map(wt -> wt.scale(10000)))
+						.execute(outDir.resolve("ArticleCommunityContent"+id+".png"));
+				}
+				
+				return true;
+			});
+		}
+	}
+	
 	private String letter(int id) {
 		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(id % 26, id % 26+1);
 	}

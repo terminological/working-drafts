@@ -225,6 +225,14 @@ analyse:
     sum(b.pagerank)/count(b) as avgPagerank,
     collect(id(b)) as ids 
     ORDER BY totalPagerank DESC
+  
+  getArticleCommunityTitlesAbstracts: |
+    MATCH (a:Article)
+    RETURN DISTINCT
+    id(a) as nodeId,
+    a.articleCommunity as articleCommunity,
+    a.title as title,
+    a.abstract as abstract
     
 # AUTHORS
 
