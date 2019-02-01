@@ -687,6 +687,9 @@ public class LitReviewAnalysis {
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
 				
+				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
+				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
+				
 				EavMap<Integer,Integer,Double> authorArticleCorrelation = new EavMap<>();
  				
 				for( Record r : res) {
@@ -700,15 +703,16 @@ public class LitReviewAnalysis {
 					doc.addMetadata("articleCommunity",artComm);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 
-					Double score = authorArticleCorrelation.get(next, artComm);
-					if (score == null) { score = 0D; }
-					score += 1.0D;
-					authorArticleCorrelation.put(next, artComm, score);
+					if (top10community.contains(next) && top10articleCommunity.contains(artComm)) {
+						Double score = authorArticleCorrelation.get(next, artComm);
+						if (score == null) { score = 0D; }
+						score += 1.0D;
+						authorArticleCorrelation.put(next, artComm, score);
+					}
 					
 				}
 
-				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
-				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
+				
 				
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 
