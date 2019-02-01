@@ -41,6 +41,8 @@ import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Node;
 import org.yaml.snakeyaml.Yaml;
 
+import com.google.common.collect.Streams;
+
 import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Output;
 import uk.co.terminological.bibliography.record.PrintRecord;
@@ -626,7 +628,7 @@ public class LitReviewAnalysis {
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
 				result.printTopics(10);
 				
-				EavMap<String,String,Double> topicCommunityCorrelation = new EavMap<>();
+				EavMap<Integer,Integer,Double> topicCommunityCorrelation = new EavMap<>();
 				try {
 				
 					OutputStream out = Files.newOutputStream(outDir.resolve("getTopicDocuments.tsv"));
@@ -654,15 +656,27 @@ public class LitReviewAnalysis {
 						Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
 						commId.ifPresent( cid -> {
 							if (top10community.contains(cid)) {
-								Double score = topicCommunityCorrelation.get("Topic "+id, "Community "+cid);
+								Double score = topicCommunityCorrelation.get(id, cid);
 								if (score == null) { score = 0D; }
 								score += wd.getWeight();
-								topicCommunityCorrelation.put("Topic "+id, "Community "+cid, score);
-								topicCommunityCorrelation.put("Community "+cid, "Topic "+id, score);
+								topicCommunityCorrelation.put(id, cid, score);
 							}
 						});
 					});
 				});
+				
+				Streams.concat(
+						topicCommunityCorrelation.stream().map(t -> 
+							Triple.create(
+									"Topic "+t.getFirst(),
+									"Community "+t.getSecond(),
+									t.getThird())),
+						topicCommunityCorrelation.stream().map(t -> 
+							Triple.create(
+									"Community "+t.getSecond(),
+									"Topic "+t.getFirst(),
+									t.getThird()))
+						);
 				
 				try {
 					fig.withNewChart("Topic community relationships", ChartType.CHORD)
@@ -677,6 +691,16 @@ public class LitReviewAnalysis {
 				//TODO: find meaningful export format for topic and corpus data e.g. some sort of CSV
 
 				out.close();
+				
+				OutputStream out2 = Files.newOutputStream(outDir.resolve("getTopicCommunity.tsv"));
+				out2.write("topic\tcommunity\ntotalScore\n".getBytes());
+				topicCommunityCorrelation.stream().forEach(t -> 
+					StreamExceptions.tryIgnore(
+							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
+							out2::write
+					));
+				
+				out2.close();
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
