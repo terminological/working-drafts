@@ -43,6 +43,10 @@ public class Counted<T> implements Comparable<Counted<T>> {
 		return result;
 	}
 	
+	public Weighted<T> asPercentage(int total) {
+		return Weighted.create(thing, ((double) count)/total);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

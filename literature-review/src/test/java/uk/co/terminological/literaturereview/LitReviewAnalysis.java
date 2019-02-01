@@ -36,6 +36,7 @@ import org.neo4j.driver.v1.GraphDatabase;
 import org.neo4j.driver.v1.Record;
 import org.neo4j.driver.v1.Session;
 import org.neo4j.driver.v1.StatementResult;
+import org.neo4j.driver.v1.Transaction;
 import org.neo4j.driver.v1.Value;
 import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Node;
@@ -523,6 +524,27 @@ public class LitReviewAnalysis {
 	}*/
 	
 	static int MAX = 6;
+	
+	List<Integer> topCommunities = null;
+	
+	private List<Integer> topCommunitiesByArticles(Transaction tx, int size) {
+		if (topCommunities == null) {
+			
+			String qry = queries.get("getAuthorCommunityStats");
+			List<Record> res = tx.run( qry ).list();
+			SortedSet<Counted<Integer>> tmp = Counted.descending();
+	
+			res.stream().forEach(r -> {
+					tmp.add(Counted.create(
+							r.get("community").asNumber().intValue(),
+							r.get("community").asNumber().intValue()));
+			});
+			
+			topCommunities = tmp.stream().limit(size).map(cc -> cc.getTarget()).collect(Collectors.toList());
+		
+		}
+		return topCommunities;
+	}
 	
 	@Test
 	public void plotCommunityAffiliations() {
