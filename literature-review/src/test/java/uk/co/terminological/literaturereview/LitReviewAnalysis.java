@@ -600,7 +600,7 @@ public class LitReviewAnalysis {
 		try ( Session session = driver.session() ) {
 			session.readTransaction( tx -> {
 
-				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
+				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
 				SortedSet<Counted<Integer>> communities = Counted.descending();
