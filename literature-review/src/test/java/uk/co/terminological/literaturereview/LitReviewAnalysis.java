@@ -838,7 +838,7 @@ public class LitReviewAnalysis {
 				
 				OutputStream out4 = Files.newOutputStream(outDir.resolve("getAuthorCommunityArticleGroup.tsv"));
 				out4.write("authorCommunity\tarticleCommunity\ttotalScore\n".getBytes());
-				articleCommunityCorrelation.stream().forEach(t -> 
+				authorArticleCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
 							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out4::write
