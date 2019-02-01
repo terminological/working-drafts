@@ -96,13 +96,9 @@ htTop5ByTopic <- as_huxtable(top5ByTopic, add_colnames = TRUE) %>%
   set_caption('Top 5 articles by topic')
 
 for (tt in (top5ByTopic %>% distinct(topic))$topic ) {
-  print(tt)
   tmp = seq(2,nrow(top5ByTopic)+1)
-  print(tmp)
   l = min(tmp[top5ByTopic$topic == tt])
   r = max(tmp[top5ByTopic$topic == tt])
-  print(l)
-  print(r)
   htTop5ByTopic <- merge_cells(htTop5ByTopic, l:r, 1)
   htTop5ByTopic <- htTop5ByTopic %>% set_top_border(l, 1:3, 1)
 }
@@ -113,6 +109,7 @@ authorCommunityByMember <- getAuthorCommunityLabels %>%
   mutate(community = authorCommunity) %>% 
   left_join(getAuthorCoauthorHarmonicCentrality) %>%
   mutate(name = paste0(lastName,", ",firstName)) %>%
+  mutate(affiliation = str_trunc(affiliation,50,"right")) %>%
   group_by(label) %>% top_n(5,pagerank) %>%
   arrange(desc(pagerank), .by_group = TRUE) %>%
   select(community = label, name, affiliation, pagerank)
@@ -129,15 +126,11 @@ htAuthorsByCommunity <- as_huxtable(authorCommunityByMember, add_colnames = TRUE
   set_caption('Top 5 pageranked researchers in community')
   
 for (tt in getAuthorCommunityLabels$label ) {
-  print(tt)
   tmp = seq(2,nrow(authorCommunityByMember)+1)
-  print(tmp)
   l = min(tmp[authorCommunityByMember$community == tt])
   r = max(tmp[authorCommunityByMember$community == tt])
-  print(l)
-  print(r)
   htAuthorsByCommunity <- merge_cells(htAuthorsByCommunity, l:r, 1)
-  htAuthorsByCommunity <- htAuthorsByCommunity %>% set_top_border(l, 1:3, 1)
+  htAuthorsByCommunity <- htAuthorsByCommunity %>% set_top_border(l, 1:4, 1)
 }
 
 quick_html(htAuthorsByCommunity, file="~/Dropbox/litReview/output/top5AuthorsByCommunity.html")
