@@ -234,6 +234,23 @@ public class Corpus {
 		return out.stream();
 	}
 	
+	public Stream<Weighted<Term>> getTermsByTfidf(Predicate<Document> featureDetector) {
+		SortedSet<Weighted<Term>> out = Weighted.descending();
+		
+		//unit here is the document.
+		
+		Set<Document> withFeatures = new HashSet<>();
+		this.documents.values().stream().filter(featureDetector).forEach(withFeatures::add);
+		
+		Map<Term,Double> termTfidf = new HashMap<>();
+		for (Document doc: withFeatures) {
+			doc.termsByTfIdf().forEach(wt -> termTfidf.merge(wt.getTarget(), wt.getWeight(), (v1,v2)->v1+v2)); 
+		}
+		
+		termTfidf.forEach((k,v) -> out.add(Weighted.create(k, v)));
+		return out.stream();
+	}
+	
 	/**
 	 * This is an aggregated unnormalised mutual information score for each combination of terms
 	 * in the corpus presented in descending order. Missing values are zero.
