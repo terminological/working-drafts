@@ -277,6 +277,7 @@ public class LitReviewAnalysis {
 	}
 
 	@Test 
+	@Deprecated
 	public void plotArticlesByJournal() {
 		try ( Session session = driver.session() ) {
 
@@ -480,12 +481,12 @@ public class LitReviewAnalysis {
 			.withTokenFilter(Filters.shorterThan(4));
 	}
 	
-	private void plotCommunityWordcloud(Corpus texts, int community, String type) {
+	/*private void plotCommunityWordcloud(Corpus texts, int community, String type) {
 		WordCloudBuilder.from(texts, 200, 600, 600)
 		.withSelector(c -> c.getTermsByTotalEntropy().map(wt -> wt.scale(100)))
 		.withColourScheme(ColourScheme.sequential(community))
 		.execute(outDir.resolve("Community"+type+community+".png"));
-	}
+	}*/
 	
 	/*@Test
 	public void plotCommunityAffiliations() {
