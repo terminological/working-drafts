@@ -661,13 +661,14 @@ public class LitReviewAnalysis {
 				}
 				
 				int id=0;
-				for (Integer community: topNArticleCommunities(tx, MAX)) {
+				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
+				for (Integer community: top10articleCommunity) {
 					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential3(id).darker(0.25F))
 						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("articleCommunity").orElse(null)))
 						.map(wt -> wt.scale(10000)))
-						.execute(outDir.resolve("ArticleCommunityContent"+id+".png"));
+						.execute(outDir.resolve("ArticleCommunityContent"+roman(top10articleCommunity.indexOf(j))+".png"));
 				}
 				
 				return true;
@@ -678,6 +679,11 @@ public class LitReviewAnalysis {
 	private String letter(int id) {
 		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(id % 26, id % 26+1);
 	}
+	
+	private String roman(int id) {
+		return (new String[] {"I","II","III","IV","V","VI","VII","VIII","IX","X","XI"})[id];
+	}
+	
 	@Test
 	public void plotTopicContent() {
 		try ( Session session = driver.session() ) {
@@ -768,17 +774,17 @@ public class LitReviewAnalysis {
 				
 				doChordDiagram(topicCommunityCorrelation,
 						i -> "Topic "+letter(i),
-						j -> "Community "+j,
+						j -> "Community "+top10community.indexOf(j),
 						"Topic author community relationships");
 				
 				doChordDiagram(articleCommunityCorrelation,
 						i -> "Topic "+letter(i),
-						j -> "Article group "+j,
+						j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
 						"Topic article group relationships");
 				
 				doChordDiagram(authorArticleCorrelation,
-						i -> "Community "+i,
-						j -> "Article group "+j,
+						i -> "Community "+top10community.indexOf(i),
+						j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
 						"Author community article group relationships");
 				
 				out.close();
