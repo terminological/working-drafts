@@ -627,9 +627,10 @@ public class LitReviewAnalysis {
 				result.printTopics(10);
 				
 				EavMap<String,String,Double> topicCommunityCorrelation = new EavMap<>();
+				try {
 				
-				Optional<OutputStream> out = StreamExceptions.tryRethrow(() -> Files.newOutputStream(outDir.resolve("getTopicDocuments.tsv")));
-				
+					OutputStream out = Files.newOutputStream(outDir.resolve("getTopicDocuments.tsv"));
+					out.write("topic\tnodeId\tweight\n".getBytes());
 				
 				result.getTopicsForDocuments().forEach(top -> {
 
@@ -645,6 +646,11 @@ public class LitReviewAnalysis {
 						.execute(outDir.resolve("TopicContent"+id+".png"));
 				
 					top.streamDocuments().forEach(wd -> {
+						
+						StreamExceptions.tryLogWarn(
+								(id+"\t"+wd.getTarget().getIdentifier()+"\t"+wd.getWeight()+"\n").getBytes(),
+								out::write);
+						
 						Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
 						commId.ifPresent( cid -> {
 							if (top10community.contains(cid)) {
@@ -670,6 +676,9 @@ public class LitReviewAnalysis {
 				} catch (Exception e) {throw new RuntimeException(e);}
 				//TODO: find meaningful export format for topic and corpus data e.g. some sort of CSV
 
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 				return true;
 			});
 
