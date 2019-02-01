@@ -15,6 +15,7 @@ public class TestYaml {
 	  .getClassLoader()
 	  .getResourceAsStream("cypherQuery.yaml");
 	Map<String, Object> obj = yaml.load(inputStream);
+	
 	System.out.println(obj);
 	}
 	

@@ -401,6 +401,7 @@ config:
     research
     centre
     center
+    null
   stopwordsForText: |
     i
     me
@@ -529,3 +530,4 @@ config:
     don
     should
     now
+    null
