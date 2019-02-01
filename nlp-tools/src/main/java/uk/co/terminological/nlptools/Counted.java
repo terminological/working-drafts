@@ -33,6 +33,7 @@ public class Counted<T> implements Comparable<Counted<T>> {
 		int comp = -getCount().compareTo(o.getCount());
 		return comp == 0 ? hashCode()-o.hashCode() : comp;
 	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -41,6 +42,7 @@ public class Counted<T> implements Comparable<Counted<T>> {
 		result = prime * result + ((thing == null) ? 0 : thing.hashCode());
 		return result;
 	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
