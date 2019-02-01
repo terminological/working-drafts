@@ -1,5 +1,13 @@
 build:
 
+- fixGeniaRecord: |
+    MATCH (a:Article),(b:Article) 
+    WHERE a.title=~"GENIA corpus.*" 
+    AND b.title=~"GENIA corpus.*"
+    AND a<>b
+    CALL apoc.refactor.mergeNodes([a,b],{mergeRels:true}) 
+    YIELD node RETURN COUNT(*)
+
 # AUTHORS - DISAMBIGUATE
 - mergeAuthorsWithSameOrcid: | # orchid matches: combine clause here causes error
     MATCH (n:Author), (o:Author) 
@@ -70,6 +78,11 @@ build:
 - createAuthorCitesClosenessCentrality: | # closeness algorithm
     CALL algo.closeness.harmonic('Author','CITES',{direction:'both',write:true, writeProperty:'citesHarmonic'})
     YIELD nodes,loadMillis, computeMillis, writeMillis;
+
+- createAuthorPageRank: | # PageRank
+    CALL algo.pageRank('Author', 'CO_AUTHOR', {iterations:20, dampingFactor:0.85, write:true, writeProperty:"pagerank"})
+    YIELD nodes, iterations, loadMillis, computeMillis, writeMillis, dampingFactor, write, writeProperty
+
     
 # ARTICLES
 
@@ -322,7 +335,8 @@ analyse:
     a.initials as initials,
     collect(b.organisationName) AS affiliations, 
     a.harmonic as harmonic,
-    a.citesHarmonic as citesHarmonic, 
+    a.citesHarmonic as citesHarmonic,
+    a.pagerank as pagerank, 
     a.community as community
     ORDER BY a.harmonic DESC;
 
