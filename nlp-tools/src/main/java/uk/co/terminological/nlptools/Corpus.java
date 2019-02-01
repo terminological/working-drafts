@@ -217,6 +217,39 @@ public class Corpus {
 		return out.stream();
 	}
 	
+	public Stream<Counted<Term>> getTermsByCount(Predicate<Document> featureDetector) {
+		SortedSet<Counted<Term>> out = Counted.descending();
+		
+		//unit here is the document.
+		
+		Set<Document> withFeatures = new HashSet<>();
+		this.documents.values().stream().filter(featureDetector).forEach(withFeatures::add);
+		
+		Map<Term,Integer> termCount = new HashMap<>();
+		for (Document doc: withFeatures) {
+			doc.getTermCounts()
+		}
+		
+		terms.values().stream()
+			.filter(ter -> ter.countOccurrences() > minSize)
+			.forEach(term -> {
+				Set<Document> containingTerm = term.getDocumentsUsing();
+				int documentsInWhichTermOccurs = containingTerm.size();
+				
+				HashSet<Document> tmp = new HashSet<>(withFeatures);
+				tmp.retainAll(containingTerm);
+				int documentsInWhichTermCooccursWithFeature = tmp.size();
+				
+				out.add(Weighted.create(term, Calculation.mi(
+						documentsInWhichTermCooccursWithFeature, 
+						documentsInWhichTermOccurs, 
+						documentsInWhichFeatureOccurs, 
+						totalDocuments)));
+			});
+		
+		return out.stream();
+	}
+	
 	/**
 	 * This is an aggregated unnormalised mutual information score for each combination of terms
 	 * in the corpus presented in descending order. Missing values are zero.

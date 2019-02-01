@@ -255,5 +255,11 @@ public class Document {
 	public Optional<Object> getMetadata(String string2) {
 		return Optional.ofNullable(this.metadata.get(string2));
 	}
+
+	public Map<Term,Integer> getTermCounts() {
+		return termCounts;
+	}
+
+	
 	
 }
