@@ -228,7 +228,7 @@ analyse:
   
   getArticleCommunityTitlesAbstracts: |
     MATCH (a:Article)
-    RETURN DISTINCT
+    RETURN
     id(a) as nodeId,
     a.articleCommunity as articleCommunity,
     a.title as title,

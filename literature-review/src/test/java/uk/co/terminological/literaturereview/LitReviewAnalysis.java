@@ -649,7 +649,7 @@ public class LitReviewAnalysis {
 					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
-						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
+						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("articleCommunity").orElse(null)))
 						.map(wt -> wt.scale(10000)))
 						.execute(outDir.resolve("ArticleCommunityContent"+id+".png"));
 				}
