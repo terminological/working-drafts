@@ -660,15 +660,14 @@ public class LitReviewAnalysis {
 					doc.addMetadata("articleCommunity",next);
 				}
 				
-				int id=0;
 				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
 				for (Integer community: top10articleCommunity) {
-					id++;
+					int id = top10articleCommunity.indexOf(community);
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential3(id).darker(0.25F))
 						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("articleCommunity").orElse(null)))
 						.map(wt -> wt.scale(10000)))
-						.execute(outDir.resolve("ArticleCommunityContent"+roman(top10articleCommunity.indexOf(j))+".png"));
+						.execute(outDir.resolve("ArticleCommunityContent"+roman(id)+".png"));
 				}
 				
 				return true;
