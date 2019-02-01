@@ -227,7 +227,7 @@ public class LitReviewAnalysis {
 										String s = cits.get(i).trim();
 										line.append(s);
 									} catch (Exception e) {
-										line.append(v.toString());
+										line.append(v.toString().replace("\n", " "));
 									}
 								}
 								writer.write(("\n"+line.toString()).getBytes());
