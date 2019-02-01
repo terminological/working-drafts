@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -686,6 +687,7 @@ public class LitReviewAnalysis {
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
 				
+				EavMap<Integer,Integer,Double> authorArticleCorrelation = new EavMap<>();
  				
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
@@ -698,6 +700,11 @@ public class LitReviewAnalysis {
 					doc.addMetadata("articleCommunity",artComm);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 
+					Double score = authorArticleCorrelation.get(next, artComm);
+					if (score == null) { score = 0D; }
+					score += 1.0D;
+					authorArticleCorrelation.put(next, artComm, score);
+					
 				}
 
 				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
@@ -755,55 +762,20 @@ public class LitReviewAnalysis {
 					});
 				});
 				
-				Stream<Triple<String,String,Double>> display = Streams.concat(
-						topicCommunityCorrelation.stream().map(t -> 
-							Triple.create(
-									"Topic "+letter(t.getFirst()),
-									"Community "+t.getSecond(),
-									t.getThird())),
-						topicCommunityCorrelation.stream().map(t -> 
-							Triple.create(
-									"Community "+t.getSecond(),
-									"Topic "+letter(t.getFirst()),
-									t.getThird()))
-						);
+				doChordDiagram(topicCommunityCorrelation,
+						i -> "Topic "+letter(i),
+						j -> "Community "+j,
+						"Topic author community relationships");
 				
-				try {
-					fig.withNewChart("Topic community relationships", ChartType.CHORD)
-						.withSeries(display)
-						.bind(ID, t -> t.getFirst(), "source")
-						.bind(STRENGTH, t -> t.getThird())
-						.bind(ID, t -> t.getSecond(), "target")
-						.withColourScheme(ColourScheme.Set2)
-						.done()
-						.render();
-				} catch (Exception e) {throw new RuntimeException(e);}
-				//TODO: find meaningful export format for topic and corpus data e.g. some sort of CSV
-
-				Stream<Triple<String,String,Double>> display2 = Streams.concat(
-						articleCommunityCorrelation.stream().map(t -> 
-							Triple.create(
-									"Topic "+letter(t.getFirst()),
-									"Article community "+t.getSecond(),
-									t.getThird())),
-						articleCommunityCorrelation.stream().map(t -> 
-							Triple.create(
-									"Article community "+t.getSecond(),
-									"Topic "+letter(t.getFirst()),
-									t.getThird()))
-						);
+				doChordDiagram(articleCommunityCorrelation,
+						i -> "Topic "+letter(i),
+						j -> "Article group "+j,
+						"Topic article group relationships");
 				
-				try {
-					fig.withNewChart("Topic Article community relationships", ChartType.CHORD)
-						.withSeries(display2)
-						.bind(ID, t -> t.getFirst(), "source")
-						.bind(STRENGTH, t -> t.getThird())
-						.bind(ID, t -> t.getSecond(), "target")
-						.withColourScheme(ColourScheme.Accent)
-						.done()
-						.render();
-				} catch (Exception e) {throw new RuntimeException(e);}
-				
+				doChordDiagram(authorArticleCorrelation,
+						i -> "Community "+i,
+						j -> "Article group "+j,
+						"Author community article group relationships");
 				
 				out.close();
 				
@@ -823,6 +795,14 @@ public class LitReviewAnalysis {
 							out3::write
 					));
 				
+				OutputStream out4 = Files.newOutputStream(outDir.resolve("getAuthorCommunityArticleGroup.tsv"));
+				out3.write("authorCommunity\tarticleCommunity\ttotalScore\n".getBytes());
+				articleCommunityCorrelation.stream().forEach(t -> 
+					StreamExceptions.tryIgnore(
+							(""+letter(t.getFirst())+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
+							out4::write
+					));
+				
 				out2.close();
 				} catch (IOException e) {
 					throw new RuntimeException(e);
@@ -833,5 +813,36 @@ public class LitReviewAnalysis {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	private void doChordDiagram(
+			EavMap<Integer,Integer,Double> correlation,
+			Function<Integer,String> nameSource,
+			Function<Integer,String> nameTarget,
+			String diagramName
+			) {
+		Stream<Triple<String,String,Double>> display = Streams.concat(
+				correlation.stream().map(t -> 
+					Triple.create(
+							nameSource.apply(t.getFirst()),
+							nameTarget.apply(t.getSecond()),
+							t.getThird())),
+				correlation.stream().map(t -> 
+					Triple.create(
+							nameTarget.apply(t.getSecond()),
+							nameSource.apply(t.getFirst()),
+							t.getThird()))
+				);
+		
+		try {
+			fig.withNewChart(diagramName, ChartType.CHORD)
+				.withSeries(display)
+				.bind(ID, t -> t.getFirst(), "source")
+				.bind(STRENGTH, t -> t.getThird())
+				.bind(ID, t -> t.getSecond(), "target")
+				.withColourScheme(ColourScheme.Set2)
+				.done()
+				.render();
+		} catch (Exception e) {throw new RuntimeException(e);}
 	}
 }
