@@ -44,12 +44,12 @@ public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDat
 		CSLItemDataBuilder builder = new CSLItemDataBuilder()
 	            .id(id)
 	            .type(CSLType.ARTICLE_JOURNAL);
-	         record.getTitle().ifPresent(t -> builder.title(t));
+	         record.getTitle().ifPresent(t -> builder.title(t.replace('\n', ' ').trim()));
 	         if (record.getFirstAuthor().isPresent()) {
 	        	 Author a = record.getFirstAuthor().get();
 	        	 builder.author(
-	        		a.getFirstName().or(() -> a.getInitials()).orElse(""),
-	        		a.getLastName()
+	        		a.getFirstName().or(() -> a.getInitials()).orElse("").replace("\n", " ").trim(),
+	        		a.getLastName().replace("\n", " ").trim()
 	        	); 
 	         } else if (record.getFirstAuthorLastName().isPresent()) {
 	        	 if (record.getFirstAuthorFirstName().isPresent()) {
@@ -68,7 +68,7 @@ public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDat
 	         buildIds(builder, record.getIdentifierType(), record.getIdentifier());
 	         record.getOtherIdentifiers().forEach(rr -> buildIds(builder, rr.getIdentifierType(), rr.getIdentifier()));
 	         
-	         record.getAbstract().ifPresent(a -> builder.abstrct(a));
+	         record.getAbstract().ifPresent(a -> builder.abstrct(a.replace('\n', ' ').trim()));
 	         record.getPdfUri().ifPresent(p -> builder.URL(p.toString()));
 	         
 	         if (record instanceof Print) {
