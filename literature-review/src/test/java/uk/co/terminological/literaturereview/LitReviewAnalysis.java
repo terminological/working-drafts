@@ -452,10 +452,10 @@ public class LitReviewAnalysis {
 
 				try {
 					fig.withNewChart("Keywords by npmi", ChartType.CHORD)
-					.withSeries(new ArrayList<>(nodes))
-					.bind(ID, t -> t)
-					.bind(LABEL, t -> t)
-					.done()
+					//.withSeries(new ArrayList<>(nodes))
+					//.bind(ID, t -> t)
+					//.bind(LABEL, t -> t)
+					//.done()
 					.withSeries(links)
 					.bind(ID, t -> t.getFirst(), "source")
 					.bind(STRENGTH, t -> t.getSecond())
