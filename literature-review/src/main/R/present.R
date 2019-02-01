@@ -2,6 +2,7 @@ library(tidyverse)
 library(reshape2)
 library(cowplot)
 library(lubridate)
+library(huxtable)
 
 files <- list.files(path = "~/Dropbox/litReview/output/", pattern = "*.tsv", all.files = TRUE)
 files <- colsplit(files,"\\.",names=c("base","etn"))
