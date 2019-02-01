@@ -555,25 +555,22 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityAffiliations");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = affiliationCorpus();
-				SortedSet<Counted<Integer>> communities = Counted.descending();
- 				
+				
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
-					Integer size = r.get("size").asInt();
-					communities.add(Counted.create(next, size));
+					// Integer size = r.get("size").asInt();
 					r.get("affiliations").asList(Values.ofString()).forEach(aff -> { 
 						Document doc = texts.addDocument(aff);
 						doc.addMetadata("community", next);
 					});
 				}
 				
-				int id=0;
-				for (Counted<Integer> community: communities) {
-					if (id > MAX) break;
+				int id = 0;
+				for (Integer community: topCommunitiesByArticles(tx,MAX)) {
 					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
-						.withSelector(c -> c.getTermsByMutualInformation(d -> community.getTarget().equals(d.getMetadata("community").orElse(null)))
+						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.map(wt -> wt.scale(100000)))
 						.execute(outDir.resolve("CommunityAffiliations"+id+".png"));
 				}
@@ -591,12 +588,10 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
-				SortedSet<Counted<Integer>> communities = Counted.descending();
- 				
+				
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
-					Integer size = r.get("size").asInt();
-					communities.add(Counted.create(next, size));
+					//Integer size = r.get("size").asInt();
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
@@ -605,12 +600,11 @@ public class LitReviewAnalysis {
 				}
 				
 				int id=0;
-				for (Counted<Integer> community: communities) {
-					if (id > MAX) break;
+				for (Integer community: topCommunitiesByArticles(tx,MAX)) {
 					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
-						.withSelector(c -> c.getTermsByMutualInformation(d -> community.getTarget().equals(d.getMetadata("community").orElse(null)))
+						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.map(wt -> wt.scale(10000)))
 						.execute(outDir.resolve("CommunityContent"+id+".png"));
 				}
@@ -628,12 +622,10 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
-				SortedSet<Counted<Integer>> communities = Counted.descending();
+				
  				
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
-					Integer size = r.get("size").asInt();
-					communities.add(Counted.create(next, size));
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
@@ -643,7 +635,7 @@ public class LitReviewAnalysis {
 
 				}
 
-				List<Integer> top10community = communities.stream().limit(MAX).map(cc -> cc.getTarget()).collect(Collectors.toList());
+				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
 				
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 
