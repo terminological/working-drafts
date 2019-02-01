@@ -241,6 +241,7 @@ public class LitReviewAnalysis {
 								writer.write(("\n"+line.toString()).getBytes());
 								i++;
 							}
+							writer.write('\n');
 							writer.close();
 
 						} catch (Exception e) {
