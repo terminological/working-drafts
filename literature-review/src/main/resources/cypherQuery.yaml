@@ -309,6 +309,7 @@ analyse:
     RETURN DISTINCT
     id(t) as nodeId,
     a.community as community,
+    size,
     t.title as title,
     t.abstract as abstract
     
