@@ -184,7 +184,7 @@ analyse:
 # TODO: Ordered authors + journal name
 # collect(b.lastName) as authors,
   getArticlesByPagerank: |
-    MATCH (a:Article)<-[r:HAS_REFERENCE]-()
+    MATCH (a:Article)<-[r:HAS_REFERENCE*0..]-()
     RETURN DISTINCT
     a.title as title, 
     a.doi as doi, 
