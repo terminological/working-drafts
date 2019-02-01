@@ -163,7 +163,7 @@ public class LitReviewAnalysis {
 		driver.close();
 	}
 
-	@Test
+	/*@Test
 	public void articlesCSL() {
 		try ( Session session = driver.session() ) {
 
@@ -190,7 +190,7 @@ public class LitReviewAnalysis {
 				return true;
 			});
 		}
-	}
+	}*/
 
 	//TODO: Top N articles plus scores
 	//TODO: Top N Articles in community
@@ -260,7 +260,7 @@ public class LitReviewAnalysis {
 
 	}
 
-	@Test
+	/*@Test
 	@Deprecated
 	// Probably better to export and do in R
 	public void plotAgeOfArticles() {
@@ -287,9 +287,9 @@ public class LitReviewAnalysis {
 				return true;
 			});
 		}
-	}
+	}*/
 
-	@Test 
+	/*@Test 
 	@Deprecated
 	public void plotArticlesByJournal() {
 		try ( Session session = driver.session() ) {
@@ -314,9 +314,9 @@ public class LitReviewAnalysis {
 				return true;
 			});
 		}
-	}
+	}*/
 
-	@Test
+	/*@Test
 	@Deprecated
 	//Export and do in R
 	public void plotCommunityStats() {
@@ -363,7 +363,7 @@ public class LitReviewAnalysis {
 				return true;
 			});
 		}
-	}
+	}*/
 
 	@Test
 	public void plotCooccurrenceOfMeshCodes() {
@@ -578,7 +578,7 @@ public class LitReviewAnalysis {
 						//.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.withSelector(c -> c.getTermsByTfidf(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.map(wt -> wt.scale(100000)))
-						.execute(outDir.resolve("CommunityAffiliations"+id+".png"));
+						.execute(outDir.resolve("CommunityAffiliations"+letter(id)+".png"));
 				}
 				//plotCommunityWordcloud(texts,community,"Affiliations");
 				return true;
@@ -612,7 +612,7 @@ public class LitReviewAnalysis {
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.map(wt -> wt.scale(10000)))
-						.execute(outDir.resolve("CommunityContent"+id+".png"));
+						.execute(outDir.resolve("CommunityContent"+letter(id)+".png"));
 				}
 				
 				return true;
@@ -774,7 +774,7 @@ public class LitReviewAnalysis {
 							.filter(t -> t.getTopicId() == id)
 							.flatMap(t -> t.streamTerms())
 							.map(wt -> wt.scale(10000)))
-						.execute(outDir.resolve("TopicContent"+letter(id)+".png"));
+						.execute(outDir.resolve("TopicContent"+id+".png"));
 				
 					top.streamDocuments().forEach(wd -> {
 						
