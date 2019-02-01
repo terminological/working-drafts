@@ -143,4 +143,4 @@ topicArticleGroupXmap = getTopicArticleCommunity %>% mutate(articleGroup = artic
 
 ggplot(topicArticleGroupXmap, aes(x=topic, y=articleGroup, fill=totalScore)) +
   geom_tile(colour = "white") +
-  scale_fill_gradient(low = "white",high = "steelblue"))
+  scale_fill_gradient(low = "white",high = "steelblue")
