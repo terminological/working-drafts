@@ -79,7 +79,8 @@ quick_html(htTop10Articles, file="~/Dropbox/litReview/output/top10Refs.html")
 
 top5ByTopic <- getTopicDocuments %>% left_join(getArticlesByPagerank, by="nodeId") %>% group_by(topic) %>%
   top_n(5,weight) %>%
-  mutate(reference = sub("\\[[0-9]+\\]","",node)) # %>% select(topic,reference,weight) 
+  mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
+  select(topic,reference,weight) 
 
 htTop5ByTopic <- as_huxtable(top5ByTopic, add_colnames = TRUE) %>% 
   set_bold(1, 1:3, TRUE) %>% 
