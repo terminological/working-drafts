@@ -537,7 +537,7 @@ public class LitReviewAnalysis {
 			res.stream().forEach(r -> {
 					tmp.add(Counted.create(
 							r.get("community").asNumber().intValue(),
-							r.get("community").asNumber().intValue()));
+							r.get("articles").asNumber().intValue()));
 			});
 			
 			topCommunities = tmp.stream().limit(size).map(cc -> cc.getTarget()).collect(Collectors.toList());
