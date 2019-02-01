@@ -19,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,7 @@ import uk.co.terminological.nlptools.Document;
 import uk.co.terminological.nlptools.Filters;
 import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.nlptools.WordCloudBuilder;
+import uk.co.terminological.nlptools.Counted;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
@@ -515,6 +519,8 @@ public class LitReviewAnalysis {
 		}
 	}*/
 	
+	static int MAX = 6;
+	
 	@Test
 	public void plotCommunityAffiliations() {
 		try ( Session session = driver.session() ) {
@@ -524,19 +530,22 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityAffiliations");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = affiliationCorpus();
-				List<Integer> communities = new ArrayList<>();
+				SortedSet<Counted<Integer>> communities = Counted.descending();
  				
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
-					if (!communities.contains(next)) communities.add(next);
+					Integer size = r.get("size").asInt();
+					communities.add(Counted.create(next, size));
 					r.get("affiliations").asList(Values.ofString()).forEach(aff -> { 
 						Document doc = texts.addDocument(aff);
 						doc.addMetadata("community", next);
 					});
 				}
 				
-				for (Integer community: communities.subList(0, 10)) {
-					int id = communities.indexOf(community);
+				int id=0;
+				for (Counted<Integer> community: communities) {
+					if (id > MAX) break;
+					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
@@ -557,11 +566,12 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
-				List<Integer> communities = new ArrayList<>();
+				SortedSet<Counted<Integer>> communities = Counted.descending();
  				
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
-					if (!communities.contains(next)) communities.add(next);
+					Integer size = r.get("size").asInt();
+					communities.add(Counted.create(next, size));
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
@@ -569,8 +579,10 @@ public class LitReviewAnalysis {
 					doc.addMetadata("community",next);
 				}
 				
-				for (Integer community: communities.subList(0, 10)) {
-					int id = communities.indexOf(community);
+				int id=0;
+				for (Counted<Integer> community: communities) {
+					if (id > MAX) break;
+					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
@@ -591,22 +603,22 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts2");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
-				List<Integer> top10community = new ArrayList<>();
-				
+				SortedSet<Counted<Integer>> communities = Counted.descending();
+ 				
 				for( Record r : res) {
-
-					Integer i = r.get("community").asInt();
-					if (top10community.size() < 10 && !top10community.contains(i)) top10community.add(i);
+					Integer next = r.get("community").asInt();
+					Integer size = r.get("size").asInt();
+					communities.add(Counted.create(next, size));
 					String nodeId = r.get("nodeId").asNumber().toString();
 					String title = r.get("title").asString();
 					String abstrct = r.get("abstract").asString();
 					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
-					doc.addMetadata("community",i);
+					doc.addMetadata("community",next);
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 
 				}
 
-				
+				List<Integer> top10community = communities.stream().limit(MAX).map(cc -> cc.getTarget()).collect(Collectors.toList());
 				
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 

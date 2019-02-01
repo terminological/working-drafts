@@ -34,4 +34,6 @@ public class Counted<T> implements Comparable<Counted<T>> {
 		return comp == 0 ? hashCode()-o.hashCode() : comp;
 	}
 	
+	
+	
 }
