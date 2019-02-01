@@ -683,6 +683,38 @@ public class LitReviewAnalysis {
 		return (new String[] {"I","II","III","IV","V","VI","VII","VIII","IX","X","XI"})[id];
 	}
 	
+	@Test 
+	public void generateCommunityLabels() {
+		try ( Session session = driver.session() ) {
+			session.readTransaction( tx -> {
+				
+				List<Integer> article = topNArticleCommunities(tx, MAX);
+				try {
+					OutputStream out2 = Files.newOutputStream(outDir.resolve("getArticleGroupLabels.tsv"));
+					out2.write("articleGroup\tlabel\n".getBytes());
+					article.stream().forEach(t -> 
+						StreamExceptions.tryIgnore(
+							(""+t+"\t"+roman(article.indexOf(t))+"\n").getBytes(),
+							out2::write)
+					);
+				} catch (Exception e) {throw new RuntimeException(e);}
+				
+				List<Integer> author = topCommunitiesByArticles(tx, MAX);
+				try {
+					OutputStream out2 = Files.newOutputStream(outDir.resolve("getAuthorCommunityLabels.tsv"));
+					out2.write("authorCommunity\tlabel\n".getBytes());
+					article.stream().forEach(t -> 
+						StreamExceptions.tryIgnore(
+							(""+t+"\t"+letter(author.indexOf(t))+"\n").getBytes(),
+							out2::write)
+					);
+				} catch (Exception e) {throw new RuntimeException(e);}
+				
+				return true;
+			});
+		}
+	}
+	
 	@Test
 	public void plotTopicContent() {
 		try ( Session session = driver.session() ) {
