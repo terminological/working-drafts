@@ -549,7 +549,7 @@ public class LitReviewAnalysis {
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						.withSelector(c -> c.getTermsByMutualInformation(d -> community.getTarget().equals(d.getMetadata("community").orElse(null)))
-						.map(wt -> wt.scale(10000)))
+						.map(wt -> wt.scale(100000)))
 						.execute(outDir.resolve("CommunityAffiliations"+id+".png"));
 				}
 				//plotCommunityWordcloud(texts,community,"Affiliations");
