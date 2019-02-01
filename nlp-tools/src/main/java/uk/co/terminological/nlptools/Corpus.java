@@ -50,11 +50,7 @@ public class Corpus {
 	}
 	
 	public static Corpus create() {
-		return new Corpus(
-			string -> string.replaceAll("[_,\\.]"," ").replaceAll("[^a-zA-Z0-9\\s]", "-").replaceAll("\\s+", " ").toLowerCase(),
-			string -> Stream.of(string.split("\\s+")).filter(s -> !s.equals("-")),
-			Collections.emptyList()
-		);
+		return new Corpus(Normaliser.DEFAULT,Tokeniser.DEFAULT,Collections.emptyList());
 	}
 	
 	public Corpus withTokenFilter(Predicate<String> filter) {
