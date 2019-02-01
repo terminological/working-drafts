@@ -24,6 +24,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
@@ -524,7 +525,7 @@ public class LitReviewAnalysis {
 		}
 	}*/
 	
-	static int MAX = 6;
+	static int MAX = 10;
 	
 	List<Integer> topCommunities = null;
 	
@@ -684,7 +685,7 @@ public class LitReviewAnalysis {
 					});
 				});
 				
-				Streams.concat(
+				Stream<Triple<String,String,Double>> display = Streams.concat(
 						topicCommunityCorrelation.stream().map(t -> 
 							Triple.create(
 									"Topic "+letter(t.getFirst()),
@@ -699,7 +700,7 @@ public class LitReviewAnalysis {
 				
 				try {
 					fig.withNewChart("Topic community relationships", ChartType.CHORD)
-						.withSeries(topicCommunityCorrelation.stream())
+						.withSeries(display)
 						.bind(ID, t -> t.getFirst(), "source")
 						.bind(STRENGTH, t -> t.getThird())
 						.bind(ID, t -> t.getSecond(), "target")
