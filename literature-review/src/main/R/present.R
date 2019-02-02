@@ -146,6 +146,8 @@ ggplot(topicArticleGroupXmap, aes(x=as.factor(topic), y=articleGroup, fill=total
   scale_fill_gradient(low = "white",high = "steelblue") +
   xlab("topic") + ylab("article group")
 
+chisq.test(xtabs(totalScore ~ as.factor(topic) + articleGroup, topicArticleGroupXmap), correct=TRUE)
+
 topicAuthorCommunityXmap = getTopicCommunity %>% mutate(authorCommunity = community) %>% left_join(getAuthorCommunityLabels) %>%
   select(topic,authorCommunity = label,totalScore)
 
@@ -153,6 +155,8 @@ ggplot(topicAuthorCommunityXmap, aes(x=as.factor(topic), y=authorCommunity, fill
   geom_tile(colour = "white") +
   scale_fill_gradient(low = "white",high = "green") +
   xlab("topic") + ylab("author community")
+
+chisq.test(xtabs(totalScore ~ as.factor(topic) + authorCommunity, topicAuthorCommunityXmap), correct=TRUE)
 
 articleGroupAuthorCommunityXmap = getAuthorCommunityArticleGroup %>% 
   mutate(articleGroup = articleCommunity) %>% 
@@ -167,4 +171,4 @@ ggplot(articleGroupAuthorCommunityXmap , aes(x=articleGroup, y=authorCommunity, 
   xlab("topic") + ylab("author community")
 
 table(articleGroupAuthorCommunityXmap)
-
+chisq.test(xtabs(totalScore ~ articleGroup + authorCommunity, articleGroupAuthorCommunityXmap), correct=TRUE)
