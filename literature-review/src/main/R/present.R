@@ -165,3 +165,6 @@ ggplot(articleGroupAuthorCommunityXmap , aes(x=articleGroup, y=authorCommunity, 
   geom_tile(colour = "white") +
   scale_fill_gradient(low = "white",high = "orange") +
   xlab("topic") + ylab("author community")
+
+table(articleGroupAuthorCommunityXmap)
+
