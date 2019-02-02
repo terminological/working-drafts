@@ -141,6 +141,27 @@ quick_html(htAuthorsByCommunity, file="~/Dropbox/litReview/output/top5AuthorsByC
 topicArticleGroupXmap = getTopicArticleCommunity %>% mutate(articleGroup = articleCommunity) %>% left_join(getArticleGroupLabels) %>%
   select(topic,articleGroup=label,totalScore)
 
-ggplot(topicArticleGroupXmap, aes(x=topic, y=articleGroup, fill=totalScore)) +
+ggplot(topicArticleGroupXmap, aes(x=as.factor(topic), y=articleGroup, fill=totalScore)) +
   geom_tile(colour = "white") +
-  scale_fill_gradient(low = "white",high = "steelblue")
+  scale_fill_gradient(low = "white",high = "steelblue") +
+  xlab("topic") + ylab("article group")
+
+topicAuthorCommunityXmap = getTopicCommunity %>% mutate(authorCommunity = community) %>% left_join(getAuthorCommunityLabels) %>%
+  select(topic,authorCommunity = label,totalScore)
+
+ggplot(topicAuthorCommunityXmap, aes(x=as.factor(topic), y=authorCommunity, fill=totalScore)) +
+  geom_tile(colour = "white") +
+  scale_fill_gradient(low = "white",high = "green") +
+  xlab("topic") + ylab("author community")
+
+articleGroupAuthorCommunityXmap = getAuthorCommunityArticleGroup %>% 
+  mutate(articleGroup = articleCommunity) %>% 
+  left_join(getArticleGroupLabels) %>%
+  mutate(articleGroup = label) %>% select(-label) %>%
+  left_join(getAuthorCommunityLabels) %>%
+  select(articleGroup,authorCommunity = label,totalScore)
+
+ggplot(articleGroupAuthorCommunityXmap , aes(x=articleGroup, y=authorCommunity, fill=totalScore)) +
+  geom_tile(colour = "white") +
+  scale_fill_gradient(low = "white",high = "orange") +
+  xlab("topic") + ylab("author community")
