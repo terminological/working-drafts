@@ -87,6 +87,20 @@ defaultLayout = function(hux) {
     set_valign(everywhere,everywhere,"top") )
 }
 
+mergeCells = function(hux) {
+  tmpHux = hux
+  for (tt in unique(hux[[1]][-1])) {
+    tmp = seq(1,length(hux[[1]][-1])+1)
+    l = min(tmp[hux[[1]] == tt])
+    r = max(tmp[hux[[1]] == tt])
+    tmpHux <- merge_cells(tmpHux, l:r, 1)
+    tmpHux <- tmpHux %>% set_top_border(l, everywhere, 1)
+  }
+  return(tmpHux)
+}
+
+##############################################
+
 top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
   select(reference = node,pagerank) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
@@ -97,6 +111,7 @@ htTop10Articles <- defaultLayout(as_huxtable(top10articles, add_colnames = TRUE)
 quick_html(htTop10Articles, file="~/Dropbox/litReview/output/top10Refs.html")
 # quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
 
+###############################################
 
 top10CitedArticles<-getArticlesByPagerank %>%
   mutate(citedByCount = as.numeric(citedByCount)) %>% top_n(10, citedByCount) %>%
@@ -111,6 +126,8 @@ htTop10CitedArticles <- defaultLayout(as_huxtable(top10CitedArticles, add_colnam
 quick_html(htTop10CitedArticles, file="~/Dropbox/litReview/output/top10CitedRefs.html")
 # quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
 
+###############################################
+
 top5ByTopic <- getTopicDocuments %>% left_join(getArticlesByPagerank, by="nodeId") %>% group_by(topic) %>%
   top_n(5,weight) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
@@ -122,15 +139,7 @@ htTop5ByTopic <- defaultLayout(as_huxtable(top5ByTopic, add_colnames = TRUE)) %>
   set_width("400pt") %>%
   set_col_width(c(.1, .7, .2)) %>%
   set_caption('Top 5 articles by topic')
-
-for (tt in (top5ByTopic %>% distinct(topic))$topic ) {
-  tmp = seq(2,nrow(top5ByTopic)+1)
-  l = min(tmp[top5ByTopic$topic == tt])
-  r = max(tmp[top5ByTopic$topic == tt])
-  htTop5ByTopic <- merge_cells(htTop5ByTopic, l:r, 1)
-  htTop5ByTopic <- htTop5ByTopic %>% set_top_border(l, 1:3, 1)
-}
-
+htTop5ByTopic = mergeCells(htTop5ByTopic)
 quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
 
 ##################################################
@@ -143,6 +152,7 @@ top5ByAuthorCommunity <- getAuthorCommunityArticles %>%
   left_join(getArticlesByPagerank, by="nodeId") %>% group_by(community) %>%
   mutate(pagerank = pagerank.x) %>%
   top_n(5,pagerank) %>%
+  filter(row_number() < 6) %>%
   arrange(desc(pagerank), .by_group = TRUE) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(community,reference,pagerank) 
@@ -153,21 +163,35 @@ htTop5ByAuthorCommunity <- defaultLayout(as_huxtable(top5ByAuthorCommunity, add_
   set_width("400pt") %>%
   set_col_width(c(.1, .7, .2)) %>%
   set_caption('Top 5 articles by author community')
+htTop5ByAuthorCommunity <- mergeCells(htTop5ByAuthorCommunity)
 
-mergeCells = function(hux) {
-  tmpHux = hux
-  for (tt in unique(hux[[1]][-1])) {
-    tmp = seq(1,length(hux[[1]][-1]))
-    l = min(tmp[hux[[1]] == tt])
-    r = max(tmp[hux[[1]] == tt])
-    tmpHux <- merge_cells(tmpHux, l:r, 1)
-    tmpHux <- tmpHux %>% set_top_border(l, everywhere, 1)
-  }
-}
-  
-mergeCells(htTop5ByAuthorCommunity)
+quick_html(htTop5ByAuthorCommunity, file="~/Dropbox/litReview/output/top5RefsByAuthorCommunity.html")
 
-quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
+##################################################
+
+
+top5ByArticleGroup <- getArticlesByPagerank %>%
+  mutate(articleGroup=articleCommunity) %>%
+  inner_join(getArticleGroupLabels, by="articleGroup") %>%
+  mutate(articleGroup = label) %>%
+  group_by(articleGroup) %>%
+  top_n(5,pagerank) %>%
+  filter(row_number() < 6) %>%
+  arrange(desc(pagerank), .by_group = TRUE) %>%
+  mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
+  select(articleGroup,reference,pagerank) 
+
+htTop5ByArticleGroup <- defaultLayout(as_huxtable(top5ByArticleGroup, add_colnames = TRUE)) %>% 
+  set_align(1, 3, 'right') %>%
+  set_align(everywhere, 1, 'left') %>%
+  set_width("400pt") %>%
+  set_col_width(c(.1, .7, .2)) %>%
+  set_caption('Top 5 articles by article group')
+htTop5ByArticleGroup <- mergeCells(htTop5ByArticleGroup)
+
+quick_html(htTop5ByArticleGroup, file="~/Dropbox/litReview/output/top5RefsByArticleGroup.html")
+
+##############################################
 
 authorCommunityByMember <- getAuthorCommunityLabels %>% 
   mutate(community = authorCommunity) %>% 
@@ -183,17 +207,11 @@ htAuthorsByCommunity <- defaultLayout(as_huxtable(authorCommunityByMember, add_c
   set_align(1, 4, 'right') %>%
   set_col_width(c(.1, .3, .5, .1)) %>%
   set_caption('Top 5 pageranked researchers in community')
-  
-for (tt in getAuthorCommunityLabels$label ) {
-  tmp = seq(2,nrow(authorCommunityByMember)+1)
-  l = min(tmp[authorCommunityByMember$community == tt])
-  r = max(tmp[authorCommunityByMember$community == tt])
-  htAuthorsByCommunity <- merge_cells(htAuthorsByCommunity, l:r, 1)
-  htAuthorsByCommunity <- htAuthorsByCommunity %>% set_top_border(l, 1:4, 1)
-}
+htAuthorsByCommunity = mergeCells(htAuthorsByCommunity)
 
 quick_html(htAuthorsByCommunity, file="~/Dropbox/litReview/output/top5AuthorsByCommunity.html")
 
+##########################################################
 # confusion matrices
 
 topicArticleGroupXmap = getTopicArticleCommunity %>% mutate(articleGroup = articleCommunity) %>% left_join(getArticleGroupLabels) %>%
