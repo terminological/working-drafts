@@ -138,7 +138,7 @@ quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html"
 
 top5ByAuthorCommunity <- getAuthorCommunityArticles %>%
   mutate(authorCommunity=community) %>%
-  left_join(getAuthorCommunityLabels, by="authorCommunity") %>%
+  inner_join(getAuthorCommunityLabels, by="authorCommunity") %>%
   mutate(nodeId=articleId, community=label) %>%
   left_join(getArticlesByPagerank, by="nodeId") %>% group_by(community) %>%
   mutate(pagerank = pagerank.x) %>%
@@ -147,20 +147,25 @@ top5ByAuthorCommunity <- getAuthorCommunityArticles %>%
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(community,reference,pagerank) 
 
-htTop5ByTopic <- defaultLayout(as_huxtable(top5ByTopic, add_colnames = TRUE)) %>% 
+htTop5ByAuthorCommunity <- defaultLayout(as_huxtable(top5ByAuthorCommunity, add_colnames = TRUE)) %>% 
   set_align(1, 3, 'right') %>%
   set_align(everywhere, 1, 'left') %>%
   set_width("400pt") %>%
   set_col_width(c(.1, .7, .2)) %>%
-  set_caption('Top 5 articles by topic')
+  set_caption('Top 5 articles by author community')
 
-for (tt in (top5ByTopic %>% distinct(topic))$topic ) {
-  tmp = seq(2,nrow(top5ByTopic)+1)
-  l = min(tmp[top5ByTopic$topic == tt])
-  r = max(tmp[top5ByTopic$topic == tt])
-  htTop5ByTopic <- merge_cells(htTop5ByTopic, l:r, 1)
-  htTop5ByTopic <- htTop5ByTopic %>% set_top_border(l, 1:3, 1)
+mergeCells = function(hux) {
+  tmpHux = hux
+  for (tt in unique(hux[[1]][-1])) {
+    tmp = seq(1,length(hux[[1]][-1]))
+    l = min(tmp[hux[[1]] == tt])
+    r = max(tmp[hux[[1]] == tt])
+    tmpHux <- merge_cells(tmpHux, l:r, 1)
+    tmpHux <- tmpHux %>% set_top_border(l, everywhere, 1)
+  }
 }
+  
+mergeCells(htTop5ByAuthorCommunity)
 
 quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
 
