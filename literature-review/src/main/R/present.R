@@ -68,12 +68,19 @@ save_plot("~/Dropbox/litReview/output/figure1.png", figure1pg, base_width = 5)
 # plotArticlesByPagerank_DateDomainCitedBy
 #Could fit linear model to log of citedByCount, and determine residuals
 
-# plotArticlesByPagerank_DatePagerank <- ggplot(getArticlesByPagerank, aes(x=as.Date(date),y=pagerank))+
-#   geom_point()+
-#   xlab("date")+ylab("pagerank")+ 
-#   geom_smooth(method='lm')+
-#   coord_cartesian(xlim = as.Date(c('2005-01-01', '2019-01-01')))
+# plotArticlesByPagerank_DatePagerank <- ggplot(
+#   getArticlesByPagerank, 
+#   aes(x=as.factor(year(as.Date(date))),y=pagerank))+
+#   geom_violin(na.rm = TRUE, scale = "count")+
+#   xlab("date")+ylab("pagerank")+
+#   # geom_smooth(method='lm')+
+#   coord_cartesian(
+# #    xlim = as.factor(year(as.Date(c('2005-01-01', '2019-01-01')))),
+#     ylim = c(0.15, 0.175)
+#     )
 # plotArticlesByPagerank_DatePagerank
+
+###########################################
 
 defaultLayout = function(hux) {
   return( hux %>% 
