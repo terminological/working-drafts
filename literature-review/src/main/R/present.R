@@ -68,12 +68,12 @@ save_plot("~/Dropbox/litReview/output/figure1.png", figure1pg, base_width = 5)
 # plotArticlesByPagerank_DateDomainCitedBy
 #Could fit linear model to log of citedByCount, and determine residuals
 
-plotArticlesByPagerank_DatePagerank <- ggplot(getArticlesByPagerank, aes(x=as.Date(date),y=pagerank))+
-  geom_point()+
-  xlab("date")+ylab("pagerank")+ 
-  geom_smooth(method='lm')+
-  coord_cartesian(xlim = as.Date(c('2005-01-01', '2019-01-01')))
-plotArticlesByPagerank_DatePagerank
+# plotArticlesByPagerank_DatePagerank <- ggplot(getArticlesByPagerank, aes(x=as.Date(date),y=pagerank))+
+#   geom_point()+
+#   xlab("date")+ylab("pagerank")+ 
+#   geom_smooth(method='lm')+
+#   coord_cartesian(xlim = as.Date(c('2005-01-01', '2019-01-01')))
+# plotArticlesByPagerank_DatePagerank
 
 defaultLayout = function(hux) {
   return( hux %>% 
@@ -84,7 +84,7 @@ defaultLayout = function(hux) {
     set_width("400pt") %>%
     set_wrap(TRUE) %>%
     set_all_padding(everywhere,everywhere,2) %>%
-    set_valign(everywhere,everywhere,"bottom") )
+    set_valign(everywhere,everywhere,"top") )
 }
 
 top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
@@ -95,6 +95,20 @@ htTop10Articles <- defaultLayout(as_huxtable(top10articles, add_colnames = TRUE)
   set_col_width(c(.8, .2)) %>%
   set_caption('Top 10 articles by page rank')
 quick_html(htTop10Articles, file="~/Dropbox/litReview/output/top10Refs.html")
+# quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
+
+
+top10CitedArticles<-getArticlesByPagerank %>%
+  mutate(citedByCount = as.numeric(citedByCount)) %>% top_n(10, citedByCount) %>%
+  arrange(desc(citedByCount)) %>%
+  select(reference = node,citedByCount) %>%
+  mutate(reference = sub("\\[[0-9]+\\]","",reference))
+htTop10CitedArticles <- defaultLayout(as_huxtable(top10CitedArticles, add_colnames = TRUE)) %>%
+  set_align(1, 2, 'right') %>%
+  set_col_width(c(.8, .2)) %>%
+  set_number_format(everywhere,2,0) %>%
+  set_caption('Top 10 articles by citation count')
+quick_html(htTop10CitedArticles, file="~/Dropbox/litReview/output/top10CitedRefs.html")
 # quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
 
 top5ByTopic <- getTopicDocuments %>% left_join(getArticlesByPagerank, by="nodeId") %>% group_by(topic) %>%
@@ -119,23 +133,49 @@ for (tt in (top5ByTopic %>% distinct(topic))$topic ) {
 
 quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
 
+##################################################
+
+
+top5ByAuthorCommunity <- getAuthorCommunityArticles %>%
+  mutate(authorCommunity=community) %>%
+  left_join(getAuthorCommunityLabels, by="authorCommunity") %>%
+  mutate(nodeId=articleId, community=label) %>%
+  left_join(getArticlesByPagerank, by="nodeId") %>% group_by(community) %>%
+  mutate(pagerank = pagerank.x) %>%
+  top_n(5,pagerank) %>%
+  arrange(desc(pagerank), .by_group = TRUE) %>%
+  mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
+  select(community,reference,pagerank) 
+
+htTop5ByTopic <- defaultLayout(as_huxtable(top5ByTopic, add_colnames = TRUE)) %>% 
+  set_align(1, 3, 'right') %>%
+  set_align(everywhere, 1, 'left') %>%
+  set_width("400pt") %>%
+  set_col_width(c(.1, .7, .2)) %>%
+  set_caption('Top 5 articles by topic')
+
+for (tt in (top5ByTopic %>% distinct(topic))$topic ) {
+  tmp = seq(2,nrow(top5ByTopic)+1)
+  l = min(tmp[top5ByTopic$topic == tt])
+  r = max(tmp[top5ByTopic$topic == tt])
+  htTop5ByTopic <- merge_cells(htTop5ByTopic, l:r, 1)
+  htTop5ByTopic <- htTop5ByTopic %>% set_top_border(l, 1:3, 1)
+}
+
+quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
+
 authorCommunityByMember <- getAuthorCommunityLabels %>% 
   mutate(community = authorCommunity) %>% 
   left_join(getAuthorCoauthorHarmonicCentrality) %>%
   mutate(name = paste0(lastName,", ",firstName)) %>%
-  mutate(affiliation = str_trunc(affiliation,50,"right")) %>%
+  # mutate(affiliation = str_trunc(affiliation,50,"right")) %>%
+  mutate(affiliation = str_extract(affiliation, "([^,]+,[^,]+)|([^,]*)")) %>%
   group_by(label) %>% top_n(5,pagerank) %>%
   arrange(desc(pagerank), .by_group = TRUE) %>%
   select(community = label, name, affiliation, pagerank)
 
-htAuthorsByCommunity <- as_huxtable(authorCommunityByMember, add_colnames = TRUE) %>% 
-  set_bold(1, 1:4, TRUE) %>% 
-  set_top_border(1, 1:4, 2) %>%
-  set_bottom_border(1, 1:4, 2) %>%
-  set_bottom_border(nrow(top5ByTopic)+1, 1:4, 1) %>%
+htAuthorsByCommunity <- defaultLayout(as_huxtable(authorCommunityByMember, add_colnames = TRUE)) %>% 
   set_align(1, 4, 'right') %>%
-  set_width("400pt") %>%
-  set_wrap(TRUE) %>%
   set_col_width(c(.1, .3, .5, .1)) %>%
   set_caption('Top 5 pageranked researchers in community')
   
