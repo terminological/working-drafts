@@ -52,6 +52,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
 import com.google.common.collect.Streams;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
@@ -794,7 +795,7 @@ public class LitReviewAnalysis {
 			throw new RuntimeException(e);
 		}
 		try {
-			Format oos = new Format(Files.newOutputStream(topicPath));
+			Output oos = new Output(Files.newOutputStream(topicPath));
 			kryo.writeObject(oos,result);
 			oos.close();
 		} catch (Exception e) {
