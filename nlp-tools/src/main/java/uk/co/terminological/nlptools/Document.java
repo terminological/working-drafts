@@ -74,10 +74,6 @@ public class Document extends SerialisationHelper implements Serializable {
 	
 	// ============ BEAN METHODS =====================
 	
-	public String getIdentifier() {
-		return identifier;
-	}
-	
 	public String getString() {
 		return string;
 	}
