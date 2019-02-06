@@ -85,7 +85,7 @@ public class CrossRefClient extends CachingApiClient {
 
 	static String baseUrl ="https://api.crossref.org/";
 
-	public Optional<SingleResult> getByDoi(String doi) throws BibliographicApiException {
+	public Optional<SingleResult> getByDoi(String doi) {
 		
 		String url = baseUrl+"works/"+encode(doi);
 		return this
