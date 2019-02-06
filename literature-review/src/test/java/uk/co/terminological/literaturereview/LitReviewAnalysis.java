@@ -738,6 +738,11 @@ public class LitReviewAnalysis {
 					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
 					doc.addMetadata("community",next);
 					doc.addMetadata("articleCommunity",artComm);
+					Optional<String> doi = Optional.ofNullable(r.get("doi").asString());
+					Optional<String> pmid = Optional.ofNullable(r.get("pmid").asString());
+					doi.ifPresent(d -> doc.addMetadata("doi",d));
+					pmid.ifPresent(p -> doc.addMetadata("pmid",p));
+					
 					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
 
 					if (top10community.contains(next) && top10articleCommunity.contains(artComm)) {
@@ -755,6 +760,8 @@ public class LitReviewAnalysis {
 
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
 				result.printTopics(10);
+				
+				//TODO: SERIALIZE CORPUS
 				
 				EavMap<Integer,Integer,Double> articleCommunityCorrelation = new EavMap<>();
 				EavMap<Integer,Integer,Double> topicCommunityCorrelation = new EavMap<>();
@@ -890,7 +897,9 @@ public class LitReviewAnalysis {
 	@Test
 	public void testModels() {
 		//TODO: re-run pubmed query for 6 month period in 2017 and 6 month in 2018
-		//TODO: find references 
+		//TODO: find references from Xref (as dois) and pubmed (as pmids)
+		//TODO: Predict article topic from model
+		//TODO: Identify if graph contains each reference and if so author community, article community, and topic of that reference
 		
 	}
 }

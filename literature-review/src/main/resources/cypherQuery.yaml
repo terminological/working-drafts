@@ -337,6 +337,8 @@ analyse:
     id(t) as nodeId,
     a.community as community,
     t.articleCommunity as articleCommunity,
+    t.doi as doi,
+    t.pmid as pmid,
     size,
     t.title as title,
     t.abstract as abstract
