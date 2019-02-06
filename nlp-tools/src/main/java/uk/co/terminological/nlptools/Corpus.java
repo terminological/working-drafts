@@ -257,8 +257,8 @@ public class Corpus implements Serializable {
 	 * in the corpus presented in descending order. Missing values are zero.
 	 * @return
 	 */
-	public Stream<Weighted<Map.Entry<Term,Term>>> getMutualInformation() {
-		SortedSet<Weighted<Map.Entry<Term,Term>>> out = Weighted.descending();
+	public Stream<Weighted<Tuple<Term,Term>>> getMutualInformation() {
+		SortedSet<Weighted<Tuple<Term,Term>>> out = Weighted.descending();
 		this.terms.values().forEach(source -> {
 			source.mutualInformation().forEach(tv -> out.add(Weighted.create(Tuple.create(source, tv.getTarget()),  tv.getWeight())));
 		});
@@ -270,8 +270,8 @@ public class Corpus implements Serializable {
 	 * in the corpus. it is presented in term order.
 	 * @return
 	 */
-	public Stream<Weighted<Map.Entry<Term,Term>>> getNormalisedMutualInformation() {
-		List<Weighted<Map.Entry<Term,Term>>> out = new ArrayList<>();
+	public Stream<Weighted<Tuple<Term,Term>>> getNormalisedMutualInformation() {
+		List<Weighted<Tuple<Term,Term>>> out = new ArrayList<>();
 		//EavMap<Term,Term,Double> out = new EavMap<Term,Term,Double>();
 		HashSet<Term> targets = new HashSet<Term>(this.terms.values());
 		this.terms.values().forEach(source -> {
@@ -287,8 +287,8 @@ public class Corpus implements Serializable {
 		return out.stream();
 	}
 	
-	public Stream<Weighted<Map.Entry<Term,Term>>> getCollocations(int span) {
-		SortedSet<Weighted<Map.Entry<Term,Term>>> out = Weighted.descending();
+	public Stream<Weighted<Tuple<Term,Term>>> getCollocations(int span) {
+		SortedSet<Weighted<Tuple<Term,Term>>> out = Weighted.descending();
 		this.terms.values().forEach(source -> {
 			source.chiSqCollocations(span).forEach((wt) -> {
 				out.add(Weighted.create(Tuple.create(source,wt.getTarget()), wt.getWeight()));
