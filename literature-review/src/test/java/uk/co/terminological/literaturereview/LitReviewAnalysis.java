@@ -965,7 +965,7 @@ public class LitReviewAnalysis {
 		
 		
 		Optional<Search> result = biblioApi.getEntrez().buildSearchQuery(broaderSearch)
-			.betweenDates(LocalDate.of(2017, 1, 1), LocalDate.of(2019, 1, 1))
+			.betweenDates(LocalDate.of(2017, 1, 1), LocalDate.of(2018, 12, 31))
 			.execute();
 		
 		result.ifPresent(r -> {
