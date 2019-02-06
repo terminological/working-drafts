@@ -29,7 +29,7 @@ import cc.mallet.types.TokenSequence;
  */
 public class Document extends SerialisationHelper implements Serializable {
 	
-	private String identifier;
+	
 	private String string;
 	private String normalised;
 	private List<TermInstance> termSequence = new ArrayList<>();
@@ -39,7 +39,7 @@ public class Document extends SerialisationHelper implements Serializable {
 	private SortedSet<Weighted<Topic>> topics = Weighted.descending();
 	
 	protected Document(String id, String string, Corpus corpus) {
-		this.identifier = id;
+		super(id);
 		this.corpus = corpus;
 		this.string = string;
 		//TODO: retain positional information
@@ -95,11 +95,11 @@ public class Document extends SerialisationHelper implements Serializable {
 	}
 	
 	public int hashCode() {
-		return identifier.hashCode();
+		return getIdentifier().hashCode();
 	}
 	
 	public boolean equals(Object o) {
-		if (o instanceof Document) return ((Document) o).identifier.equals(this.identifier);
+		if (o instanceof Document) return ((Document) o).getIdentifier().equals(this.getIdentifier());
 		else return false;
 	}
 	
