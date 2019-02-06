@@ -113,12 +113,12 @@ public class PubMedGraphExperiment {
 		BibliographicApis biblioApi = BibliographicApis.create(secretsPath);
 		GraphDatabaseApi graphApi = GraphDatabaseApi.create(graphOptionsPath, graphConfPath);
 
-		String search = prop.getProperty("search");
+		//String search = prop.getProperty("search");
 		String broaderSearch = prop.getProperty("broader-search");
 		LocalDate earliest = LocalDate.parse(prop.getProperty("earliest"));
 		LocalDate latest = LocalDate.parse(prop.getProperty("latest"));
 
-		execute(graphApi, biblioApi, workingDir, outputDir, search, broaderSearch, earliest, latest);
+		execute(graphApi, biblioApi, workingDir, outputDir, broaderSearch, earliest, latest);
 
 		graphApi.waitAndShutdown();
 	}
@@ -130,7 +130,7 @@ public class PubMedGraphExperiment {
 	
 	public static class PMIDList extends ArrayList<String> {}
 
-	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String search, String broaderSearch, LocalDate earliest, LocalDate latest) throws IOException {
+	public static void execute(GraphDatabaseApi graphApi, BibliographicApis biblioApi, Path workingDir, Path outputDir, String broaderSearch, LocalDate earliest, LocalDate latest) throws IOException {
 
 		log.error("Starting graphDb build");
 		PubMedGraphSchema.setupSchema(graphApi);
@@ -143,7 +143,7 @@ public class PubMedGraphExperiment {
 		.withApi(graphApi)
 		.withApi(biblioApi)
 		.withApi(new PMIDList())
-		.withEventGenerator(searchPubMed(search, earliest, latest))
+		.withEventGenerator(searchPubMed(broaderSearch, earliest, latest))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(PMID_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(DOI_STUB))
 		.withEventGenerator(GraphDatabaseWatcher.newLabelTrigger(EXPAND))

@@ -983,16 +983,17 @@ public class LitReviewAnalysis {
 								.flatMap(w -> w.getCitations())
 								.flatMap(ref -> ref.getIdentifier().stream())
 								.collect(Collectors.toList());
-						
+						//TODO: Check whether references are in corpus (found / not found)
+						//TODO: Check whether topic scores agree???
+						//TODO: get author community for each reference (as a SortedSet<Counted<Integer>>)
+						//TODO: get article group for each reference (as a SortedSet<Counted<Integer>>)
+						//TODO: write into a csv
 					});
 			});
 		});
 		
 		
-		//TODO: re-run pubmed query for 6 month period in 2017 and 6 month in 2018
-		//TODO: find references from Xref (as dois) and pubmed (as pmids)
-		//TODO: Predict article topic from model
-		//TODO: Identify if graph contains each reference and if so author community, article community, and topic of that reference
+		
 
 	}
 }
