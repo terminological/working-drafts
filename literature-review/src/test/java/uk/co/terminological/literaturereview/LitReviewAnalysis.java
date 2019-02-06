@@ -68,8 +68,8 @@ import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
 import uk.co.terminological.nlptools.Filter;
+import uk.co.terminological.nlptools.Result;
 import uk.co.terminological.nlptools.TopicModelBuilder;
-import uk.co.terminological.nlptools.TopicModelBuilder.Result;
 import uk.co.terminological.nlptools.Weighted;
 import uk.co.terminological.nlptools.WordCloudBuilder;
 import uk.co.terminological.nlptools.Counted;
@@ -748,19 +748,19 @@ public class LitReviewAnalysis {
 
 	static String TOPIC_MODEL = "topicModel.ser";
 
-	private TopicModelBuilder.Result getTopicModel() {
+	private Result getTopicModel() {
 		Kryo kryo = new Kryo();
-	    kryo.register(TopicModelBuilder.Result.class);
+	    kryo.register(Result.class);
 		Path topicPath = cacheDir.resolve(TOPIC_MODEL);
 		try {
 			if (Files.exists(topicPath)) {
 				Input oid = new Input(Files.newInputStream(topicPath));
-				return kryo.readObject(oid,TopicModelBuilder.Result.class);
+				return kryo.readObject(oid,Result.class);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		TopicModelBuilder.Result result = null;
+		Result result = null;
 		try {
 			Session session = driver.session();
 			Transaction tx = session.beginTransaction();
@@ -812,7 +812,7 @@ public class LitReviewAnalysis {
 
 				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
 				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
-				TopicModelBuilder.Result result = getTopicModel();
+				Result result = getTopicModel();
 				result.printTopics(10);
 				EavMap<Integer,Integer,Double> authorArticleCorrelation = new EavMap<>();
 				Corpus texts = result.getCorpus();
