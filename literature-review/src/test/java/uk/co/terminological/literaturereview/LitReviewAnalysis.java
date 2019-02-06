@@ -972,6 +972,11 @@ public class LitReviewAnalysis {
 		TopicModelResult topic = getTopicModel();
 		//TODO: Fully recreate the database limited to 2017 and before.
 		
+		OutputStream topicCsv = Files.newOutputStream(outDir.resolve("getTestSetTopics.tsv"));
+		topicCsv.write("doi\ttopic\tscore\n".getBytes());
+		
+		OutputStream refsCsv = Files.newOutputStream(outDir.resolve("getTestSetReferences.tsv"));
+		topicCsv.write("doi\treferenceDoi\n".getBytes());
 		
 		Optional<Search> result = biblioApi.getEntrez().buildSearchQuery(broaderSearch)
 			.betweenDates(LocalDate.of(2017, 1, 1), LocalDate.of(2018, 12, 31))
@@ -986,12 +991,25 @@ public class LitReviewAnalysis {
 						//String pmid = e.getPMID().get();
 						String abstrct = e.getAbstract().orElse("");
 						String title = e.getTitle().orElse("");
-						SortedSet<Weighted<Integer>> topicScores = topic.predict(title+abstrct);
-						List<String> referenceDois = biblioApi.getCrossref().getByDoi(doi).stream()
+						SortedSet<Weighted<Integer>> topicScores = topic.predict((title+"\n"+abstrct).trim());
+						topicScores.forEach(wt -> {
+							try {
+								topicCsv.write((doi+"\t"+wt.getTarget()+"\t"+wt.getWeight()+"\n").getBytes());
+							} catch (IOException e1) {
+								throw new RuntimeException(e1);
+							}
+						});
+						biblioApi.getCrossref().getByDoi(doi).stream()
 								.map(sr -> sr.getWork())
 								.flatMap(w -> w.getCitations())
 								.flatMap(ref -> ref.getIdentifier().stream())
-								.collect(Collectors.toList());
+								.forEach(refDoi -> {
+									try {
+										refsCsv.write((doi+"\t"+refDoi+"\n").getBytes());
+									} catch (IOException e1) {
+										throw new RuntimeException(e1);
+									}
+								});						
 						//TODO: Check whether references are in corpus (found / not found)
 						//TODO: Check whether topic scores agree???
 						//TODO: get author community for each reference (as a SortedSet<Counted<Integer>>)
@@ -1001,8 +1019,8 @@ public class LitReviewAnalysis {
 			});
 		});
 		
-		
-		
+		topicCsv.close();
+		refsCsv.close();
 
 	}
 }
