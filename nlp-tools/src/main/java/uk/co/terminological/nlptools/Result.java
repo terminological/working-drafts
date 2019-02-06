@@ -105,7 +105,7 @@ public class Result implements Serializable {
 	}
 
 	public Corpus getCorpus() {
-		return builder.corpus;
+		return builder.getCorpus();
 	}
 
 	public SortedSet<Weighted<Integer>> predict(String string) {
