@@ -44,7 +44,7 @@ public class Result implements Serializable {
 	}
 
 	public int getTopicCount() {
-		return builder.topics;
+		return builder.getTopics();
 	}
 	
 	public Stream<Topic> getTopicsForDocuments() {
