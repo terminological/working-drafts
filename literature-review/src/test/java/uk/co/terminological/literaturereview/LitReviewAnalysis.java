@@ -8,6 +8,8 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -106,6 +108,7 @@ public class LitReviewAnalysis {
 	Map<String,String> queries;
 	// List<Integer> communityIndex = new ArrayList<>();
 	Path outDir;
+	Path cacheDir;
 
 	/*private String getCommunityName(int community) {
 		int i = getCommunityIndex(community);
@@ -151,6 +154,7 @@ public class LitReviewAnalysis {
 		InputStream inputStream = PubMedGraphAnalysis.class.getClassLoader().getResourceAsStream("cypherQuery.yaml");
 		obj = yaml.load(inputStream);
 		outDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/output");
+		cacheDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/cache");
 		fig = Figure.outputTo(outDir.toFile());
 
 		affiliationStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForAffiliation").split("\n"));
@@ -715,6 +719,53 @@ public class LitReviewAnalysis {
 		}
 	}
 	
+	static String TOPIC_MODEL = "topicModel.ser";
+	
+	private TopicModelBuilder.Result getTopicModel() throws IOException, ClassNotFoundException {
+		Path topicPath = cacheDir.resolve(TOPIC_MODEL);
+		if (Files.exists(topicPath)) {
+			ObjectInputStream oid = new ObjectInputStream(Files.newInputStream(topicPath));
+			return (TopicModelBuilder.Result) oid.readObject();
+		}
+		TopicModelBuilder.Result result = null;
+		try {
+			Session session = driver.session();
+			Transaction tx = session.beginTransaction();
+
+			String qry = queries.get("getAuthorCommunityTitlesAbstracts");
+			List<Record> res = tx.run( qry ).list();
+			Corpus texts = textCorpus();
+
+			for( Record r : res) {
+				Integer next = r.get("community").asInt();
+				Integer artComm = r.get("articleCommunity").asInt();
+				String nodeId = r.get("nodeId").asNumber().toString();
+				String title = r.get("title").asString();
+				String abstrct = r.get("abstract").asString();
+				Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
+				doc.addMetadata("community",next);
+				doc.addMetadata("articleCommunity",artComm);
+				Optional<String> doi = Optional.ofNullable(r.get("doi").asString());
+				Optional<String> pmid = Optional.ofNullable(r.get("pmid").asString());
+				doi.ifPresent(d -> doc.addMetadata("doi",d));
+				pmid.ifPresent(p -> doc.addMetadata("pmid",p));
+
+			}
+
+			result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
+			tx.close();
+			session.close();
+			
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(topicPath));
+		oos.writeObject(result);
+		oos.close();
+		return result;
+	}
+	
+	
 	@Test
 	public void plotTopicContent() {
 		try ( Session session = driver.session() ) {
@@ -761,7 +812,7 @@ public class LitReviewAnalysis {
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
 				result.printTopics(10);
 				
-				//TODO: SERIALIZE CORPUS 
+				//TODO: SERIALIZE RESULT
 				
 				EavMap<Integer,Integer,Double> articleCommunityCorrelation = new EavMap<>();
 				EavMap<Integer,Integer,Double> topicCommunityCorrelation = new EavMap<>();
