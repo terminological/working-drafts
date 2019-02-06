@@ -51,6 +51,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.collect.Streams;
 
+import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Output;
 import uk.co.terminological.bibliography.record.PrintRecord;
@@ -110,6 +111,9 @@ public class LitReviewAnalysis {
 	// List<Integer> communityIndex = new ArrayList<>();
 	Path outDir;
 	Path cacheDir;
+	Path secretsFile;
+	Properties prop;
+	
 
 	/*private String getCommunityName(int community) {
 		int i = getCommunityIndex(community);
@@ -157,16 +161,14 @@ public class LitReviewAnalysis {
 		
 		String propFilename = "~/Dropbox/litReview/project.prop";
 		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
-		Properties prop = System.getProperties();
+		prop = System.getProperties();
 		prop.load(Files.newInputStream(propPath));
 
 		prop.forEach((k,v) -> prop.put(k, v.toString().replace("~", System.getProperty("user.home")))); 
-		//Path graphDbPath = fromProperty(prop,"graph-db-directory");
-		//Path graphConfPath = fromProperty(prop,"graph-conf-file");
 		outDir = fromProperty(prop,"output-directory");
 		cacheDir = fromProperty(prop,"working-directory");
-		// outDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/output");
-		// cacheDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/cache");
+		secretsFile = fromProperty(prop,"bibliography-secrets");
+		
 		fig = Figure.outputTo(outDir.toFile());
 
 		affiliationStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForAffiliation").split("\n"));
@@ -946,7 +948,13 @@ public class LitReviewAnalysis {
 	}
 
 	@Test
-	public void testModels() {
+	public void testModels() throws IOException {
+		
+		String broaderSearch = prop.getProperty("broader-search");
+		BibliographicApis biblioApi = BibliographicApis.create(secretsFile);
+		
+		
+		
 		//TODO: re-run pubmed query for 6 month period in 2017 and 6 month in 2018
 		//TODO: find references from Xref (as dois) and pubmed (as pmids)
 		//TODO: Predict article topic from model

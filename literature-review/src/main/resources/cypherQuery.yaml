@@ -339,6 +339,7 @@ analyse:
     t.articleCommunity as articleCommunity,
     t.doi as doi,
     t.pmid as pmid,
+    "Expand" in labels(t) as isOriginalSearch,
     size,
     t.title as title,
     t.abstract as abstract
