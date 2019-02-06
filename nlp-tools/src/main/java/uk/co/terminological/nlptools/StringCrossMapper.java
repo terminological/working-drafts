@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,7 +23,7 @@ import org.apache.commons.text.similarity.SimilarityScore;
 import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.datatypes.Triple;
 
-public class StringCrossMapper {
+public class StringCrossMapper implements Serializable {
 
 	Map<String,Document> sources = new LinkedHashMap<>();
 	Map<String,Document> targets = new HashMap<>();

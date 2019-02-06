@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -11,7 +12,7 @@ import org.apache.commons.math3.distribution.ChiSquaredDistribution;
 
 import cc.mallet.types.Token;
 
-public class Term {
+public class Term implements Serializable {
 
 	int id;
 	String tag;

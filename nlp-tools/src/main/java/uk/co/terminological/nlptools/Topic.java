@@ -1,10 +1,11 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Topic {
+public class Topic implements Serializable {
 
 	private int topicId;
 	private SortedSet<Weighted<Term>> terms = Weighted.descending();

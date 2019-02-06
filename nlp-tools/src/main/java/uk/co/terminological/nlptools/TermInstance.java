@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +9,7 @@ import java.util.Set;
 import cc.mallet.types.Token;
 import uk.co.terminological.datatypes.FluentList;
 
-public class TermInstance {
+public class TermInstance implements Serializable {
 
 	private Optional<TermInstance> previous = Optional.empty();
 	private Term current;

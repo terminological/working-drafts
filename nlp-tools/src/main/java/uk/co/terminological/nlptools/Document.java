@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ import cc.mallet.types.TokenSequence;
 /**
  * A document is an identifiable string associated with a corpus
  */
-public class Document {
+public class Document implements Serializable {
 	
 	private String identifier;
 	private String string;

@@ -1,9 +1,10 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Counted<T> implements Comparable<Counted<T>> {
+public class Counted<T> implements Comparable<Counted<T>>, Serializable {
 
 	
 
