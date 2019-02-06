@@ -266,6 +266,7 @@ public class Document implements Serializable {
 		return termCounts;
 	}
 
+	// see https://bugs.openjdk.java.net/browse/JDK-8201131
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException { 
 		in.defaultReadObject(); 
 	}
