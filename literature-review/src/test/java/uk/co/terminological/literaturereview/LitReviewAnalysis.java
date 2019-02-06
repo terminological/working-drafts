@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -153,13 +154,28 @@ public class LitReviewAnalysis {
 		Yaml yaml = new Yaml();
 		InputStream inputStream = PubMedGraphAnalysis.class.getClassLoader().getResourceAsStream("cypherQuery.yaml");
 		obj = yaml.load(inputStream);
-		outDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/output");
-		cacheDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/cache");
+		
+		String propFilename = "~/Dropbox/litReview/project.prop";
+		Path propPath= Paths.get(propFilename.replace("~", System.getProperty("user.home")));
+		Properties prop = System.getProperties();
+		prop.load(Files.newInputStream(propPath));
+
+		prop.forEach((k,v) -> prop.put(k, v.toString().replace("~", System.getProperty("user.home")))); 
+		//Path graphDbPath = fromProperty(prop,"graph-db-directory");
+		//Path graphConfPath = fromProperty(prop,"graph-conf-file");
+		outDir = fromProperty(prop,"output-directory");
+		cacheDir = fromProperty(prop,"working-directory");
+		// outDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/output");
+		// cacheDir = Paths.get(System.getProperty("user.home")+"/Dropbox/litReview/cache");
 		fig = Figure.outputTo(outDir.toFile());
 
 		affiliationStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForAffiliation").split("\n"));
 		textStopwords = Arrays.asList(((Map<String,String>) obj.get("config")).get("stopwordsForText").split("\n"));
 		queries = (Map<String,String> ) obj.get("analyse");
+	}
+	
+	static Path fromProperty(Properties prop, String name) {
+		return Paths.get(prop.getProperty(name).replace("~", System.getProperty("user.home")));
 	}
 
 	@After
@@ -778,7 +794,6 @@ public class LitReviewAnalysis {
 	public void plotTopicContent() {
 		try ( Session session = driver.session() ) {
 			session.readTransaction( tx -> {
-
 
 				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
 				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
