@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public class Similarity {
 	 * Move onto next term.
 	 * 
 	 */
-	public static <X> Double getEuclideanDistance(Stream<Weighted<X>> source, Stream<Weighted<X>> target) {
+	public static <X extends Serializable> Double getEuclideanDistance(Stream<Weighted<X>> source, Stream<Weighted<X>> target) {
 		
 		HashMap<X,Double> tmp = new HashMap<>();
 		
@@ -40,7 +41,7 @@ public class Similarity {
 	 * Move onto next term.
 	 * 
 	 */
-	public static <X> Double getCosineDifference(Stream<Weighted<X>> source, Stream<Weighted<X>> target) {
+	public static <X extends Serializable> Double getCosineDifference(Stream<Weighted<X>> source, Stream<Weighted<X>> target) {
 		
 		//List<Weighted<X>> tmpSource = new ArrayList<>();
 		HashMap<X,Double> tmpSource = new HashMap<>();
