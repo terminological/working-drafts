@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,7 @@ import cc.mallet.types.IDSorter;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.LabelSequence;
 
-public class TopicModelBuilder {
+public class TopicModelBuilder implements Serializable {
 
 	public static TopicModelBuilder create(Corpus corpus) {
 		return new TopicModelBuilder(corpus);
@@ -72,7 +73,7 @@ public class TopicModelBuilder {
 		}
 	}
 
-	public static class Result {
+	public static class Result implements Serializable {
 
 		public Result(ParallelTopicModel model, TopicModelBuilder builder) {
 			super();
@@ -83,15 +84,14 @@ public class TopicModelBuilder {
 
 		ParallelTopicModel model;
 		TopicModelBuilder builder;
-		TopicModelDiagnostics diag;
-
+		
 		public Alphabet getDataAlphabet() {
 			return builder.instances.getDataAlphabet();
 		};
 
 		public void printTopics(int terms) {
 			//PrintWriter pw = new PrintWriter(System.out);
-			diag = new TopicModelDiagnostics(model, terms);
+			TopicModelDiagnostics diag = new TopicModelDiagnostics(model, terms);
 			System.out.println(diag.toXML());
 			//model.topicPhraseXMLReport(pw, 30);
 			//pw.flush();

@@ -761,7 +761,7 @@ public class LitReviewAnalysis {
 				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
 				result.printTopics(10);
 				
-				//TODO: SERIALIZE CORPUS
+				//TODO: SERIALIZE CORPUS 
 				
 				EavMap<Integer,Integer,Double> articleCommunityCorrelation = new EavMap<>();
 				EavMap<Integer,Integer,Double> topicCommunityCorrelation = new EavMap<>();
