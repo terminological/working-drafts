@@ -27,7 +27,7 @@ import cc.mallet.types.TokenSequence;
 /**
  * A document is an identifiable string associated with a corpus
  */
-public class Document implements Serializable {
+public class Document extends SerialisationHelper implements Serializable {
 	
 	private String identifier;
 	private String string;
@@ -266,9 +266,6 @@ public class Document implements Serializable {
 		return termCounts;
 	}
 
-	// see https://bugs.openjdk.java.net/browse/JDK-8201131
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException { 
-		in.defaultReadObject(); 
-	}
+	
 	
 }
