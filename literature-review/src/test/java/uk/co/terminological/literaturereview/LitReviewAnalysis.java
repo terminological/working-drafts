@@ -974,10 +974,16 @@ public class LitReviewAnalysis {
 				es.stream().filter(e -> e.getDoi().isPresent())
 					.forEach(e -> {
 						String doi = e.getDoi().get();
-						String pmid = e.getPMID().get();
+						//String pmid = e.getPMID().get();
 						String abstrct = e.getAbstract().orElse("");
 						String title = e.getTitle().orElse("");
-						Weighted<Integer> topicScores = topic.predict(title+abstrct);
+						SortedSet<Weighted<Integer>> topicScores = topic.predict(title+abstrct);
+						List<String> referenceDois = biblioApi.getCrossref().getByDoi(doi).stream()
+								.map(sr -> sr.getWork())
+								.flatMap(w -> w.getCitations())
+								.flatMap(ref -> ref.getIdentifier().stream())
+								.collect(Collectors.toList());
+						
 					});
 			});
 		});
