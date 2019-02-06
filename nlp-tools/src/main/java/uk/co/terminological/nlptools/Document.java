@@ -224,17 +224,20 @@ public class Document implements Serializable {
 		List<Double> values = new ArrayList<>();
 		this.metadata.forEach((k,v) -> {
 			
-			Double value = null;
+			
 			if (v != null) {
+				
+				Double value = null;
 				if (v instanceof Boolean) value = ((boolean) v) ? 1D: 0D;
 				if (v instanceof Double) value = ((double) v);
 				if (v instanceof Integer) value = ((Integer) v).doubleValue();
+				int feature = keys.lookupIndex(k, true);
+				
+				features.add(feature);
+				values.add(value);
 			}
 			
-			int feature = keys.lookupIndex(k, true);
 			
-			features.add(feature);
-			values.add(value);
 		});
 		return new FeatureVector(keys, Ints.toArray(features), Doubles.toArray(values));
 		
