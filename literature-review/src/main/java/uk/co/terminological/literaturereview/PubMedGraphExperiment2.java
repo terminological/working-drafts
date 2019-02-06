@@ -464,19 +464,15 @@ public class PubMedGraphExperiment2 {
 	Set<String> findCrossRefReferencesFromNodes(Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
-			try {
-				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
-				tmp.ifPresent(t -> updateCrossRefMetadata(t.getWork(),graphApi));
-				List<Reference> referencedDois = tmp.stream()
-						.map(t -> t.getWork())
-						.flatMap(w -> w.getCitations())
-						.collect(Collectors.toList());
-				log.debug("Crossref found "+referencedDois.size()+" articles related to: "+doi);
-				mapCrossRefReferences(doi,referencedDois,graphApi);
-				outDois.addAll(referencedDois.stream().flatMap(c -> c.getIdentifier().stream()).map(s -> s.toLowerCase()).collect(Collectors.toSet()));
-			} catch (BibliographicApiException e) {
-				e.printStackTrace();
-			}
+			Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
+			tmp.ifPresent(t -> updateCrossRefMetadata(t.getWork(),graphApi));
+			List<Reference> referencedDois = tmp.stream()
+					.map(t -> t.getWork())
+					.flatMap(w -> w.getCitations())
+					.collect(Collectors.toList());
+			log.debug("Crossref found "+referencedDois.size()+" articles related to: "+doi);
+			mapCrossRefReferences(doi,referencedDois,graphApi);
+			outDois.addAll(referencedDois.stream().flatMap(c -> c.getIdentifier().stream()).map(s -> s.toLowerCase()).collect(Collectors.toSet()));
 		}
 		return outDois;
 	}
@@ -484,15 +480,11 @@ public class PubMedGraphExperiment2 {
 	Set<String> updateMetadataFromCrossRef(Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
-			try {
-				Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
-				tmp.ifPresent(t -> {
-						Optional<String> out = updateCrossRefMetadata(t.getWork(),graphApi);
-						out.ifPresent(o->outDois.add(o.toLowerCase()));
-						});
-			} catch (BibliographicApiException e) {
-				//e.printStackTrace();
-			}
+			Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
+			tmp.ifPresent(t -> {
+					Optional<String> out = updateCrossRefMetadata(t.getWork(),graphApi);
+					out.ifPresent(o->outDois.add(o.toLowerCase()));
+					});
 		}
 		return outDois;
 	}
