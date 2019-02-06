@@ -43,7 +43,7 @@ public class Corpus implements Serializable {
 	
 	
 	@SafeVarargs
-	public Corpus(Normaliser normaliser, Tokeniser tokeniser, List<String> stopwords, Predicate<String>... otherFilters) {
+	public Corpus(Normaliser normaliser, Tokeniser tokeniser, List<String> stopwords, Filter... otherFilters) {
 		this.normaliser = normaliser;
 		this.tokeniser = tokeniser;
 		this.filters.add(Filter.stopwords(stopwords, normaliser, tokeniser));
@@ -103,7 +103,7 @@ public class Corpus implements Serializable {
 		return tokeniser;
 	}
 
-	public List<Predicate<String>> getFilters() {
+	public List<Filter> getFilters() {
 		return filters;
 	}
 	
