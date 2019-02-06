@@ -46,16 +46,7 @@ public class Document extends SerialisationHelper implements Serializable {
 		//TODO: prenormalisation filtering.
 		//TODO: sentence splitter
 		//TODO: sentence normaliser not document normaliser
-		this.normalised = corpus.getNormaliser().apply(string);
-		Stream<String> tokens = corpus.getTokeniser().apply(normalised)
-			.filter(t -> {
-				//apply all the filters in sequence. 
-				//If any filter matches reject this token.
-				for (Predicate<String> filter: corpus.getFilters()) {
-					if (filter.test(t)) return false;
-				}
-				return true;
-			});
+		Stream<String> tokens = corpus.process(string);
 		TermInstance previous = null;
 		Iterator<String> tokenIt = tokens.iterator(); 
 		while (tokenIt.hasNext()) {

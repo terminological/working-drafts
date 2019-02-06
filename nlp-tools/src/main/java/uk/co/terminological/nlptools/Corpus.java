@@ -63,6 +63,20 @@ public class Corpus implements Serializable {
 		this.filters.add(Filter.stopwords(stopwords, normaliser, tokeniser));
 		return this;
 	}
+	
+	public Stream<String> process(String string) {
+		String normalised = getNormaliser().apply(string);
+		Stream<String> tokens = getTokeniser().apply(normalised)
+			.filter(t -> {
+				//apply all the filters in sequence. 
+				//If any filter matches reject this token.
+				for (Predicate<String> filter: getFilters()) {
+					if (filter.test(t)) return false;
+				}
+				return true;
+			});
+		return tokens;
+	}
 
 	// ============ BEAN METHODS =====================
 	
