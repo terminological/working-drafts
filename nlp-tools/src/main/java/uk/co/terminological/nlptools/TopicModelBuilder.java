@@ -34,7 +34,7 @@ public class TopicModelBuilder implements Serializable {
 		return this;
 	}
 
-	public Result execute(double alpha, double beta) {
+	public TopicModelResult execute(double alpha, double beta) {
 		try {
 			this.instances.addThruPipe(getCorpus().tokenSequenceIterator());
 			ParallelTopicModel model = new ParallelTopicModel(getTopics(), alpha*getTopics(), beta);
@@ -42,14 +42,14 @@ public class TopicModelBuilder implements Serializable {
 			model.setNumThreads(2);
 			model.setNumIterations(1000);
 			model.estimate();
-			return new Result(model,this);
+			return new TopicModelResult(model,this);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
 
-	public Result executeDMR() {
+	public TopicModelResult executeDMR() {
 		try {
 		this.instances.addThruPipe(getCorpus().tokenSequenceIterator());
 		DMRTopicModel model = new DMRTopicModel(getTopics());
@@ -57,7 +57,7 @@ public class TopicModelBuilder implements Serializable {
 		model.setNumThreads(2);
 		model.setNumIterations(1000);
 		model.estimate();
-		return new Result(model,this);
+		return new TopicModelResult(model,this);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

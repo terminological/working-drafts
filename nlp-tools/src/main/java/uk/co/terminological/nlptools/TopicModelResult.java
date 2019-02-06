@@ -18,9 +18,9 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.LabelSequence;
 
-public class Result implements Serializable {
+public class TopicModelResult implements Serializable {
 
-	public Result(ParallelTopicModel model, TopicModelBuilder builder) {
+	public TopicModelResult(ParallelTopicModel model, TopicModelBuilder builder) {
 		super();
 		this.model = model;
 		this.builder = builder;

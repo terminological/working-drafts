@@ -68,7 +68,7 @@ import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
 import uk.co.terminological.nlptools.Filter;
-import uk.co.terminological.nlptools.Result;
+import uk.co.terminological.nlptools.TopicModelResult;
 import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.nlptools.Weighted;
 import uk.co.terminological.nlptools.WordCloudBuilder;
@@ -748,19 +748,19 @@ public class LitReviewAnalysis {
 
 	static String TOPIC_MODEL = "topicModel.ser";
 
-	private Result getTopicModel() {
+	private TopicModelResult getTopicModel() {
 		Kryo kryo = new Kryo();
-	    kryo.register(Result.class);
+	    kryo.register(TopicModelResult.class);
 		Path topicPath = cacheDir.resolve(TOPIC_MODEL);
 		try {
 			if (Files.exists(topicPath)) {
 				Input oid = new Input(Files.newInputStream(topicPath));
-				return kryo.readObject(oid,Result.class);
+				return kryo.readObject(oid,TopicModelResult.class);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		Result result = null;
+		TopicModelResult result = null;
 		try {
 			Session session = driver.session();
 			Transaction tx = session.beginTransaction();
@@ -812,7 +812,7 @@ public class LitReviewAnalysis {
 
 				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
 				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
-				Result result = getTopicModel();
+				TopicModelResult result = getTopicModel();
 				result.printTopics(10);
 				EavMap<Integer,Integer,Double> authorArticleCorrelation = new EavMap<>();
 				Corpus texts = result.getCorpus();
@@ -965,7 +965,7 @@ public class LitReviewAnalysis {
 		
 		String broaderSearch = prop.getProperty("broader-search");
 		BibliographicApis biblioApi = BibliographicApis.create(secretsFile);
-		Result topic = getTopicModel();
+		TopicModelResult topic = getTopicModel();
 		//TODO: Fully recreate the database limited to 2017 and before.
 		
 		
