@@ -976,7 +976,7 @@ public class LitReviewAnalysis {
 		topicCsv.write("doi\ttopic\tscore\n".getBytes());
 		
 		OutputStream refsCsv = Files.newOutputStream(outDir.resolve("getTestSetReferences.tsv"));
-		topicCsv.write("doi\treferenceDoi\n".getBytes());
+		refsCsv.write("doi\treferenceDoi\n".getBytes());
 		
 		Optional<Search> result = biblioApi.getEntrez().buildSearchQuery(broaderSearch)
 			.betweenDates(LocalDate.of(2017, 1, 1), LocalDate.of(2018, 12, 31))
