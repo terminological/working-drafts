@@ -155,7 +155,7 @@ public class PubMedGraphExperiment2 {
 		
 		// get search results for broad catch all terms without any date constraints.
 		// This may be a large set and should be tested to be reasonable
-		Search broadSearch = fullSearchPubMed(this.broaderSearch).get();
+		Search broadSearch = searchPubMed(this.broaderSearch).get();
 		log.info("Pubmed broad search found {} articles",broadSearch.count().get());
 		
 		// once search is conducted use entrez history to retrieve result.
@@ -317,7 +317,7 @@ public class PubMedGraphExperiment2 {
 		}
 	}
 
-	Optional<Search> fullSearchPubMed(String search) {
+	/*Optional<Search> fullSearchPubMed(String search) {
 		try {
 			Optional<Search> tmp = biblioApi.getEntrez()
 					.buildSearchQuery(search)
@@ -328,7 +328,7 @@ public class PubMedGraphExperiment2 {
 			e.printStackTrace();
 			return Optional.empty();
 		}
-	}
+	}*/
 
 	List<Record> lookupIdMapping(List<String> ids, IdType ofType) {
 		List<Record> out = new ArrayList<>();
