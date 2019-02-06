@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Weighted<T> implements Comparable<Weighted<T>>, Serializable {
+public class Weighted<T extends Serializable> implements Comparable<Weighted<T>>, Serializable {
 
 	
 
@@ -19,13 +19,13 @@ public class Weighted<T> implements Comparable<Weighted<T>>, Serializable {
 		this.weight = d;
 	}
 	
-	public static <X> Weighted<X> create(X thing, Double d) {
+	public static <X extends Serializable> Weighted<X> create(X thing, Double d) {
 		return new Weighted<X>(thing, d);
 	}
 	
 	public String toString() {return thing.toString()+"(:"+weight.toString()+")";}
 	
-	public static <X> SortedSet<Weighted<X>> descending() {
+	public static <X extends Serializable> SortedSet<Weighted<X>> descending() {
 		return new TreeSet<Weighted<X>>();
 	}
 	
