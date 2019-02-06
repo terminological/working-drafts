@@ -749,13 +749,15 @@ public class LitReviewAnalysis {
 	static String TOPIC_MODEL = "topicModel.ser";
 
 	private TopicModelResult getTopicModel() {
-		Kryo kryo = new Kryo();
-	    kryo.register(TopicModelResult.class);
+		// Kryo kryo = new Kryo();
+	    // kryo.register(TopicModelResult.class);
 		Path topicPath = cacheDir.resolve(TOPIC_MODEL);
 		try {
 			if (Files.exists(topicPath)) {
-				Input oid = new Input(Files.newInputStream(topicPath));
-				return kryo.readObject(oid,TopicModelResult.class);
+				//Input oid = new Input(Files.newInputStream(topicPath));
+				//return kryo.readObject(oid,TopicModelResult.class);
+				ObjectInputStream oid = new ObjectInputStream(Files.newInputStream(topicPath));
+				return (TopicModelResult) oid.readObject();
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -795,8 +797,10 @@ public class LitReviewAnalysis {
 			throw new RuntimeException(e);
 		}
 		try {
-			Output oos = new Output(Files.newOutputStream(topicPath));
-			kryo.writeObject(oos,result);
+			//Output oos = new Output(Files.newOutputStream(topicPath));
+			//kryo.writeObject(oos,result);
+			ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(topicPath));
+			oos.writeObject(result);
 			oos.close();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
