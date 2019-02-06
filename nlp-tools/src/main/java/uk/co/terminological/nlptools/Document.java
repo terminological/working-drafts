@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -265,6 +266,8 @@ public class Document implements Serializable {
 		return termCounts;
 	}
 
-	
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException { 
+		in.defaultReadObject(); 
+	}
 	
 }
