@@ -56,7 +56,7 @@ import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
-import uk.co.terminological.nlptools.Filters;
+import uk.co.terminological.nlptools.Filter;
 import uk.co.terminological.nlptools.TopicModelBuilder;
 import uk.co.terminological.nlptools.WordCloudBuilder;
 import uk.co.terminological.nlptools.Counted;
@@ -483,15 +483,15 @@ public class LitReviewAnalysis {
 	private Corpus affiliationCorpus() {return 
 			Corpus.create()
 			.withStopwordFilter(affiliationStopwords)
-			.withTokenFilter(Filters.number())
-			.withTokenFilter(Filters.shorterThan(4));
+			.withTokenFilter(Filter.number())
+			.withTokenFilter(Filter.shorterThan(4));
 	}
 	
 	private Corpus textCorpus() {return 
 			Corpus.create()
 			.withStopwordFilter(textStopwords)
-			.withTokenFilter(Filters.number())
-			.withTokenFilter(Filters.shorterThan(4));
+			.withTokenFilter(Filter.number())
+			.withTokenFilter(Filter.shorterThan(4));
 	}
 	
 	/*private void plotCommunityWordcloud(Corpus texts, int community, String type) {
@@ -572,13 +572,13 @@ public class LitReviewAnalysis {
 				
 				int id = 0;
 				for (Integer community: topCommunitiesByArticles(tx,MAX)) {
-					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						//.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.withSelector(c -> c.getTermsByTfidf(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.map(wt -> wt.scale(100000)))
 						.execute(outDir.resolve("CommunityAffiliations"+letter(id)+".png"));
+					id++;
 				}
 				//plotCommunityWordcloud(texts,community,"Affiliations");
 				return true;
@@ -607,12 +607,12 @@ public class LitReviewAnalysis {
 				
 				int id=0;
 				for (Integer community: topCommunitiesByArticles(tx,MAX)) {
-					id++;
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
 						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
 						.map(wt -> wt.scale(10000)))
 						.execute(outDir.resolve("CommunityContent"+letter(id)+".png"));
+					id++;
 				}
 				
 				return true;
@@ -885,5 +885,12 @@ public class LitReviewAnalysis {
 				.done()
 				.render();
 		} catch (Exception e) {throw new RuntimeException(e);}
+	}
+	
+	@Test
+	public void testModels() {
+		//TODO: re-run pubmed query for 6 month period in 2017 and 6 month in 2018
+		//TODO: find references 
+		
 	}
 }

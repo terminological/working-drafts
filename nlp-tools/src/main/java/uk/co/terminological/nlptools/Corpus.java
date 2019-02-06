@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,13 +27,13 @@ import uk.co.terminological.datatypes.Tuple;
  * @author robchallen
  *
  */
-public class Corpus {
+public class Corpus implements Serializable {
 	
 	private Map<String,Term> terms = new HashMap<>();
 	private Map<String,Document> documents = new HashMap<>();
 	private Normaliser normaliser;
 	private Tokeniser tokeniser;
-	private List<Predicate<String>> filters = new ArrayList<>();
+	private List<Filter> filters = new ArrayList<>();
 	private int termsInCorpus;
 	private Map<Integer,Topic> topics = new HashMap<>();
 	//private Map<Term,Integer> termCounts = new HashMap<>();
@@ -45,7 +46,7 @@ public class Corpus {
 	public Corpus(Normaliser normaliser, Tokeniser tokeniser, List<String> stopwords, Predicate<String>... otherFilters) {
 		this.normaliser = normaliser;
 		this.tokeniser = tokeniser;
-		this.filters.add(Filters.stopwords(stopwords, normaliser, tokeniser));
+		this.filters.add(Filter.stopwords(stopwords, normaliser, tokeniser));
 		this.filters.addAll(Arrays.asList(otherFilters));
 	}
 	
@@ -53,13 +54,13 @@ public class Corpus {
 		return new Corpus(Normaliser.DEFAULT,Tokeniser.DEFAULT,Collections.emptyList());
 	}
 	
-	public Corpus withTokenFilter(Predicate<String> filter) {
+	public Corpus withTokenFilter(Filter filter) {
 		this.filters.add(filter);
 		return this;
 	}
 	
 	public Corpus withStopwordFilter(List<String> stopwords) {
-		this.filters.add(Filters.stopwords(stopwords, normaliser, tokeniser));
+		this.filters.add(Filter.stopwords(stopwords, normaliser, tokeniser));
 		return this;
 	}
 
