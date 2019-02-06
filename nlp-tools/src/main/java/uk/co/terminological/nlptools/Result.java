@@ -49,7 +49,7 @@ public class Result implements Serializable {
 	
 	public Stream<Topic> getTopicsForDocuments() {
 		
-		if (!builder.corpus.hasTopics()) {
+		if (!builder.getCorpus().hasTopics()) {
 			ArrayList<TreeSet<IDSorter>> topicSortedWords = model.getSortedWords();
 	        ArrayList<TreeSet<IDSorter>> topicSortedDocuments = model.getTopicDocuments(10.0);
 			Alphabet alphabet = getDataAlphabet();
@@ -59,13 +59,13 @@ public class Result implements Serializable {
 	        // Print results for each topic
 	        for (int topic = 0; topic < getTopicCount(); topic++) {
 	            TreeSet<IDSorter> sortedWords = topicSortedWords.get(topic);
-	            Topic top = builder.corpus.addTopic(topic);
+	            Topic top = builder.getCorpus().addTopic(topic);
 	            
 	            for (IDSorter info: sortedWords) {
 	            	//Double weight = info.getWeight();
 	            	Double probability = info.getWeight() / tokensPerTopic[topic];
 	                String term = alphabet.lookupObject(info.getID()).toString();
-	                Term t = builder.corpus.createTermFrom(term);
+	                Term t = builder.getCorpus().createTermFrom(term);
 	                Weighted<Term> wt = Weighted.create(t, probability);
 	                top.addTerm(wt);
 	            }
@@ -78,7 +78,7 @@ public class Result implements Serializable {
 	                double proportion = sorter.getWeight();
 	                String name = model.data.get(doc).instance.getName().toString();
 	                
-	                Optional<Document> optDoc = builder.corpus.getById(name);
+	                Optional<Document> optDoc = builder.getCorpus().getById(name);
 	                optDoc.ifPresent(d -> {
 	                	top.addDocument(Weighted.create(d, proportion));
 	                });
@@ -87,7 +87,7 @@ public class Result implements Serializable {
 	        }
 		}
 		
-        return builder.corpus.streamTopics();
+        return builder.getCorpus().streamTopics();
 		
 		
 	}

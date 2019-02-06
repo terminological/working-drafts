@@ -23,7 +23,7 @@ public class TopicModelBuilder implements Serializable {
 
 	private TopicModelBuilder(Corpus corpus) {
 
-		this.corpus = corpus;
+		this.setCorpus(corpus);
 		this.pipelist = new ArrayList<>();
 		this.pipelist.add( new TokenSequence2FeatureSequence() );
 		this.instances = new InstanceList(new SerialPipes(pipelist));
@@ -36,7 +36,7 @@ public class TopicModelBuilder implements Serializable {
 
 	public Result execute(double alpha, double beta) {
 		try {
-			this.instances.addThruPipe(corpus.tokenSequenceIterator());
+			this.instances.addThruPipe(getCorpus().tokenSequenceIterator());
 			ParallelTopicModel model = new ParallelTopicModel(getTopics(), alpha*getTopics(), beta);
 			model.addInstances(instances);
 			model.setNumThreads(2);
@@ -51,7 +51,7 @@ public class TopicModelBuilder implements Serializable {
 
 	public Result executeDMR() {
 		try {
-		this.instances.addThruPipe(corpus.tokenSequenceIterator());
+		this.instances.addThruPipe(getCorpus().tokenSequenceIterator());
 		DMRTopicModel model = new DMRTopicModel(getTopics());
 		model.addInstances(instances);
 		model.setNumThreads(2);
@@ -70,6 +70,14 @@ public class TopicModelBuilder implements Serializable {
 
 	public void setTopics(int topics) {
 		this.topics = topics;
+	}
+
+	public Corpus getCorpus() {
+		return corpus;
+	}
+
+	public void setCorpus(Corpus corpus) {
+		this.corpus = corpus;
 	}
 
 
