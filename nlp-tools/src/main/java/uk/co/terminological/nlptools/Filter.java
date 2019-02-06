@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Filters {
+public class Filter {
 
 	
 	
