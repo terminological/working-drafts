@@ -158,6 +158,10 @@ public class TopicModelBuilder implements Serializable {
 			}
 			return out;
 		}
+
+		public Corpus getCorpus() {
+			return builder.corpus;
+		}
 	}
 
 

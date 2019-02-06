@@ -768,12 +768,8 @@ public class LitReviewAnalysis {
 	
 	@Test
 	public void plotTopicContent() {
-		try ( Session session = driver.session() ) {
-			session.readTransaction( tx -> {
-
-				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
-				List<Record> res = tx.run( qry ).list();
-				Corpus texts = textCorpus();
+		TopicModelBuilder.Result result = getTopicModel();
+					Corpus texts = result.getCorpus();
 				
 				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
 				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
@@ -809,8 +805,7 @@ public class LitReviewAnalysis {
 				
 				// texts.getCollocations(5).stream().forEach(System.out::println);
 
-				TopicModelBuilder.Result result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
-				result.printTopics(10);
+				
 				
 				//TODO: SERIALIZE RESULT
 				
