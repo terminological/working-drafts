@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,9 +52,12 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.collect.Streams;
 
+import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Output;
+import uk.co.terminological.bibliography.entrez.PubMedEntries;
+import uk.co.terminological.bibliography.entrez.Search;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.StreamExceptions;
@@ -62,6 +66,8 @@ import uk.co.terminological.nlptools.Corpus;
 import uk.co.terminological.nlptools.Document;
 import uk.co.terminological.nlptools.Filter;
 import uk.co.terminological.nlptools.TopicModelBuilder;
+import uk.co.terminological.nlptools.TopicModelBuilder.Result;
+import uk.co.terminological.nlptools.Weighted;
 import uk.co.terminological.nlptools.WordCloudBuilder;
 import uk.co.terminological.nlptools.Counted;
 import uk.co.terminological.simplechart.ChartType;
@@ -950,11 +956,31 @@ public class LitReviewAnalysis {
 	}
 
 	@Test
-	public void testModels() throws IOException {
+	public void testModels() throws IOException, BibliographicApiException {
 		
 		String broaderSearch = prop.getProperty("broader-search");
 		BibliographicApis biblioApi = BibliographicApis.create(secretsFile);
+		Result topic = getTopicModel();
+		//TODO: Fully recreate the database limited to 2017 and before.
 		
+		
+		Optional<Search> result = biblioApi.getEntrez().buildSearchQuery(broaderSearch)
+			.betweenDates(LocalDate.of(2017, 1, 1), LocalDate.of(2019, 1, 1))
+			.execute();
+		
+		result.ifPresent(r -> {
+			Optional<PubMedEntries> entries = r.getStoredResult(biblioApi.getEntrez());
+			entries.ifPresent(es -> {
+				es.stream().filter(e -> e.getDoi().isPresent())
+					.forEach(e -> {
+						String doi = e.getDoi().get();
+						String pmid = e.getPMID().get();
+						String abstrct = e.getAbstract().orElse("");
+						String title = e.getTitle().orElse("");
+						Weighted<Integer> topicScores = topic.predict(title+abstrct);
+					});
+			});
+		});
 		
 		
 		//TODO: re-run pubmed query for 6 month period in 2017 and 6 month in 2018

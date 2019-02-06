@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
@@ -13,9 +14,11 @@ import cc.mallet.pipe.SerialPipes;
 import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.topics.DMRTopicModel;
 import cc.mallet.topics.ParallelTopicModel;
+import cc.mallet.topics.TopicInferencer;
 import cc.mallet.topics.TopicModelDiagnostics;
 import cc.mallet.types.Alphabet;
 import cc.mallet.types.IDSorter;
+import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.LabelSequence;
 
@@ -161,6 +164,21 @@ public class TopicModelBuilder implements Serializable {
 
 		public Corpus getCorpus() {
 			return builder.corpus;
+		}
+
+		public SortedSet<Weighted<Integer>> predict(String string) {
+			
+			InstanceList testing = new InstanceList(builder.instances.getPipe());
+	        testing.addThruPipe(new Instance(string, null, "test instance", null));
+
+	        TopicInferencer inferencer = model.getInferencer();
+	        double[] testProbabilities = inferencer.getSampledDistribution(testing.get(0), 10, 1, 5);
+	        System.out.println("0\t" + testProbabilities[0]);
+	        SortedSet<Weighted<Integer>> out = Weighted.descending();
+	        for (int i =0 ; i<testProbabilities.length; i++) {
+	        	out.add(Weighted.create(i, testProbabilities[i]));
+	        }
+			return out;
 		}
 	}
 
