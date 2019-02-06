@@ -232,9 +232,10 @@ public class Document implements Serializable {
 				if (v instanceof Double) value = ((double) v);
 				if (v instanceof Integer) value = ((Integer) v).doubleValue();
 				int feature = keys.lookupIndex(k, true);
-				
-				features.add(feature);
-				values.add(value);
+				if (value != null) {
+					features.add(feature);
+					values.add(value);
+				}
 			}
 			
 			
