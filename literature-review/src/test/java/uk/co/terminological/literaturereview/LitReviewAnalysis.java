@@ -123,7 +123,7 @@ public class LitReviewAnalysis {
 		}
 		return i;
 	}*/
-	
+
 	/*void plot(Figure fig, String name, List<String> list, Integer community, List<String> stopwords) {
 		try {
 			Integer i = getCommunity(community);
@@ -199,7 +199,7 @@ public class LitReviewAnalysis {
 	//TODO: Top N articles plus scores
 	//TODO: Top N Articles in community
 	//TODO: Top N Articles in topic
-	
+
 	@Test
 	public void writeToCsv() {
 		try ( Session session = driver.session() ) {
@@ -210,7 +210,7 @@ public class LitReviewAnalysis {
 
 						StatementResult qryR = tx.run( qry );
 						List<Record> res = qryR.list();
-						
+
 						CiteProcProvider prov = new CiteProcProvider();
 						res.forEach(r -> {
 							r.values().forEach(f -> {
@@ -221,8 +221,8 @@ public class LitReviewAnalysis {
 								} catch (Exception e) {}
 							});
 						});
-						
-						
+
+
 						Path path = outDir.resolve(name+".tsv");
 						try {
 							List<String> cits = new ArrayList<>();
@@ -230,7 +230,7 @@ public class LitReviewAnalysis {
 								cits = Arrays.asList(
 										prov.orderedCitations("ieee", Output.text).getEntries());
 							}
-							
+
 							OutputStream writer = Files.newOutputStream(path);
 							writer.write(qryR.keys().stream().collect(Collectors.joining("\t")).getBytes());
 							int i = 0;
@@ -490,21 +490,21 @@ public class LitReviewAnalysis {
 			.withTokenFilter(Filter.number())
 			.withTokenFilter(Filter.shorterThan(4));
 	}
-	
+
 	private Corpus textCorpus() {return 
 			Corpus.create()
 			.withStopwordFilter(textStopwords)
 			.withTokenFilter(Filter.number())
 			.withTokenFilter(Filter.shorterThan(4));
 	}
-	
+
 	/*private void plotCommunityWordcloud(Corpus texts, int community, String type) {
 		WordCloudBuilder.from(texts, 200, 600, 600)
 		.withSelector(c -> c.getTermsByTotalEntropy().map(wt -> wt.scale(100)))
 		.withColourScheme(ColourScheme.sequential(community))
 		.execute(outDir.resolve("Community"+type+community+".png"));
 	}*/
-	
+
 	/*@Test
 	public void plotCommunityAffiliations() {
 		try ( Session session = driver.session() ) {
@@ -514,7 +514,7 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityAffiliations");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = affiliationCorpus();
-				
+
 				Integer community = null;
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
@@ -531,30 +531,30 @@ public class LitReviewAnalysis {
 			});
 		}
 	}*/
-	
+
 	static int MAX = 10;
-	
+
 	List<Integer> topCommunities = null;
-	
+
 	private List<Integer> topCommunitiesByArticles(Transaction tx, int size) {
 		if (topCommunities == null) {
-			
+
 			String qry = queries.get("getAuthorCommunityStats");
 			List<Record> res = tx.run( qry ).list();
 			SortedSet<Counted<Integer>> tmp = Counted.descending();
-	
+
 			res.stream().forEach(r -> {
-					tmp.add(Counted.create(
-							r.get("community").asNumber().intValue(),
-							r.get("articles").asNumber().intValue()));
+				tmp.add(Counted.create(
+						r.get("community").asNumber().intValue(),
+						r.get("articles").asNumber().intValue()));
 			});
-			
+
 			topCommunities = tmp.stream().limit(size).map(cc -> cc.getTarget()).collect(Collectors.toList());
-		
+
 		}
 		return topCommunities;
 	}
-	
+
 	@Test
 	public void plotCommunityAffiliations() {
 		try ( Session session = driver.session() ) {
@@ -564,7 +564,7 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityAffiliations");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = affiliationCorpus();
-				
+
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
 					// Integer size = r.get("size").asInt();
@@ -573,15 +573,15 @@ public class LitReviewAnalysis {
 						doc.addMetadata("community", next);
 					});
 				}
-				
+
 				int id = 0;
 				for (Integer community: topCommunitiesByArticles(tx,MAX)) {
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
-						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
-						//.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
-						.withSelector(c -> c.getTermsByTfidf(d -> community.equals(d.getMetadata("community").orElse(null)))
-						.map(wt -> wt.scale(100000)))
-						.execute(outDir.resolve("CommunityAffiliations"+letter(id)+".png"));
+					.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
+					//.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
+					.withSelector(c -> c.getTermsByTfidf(d -> community.equals(d.getMetadata("community").orElse(null)))
+							.map(wt -> wt.scale(100000)))
+					.execute(outDir.resolve("CommunityAffiliations"+letter(id)+".png"));
 					id++;
 				}
 				//plotCommunityWordcloud(texts,community,"Affiliations");
@@ -598,7 +598,7 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getAuthorCommunityTitlesAbstracts");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
-				
+
 				for( Record r : res) {
 					Integer next = r.get("community").asInt();
 					//Integer size = r.get("size").asInt();
@@ -608,43 +608,43 @@ public class LitReviewAnalysis {
 					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
 					doc.addMetadata("community",next);
 				}
-				
+
 				int id=0;
 				for (Integer community: topCommunitiesByArticles(tx,MAX)) {
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
-						.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
-						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
-						.map(wt -> wt.scale(10000)))
-						.execute(outDir.resolve("CommunityContent"+letter(id)+".png"));
+					.withColourScheme(ColourScheme.sequential(id).darker(0.25F))
+					.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("community").orElse(null)))
+							.map(wt -> wt.scale(10000)))
+					.execute(outDir.resolve("CommunityContent"+letter(id)+".png"));
 					id++;
 				}
-				
+
 				return true;
 			});
 		}
 	}
 
 	List<Integer> topArticleCommunities = null;
-	
+
 	private List<Integer> topNArticleCommunities(Transaction tx,int size) {
 		if (topArticleCommunities == null) {
 			String qry = queries.get("getArticleCommunityTitlesAbstracts");
 			List<Record> res = tx.run( qry ).list();
-			
+
 			Map<Integer,Integer> communityCount = new HashMap<>();
 			for( Record r : res) {
 				Integer next = r.get("articleCommunity").asInt();
 				communityCount.merge(next, 1, (v1,v2)->v1+v2);
 			}
-			
+
 			topArticleCommunities = communityCount.entrySet().stream()
-		       .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-		       .limit(MAX).map((kv) -> kv.getKey()).collect(Collectors.toList());
-			}
-		
+					.sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+					.limit(MAX).map((kv) -> kv.getKey()).collect(Collectors.toList());
+		}
+
 		return topArticleCommunities;
 	}
-	
+
 	@Test
 	public void plotArticleCommunityContent() {
 		try ( Session session = driver.session() ) {
@@ -653,7 +653,7 @@ public class LitReviewAnalysis {
 				String qry = queries.get("getArticleCommunityTitlesAbstracts");
 				List<Record> res = tx.run( qry ).list();
 				Corpus texts = textCorpus();
-				
+
 				for( Record r : res) {
 					Integer next = r.get("articleCommunity").asInt();
 					//Integer size = r.get("size").asInt();
@@ -663,69 +663,73 @@ public class LitReviewAnalysis {
 					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
 					doc.addMetadata("articleCommunity",next);
 				}
-				
+
 				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
 				for (Integer community: top10articleCommunity) {
 					int id = top10articleCommunity.indexOf(community);
 					WordCloudBuilder.from(texts, 200, 600, 600).circular()
-						.withColourScheme(ColourScheme.sequential3(id).darker(0.25F))
-						.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("articleCommunity").orElse(null)))
-						.map(wt -> wt.scale(10000)))
-						.execute(outDir.resolve("ArticleCommunityContent"+roman(id)+".png"));
+					.withColourScheme(ColourScheme.sequential3(id).darker(0.25F))
+					.withSelector(c -> c.getTermsByMutualInformation(d -> community.equals(d.getMetadata("articleCommunity").orElse(null)))
+							.map(wt -> wt.scale(10000)))
+					.execute(outDir.resolve("ArticleCommunityContent"+roman(id)+".png"));
 				}
-				
+
 				return true;
 			});
 		}
 	}
-	
+
 	private String letter(int id) {
 		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(id % 26, id % 26+1);
 	}
-	
+
 	private String roman(int id) {
 		return (new String[] {"I","II","III","IV","V","VI","VII","VIII","IX","X","XI"})[id];
 	}
-	
+
 	@Test 
 	public void generateCommunityLabels() {
 		try ( Session session = driver.session() ) {
 			session.readTransaction( tx -> {
-				
+
 				List<Integer> article = topNArticleCommunities(tx, MAX);
 				try {
 					OutputStream out2 = Files.newOutputStream(outDir.resolve("getArticleGroupLabels.tsv"));
 					out2.write("articleGroup\tlabel\n".getBytes());
 					article.stream().forEach(t -> 
-						StreamExceptions.tryIgnore(
+					StreamExceptions.tryIgnore(
 							(""+t+"\t"+roman(article.indexOf(t))+"\n").getBytes(),
 							out2::write)
-					);
+							);
 				} catch (Exception e) {throw new RuntimeException(e);}
-				
+
 				List<Integer> author = topCommunitiesByArticles(tx, MAX);
 				try {
 					OutputStream out2 = Files.newOutputStream(outDir.resolve("getAuthorCommunityLabels.tsv"));
 					out2.write("authorCommunity\tlabel\n".getBytes());
 					author.stream().forEach(t -> 
-						StreamExceptions.tryIgnore(
+					StreamExceptions.tryIgnore(
 							(""+t+"\t"+letter(author.indexOf(t))+"\n").getBytes(),
 							out2::write)
-					);
+							);
 				} catch (Exception e) {throw new RuntimeException(e);}
-				
+
 				return true;
 			});
 		}
 	}
-	
+
 	static String TOPIC_MODEL = "topicModel.ser";
-	
-	private TopicModelBuilder.Result getTopicModel() throws IOException, ClassNotFoundException {
+
+	private TopicModelBuilder.Result getTopicModel() {
 		Path topicPath = cacheDir.resolve(TOPIC_MODEL);
-		if (Files.exists(topicPath)) {
-			ObjectInputStream oid = new ObjectInputStream(Files.newInputStream(topicPath));
-			return (TopicModelBuilder.Result) oid.readObject();
+		try {
+			if (Files.exists(topicPath)) {
+				ObjectInputStream oid = new ObjectInputStream(Files.newInputStream(topicPath));
+				return (TopicModelBuilder.Result) oid.readObject();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		TopicModelBuilder.Result result = null;
 		try {
@@ -755,149 +759,135 @@ public class LitReviewAnalysis {
 			result = TopicModelBuilder.create(texts).withTopics(10).execute(0.1,0.1);
 			tx.close();
 			session.close();
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(topicPath));
-		oos.writeObject(result);
-		oos.close();
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(topicPath));
+			oos.writeObject(result);
+			oos.close();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		return result;
 	}
-	
-	
+
+
 	@Test
 	public void plotTopicContent() {
-		TopicModelBuilder.Result result = getTopicModel();
-					Corpus texts = result.getCorpus();
-				
+		try ( Session session = driver.session() ) {
+			session.readTransaction( tx -> {
+
+
 				List<Integer> top10community = topCommunitiesByArticles(tx,MAX);
 				List<Integer> top10articleCommunity = topNArticleCommunities(tx, MAX);
-				
+				TopicModelBuilder.Result result = getTopicModel();
+				result.printTopics(10);
 				EavMap<Integer,Integer,Double> authorArticleCorrelation = new EavMap<>();
- 				
-				for( Record r : res) {
-					Integer next = r.get("community").asInt();
-					Integer artComm = r.get("articleCommunity").asInt();
-					String nodeId = r.get("nodeId").asNumber().toString();
-					String title = r.get("title").asString();
-					String abstrct = r.get("abstract").asString();
-					Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
-					doc.addMetadata("community",next);
-					doc.addMetadata("articleCommunity",artComm);
-					Optional<String> doi = Optional.ofNullable(r.get("doi").asString());
-					Optional<String> pmid = Optional.ofNullable(r.get("pmid").asString());
-					doi.ifPresent(d -> doc.addMetadata("doi",d));
-					pmid.ifPresent(p -> doc.addMetadata("pmid",p));
-					
-					//doc.addMetadata("qtr",r.get("qtr").asFloat()); //TODO: needs a think. sometimes null.
+				Corpus texts = result.getCorpus();
 
+				for( Document r : texts.getDocuments()) {
+					Integer next = r.getMetadata("community").map(o -> (int) o).orElse(-1);
+					Integer artComm = r.getMetadata("articleCommunity").map(o -> (int) o).orElse(-1);
 					if (top10community.contains(next) && top10articleCommunity.contains(artComm)) {
 						Double score = authorArticleCorrelation.get(next, artComm);
 						if (score == null) { score = 0D; }
 						score += 1.0D;
 						authorArticleCorrelation.put(next, artComm, score);
 					}
-					
+
 				}
 
-				
-				
-				// texts.getCollocations(5).stream().forEach(System.out::println);
-
-				
-				
-				//TODO: SERIALIZE RESULT
-				
 				EavMap<Integer,Integer,Double> articleCommunityCorrelation = new EavMap<>();
 				EavMap<Integer,Integer,Double> topicCommunityCorrelation = new EavMap<>();
 				try {
-				
+
 					OutputStream out = Files.newOutputStream(outDir.resolve("getTopicDocuments.tsv"));
 					out.write("topic\tnodeId\tweight\n".getBytes());
-				
-				result.getTopicsForDocuments().forEach(top -> {
 
-					int id = top.getTopicId();
+					result.getTopicsForDocuments().forEach(top -> {
 
-					WordCloudBuilder.from(texts, 200, 600, 600).circular()
+						int id = top.getTopicId();
+
+						WordCloudBuilder.from(texts, 200, 600, 600).circular()
 						.withColourScheme(ColourScheme.sequential2(id).darker(0.25F))
 						.withSelector(c -> 
-							c.streamTopics()
-							.filter(t -> t.getTopicId() == id)
-							.flatMap(t -> t.streamTerms())
-							.map(wt -> wt.scale(10000)))
+						c.streamTopics()
+						.filter(t -> t.getTopicId() == id)
+						.flatMap(t -> t.streamTerms())
+						.map(wt -> wt.scale(10000)))
 						.execute(outDir.resolve("TopicContent"+id+".png"));
-				
-					top.streamDocuments().forEach(wd -> {
-						
-						StreamExceptions.tryLogWarn(
-								(id+"\t"+wd.getTarget().getIdentifier()+"\t"+wd.getWeight()+"\n").getBytes(),
-								out::write);
-						
-						Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
-						commId.ifPresent( cid -> {
-							if (top10community.contains(cid)) {
-								Double score = topicCommunityCorrelation.get(id, cid);
-								if (score == null) { score = 0D; }
-								score += wd.getWeight();
-								topicCommunityCorrelation.put(id, cid, score);
-							}
-						});
-						Optional<Integer> artCommId = wd.getTarget().getMetadata("articleCommunity").map(o -> (int) o);
-						artCommId.ifPresent( cid -> {
-							if (top10articleCommunity.contains(cid)) {
-								Double score = articleCommunityCorrelation.get(id, cid);
-								if (score == null) { score = 0D; }
-								score += wd.getWeight();
-								articleCommunityCorrelation.put(id, cid, score);
-							}
+
+						top.streamDocuments().forEach(wd -> {
+
+							StreamExceptions.tryLogWarn(
+									(id+"\t"+wd.getTarget().getIdentifier()+"\t"+wd.getWeight()+"\n").getBytes(),
+									out::write);
+
+							Optional<Integer> commId = wd.getTarget().getMetadata("community").map(o -> (int) o);
+							commId.ifPresent( cid -> {
+								if (top10community.contains(cid)) {
+									Double score = topicCommunityCorrelation.get(id, cid);
+									if (score == null) { score = 0D; }
+									score += wd.getWeight();
+									topicCommunityCorrelation.put(id, cid, score);
+								}
+							});
+							Optional<Integer> artCommId = wd.getTarget().getMetadata("articleCommunity").map(o -> (int) o);
+							artCommId.ifPresent( cid -> {
+								if (top10articleCommunity.contains(cid)) {
+									Double score = articleCommunityCorrelation.get(id, cid);
+									if (score == null) { score = 0D; }
+									score += wd.getWeight();
+									articleCommunityCorrelation.put(id, cid, score);
+								}
+							});
 						});
 					});
-				});
-				
-				doChordDiagram(topicCommunityCorrelation,
-						i -> "Topic "+i,
-						j -> "Community "+letter(top10community.indexOf(j)),
-						"Topic author community relationships");
-				
-				doChordDiagram(articleCommunityCorrelation,
-						i -> "Topic "+i,
-						j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
-						"Topic article group relationships");
-				
-				doChordDiagram(authorArticleCorrelation,
-						i -> "Community "+letter(top10community.indexOf(i)),
-						j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
-						"Author community article group relationships");
-				
-				out.close();
-				
-				OutputStream out2 = Files.newOutputStream(outDir.resolve("getTopicCommunity.tsv"));
-				out2.write("topic\tcommunity\ttotalScore\n".getBytes());
-				topicCommunityCorrelation.stream().forEach(t -> 
+
+					doChordDiagram(topicCommunityCorrelation,
+							i -> "Topic "+i,
+							j -> "Community "+letter(top10community.indexOf(j)),
+							"Topic author community relationships");
+
+					doChordDiagram(articleCommunityCorrelation,
+							i -> "Topic "+i,
+							j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
+							"Topic article group relationships");
+
+					doChordDiagram(authorArticleCorrelation,
+							i -> "Community "+letter(top10community.indexOf(i)),
+							j -> "Article group "+roman(top10articleCommunity.indexOf(j)),
+							"Author community article group relationships");
+
+					out.close();
+
+					OutputStream out2 = Files.newOutputStream(outDir.resolve("getTopicCommunity.tsv"));
+					out2.write("topic\tcommunity\ttotalScore\n".getBytes());
+					topicCommunityCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
 							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out2::write
-					));
-				
-				OutputStream out3 = Files.newOutputStream(outDir.resolve("getTopicArticleCommunity.tsv"));
-				out3.write("topic\tarticleCommunity\ttotalScore\n".getBytes());
-				articleCommunityCorrelation.stream().forEach(t -> 
+							));
+
+					OutputStream out3 = Files.newOutputStream(outDir.resolve("getTopicArticleCommunity.tsv"));
+					out3.write("topic\tarticleCommunity\ttotalScore\n".getBytes());
+					articleCommunityCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
 							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out3::write
-					));
-				
-				OutputStream out4 = Files.newOutputStream(outDir.resolve("getAuthorCommunityArticleGroup.tsv"));
-				out4.write("authorCommunity\tarticleCommunity\ttotalScore\n".getBytes());
-				authorArticleCorrelation.stream().forEach(t -> 
+							));
+
+					OutputStream out4 = Files.newOutputStream(outDir.resolve("getAuthorCommunityArticleGroup.tsv"));
+					out4.write("authorCommunity\tarticleCommunity\ttotalScore\n".getBytes());
+					authorArticleCorrelation.stream().forEach(t -> 
 					StreamExceptions.tryIgnore(
 							(""+t.getFirst()+"\t"+t.getSecond()+"\t"+t.getThird()+"\n").getBytes(),
 							out4::write
-					));
-				
-				out2.close();
+							));
+
+					out2.close();
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
@@ -908,7 +898,7 @@ public class LitReviewAnalysis {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private void doChordDiagram(
 			EavMap<Integer,Integer,Double> correlation,
 			Function<Integer,String> nameSource,
@@ -917,35 +907,35 @@ public class LitReviewAnalysis {
 			) {
 		Stream<Triple<String,String,Double>> display = Streams.concat(
 				correlation.stream().map(t -> 
-					Triple.create(
-							nameSource.apply(t.getFirst()),
-							nameTarget.apply(t.getSecond()),
-							t.getThird())),
+				Triple.create(
+						nameSource.apply(t.getFirst()),
+						nameTarget.apply(t.getSecond()),
+						t.getThird())),
 				correlation.stream().map(t -> 
-					Triple.create(
-							nameTarget.apply(t.getSecond()),
-							nameSource.apply(t.getFirst()),
-							t.getThird()))
+				Triple.create(
+						nameTarget.apply(t.getSecond()),
+						nameSource.apply(t.getFirst()),
+						t.getThird()))
 				);
-		
+
 		try {
 			fig.withNewChart(diagramName, ChartType.CHORD)
-				.withSeries(display)
-				.bind(ID, t -> t.getFirst(), "source")
-				.bind(STRENGTH, t -> t.getThird())
-				.bind(ID, t -> t.getSecond(), "target")
-				.withColourScheme(ColourScheme.Set2)
-				.done()
-				.render();
+			.withSeries(display)
+			.bind(ID, t -> t.getFirst(), "source")
+			.bind(STRENGTH, t -> t.getThird())
+			.bind(ID, t -> t.getSecond(), "target")
+			.withColourScheme(ColourScheme.Set2)
+			.done()
+			.render();
 		} catch (Exception e) {throw new RuntimeException(e);}
 	}
-	
+
 	@Test
 	public void testModels() {
 		//TODO: re-run pubmed query for 6 month period in 2017 and 6 month in 2018
 		//TODO: find references from Xref (as dois) and pubmed (as pmids)
 		//TODO: Predict article topic from model
 		//TODO: Identify if graph contains each reference and if so author community, article community, and topic of that reference
-		
+
 	}
 }
