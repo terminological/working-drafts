@@ -764,9 +764,11 @@ public class LitReviewAnalysis {
 				String nodeId = r.get("nodeId").asNumber().toString();
 				String title = r.get("title").asString();
 				String abstrct = r.get("abstract").asString();
+				Boolean isOriginalSearch = r.get("isOriginalSearch", false);
 				Document doc = texts.addDocument(nodeId, title+(abstrct != null ? "\n"+abstrct : ""));
 				doc.addMetadata("community",next);
 				doc.addMetadata("articleCommunity",artComm);
+				doc.addMetadata("isOriginalSearch",isOriginalSearch);
 				Optional<String> doi = Optional.ofNullable(r.get("doi").asString());
 				Optional<String> pmid = Optional.ofNullable(r.get("pmid").asString());
 				doi.ifPresent(d -> doc.addMetadata("doi",d));
