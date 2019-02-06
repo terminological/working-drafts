@@ -71,11 +71,7 @@ public class TestEndToEnd {
 			.forEach(res -> System.out.println(res.getIdentifier().orElse("?")+"\t"+res.getTitle()+"\t"+res.getPdfUri()));
 		
 		Stream<Work> work = dois2.stream().flatMap(doi -> {
-			try {
-				return xref.getByDoi(doi).stream();
-			} catch (BibliographicApiException e) {
-				return Stream.empty();
-			}
+			return xref.getByDoi(doi).stream();
 		})
 				.map(sr -> sr.getWork());
 		work.forEach(w -> System.out.println(w.getTitle()));
