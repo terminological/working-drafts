@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import cc.mallet.topics.ParallelTopicModel;
@@ -17,6 +18,8 @@ import cc.mallet.types.IDSorter;
 import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.LabelSequence;
+import cc.mallet.types.Token;
+import cc.mallet.types.TokenSequence;
 
 public class TopicModelResult implements Serializable {
 
@@ -111,7 +114,8 @@ public class TopicModelResult implements Serializable {
 	public SortedSet<Weighted<Integer>> predict(String string) {
 		
 		InstanceList testing = new InstanceList(builder.instances.getPipe());
-        testing.addThruPipe(new Instance(string, null, "test instance", null));
+		TokenSequence ts = new TokenSequence(getCorpus().process(string).map(s -> new Token(s)).collect(Collectors.toList()));
+        testing.addThruPipe(new Instance(ts, null, "test instance", null));
 
         TopicInferencer inferencer = model.getInferencer();
         double[] testProbabilities = inferencer.getSampledDistribution(testing.get(0), 10, 1, 5);
