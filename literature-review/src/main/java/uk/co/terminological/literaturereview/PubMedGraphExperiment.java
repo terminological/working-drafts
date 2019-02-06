@@ -453,21 +453,17 @@ public class PubMedGraphExperiment {
 					}
 					
 					for (String doi: dois) {
-						try {
-							Optional<SingleResult> tmp = api.getCrossref().getByDoi(doi);
-							tmp.ifPresent(t ->
-									context.send(
-									Events.namedTypedEvent(t.getWork(),doi,XREF_FETCH_RESULT)
-								));
-							List<Reference> referencedDois = tmp.stream()
-								.map(t -> t.getWork())
-								.flatMap(w -> w.getCitations())
-								.collect(Collectors.toList());
-							context.getEventBus().logInfo("Crossref found "+referencedDois.size()+" articles related to: "+doi);
-							mapCrossRefReferences(doi,referencedDois,graph);
-						} catch (BibliographicApiException e) {
-							context.getEventBus().handleException(e);
-						}
+						Optional<SingleResult> tmp = api.getCrossref().getByDoi(doi);
+						tmp.ifPresent(t ->
+								context.send(
+								Events.namedTypedEvent(t.getWork(),doi,XREF_FETCH_RESULT)
+							));
+						List<Reference> referencedDois = tmp.stream()
+							.map(t -> t.getWork())
+							.flatMap(w -> w.getCitations())
+							.collect(Collectors.toList());
+						context.getEventBus().logInfo("Crossref found "+referencedDois.size()+" articles related to: "+doi);
+						mapCrossRefReferences(doi,referencedDois,graph);
 					}
 				});
 	}
