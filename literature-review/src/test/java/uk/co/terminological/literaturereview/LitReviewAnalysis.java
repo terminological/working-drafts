@@ -50,12 +50,14 @@ import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Node;
 import org.yaml.snakeyaml.Yaml;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Input;
 import com.google.common.collect.Streams;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.CiteProcProvider;
-import uk.co.terminological.bibliography.CiteProcProvider.Output;
+import uk.co.terminological.bibliography.CiteProcProvider.Format;
 import uk.co.terminological.bibliography.entrez.PubMedEntries;
 import uk.co.terminological.bibliography.entrez.Search;
 import uk.co.terminological.bibliography.record.PrintRecord;
@@ -252,7 +254,7 @@ public class LitReviewAnalysis {
 							List<String> cits = new ArrayList<>();
 							if (!prov.isEmpty()) {
 								cits = Arrays.asList(
-										prov.orderedCitations("ieee", Output.text).getEntries());
+										prov.orderedCitations("ieee", Format.text).getEntries());
 							}
 
 							OutputStream writer = Files.newOutputStream(path);
@@ -746,11 +748,13 @@ public class LitReviewAnalysis {
 	static String TOPIC_MODEL = "topicModel.ser";
 
 	private TopicModelBuilder.Result getTopicModel() {
+		Kryo kryo = new Kryo();
+	    kryo.register(TopicModelBuilder.Result.class);
 		Path topicPath = cacheDir.resolve(TOPIC_MODEL);
 		try {
 			if (Files.exists(topicPath)) {
-				ObjectInputStream oid = new ObjectInputStream(Files.newInputStream(topicPath));
-				return (TopicModelBuilder.Result) oid.readObject();
+				Input oid = new Input(Files.newInputStream(topicPath));
+				return kryo.readObject(oid,TopicModelBuilder.Result.class);
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -790,8 +794,8 @@ public class LitReviewAnalysis {
 			throw new RuntimeException(e);
 		}
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(topicPath));
-			oos.writeObject(result);
+			Format oos = new Format(Files.newOutputStream(topicPath));
+			kryo.writeObject(oos,result);
 			oos.close();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
