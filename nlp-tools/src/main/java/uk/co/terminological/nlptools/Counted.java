@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-public class Counted<T> implements Comparable<Counted<T>>, Serializable {
+public class Counted<T extends Serializable> implements Comparable<Counted<T>>, Serializable {
 
 	
 
@@ -19,13 +19,13 @@ public class Counted<T> implements Comparable<Counted<T>>, Serializable {
 		this.count = d;
 	}
 	
-	public static <X> Counted<X> create(X thing, Integer d) {
+	public static <X extends Serializable> Counted<X> create(X thing, Integer d) {
 		return new Counted<X>(thing, d);
 	}
 	
 	public String toString() {return thing.toString()+"(:"+count.toString()+")";}
 	
-	public static <X> SortedSet<Counted<X>> descending() {
+	public static <X extends Serializable> SortedSet<Counted<X>> descending() {
 		return new TreeSet<Counted<X>>();
 	}
 	
