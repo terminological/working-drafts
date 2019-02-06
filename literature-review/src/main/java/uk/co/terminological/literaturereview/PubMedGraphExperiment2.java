@@ -125,7 +125,7 @@ public class PubMedGraphExperiment2 {
 
 		FileAppender fa = new FileAppender();
 		fa.setName("FileLogger");
-		fa.setFile(outputDir.resolve("actions.log").toString());
+		fa.setFile(outputDir.resolve("build.log").toString());
 		fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
 		fa.setThreshold(Level.INFO);
 		fa.setAppend(false);
