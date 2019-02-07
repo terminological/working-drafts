@@ -42,9 +42,10 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	public Stream<Tuple<String,String>> streamReferences() {
 		try {
 			if (bib == null) orderedCitations();
-			return this.stream().map(it -> {
+			return this.stream().flatMap(it -> {
 				int i = this.indexOf(it);
-				return Tuple.create(ids.get(i), bib.getEntries()[i]);
+				Optional<String> tmp = fetchReference(it.getId());
+				return tmp.map(r -> Tuple.create(ids.get(i), r)).stream();
 			});
 		} catch (Exception e) {
 			//TODO: log this?
@@ -154,11 +155,12 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	}
 	
 	public Optional<String> fetchReference(String id) {
-		
 			try {
 				if (bib == null) orderedCitations();
 				int index = this.ids.indexOf(id);
-				return Optional.ofNullable(bib.getEntries()[index]);
+				String tmp = bib.getEntries()[index];
+				if (this.format.equals(Format.text)) tmp = tmp.trim().replace("\n", " ");
+				return Optional.ofNullable(tmp);
 			} catch (Exception e) {
 				return Optional.empty();
 			}

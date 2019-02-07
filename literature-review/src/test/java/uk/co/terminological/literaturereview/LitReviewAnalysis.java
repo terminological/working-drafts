@@ -227,6 +227,8 @@ public class LitReviewAnalysis {
 	//TODO: Top N Articles in community
 	//TODO: Top N Articles in topic
 
+	public static String REFERENCE_FORMAT = "ieee";
+	
 	@Test
 	public void writeToCsv() {
 		try ( Session session = driver.session() ) {
@@ -238,7 +240,7 @@ public class LitReviewAnalysis {
 						StatementResult qryR = tx.run( qry );
 						List<Record> res = qryR.list();
 
-						CiteProcProvider prov = new CiteProcProvider();
+						CiteProcProvider prov = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
 						res.forEach(r -> {
 							r.values().forEach(f -> {
 								try {
@@ -255,7 +257,7 @@ public class LitReviewAnalysis {
 							List<String> cits = new ArrayList<>();
 							if (!prov.isEmpty()) {
 								cits = Arrays.asList(
-										prov.orderedCitations("ieee", Format.text).getEntries());
+										prov.orderedCitations().getEntries());
 							}
 
 							OutputStream writer = Files.newOutputStream(path);
@@ -984,8 +986,8 @@ public class LitReviewAnalysis {
 		
 		result.ifPresent(r -> {
 			Optional<PubMedEntries> entries = r.getStoredResult(biblioApi.getEntrez());
-			CiteProcProvider cppNew = new CiteProcProvider();
-			CiteProcProvider cppRefs = new CiteProcProvider();
+			CiteProcProvider cppNew = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
+			CiteProcProvider cppRefs = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
 			entries.ifPresent(es -> {
 				es.stream().filter(e -> e.getDoi().isPresent())
 					.forEach(e -> {
