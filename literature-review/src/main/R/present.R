@@ -259,14 +259,15 @@ chisq.test(xtabs(totalScore ~ articleGroup + authorCommunity, articleGroupAuthor
 ############################################################
 
 tmp <- getTestSetReferences %>% mutate(referenceDoi = str_to_lower(referenceDoi)) %>%
-  left_join(getArticlesByPagerank %>% mutate(referenceDoi = doi), c("referenceDoi"))
+  left_join(getArticlesByPagerank %>% mutate(referenceDoi = doi), c("referenceDoi")) %>%
+  mutate(id=referenceDoi) %>% left_join(getTestSetReferencesDetails, c("id"))
 
-tmp %>% group_by(doi.x) %>% summarize(
+tmp2 <- tmp %>% group_by(doi.x) %>% summarize(id = head(doi.x,1),
   count = n(), matched = sum(if_else(is.na(title),0,1))) %>% 
   mutate(frac = matched/count) %>% 
-  arrange(desc(frac))
+  arrange(desc(frac)) %>% select(-doi.x)
 
-
+tmp3 <- tmp2 %>% left_join(getTestSetDetails)
 
 # group by articles with high numbers of references - are these a closer match to topics?
 # are there some hot spots?
