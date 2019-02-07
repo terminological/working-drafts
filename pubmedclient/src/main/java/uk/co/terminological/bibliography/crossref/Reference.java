@@ -1,15 +1,23 @@
 package uk.co.terminological.bibliography.crossref;
 
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
+import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class Reference extends ExtensibleJson implements RecordReference, Print {
+public class Reference extends ExtensibleJson implements RecordReference, Print, Record {
 	
 	public Reference(JsonNode node) { super(node); }
 	
@@ -25,6 +33,63 @@ public class Reference extends ExtensibleJson implements RecordReference, Print 
 	@Override
 	public IdType getIdentifierType() {
 		return this.asString("DOI").isPresent() ? IdType.DOI : IdType.MID;
+	}
+
+	@Override
+	public Set<RecordReference> getOtherIdentifiers() {
+		return Collections.emptySet();
+	}
+
+	@Override
+	public List<? extends Author> getAuthors() {
+		return Collections.singletonList(new Author() {
+
+			@Override
+			public Optional<String> getORCID() {
+				return Optional.empty();
+			}
+
+			@Override
+			public Optional<String> getFirstName() {
+				return Optional.empty();
+			}
+
+			@Override
+			public String getLastName() {
+				return getFirstAuthorName().orElse("Unknown");
+			}
+
+			@Override
+			public Optional<String> getInitials() {
+				return Optional.empty();
+			}
+
+			@Override
+			public Stream<String> getAffiliations() {
+				return Stream.empty();
+			}
+			
+		});
+	}
+
+	@Override
+	public Stream<String> getLicenses() {
+		return Stream.empty();
+	}
+
+	@Override
+	public Optional<String> getAbstract() {
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<LocalDate> getDate() {
+		return getYear().map(y -> LocalDate.of(y.intValue(), 1, 1));
+	}
+
+	@Override
+	public Optional<URI> getPdfUri() {
+		return Optional.empty();
 	}
 	
 	

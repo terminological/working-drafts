@@ -984,6 +984,8 @@ public class LitReviewAnalysis {
 		
 		result.ifPresent(r -> {
 			Optional<PubMedEntries> entries = r.getStoredResult(biblioApi.getEntrez());
+			CiteProcProvider cppNew = new CiteProcProvider();
+			CiteProcProvider cppRefs = new CiteProcProvider();
 			entries.ifPresent(es -> {
 				es.stream().filter(e -> e.getDoi().isPresent())
 					.forEach(e -> {
@@ -1001,8 +1003,14 @@ public class LitReviewAnalysis {
 						});
 						biblioApi.getCrossref().getByDoi(doi).stream()
 								.map(sr -> sr.getWork())
-								.flatMap(w -> w.getCitations())
-								.flatMap(ref -> ref.getIdentifier().stream())
+								.flatMap(w -> {
+									cppNew.add(w);
+									return w.getCitations();
+								})
+								.flatMap(ref -> {
+									cppRefs.add(ref);
+									return ref.getIdentifier().stream();
+								})
 								.forEach(refDoi -> {
 									try {
 										refsCsv.write((doi+"\t"+refDoi+"\n").getBytes());
