@@ -984,10 +984,12 @@ public class LitReviewAnalysis {
 			.betweenDates(LocalDate.of(2017, 1, 1), LocalDate.of(2018, 12, 31))
 			.execute();
 		
+		CiteProcProvider cppNew = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
+		CiteProcProvider cppRefs = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
+		
 		result.ifPresent(r -> {
 			Optional<PubMedEntries> entries = r.getStoredResult(biblioApi.getEntrez());
-			CiteProcProvider cppNew = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
-			CiteProcProvider cppRefs = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
+			
 			entries.ifPresent(es -> {
 				es.stream().filter(e -> e.getDoi().isPresent())
 					.forEach(e -> {
@@ -1027,7 +1029,12 @@ public class LitReviewAnalysis {
 						//TODO: write into a csv
 					});
 			});
+			
 		});
+		
+		
+		cppNew.writeToFile(outDir.resolve("getTestSetDetails.tsv"));
+		cppRefs.writeToFile(outDir.resolve("getTestSetReferencesDetails.tsv"));
 		
 		topicCsv.close();
 		refsCsv.close();
