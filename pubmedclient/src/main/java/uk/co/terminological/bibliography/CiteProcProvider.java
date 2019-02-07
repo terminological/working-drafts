@@ -19,6 +19,7 @@ import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.datatypes.Tuple;
 
 public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemDataProvider  {
     
@@ -36,6 +37,19 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 		out.format = output;
 		out.style = style;
 		return out;
+	}
+	
+	public Stream<Tuple<String,String>> streamReferences() {
+		try {
+			if (bib == null) orderedCitations();
+			return this.stream().map(it -> {
+				int i = this.indexOf(it);
+				return Tuple.create(ids.get(i), bib.getEntries()[i]);
+			});
+		} catch (Exception e) {
+			//TODO: log this?
+			return Stream.empty();
+		}
 	}
 	
 	@Override
