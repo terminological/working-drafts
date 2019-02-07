@@ -52,11 +52,13 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
     }
     
 	public void add(Record rec) {
+		bib = null;
 		add(fromRecord(rec,Integer.toString(size())));
 		ids.add(Integer.toString(size()));
 	}
 	
 	public void add(Record rec, String id) {
+		bib = null;
 		if (ids.contains(id)) {
 			this.set(ids.indexOf(id), fromRecord(rec,id));
 		} else {
