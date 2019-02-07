@@ -1,6 +1,7 @@
 package uk.co.terminological.bibliography;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -8,10 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import com.itextpdf.text.pdf.codec.Base64.OutputStream;
 
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
@@ -182,7 +180,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	
 	//TODO: this is buggy and won't catch all sorts of cases
 	public void writeToFile(Path path) throws IOException {
-		java.io.OutputStream os = Files.newOutputStream(path);
+		OutputStream os = Files.newOutputStream(path);
 		os.write("id\treference\n".getBytes());
 		streamReferences().forEach(StreamExceptions.rethrow(kv -> {os.write((kv.getKey()+"\t"+kv.getValue()+"\n").getBytes());}));
 		os.close();
