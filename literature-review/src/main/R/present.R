@@ -255,3 +255,18 @@ ggplot(articleGroupAuthorCommunityXmap , aes(x=articleGroup, y=authorCommunity, 
 
 table(articleGroupAuthorCommunityXmap)
 chisq.test(xtabs(totalScore ~ articleGroup + authorCommunity, articleGroupAuthorCommunityXmap), correct=TRUE)
+
+############################################################
+
+tmp <- getTestSetReferences %>% mutate(referenceDoi = str_to_lower(referenceDoi)) %>%
+  left_join(getArticlesByPagerank %>% mutate(referenceDoi = doi), c("referenceDoi"))
+
+tmp %>% group_by(doi.x) %>% summarize(
+  count = n(), matched = sum(if_else(is.na(title),0,1))) %>% 
+  mutate(frac = matched/count) %>% 
+  arrange(desc(frac))
+
+
+
+# group by articles with high numbers of references - are these a closer match to topics?
+# are there some hot spots?
