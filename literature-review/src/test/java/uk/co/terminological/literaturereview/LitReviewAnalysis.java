@@ -750,6 +750,7 @@ public class LitReviewAnalysis {
 
 	static String TOPIC_MODEL = "topicModel.ser";
 
+	//
 	private TopicModelResult getTopicModel() {
 		// Kryo kryo = new Kryo();
 	    // kryo.register(TopicModelResult.class);
@@ -1008,11 +1009,11 @@ public class LitReviewAnalysis {
 						biblioApi.getCrossref().getByDoi(doi).stream()
 								.map(sr -> sr.getWork())
 								.flatMap(w -> {
-									cppNew.add(w);
+									cppNew.add(w,doi);
 									return w.getCitations();
 								})
 								.flatMap(ref -> {
-									cppRefs.add(ref);
+									cppRefs.add(ref,ref.getIdentifier().get());
 									return ref.getIdentifier().stream();
 								})
 								.forEach(refDoi -> {
