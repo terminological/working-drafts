@@ -1013,7 +1013,7 @@ public class LitReviewAnalysis {
 									return w.getCitations();
 								})
 								.flatMap(ref -> {
-									cppRefs.add(ref,ref.getIdentifier().get());
+									ref.getIdentifier().ifPresent(d -> cppRefs.add(ref,d));
 									return ref.getIdentifier().stream();
 								})
 								.forEach(refDoi -> {
