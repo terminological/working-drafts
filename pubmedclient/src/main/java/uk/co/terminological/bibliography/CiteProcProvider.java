@@ -140,8 +140,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	}
 	
 	public String[] getIds() {
-        return IntStream.range(0, size()).mapToObj(r -> Integer.toString(r))
-        		.collect(Collectors.toList()).toArray(new String[] {});
+        return ids.toArray(new String[] {});
     }
 	
 	public Bibliography orderedCitations(String style, Format format) throws IOException {
