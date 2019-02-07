@@ -23,6 +23,20 @@ import uk.co.terminological.bibliography.record.Record;
 public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemDataProvider  {
     
 	private List<String> ids = new ArrayList<>();
+	private Bibliography bib = null;
+	private Format format = Format.text;
+	private String style = "ieee";
+	
+	public static CiteProcProvider create() {
+		return create("ieee", Format.text);
+	}
+	
+	public static CiteProcProvider create(String style, Format output) {
+		CiteProcProvider out = new CiteProcProvider();
+		out.format = output;
+		out.style = style;
+		return out;
+	}
 	
 	@Override
     public CSLItemData retrieveItem(String id) {
@@ -114,13 +128,24 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
     }
 	
 	public Bibliography orderedCitations(String style, Format format) throws IOException {
-		/*CSL citeproc = new CSL(this, style);
-		citeproc.setOutputFormat(format.toString());
+		bib = CSL.makeAdhocBibliography(style, format.toString(), this.toArray(new CSLItemData[] {}));
+		return bib;
+	}
+	
+	public Bibliography orderedCitations() throws IOException {
+		bib = CSL.makeAdhocBibliography(style, format.toString(), this.toArray(new CSLItemData[] {}));
+		return bib;
+	}
+	
+	public Optional<String> fetchReference(String id) {
 		
-		//citeproc.makeCitation(getIds());
-		citeproc.registerCitationItems(getIds());
-		return citeproc.makeBibliography();*/
-		return CSL.makeAdhocBibliography(style, format.toString(), this.toArray(new CSLItemData[] {}));
+			try {
+				if (bib == null) orderedCitations();
+				int index = this.ids.indexOf(id);
+				return Optional.ofNullable(bib.getEntries()[index]);
+			} catch (Exception e) {
+				return Optional.empty();
+			}
 	}
 	
 	public static Bibliography convert(String style, Format format, Record... record) throws IOException {
