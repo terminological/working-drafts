@@ -44,7 +44,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 			if (bib == null) orderedCitations();
 			return this.stream().flatMap(it -> {
 				int i = this.indexOf(it);
-				Optional<String> tmp = fetchReference(it.getId());
+				Optional<String> tmp = getReference(it.getId());
 				return tmp.map(r -> Tuple.create(ids.get(i), r)).stream();
 			});
 		} catch (Exception e) {
@@ -154,7 +154,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 		return bib;
 	}
 	
-	public Optional<String> fetchReference(String id) {
+	public Optional<String> getReference(String id) {
 			try {
 				if (bib == null) orderedCitations();
 				int index = this.ids.indexOf(id);
