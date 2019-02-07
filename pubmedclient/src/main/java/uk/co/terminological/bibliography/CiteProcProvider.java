@@ -1,6 +1,8 @@
 package uk.co.terminological.bibliography;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,14 +19,17 @@ import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.Record;
-import uk.co.terminological.datatypes.FluentList;
 
-public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDataProvider  {
+public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemDataProvider  {
     
+	private List<String> ids = new ArrayList<>();
+	
 	@Override
     public CSLItemData retrieveItem(String id) {
 		try {
-			CSLItemData out = this.get(Integer.parseInt(id));
+			int i = ids.indexOf(id);
+			if (i==-1) return null;
+			CSLItemData out = this.get(i);
 			return out;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -34,6 +39,16 @@ public class CiteProcProvider extends FluentList<CSLItemData> implements ItemDat
     
 	public void add(Record rec) {
 		add(fromRecord(rec,Integer.toString(size())));
+		ids.add(Integer.toString(size()));
+	}
+	
+	public void add(Record rec, String id) {
+		if (ids.contains(id)) {
+			this.set(ids.indexOf(id), fromRecord(rec,id));
+		} else {
+			add(fromRecord(rec,id));
+			ids.add(id);
+		}
 	}
 	
 	public static CSLItemData fromRecord(Record record) {
