@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import cc.mallet.topics.MarginalProbEstimator;
 import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.topics.TopicInferencer;
 import cc.mallet.topics.TopicModelDiagnostics;
@@ -21,6 +22,8 @@ import cc.mallet.types.LabelSequence;
 import cc.mallet.types.Token;
 import cc.mallet.types.TokenSequence;
 
+// http://videolectures.net/mlss09uk_blei_tm/
+// http://mimno.infosci.cornell.edu/topics.html
 public class TopicModelResult implements Serializable {
 
 	public TopicModelResult(ParallelTopicModel model, TopicModelBuilder builder) {
@@ -118,7 +121,10 @@ public class TopicModelResult implements Serializable {
         testing.addThruPipe(new Instance(ts, null, "test instance", null));
 
         TopicInferencer inferencer = model.getInferencer();
+        //MarginalProbEstimator estimator = model.getProbEstimator();
         double[] testProbabilities = inferencer.getSampledDistribution(testing.get(0), 10, 1, 5);
+        
+        estimator.evaluateLeftToRight(testing, numParticles, usingResampling, docProbabilityStream)
         System.out.println("0\t" + testProbabilities[0]);
         SortedSet<Weighted<Integer>> out = Weighted.descending();
         for (int i =0 ; i<testProbabilities.length; i++) {
