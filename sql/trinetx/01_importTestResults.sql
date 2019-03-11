@@ -7,6 +7,7 @@ BEGIN TRY
 		db VARCHAR(70),
 		tbl VARCHAR(70),
 		pkName VARCHAR(70), -- the name of the primary key
+		job VARCHAR(70), -- the name of the extraction job
 		maxPkValue VARCHAR(70), -- the max value of the primary key extracted so far
 		extractDate DATETIME,
 		comment TEXT
@@ -55,10 +56,15 @@ GO
 
 CREATE PROCEDURE dbo.uspWipeEMISResults AS
 BEGIN
-	DELETE FROM TriNetX.dbo.tblExtractLog WHERE db='ordercomms_review' and tbl='report' and pkName='report_id';
+	DELETE FROM TriNetX.dbo.tblExtractLog WHERE job='labs';
 	DELETE FROM TriNetX.dbo.tblTriNetXLabResult;
 END
 GO
+
+DROP VIEW IF EXISTS dbo.viewTmpEMISResultsBatch;
+GO
+
+
 
 
 ---------------------------------------------------
@@ -82,36 +88,45 @@ BEGIN
 	DECLARE @maxReportId INT;
 	-- DECLARE @date datetime;
 	-- DECLARE @message nvarchar(max);
-	DECLARE @size int;
+	
 	DECLARE @insertRows INT;
 	SET @insertRows = -1;
 
+	DECLARE @size int;
 	SET @size = 100000;
+	
 	-- initialise the minReportId to be the largest value that appears in the tblExtract log
-	SET @minReportId = (SELECT MAX(CAST(maxPkValue as INT)) FROM TriNetX.dbo.tblExtractLog WHERE db='ordercomms_review' and tbl='report' and pkName='report_id');
+	SET @minReportId = (SELECT MAX(CAST(maxPkValue as INT)) FROM TriNetX.dbo.tblExtractLog WHERE db='ordercomms_review' and tbl='report' and pkName='report_id' and job='labs');
 	SET @minReportId = IIF(@minReportId IS NULL, 0, @minReportId);
 	-- last entered report in ordercomms database
 	SET @maxReportId = (SELECT TOP 1 report_id FROM ordercomms_review.dbo.report order by report_id DESC); 
 
 	-- @batchReport is a temp table to hold the next items that will be inserted. This is usually done in 100000 record batches.
 	DECLARE @batchReport TABLE (
+		id INT NOT NULL IDENTITY PRIMARY KEY,
 		report_id INT,
 		[Patient id] VARCHAR(255),
-
-		INDEX X_report_id (report_id),
-		INDEX X_hospital_no ([Patient id])
+		INDEX X_hospital_no (report_id,[Patient id])
 	);
+
 	
-	WHILE @minReportId <= @maxReportId OR @insertRows <> 0
+
+	WHILE @minReportId <= @maxReportId AND @insertRows <> 0
 	BEGIN
 
 		DELETE FROM @batchReport;
 
+		-- This join generates duplicates wherever there are multiple RBA identifiers for a patient or other slight variations in the patient identifier. 
+		-- It also select out blood results for patients that have ever been RBA patients
+		-- these tests may have been done in a different context.
+		-- this is possibly not what we are allowed to do from a IG perspective
+		-- if this is not wanted then the query immediately below will perform the same thing in a more conservative fashion.
+		-- TODO: this is not quite working...
 		INSERT INTO @batchReport
-		SELECT TOP(@size)
+		SELECT TOP(@size) 
 			r.report_id,
-			RIGHT(l.hospital_no,LEN(l.hospital_no)-3) as hospital_no
-		FROM ordercomms_review.dbo.report r WITH (INDEX(PK_report_reportid))
+			RIGHT(l.hospital_no,LEN(l.hospital_no)-3) as [Patient id]
+		FROM ordercomms_review.dbo.report r
 			INNER JOIN ordercomms_review.dbo.lab_patient l 
 			ON r.patient_id = l.patient_id
 		WHERE 
@@ -119,7 +134,34 @@ BEGIN
 			and r.report_id > @minReportId
 			and r.amended=0 -- TODO: interim microbiology reports?
 			and r.result_date IS NOT NULL
-			and r.result_time IS NOT NULL;
+			and r.result_time IS NOT NULL
+		ORDER BY report_id ASC
+		
+		DELETE b FROM @batchReport b,
+		(
+			SELECT 
+				ROW_NUMBER() OVER(PARTITION BY [Patient id] ORDER BY report_id) as rowNum,
+				*
+			FROM @batchReport
+		) out 
+		WHERE b.id = out.id AND out.rowNum > 1
+		;
+
+		--INSERT INTO @batchReport
+		--SELECT * FROM (
+		--	SELECT TOP(@size) 
+		--		r.report_id,
+		--		RIGHT(r.hospital_no,LEN(r.hospital_no)-3) as [Patient id]
+		--	FROM ordercomms_review.dbo.report r -- WITH (INDEX(PK_report_reportid))
+		--	WHERE 
+		--		r.hospital_no like 'RBA%' -- previously done on request location id...
+		--		and r.report_id > @minReportId
+		--		and r.amended=0 -- TODO: interim microbiology reports?
+		--		and r.result_date IS NOT NULL
+		--		and r.result_time IS NOT NULL
+		--	) t
+		--GROUP BY t.report_id, t.[Patient id]
+
 
 		INSERT INTO TriNetX.dbo.tblTriNetXLabResult
 		SELECT
@@ -158,19 +200,25 @@ BEGIN
 		-- however there is a question about whether the textual reports should be held here or as documents relating to patient.
 		-- there is an argument that unstructured microbiology reports should not be included here either.
 		
-		DECLARE @insertReports INT;
+		-- TODO: can filter by lab discipline - list here if we want to handle some stuff differently. 
+		-- SELECT TOP (1000) [discipline_id],[name],[code]
+		-- FROM [ordercomms_review].[dbo].[discipline]
+
+		
 
 		SET @insertRows = @@ROWCOUNT
 
 		-- TODO: this may not handle failures.  
-		SET @minReportId = (SELECT MAX(report_id) from @batchReport);
-		SET @minReportId = IIF(@minReportId IS NULL, 0, @minReportId);
+		SET @minReportId = IIF(@insertRows>0, (SELECT MAX(report_id) from @batchReport), @minReportId);
+		-- This shouldn't happen but just in case....
+		SET @minReportId = IIF(@minReportId IS NULL, @maxReportId, @minReportId);
 
+		DECLARE @insertReports INT;
 		SET @insertReports = (SELECT COUNT(*) from @batchReport);
 		
 		-- Log successful extractions for resuming / incremental updates
-		INSERT INTO TriNetX.dbo.tblExtractLog (db,tbl,pkName,maxPkValue,extractDate,comment) 
-		VALUES ('ordercomms_review','report','report_id',@minReportId, getdate(),
+		INSERT INTO TriNetX.dbo.tblExtractLog (db,tbl,pkName,job,maxPkValue,extractDate,comment) 
+		VALUES ('ordercomms_review','report','report_id','labs',@minReportId, getdate(),
 			CONCAT('inserted ',@insertReports,' reports, consisting of ',@insertRows,' test results'));
 		
 
@@ -196,9 +244,10 @@ GO
 
 -----------------------------------------------
 -- find out progress
-SELECT TOP [db]
+SELECT [db]
       ,[tbl]
       ,[pkName]
+	  ,job
       ,[maxPkValue]
       ,[extractDate]
       ,[comment]
@@ -214,6 +263,9 @@ GO
 -- or from powershell using bcp as 
 -- bcp -S MPH-EPRDTSDB1\DTSDEV TriNetX.dbo.viewTriNetXLabCodeSystems out C:\Test\TriNetXLabCodeSystems.csv
 -----------------------------------------------
+DROP VIEW IF EXISTS dbo.viewTriNetXLabCodeSystems;
+GO
+
 CREATE VIEW dbo.viewTriNetXLabCodeSystems AS
 SELECT
 	'TSFT' as [Source Id],
