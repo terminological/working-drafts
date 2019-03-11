@@ -124,7 +124,7 @@ public class TopicModelResult implements Serializable {
         //MarginalProbEstimator estimator = model.getProbEstimator();
         double[] testProbabilities = inferencer.getSampledDistribution(testing.get(0), 10, 1, 5);
         
-        estimator.evaluateLeftToRight(testing, numParticles, usingResampling, docProbabilityStream)
+        //estimator.evaluateLeftToRight(testing, numParticles, usingResampling, docProbabilityStream);
         System.out.println("0\t" + testProbabilities[0]);
         SortedSet<Weighted<Integer>> out = Weighted.descending();
         for (int i =0 ; i<testProbabilities.length; i++) {

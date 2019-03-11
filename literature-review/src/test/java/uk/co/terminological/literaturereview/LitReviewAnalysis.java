@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.driver.v1.AuthTokens;
 import org.neo4j.driver.v1.Config;
@@ -150,12 +151,15 @@ public class LitReviewAnalysis {
 			.render();
 		} catch (Exception e) {throw new RuntimeException(e);}
 	};*/
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		BasicConfigurator.configure();
+	}
 
 	@SuppressWarnings("unchecked")
 	@Before
-	public void setUpBeforeClass() throws Exception {
-		BasicConfigurator.configure();
-
+	public void setUp() throws Exception {
+		
 		Config config = Config.builder()
 				.withMaxConnectionLifetime( 30, TimeUnit.MINUTES )
 				.withMaxConnectionPoolSize( 50 )
@@ -190,7 +194,7 @@ public class LitReviewAnalysis {
 	}
 
 	@After
-	public void tearDownAfterClass() throws Exception {
+	public void tearDown() throws Exception {
 		driver.close();
 	}
 
@@ -223,13 +227,12 @@ public class LitReviewAnalysis {
 		}
 	}*/
 
-	//TODO: Top N articles plus scores
-	//TODO: Top N Articles in community
-	//TODO: Top N Articles in topic
-
 	public static String REFERENCE_FORMAT = "ieee";
 	
 	@Test
+	/*
+	 * Writes every query defined in cypherQuery.yaml to a csv file. 
+	 */
 	public void writeToCsv() {
 		try ( Session session = driver.session() ) {
 			queries.forEach((name,qry) -> {
