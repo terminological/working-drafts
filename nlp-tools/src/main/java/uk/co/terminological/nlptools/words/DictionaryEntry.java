@@ -4,6 +4,8 @@ public interface DictionaryEntry<X> {
 
 	public Dictionary<? extends DictionaryEntry<X>,X> getDictionary();
 	public X getValue();
-	public long getIndex();
+	public default long getIndex() {
+		return getDictionary().lookup(getValue());
+	};
 	
 }

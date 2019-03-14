@@ -10,8 +10,14 @@ public class Description implements DictionaryEntry<String> {
 
 	@Override
 	public long getIndex() {
-		// TODO Auto-generated method stub
+		
 		return 0;
+	}
+
+	@Override
+	public Dictionary<Description, String> getDictionary() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
