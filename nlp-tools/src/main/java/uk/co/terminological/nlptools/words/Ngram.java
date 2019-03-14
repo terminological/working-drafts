@@ -14,4 +14,10 @@ public class Ngram implements DictionaryEntry<String> {
 		return 0;
 	}
 
+	@Override
+	public Dictionary<Ngram, String> getDictionary() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
