@@ -1,5 +1,5 @@
 package uk.co.terminological.nlptools.words;
 
-public class RareNgramIndex<X> {
+public class RareNgramIndex {
 
 }
