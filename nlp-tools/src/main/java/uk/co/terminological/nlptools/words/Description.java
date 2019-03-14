@@ -1,6 +1,6 @@
 package uk.co.terminological.nlptools.words;
 
-public class Description implements DictionaryEntry<String> {
+public class Description {
 
 	@Override
 	public String getValue() {

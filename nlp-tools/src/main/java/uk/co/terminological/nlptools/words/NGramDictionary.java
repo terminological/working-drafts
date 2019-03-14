@@ -7,6 +7,7 @@ public class NGramDictionary {
 
 	StringIntMap map = StringIntMap.withExpectedSize(100000);
 	List<String> strings;
+	RareNgramIndex index;
 	
 	public String lookup(int index) {
 		return strings.get(index);
@@ -14,7 +15,11 @@ public class NGramDictionary {
 	
 	public Ngram create(String characters) {
 		if (map.containsKey(characters)) {
-			return new Ngram(map.getInt(characters));
+			Ngram ngram = new Ngram(map.getInt(characters));
+			index.update(ngram);
+			
+		} else {
+			
 		}
 			
 	};
