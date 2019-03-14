@@ -5,7 +5,7 @@ import com.koloboke.compile.KolobokeMap;
 @KolobokeMap
 abstract class IntIntMap {
     
-	static StringIntMap withExpectedSize(int expectedSize) {
+	static IntIntMap withExpectedSize(int expectedSize) {
         return new KolobokeIntIntMap(expectedSize);
     }
     
