@@ -1,5 +1,6 @@
 package uk.co.terminological.nlptools.words;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import com.koloboke.collect.map.hash.HashObjIntMaps;
 public class NGramDictionary {
 
 	Map<String,Integer> map = HashObjIntMaps.newMutableMap(100000);
-	List<String> strings;
+	List<String> strings = new ArrayList<>();
 	RareNgramIndex index;
 	
 	public String lookup(int index) {
