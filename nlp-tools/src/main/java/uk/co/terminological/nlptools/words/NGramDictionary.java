@@ -1,15 +1,22 @@
 package uk.co.terminological.nlptools.words;
 
+import java.util.List;
+import java.util.Map;
+
 public class NGramDictionary {
 
-	Map<String,Long> map = HashObjectLongMaps
+	StringIntMap map = StringIntMap.withExpectedSize(100000);
+	List<String> strings;
 	
-	public Ngram lookup(long index) {
-		return null;
+	public String lookup(int index) {
+		return strings.get(index);
 	}
 	
 	public Ngram create(String characters) {
-		
+		if (map.containsKey(characters)) {
+			return new Ngram(map.getInt(characters));
+		}
+			
 	};
 	
 }

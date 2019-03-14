@@ -10,10 +10,8 @@ public class Ngram {
 	}
 
 
-	@Override
 	public String getValue(NGramDictionary dict) {
-		// TODO Auto-generated method stub
-		return null;
+		return dict.lookup(index);
 	}
 
 }
