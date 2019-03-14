@@ -24,7 +24,12 @@ public class NGramDictionary {
 			index.update(ngram);
 			return ngram;
 		} else {
-			
+			int key = strings.size();
+			map.put(characters, key);
+			strings.add(characters);
+			Ngram ngram = new Ngram(key);
+			index.update(ngram);
+			return ngram;
 		}
 			
 	};
