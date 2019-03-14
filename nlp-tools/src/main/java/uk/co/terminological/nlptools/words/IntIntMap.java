@@ -1,5 +1,17 @@
 package uk.co.terminological.nlptools.words;
 
-public class IntIntMap {
+import com.koloboke.compile.KolobokeMap;
 
+@KolobokeMap
+abstract class IntIntMap {
+    
+	static StringIntMap withExpectedSize(int expectedSize) {
+        return new KolobokeIntIntMap(expectedSize);
+    }
+    
+    abstract void justPut(int key, int value);
+
+    abstract int getInt(int key);
+
+    
 }
