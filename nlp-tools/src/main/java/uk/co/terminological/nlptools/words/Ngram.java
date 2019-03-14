@@ -1,18 +1,12 @@
 package uk.co.terminological.nlptools.words;
 
-public class Ngram implements DictionaryEntry<String> {
+public class Ngram {
 
 	long index;
 	
 	
 	@Override
-	public String getValue() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Dictionary<Ngram, String> getDictionary() {
+	public String getValue(NGramDictionary dict) {
 		// TODO Auto-generated method stub
 		return null;
 	}
