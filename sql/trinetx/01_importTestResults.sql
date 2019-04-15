@@ -335,6 +335,6 @@ GO
 
 -- technically if we are trying to tie a test result back to an encounter we need to look at the requested
 -- location, request date and try and match them up to the visit/encounter. probably this can be done just on the request date or more likely 
--- the specimen recieved date.
+-- the specimen recieved date which is not in the extract as is.
 --------------------------------------------------------------
 
