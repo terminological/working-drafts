@@ -1,0 +1,37 @@
+package uk.co.terminological.nlptools.words;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.koloboke.collect.map.ObjIntMap;
+import com.koloboke.collect.map.ObjIntMapFactory;
+import com.koloboke.collect.map.hash.HashObjIntMaps;
+
+public class NGramDictionary {
+
+	Map<String,Integer> map = HashObjIntMaps.newMutableMap(100000);
+	List<String> strings = new ArrayList<>();
+	RareNgramIndex index;
+	
+	public String lookup(int index) {
+		return strings.get(index);
+	}
+	
+	public Ngram create(String characters) {
+		if (map.containsKey(characters)) {
+			Ngram ngram = new Ngram(map.get(characters));
+			index.update(ngram);
+			return ngram;
+		} else {
+			int key = strings.size();
+			map.put(characters, key);
+			strings.add(characters);
+			Ngram ngram = new Ngram(key);
+			index.update(ngram);
+			return ngram;
+		}
+			
+	};
+	
+}
