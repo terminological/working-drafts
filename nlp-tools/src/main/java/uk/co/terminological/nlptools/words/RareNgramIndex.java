@@ -8,14 +8,13 @@ public class RareNgramIndex {
 
 	Map<Integer,Integer> counts = HashIntIntMaps.newMutableMap(100000);
 	
-	public void update(Ngram ngram) {
+	public void update(Ngram ngram, Description desc) {
 		counts.put(
 				ngram.index,
 				counts.getOrDefault(ngram.index, 0)+1);
+		
 	}
 	
-	public void addDescription(Description desc) {
-		//TODO: create ngrams for description 
-	}
+	
 
 }

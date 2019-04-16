@@ -5,15 +5,15 @@ public class Ngram {
 	int index;
 	
 	
-	public Ngram(int int1) {
+	// Only construct via dictionary
+	protected Ngram(int int1) {
 		index = int1;
 	}
 
-
+	@Deprecated
 	public String getValue(NGramDictionary dict) {
 		return dict.lookup(index);
 	}
-
 
 	@Override
 	public int hashCode() {

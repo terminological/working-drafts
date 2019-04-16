@@ -1,7 +1,21 @@
 package uk.co.terminological.nlptools.words;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Description {
 
+	private String term;
+	private NGramDictionary dict;
+	private List<Ngram> ngrams;
 	
+	protected Description(String term) {
+		this.term = term;
+		this.ngrams = dict.create(this);
+	}
+
+	public String getTerm() {
+		return term;
+	}
 
 }
