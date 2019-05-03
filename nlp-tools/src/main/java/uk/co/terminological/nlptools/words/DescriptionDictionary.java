@@ -15,9 +15,10 @@ public class DescriptionDictionary {
 		return strings.get(index);
 	}
 	
-	public void put(Description desc) {
-		map.computeIfAbsent(desc.getTerm(), d -> strings.size());
+	public int put(Description desc) {
+		Integer index = map.computeIfAbsent(desc.getTerm(), d -> strings.size());
 		strings.add(desc);
+		return index;
 	}
 	
 	
