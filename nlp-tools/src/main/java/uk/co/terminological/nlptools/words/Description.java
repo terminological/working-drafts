@@ -1,6 +1,5 @@
 package uk.co.terminological.nlptools.words;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Description {
@@ -11,7 +10,9 @@ public class Description {
 	
 	protected Description(String term, Concept concept) {
 		this.term = term;
+		this.concept = concept;
 		this.ngrams = concept.getConceptList().getDict().create(this);
+		this.concept.getConceptList().getDescDict().put(this);
 	}
 
 	public String getTerm() {
