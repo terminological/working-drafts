@@ -6,10 +6,10 @@ import java.util.List;
 public class Description {
 
 	private String term;
-	private NGramDictionary dict;
+	private Concept concept;
 	private List<Ngram> ngrams;
 	
-	protected Description(String term) {
+	protected Description(String term, Concept concept) {
 		this.term = term;
 		this.ngrams = dict.create(this);
 	}
