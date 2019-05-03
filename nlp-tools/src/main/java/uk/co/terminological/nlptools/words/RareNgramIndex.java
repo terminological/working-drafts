@@ -18,7 +18,7 @@ public class RareNgramIndex {
 			freqs.put(n, new Mapping(
 					counts.increment(n.index),
 					seq,
-					desc.get
+					desc.getId()
 				));	
 		}
 		freqs

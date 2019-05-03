@@ -20,4 +20,8 @@ public class Description {
 		return term;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 }
