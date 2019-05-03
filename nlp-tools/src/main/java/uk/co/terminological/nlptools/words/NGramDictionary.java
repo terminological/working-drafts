@@ -43,9 +43,11 @@ public class NGramDictionary {
 				strings.add(characters);
 				ngram = new Ngram(key);
 			}
-			index.update(ngram, desc);
+			
 			out.add(ngram);
 		}
+		
+		index.update(out, desc);
 		
 		return out;
 	};
