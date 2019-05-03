@@ -11,7 +11,7 @@ public class Description {
 	
 	protected Description(String term, Concept concept) {
 		this.term = term;
-		this.ngrams = dict.create(this);
+		this.ngrams = concept.getConceptList().getDict().create(this);
 	}
 
 	public String getTerm() {
