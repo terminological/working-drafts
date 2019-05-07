@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.koloboke.collect.map.ObjIntMap;
-import com.koloboke.collect.map.ObjIntMapFactory;
 import com.koloboke.collect.map.hash.HashObjIntMaps;
 
 import uk.co.terminological.nlptools.Normaliser;
@@ -13,12 +11,12 @@ import uk.co.terminological.nlptools.Normaliser;
 public class NGramDictionary {
 
 	Map<String,Integer> map = HashObjIntMaps.newMutableMap(100000);
-	List<String> strings = new ArrayList<>();
-	Normaliser norm;
-	RareNgramIndex index;
-	int nGramSize;
+	List<Ngram> strings = new ArrayList<>();
+	Normaliser norm = Normaliser.DEFAULT;
+	RareNgramIndex index = new RareNgramIndex();
+	int nGramSize = 3;
 	
-	public String lookup(int index) {
+	public Ngram lookup(int index) {
 		return strings.get(index);
 	}
 	
@@ -28,26 +26,29 @@ public class NGramDictionary {
 				new String(new char[nGramSize-1]);
 	}
 	
-	public List<Ngram> create(Description desc) {
-		List<Ngram> out = new ArrayList<>();
+	public List<Integer> create(Description desc) {
+		List<Integer> out = new ArrayList<>();
 	
 		String tmp = ngramTerm(desc.getTerm());
 		for (int pos = 0; pos<(tmp.length()-nGramSize); pos++) {
 			String characters = tmp.substring(pos, pos+nGramSize);
 			Ngram ngram = null;
 			if (map.containsKey(characters)) {
-				ngram = new Ngram(map.get(characters));
+				int key = map.get(characters);
+				ngram = strings.get(key);
+				index.update(ngram, desc);
+				out.add(key);
 			} else {
 				int key = strings.size();
 				map.put(characters, key);
-				strings.add(characters);
 				ngram = new Ngram(key);
+				index.update(ngram, desc);
+				strings.add(ngram);
+				out.add(key);
 			}
-			
-			out.add(ngram);
 		}
 		
-		index.update(out, desc);
+		
 		
 		return out;
 	};

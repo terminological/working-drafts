@@ -1,18 +1,18 @@
 package uk.co.terminological.nlptools.words;
 
+import java.util.Set;
+
+import com.koloboke.collect.set.hash.HashIntSets;
+
 public class Ngram {
 
 	int index;
-	
+	// int count=0;
+	Set<Integer> descs = HashIntSets.newMutableSet(); 
 	
 	// Only construct via dictionary
 	protected Ngram(int int1) {
 		index = int1;
-	}
-
-	@Deprecated
-	public String getValue(NGramDictionary dict) {
-		return dict.lookup(index);
 	}
 
 	@Override
@@ -33,6 +33,15 @@ public class Ngram {
 		if (index != other.index)
 			return false;
 		return true;
+	}
+
+	/*public void addOccurrence(Description desc) {
+		count+=1;
+		descs.add(desc.getId());
+	}*/
+
+	public int getId() {
+		return index;
 	}
 
 }
