@@ -22,8 +22,29 @@ con <- dbConnect(odbc(),
                  Port = 1433,
                  bigint = "integer");
 mapping <- dbReadTable(con,"mappingComparison")
+mappingGoldFull <- dbReadTable(con,"mappingGoldStandardOPCS4")
+mappingGold <- mappingGoldFull %>% 
+  mutate(mapped_concept_id=target_concept_id) %>%
+  group_by(source_concept_id,mapped_concept_id) %>% 
+  summarise(
+    source_description_name = paste0(source_description_name, collapse = "\n"),
+    mapped_description_name = paste0(target_description_name, collapse = "\n")
+  ) %>%
+  distinct()
+mappingDetail <- dbReadTable(con,"mappingTestDetailOPCS4")
+
+mappingIndex <- dbReadTable(con,"mappingIndexInput")
+mappingSearch <- dbReadTable(con,"mappingSearchInput")
+
+# one description per concept - a feature of OPCS4.
+
+# mappingDetail %>% select(source_concept_id,source_desc_id) %>% distinct() %>% group_by(source_concept_id) %>% summarise(n=n()) %>% filter(n>1)
 
 sources <- mapping %>% select(source_concept_id) %>% distinct()
+targets <- mapping %>% select(target_concept_id) %>% distinct()
+mappeds <- mapping %>% select(mapped_concept_id) %>% distinct()
+
+
 
 mapping %>% select(target_concept_id) %>% distinct() %>% count()
 
@@ -115,7 +136,7 @@ ggplot(prRank %>% filter(beta=='1'),aes(x=rank))+
 
 ggplot(prRank,aes(x=rank, y=fValue, color = beta))+
   geom_line()+geom_point()
-# precision for cutoff ----
+# OLD 2 precision for cutoff ----
 
 precisionForSimilarity <- function(sim) {
   tmp <- mapping %>%  mutate(
@@ -159,27 +180,52 @@ ggplot(pr,aes(x=sim, y=fValue, color = beta))+
 
 # Confusion matrix ----
 
-confMatrixGenerator <- function(sim, rank) {
-  # rank = 5; sim = 0.75
-  tmp <- mapping %>% 
-    mutate(
-      source_concept_id,
-      target_concept_id = ifelse(is.na(target_concept_id) | (rankOrder <= rank & similarity >= sim),target_concept_id,NA),
-      mapped_concept_id,
-      similarity = ifelse(is.na(similarity) | (rankOrder <= rank & similarity >= sim),similarity,NA),
-      rankOrder = ifelse(is.na(rankOrder) | (rankOrder <= rank & similarity >= sim),rankOrder,NA)
-    ) %>% 
-    filter(!(is.na(mapped_concept_id) & is.na(target_concept_id))) %>%
-    select(source_concept_id,target_concept_id,mapped_concept_id,similarity,rankOrder) %>% distinct()
-  tmp <- sources %>% left_join(tmp)
-  tp = (tmp %>% filter(!is.na(target_concept_id) & !is.na(mapped_concept_id)) %>% select(source_concept_id) %>% distinct() %>% count())$n
-  fp = (tmp %>% filter(!is.na(target_concept_id) & is.na(mapped_concept_id))  %>% select(source_concept_id,target_concept_id) %>% distinct() %>% count())$n
-  tn = (tmp %>% filter(is.na(target_concept_id) & is.na(mapped_concept_id))  %>% select(source_concept_id) %>% distinct() %>% count())$n
-  fn = (tmp %>% filter(is.na(target_concept_id) & !is.na(mapped_concept_id))  %>% select(source_concept_id) %>% distinct() %>% count())$n
-  return(lst(sim=sim, rank=rank, tp=tp, tn=tn, fp=fp, fn=fn))
+# confMatrixGenerator <- function(sim, rank) {
+#   # rank = 5; sim = 0.75
+#   tmp <- mapping %>% 
+#     mutate(
+#       source_concept_id,
+#       target_concept_id = ifelse(is.na(target_concept_id) | (rankOrder <= rank & similarity >= sim),target_concept_id,NA),
+#       mapped_concept_id,
+#       similarity = ifelse(is.na(similarity) | (rankOrder <= rank & similarity >= sim),similarity,NA),
+#       rankOrder = ifelse(is.na(rankOrder) | (rankOrder <= rank & similarity >= sim),rankOrder,NA)
+#     ) %>% 
+#     filter(!(is.na(mapped_concept_id) & is.na(target_concept_id))) %>%
+#     select(source_concept_id,target_concept_id,mapped_concept_id,similarity,rankOrder) %>% distinct()
+#   tmp <- sources %>% left_join(tmp)
+#   tp = (tmp %>% filter(!is.na(target_concept_id) & !is.na(mapped_concept_id)) %>% select(source_concept_id) %>% distinct() %>% count())$n
+#   fp = (tmp %>% filter(!is.na(target_concept_id) & is.na(mapped_concept_id))  %>% select(source_concept_id,target_concept_id) %>% distinct() %>% count())$n
+#   tn = (tmp %>% filter(is.na(target_concept_id) & is.na(mapped_concept_id))  %>% select(source_concept_id) %>% distinct() %>% count())$n
+#   fn = (tmp %>% filter(is.na(target_concept_id) & !is.na(mapped_concept_id))  %>% select(source_concept_id) %>% distinct() %>% count())$n
+#   return(lst(sim=sim, rank=rank, tp=tp, tn=tn, fp=fp, fn=fn))
+# }
+
+filteredResult <- mappingDetail %>% group_by(source_concept_id) %>% mutate(
+  rank=dense_rank(desc(similarity))
+  # target_concept_id = ifelse(is.na(target_concept_id),-1,target_concept_id)
+) %>%
+  group_by(source_concept_id,target_concept_id) %>% # best hit
+  summarise(rank = min(rank), similarity=max(similarity)) %>% # best hit
+  select(source_concept_id,target_concept_id,rank,similarity) %>%
+distinct()
+
+confMatrixGenerator <- function(minSim, maxRank) {
+  # minSim <- 0.5
+  # maxRank <- 5
+  tmp <- mappingGold %>% ungroup() %>% full_join(
+    filteredResult %>% ungroup() %>% filter(rank<=maxRank & similarity>= minSim)
+  ) %>% mutate(
+    tn = is.na(mapped_concept_id) & is.na(target_concept_id),
+    fn = !is.na(mapped_concept_id) & is.na(target_concept_id),
+    fp = is.na(mapped_concept_id) & !is.na(target_concept_id) | (!is.na(mapped_concept_id) & !is.na(target_concept_id) & mapped_concept_id!=target_concept_id),
+    tp = (!is.na(mapped_concept_id) & !is.na(target_concept_id) & mapped_concept_id==target_concept_id)
+  )
+  return(
+    tmp %>% summarise(tp = sum(tp), tn=sum(tn), fp=sum(fp), fn=sum(fn)) %>% mutate(sim = minSim, rank=maxRank)
+  )
 }
 
-tmp2 <- confMatrixGenerator(1,20)
+tmp2 <- confMatrixGenerator(0.5,20)
 tmp2
 tmp2$tp+tmp2$tn+tmp2$fn
 
@@ -187,7 +233,7 @@ tmp2$tp+tmp2$tn+tmp2$fn
 # confMatrixInput <- tibble(rank=1:2) %>% merge(tibble(sim=seq(0.5,1,0.1)), by=NULL)
 confMatrix = tibble()
 
-for (sim in seq(0.5,1,0.01)) {
+for (sim in seq(0,1,0.02)) {
   for (rank in 1:20) {
     confMatrix <- confMatrix %>% bind_rows(confMatrixGenerator(sim,rank))
   }
@@ -216,27 +262,40 @@ confMatrix <- confMatrix %>% mutate(
   f8 = fValue(8,tp,tn,fp,fn)
 )
 
+
+# Plots ----
 setwd("~/Dropbox/ngramTextMatching")
+
+totalPlot <- ggplot(confMatrix, aes(x=rank,y=sim,fill=tp+fn, z=tp+fn))+geom_tile(show.legend=FALSE)+geom_contour2(colour='black')+
+  geom_text_contour(stroke=0.1)+scale_fill_gradient(high="grey72", low="grey25")+
+  xlab('results rank')+ylab("similarity cutoff")
+ggsave('total.png',width=7,height=5,units='in')
+ggsave('total.svg',width=7,height=5,units='in')
+
 
 tpPlot <- ggplot(confMatrix, aes(x=rank,y=sim,fill=tp, z=tp))+geom_tile(show.legend=FALSE)+geom_contour2(colour='black')+
   geom_text_contour(stroke=0.1)+scale_fill_gradient(high="green", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('tp.png',width=7,height=5,units='in')
+ggsave('tp.svg',width=7,height=5,units='in')
 
 tnPlot <- ggplot(confMatrix, aes(x=rank,y=sim,fill=tn, z=tn))+geom_tile(show.legend=FALSE)+geom_contour2(colour='black')+
   geom_text_contour(stroke=0.1)+scale_fill_gradient(high="green", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('tn.png',width=7,height=5,units='in')
+ggsave('tn.svg',width=7,height=5,units='in')
 
 fpPlot <- ggplot(confMatrix, aes(x=rank,y=sim,fill=fp, z=fp))+geom_tile(show.legend=FALSE)+geom_contour2(colour='black')+
   geom_text_contour(stroke=0.1)+scale_fill_gradient(high="red", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('fp.png',width=7,height=5,units='in')
+ggsave('fp.svg',width=7,height=5,units='in')
 
 fnPlot <- ggplot(confMatrix, aes(x=rank,y=sim,fill=fn, z=fn))+geom_tile(show.legend=FALSE)+geom_contour2(colour='black')+
   geom_text_contour(stroke=0.1)+scale_fill_gradient(high="red", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('fn.png',width=7,height=5,units='in')
+ggsave('fn.svg',width=7,height=5,units='in')
 
 
 
@@ -244,53 +303,80 @@ ggplot(confMatrix, aes(x=rank,y=sim,fill=mcc, z=mcc))+geom_tile(show.legend=FALS
   geom_text_contour(stroke=0.1)+scale_fill_gradient2(high="green", low="red", mid="grey75",midpoint=0, limits=c(-1,1))+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('matthewsCorrelationCoefficient.png',width=7,height=5,units='in')
+ggsave('matthewsCorrelationCoefficient.svg',width=7,height=5,units='in')
 
 ggplot(confMatrix, aes(x=rank,y=sim,fill=recall, z=recall))+geom_tile(show.legend=FALSE)+
-  geom_contour2(breaks=seq(0.5,0.68,0.02),colour='black')+
-  geom_text_contour(breaks=seq(0.5,0.68,0.02),stroke=0.1)+
-  scale_fill_gradient(high="orange", low="grey75", limits=c(0.45,0.7))+
+  geom_contour2(breaks=seq(0.65,0.95,0.05),colour='black')+
+  geom_text_contour(breaks=seq(0.65,0.95,0.05),stroke=0.1)+
+  scale_fill_gradient(high="orange", low="grey75", limits=c(0.45,1))+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('recall.png',width=7,height=5,units='in')
+ggsave('recall.svg',width=7,height=5,units='in')
 
-ggplot(confMatrix, aes(x=rank,y=sim,fill=f1, z=f1))+geom_tile(show.legend=FALSE)+geom_contour2(breaks=seq(0.5,0.68,0.02),colour='black')+
-  geom_text_contour(breaks=seq(0.5,0.68,0.02),stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
+ggplot(confMatrix, aes(x=rank,y=sim,fill=acc, z=acc))+geom_tile(show.legend=FALSE)+
+  geom_contour2(#breaks=seq(0.65,0.95,0.05),
+    colour='black')+
+  geom_text_contour(#breaks=seq(0.65,0.95,0.05),
+    stroke=0.1)+
+  scale_fill_gradient(high="purple", low="grey75")+
+  xlab('results rank')+ylab("similarity cutoff")
+ggsave('precision.png',width=7,height=5,units='in')
+ggsave('precision.svg',width=7,height=5,units='in')
+
+ggplot(confMatrix, aes(x=rank,y=sim,fill=f1, z=f1))+geom_tile(show.legend=FALSE)+geom_contour2(#breaks=seq(0.5,0.68,0.02),
+  colour='black')+
+  geom_text_contour(#breaks=seq(0.5,0.68,0.02),
+    stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('f1.png',width=7,height=5,units='in')
+ggsave('f1.svg',width=7,height=5,units='in')
 
-ggplot(confMatrix, aes(x=rank,y=sim,fill=f2, z=f2))+geom_tile(show.legend=FALSE)+geom_contour2(breaks=seq(0.5,0.68,0.02),colour='black')+
-  geom_text_contour(breaks=seq(0.5,0.68,0.02),stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
+ggplot(confMatrix, aes(x=rank,y=sim,fill=f2, z=f2))+geom_tile(show.legend=FALSE)+geom_contour2(#breaks=seq(0.5,0.68,0.02),
+  colour='black')+
+  geom_text_contour(#breaks=seq(0.5,0.68,0.02),
+    stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('f2.png',width=7,height=5,units='in')
+ggsave('f2.svg',width=7,height=5,units='in')
 
-ggplot(confMatrix, aes(x=rank,y=sim,fill=f4, z=f4))+geom_tile(show.legend=FALSE)+geom_contour2(breaks=seq(0.5,0.68,0.02),colour='black')+
-  geom_text_contour(breaks=seq(0.5,0.68,0.02),stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
+ggplot(confMatrix, aes(x=rank,y=sim,fill=f4, z=f4))+geom_tile(show.legend=FALSE)+geom_contour2(#breaks=seq(0.5,0.68,0.02),
+  colour='black')+
+  geom_text_contour(breaks=seq(0.65,0.95,0.05),
+    stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('f4.png',width=7,height=5,units='in')
+ggsave('f4.svg',width=7,height=5,units='in')
 
-ggplot(confMatrix, aes(x=rank,y=sim,fill=f8, z=f8))+geom_tile(show.legend=FALSE)+geom_contour2(breaks=seq(0.5,0.68,0.02),colour='black')+
-  geom_text_contour(breaks=seq(0.5,0.68,0.02),stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
+ggplot(confMatrix, aes(x=rank,y=sim,fill=f8, z=f8))+geom_tile(show.legend=FALSE)+geom_contour2(breaks=seq(0.75,0.99,0.02),
+  colour='black')+
+  geom_text_contour(breaks=seq(0.87,0.99,0.02),
+    stroke=0.1)+scale_fill_gradient(high="blue", low="grey75")+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('f8.png',width=7,height=5,units='in')
+ggsave('f8.svg',width=7,height=5,units='in')
 
+# Unused ones ----
 
 ggplot(confMatrix, aes(x=rank,y=sim,fill=bmi, z=bmi))+geom_tile(show.legend=FALSE)+geom_contour(colour='black')+
   geom_text_contour(stroke=0.1)+scale_fill_gradient2(high="green", low="red", mid="grey75",midpoint=0, limits=c(-1,1))+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('bookmakersInformedness.png',width=7,height=5,units='in')
 
-ggplot(confMatrix %>% mutate(col = rgb(precision*63+192,192,(recall-0.5)/0.2*63+192,255,NULL,255)), aes(x=rank,y=sim))+
+ggplot(confMatrix %>% mutate(col = rgb(precision*63+192,192,(recall-0.5)/0.5*63+192,255,NULL,255)), aes(x=rank,y=sim))+
   geom_tile(aes(fill=col),show.legend=FALSE)+
-  geom_contour2(aes(z=recall),breaks=seq(0.5,0.68,0.02),colour='blue')+
-  geom_text_contour(aes(z=recall),breaks=seq(0.5,0.68,0.02),stroke=0.1,colour='blue')+
+  geom_contour2(aes(z=recall),breaks=seq(0.65,0.95,0.05),
+                colour='blue')+
+  geom_text_contour(aes(z=recall),breaks=seq(0.65,0.95,0.05),
+                    stroke=0.1,colour='blue')+
   geom_contour(aes(z=precision),colour='red')+
   geom_text_contour(aes(z=precision),stroke=0.1,colour='red')+scale_fill_identity()+
   xlab('results rank')+ylab("similarity cutoff")
 ggsave('precisionRecall.png',width=7,height=5,units='in')
 
-ggplot(confMatrix %>% mutate(col = rgb(192,spec*63+192,(recall-0.5)/0.2*63+192,255,NULL,255)), aes(x=rank,y=sim))+
+ggplot(confMatrix %>% mutate(col = rgb(192,spec*63+192,(recall-0.5)/0.5*63+192,255,NULL,255)), aes(x=rank,y=sim))+
   geom_tile(aes(fill=col),show.legend=FALSE)+
-  geom_contour2(aes(z=recall),breaks=seq(0.5,0.68,0.02),colour='blue')+
-  geom_text_contour(aes(z=recall),breaks=seq(0.5,0.68,0.02),stroke=0.1,colour='blue')+
+  geom_contour2(aes(z=recall),breaks=seq(0.65,0.95,0.05),colour='blue')+
+  geom_text_contour(aes(z=recall),breaks=seq(0.65,0.95,0.05),stroke=0.1,colour='blue')+
   geom_contour(aes(z=spec),colour='green')+
   geom_text_contour(aes(z=spec),stroke=0.1,colour='green')+scale_fill_identity()+
   xlab('results rank')+ylab("similarity cutoff")
@@ -298,8 +384,8 @@ ggsave('sensSpec.png',width=7,height=5,units='in')
 
 ggplot(confMatrix, aes(x=rank,y=sim))+
   geom_tile(aes(fill=rgb(recall*0.25+0.75,0.75,mcc*0.25+0.75,1)),show.legend=FALSE)+
-  geom_contour2(aes(z=recall),breaks=seq(0.61,0.68,0.01),colour='blue')+
-  geom_text_contour(aes(z=recall),breaks=seq(0.61,0.68,0.01),stroke=0.1,colour='blue')+
+  geom_contour2(aes(z=recall),breaks=seq(0.65,0.95,0.05),colour='blue')+
+  geom_text_contour(aes(z=recall),breaks=seq(0.65,0.95,0.05),stroke=0.1,colour='blue')+
   geom_contour(aes(z=mcc),colour='red')+
   geom_text_contour(aes(z=mcc),stroke=0.1,colour='red')+scale_fill_identity()+
   xlab('results rank')+ylab("similarity cutoff")
@@ -320,14 +406,17 @@ ggplot(confMatrix %>% filter(sim==0.5) %>% gather(key='metric',value='value',rec
   geom_line(aes(y=value,colour=metric))
 ggsave('metricsByRankForSimilarity05.png',width=7,height=5,units='in')
 
-ggplot(confMatrix %>% filter(sim==0.69) %>% gather(key='metric',value='value',recall,precision,acc,mcc,bmi,spec), aes(x=rank))+
+ggplot(confMatrix %>% filter(sim==0.3) %>% gather(key='metric',value='value',recall,precision,acc,mcc,bmi,spec), aes(x=rank))+
   geom_line(aes(y=value,colour=metric))
-ggsave('metricsByRankForSimilarity069.png',width=7,height=5,units='in')
-
+ggsave('metricsByRankForSimilarity03.png',width=7,height=5,units='in')
 
 ggplot(confMatrix %>% filter(sim==0.5) %>% gather(key='metric',value='value',tp,fp,tn,fn), aes(x=rank))+
   geom_line(aes(y=value,colour=metric))
 ggsave('rawByRankForSimilarity05.png',width=7,height=5,units='in')
+
+ggplot(confMatrix %>% filter(sim==0.8) %>% gather(key='metric',value='value',tp,fp,tn,fn), aes(x=rank))+
+  geom_line(aes(y=value,colour=metric))
+ggsave('rawByRankForSimilarity07.png',width=7,height=5,units='in')
 
 ggplot(confMatrix %>% filter(rank==20) %>% gather(key='metric',value='value',tp,fp,tn,fn), aes(x=sim))+
   geom_line(aes(y=value,colour=metric))
@@ -344,76 +433,83 @@ defaultLayout = function(...) {
             set_all_padding(everywhere,everywhere,2) %>%
             set_valign(everywhere,everywhere,"top") )
 }
-
-best_suggestion <- mapping %>% filter(!is.na(target_concept_id)) %>% 
-  group_by(source_concept_id,source_concept_name) %>% 
+# TODO: source_concept_name = source_description_name
+best_suggestion <- mappingDetail %>% 
+  group_by(source_concept_id,source_term) %>%
+  mutate(suggestions=n()) %>%
+  top_n(5,desc(similarity)) %>%
+  arrange(desc(similarity)) %>%
   summarize(
-    suggestions=n(),
-    best=first(target_concept_name,order_by=desc(similarity))
-  ) %>% arrange(desc(suggestions))
+    suggestions=max(suggestions),
+    bestSim=max(similarity),
+    top5Sim=mean(similarity),
+    best=first(target_term,order_by=desc(similarity)),
+    top5=paste0(target_term,collapse="; ")
+  ) %>% arrange(desc(top5Sim))
 
-not_found_in_mapping <- mapping %>% 
-  filter(is.na(target_concept_id) & !is.na(mapped_concept_id)) %>%
-  select(source_concept_id,source_concept_name,mapped_concept_name) %>%
-  left_join( best_suggestion, on='source_concept_id') %>%
-  mutate(suggestions = ifelse(is.na(suggestions),0,suggestions))
+not_found_in_mapping <- 
+  best_suggestion %>% anti_join(mappingGold %>% filter(!is.na(mapped_concept_id)), on='source_concept_id')
+
 
 # ggplot(
-missed_by_count <- defaultLayout(huxtable(
-  not_found_in_mapping %>%
-    mutate(suggestions = cut(suggestions,breaks=c(-Inf,0.5,1.5,2.5,3.5,4.5,Inf),labels=c(0,1,2,3,4,'>5')))
-    %>% group_by(suggestions) %>% summarise( count = n()) %>%
-    select("Number candidates"=suggestions, "Original search terms"=count),
-  add_colnames = TRUE
-))
-quick_html(defaultLayout(missed_by_count),file='missedByCount.html',open=FALSE)
-quick_latex(defaultLayout(missed_by_count),file='missedByCount.tex',open=FALSE)
+# missed_by_count <- 
+# defaultLayout(huxtable(
+#   not_found_in_mapping %>%
+#     mutate(suggestions = cut(suggestions,breaks=c(-Inf,0.5,1.5,2.5,3.5,4.5,Inf),labels=c(0,1,2,3,4,'>5')))
+#     %>% group_by(suggestions) %>% summarise( count = n()) %>%
+#     select("Number candidates"=suggestions, "Original search terms"=count),
+#   add_colnames = TRUE
+# ))
+# quick_html(defaultLayout(missed_by_count),file='missedByCount.html',open=FALSE)
+# quick_latex(defaultLayout(missed_by_count),file='missedByCount.tex',open=FALSE)
 
 # ,
 #aes(x=suggestions,y=count)
   #) + geom_histogram(stat = 'identity')
 
-missed_with_suggestions <- huxtable(
-  not_found_in_mapping %>%
-    top_n(10, suggestions) %>%
-    arrange(desc(suggestions)) %>%
+missed_with_suggestions <- defaultLayout(huxtable(
+  not_found_in_mapping %>% ungroup() %>%
+    top_n(5,bestSim) %>%
+    arrange(desc(bestSim)) %>%
     select(
-      "Original"=source_concept_name,
-      "Gold standard"=mapped_concept_name,
+      "Original"=source_term,
       "Search hits"=suggestions,
-      "Best search result"=best) ,
+      "Best 5 search result"=top5) ,
   add_colnames = TRUE
-)
-quick_html(defaultLayout(missed_with_suggestions),file='missedWithSuggestions.html',open=FALSE)
-quick_latex(defaultLayout(missed_with_suggestions),file='missedWithSuggestions.tex',open=FALSE)
+))
+quick_html(missed_with_suggestions,file='missedWithSuggestions.html',open=FALSE)
+quick_latex(missed_with_suggestions,file='missedWithSuggestions.tex',open=FALSE)
 
-missed_with_one_suggestion <- huxtable(
-  not_found_in_mapping %>%
-    filter(suggestions==1) %>%
-    top_n(-10,source_concept_name) %>%
-    arrange(source_concept_name) %>%
-    select(
-      "Original"=source_concept_name,
-      "Gold standard"=mapped_concept_name,
-      "Search hits"=suggestions,
-      "Best search result"=best),
-  add_colnames = TRUE
-)
-quick_html(defaultLayout(missed_with_one_suggestion),file='missedWithOneSuggestion.html',open=FALSE)
-quick_latex(defaultLayout(missed_with_one_suggestion),file='missedWithOneSuggestion.tex',open=FALSE)
+# missed_with_one_suggestion <- huxtable(
+#   not_found_in_mapping %>%
+#     filter(suggestions==1) %>%
+#     top_n(-10,source_concept_name) %>%
+#     arrange(source_concept_name) %>%
+#     select(
+#       "Original"=source_concept_name,
+#       "Gold standard"=mapped_concept_name,
+#       "Search hits"=suggestions,
+#       "Best search result"=best),
+#   add_colnames = TRUE
+# )
+# quick_html(defaultLayout(missed_with_one_suggestion),file='missedWithOneSuggestion.html',open=FALSE)
+# quick_latex(defaultLayout(missed_with_one_suggestion),file='missedWithOneSuggestion.tex',open=FALSE)
 
-missed_without_suggestions <- huxtable(
-  not_found_in_mapping %>%
-    filter(suggestions==0) %>%
-    top_n(-10,source_concept_name) %>%
-    arrange(source_concept_name) %>%
-    select(
-      "Original"=source_concept_name,
-      "Gold standard"=mapped_concept_name,
-      "Search hits"=suggestions
-    ),
-  add_colnames = TRUE
-)
-quick_html(defaultLayout(missed_without_suggestions),file='missedWithoutSuggestions.html',open=FALSE)
-quick_latex(defaultLayout(missed_without_suggestions),file='missedWithoutSuggestions.tex',open=FALSE)
-
+# there are no items that are not mapped and have no suggestions (because similarity is so low.)
+# mappingGold %>% filter(is.na(mapped_concept_id)) %>% anti_join(mappingDetail)
+# 
+# missed_without_suggestions <- huxtable(
+#   not_found_in_mapping %>%
+#     filter(suggestions==0) %>%
+#     top_n(-10,source_concept_name) %>%
+#     arrange(source_concept_name) %>%
+#     select(
+#       "Original"=source_concept_name,
+#       "Gold standard"=mapped_concept_name,
+#       "Search hits"=suggestions
+#     ),
+#   add_colnames = TRUE
+# )
+# quick_html(defaultLayout(missed_without_suggestions),file='missedWithoutSuggestions.html',open=FALSE)
+# quick_latex(defaultLayout(missed_without_suggestions),file='missedWithoutSuggestions.tex',open=FALSE)
+# 
