@@ -52,6 +52,7 @@ import uk.co.terminological.pipestream.FluentEvents.Handlers;
 import uk.co.terminological.pipestream.FluentEvents.Predicates;
 import uk.co.terminological.pipestream.HandlerTypes.EventProcessor;
 
+@Deprecated
 public class PubMedGraphExperiment {
 
 	static Logger log = LoggerFactory.getLogger(PubMedGraphExperiment.class);
