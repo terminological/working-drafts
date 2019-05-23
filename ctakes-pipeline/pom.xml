@@ -7,9 +7,14 @@
 		<artifactId>ctakes</artifactId>
 		<version>4.0.0</version>
 	</parent>
-	<!-- <properties>
-		<ctakes.version>4.0.0</ctakes.version>
-	</properties> -->
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<slf4j-version>1.7.22</slf4j-version>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+	
 	<artifactId>ctakes-pipeline</artifactId>
 
 
@@ -153,7 +158,31 @@
 		<!-- <artifactId>ctakes-coreference</artifactId> -->
 		<!-- <version>${ctakes.version}</version> -->
 		<!-- </dependency> -->
+		
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-snorx-hack</artifactId>
+			<version>${ctakes.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>uk.co.terminological</groupId>
+			<artifactId>exotic-datatypes</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<profiles>
 		<!-- JcasGen will compile classes described in the TypeSystem.xml file 
 			into java classes. -->
