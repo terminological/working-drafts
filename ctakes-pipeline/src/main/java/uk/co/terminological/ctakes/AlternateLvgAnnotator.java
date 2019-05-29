@@ -16,17 +16,19 @@ import org.apache.commons.io.IOUtils;
 import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl;
-import org.apache.log4j.Logger;
+
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.ExternalResourceFactory;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.datatypes.StreamExceptions;
 
 public class AlternateLvgAnnotator {
 
-	static Logger logger = Logger.getLogger(LvgAnnotator.class.getName());
+	static Logger logger = LoggerFactory.getLogger(LvgAnnotator.class.getName());
 	/**
 	 * Copy to under /tmp/ (or some other specified directory) the files needed for EventAnnotatorTest and anyone else 
 	 * using UIMAfit to create a pipeline.
@@ -155,6 +157,7 @@ public class AlternateLvgAnnotator {
 		String lvgProperties = null;
 	final String cTakesHome = System.getenv( CTAKES_HOME );
     if ( cTakesHome != null && !cTakesHome.isEmpty() ) {
+    	logger.info("Looking for lvgProperties at {}, {}",cTakesHome,relativePath);
        File file = new File( cTakesHome, relativePath );
        if ( file.exists() ) {
           lvgProperties = createDiscoveredPath( relativePath, file, "under $CTAKES_HOME" );
