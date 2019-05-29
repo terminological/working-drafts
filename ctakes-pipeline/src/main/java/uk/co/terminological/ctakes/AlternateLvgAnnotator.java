@@ -149,7 +149,7 @@ public class AlternateLvgAnnotator {
 						LvgCmdApiResourceImpl.class, cacheDir.resolve(lvgProperties).toUri().toURL()));
 	}
 
-	static private final String CTAKES_HOME = "CTAKES_HOME";
+	static final String CTAKES_HOME = "CTAKES_HOME";
 	
 	public static AnalysisEngineDescription createAnnotatorDescription() throws ResourceInitializationException, MalformedURLException {
 

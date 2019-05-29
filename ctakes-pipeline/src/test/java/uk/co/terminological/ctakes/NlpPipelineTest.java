@@ -38,22 +38,24 @@ public class NlpPipelineTest {
 
 	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {
+		BasicConfigurator.configure();
+		log.info("setup before class");
 		testFilePath = Paths.get(ClassLoader.getSystemResource("mtsamplesMI.txt").toURI());
 		if (!Files.exists(testFilePath)) {
 			throw new RuntimeException("cannot find test file");
 		}
-		BasicConfigurator.configure();
 	}
 	
 	@Before
 	public void setUp() throws Exception {
+		log.info("setup");
 		Properties p = new Properties();
 		p.load(Files.newInputStream(
 				Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/ctakes.prop")));
 		ctakes = new NlpPipeline(p.getProperty("umls.user"),p.getProperty("umls.pw"));
 		Path ctakesHome = Paths.get(System.getProperty("user.home"),p.getProperty("ctakes.resources"));
 		log.info("Ctakes resources at: "+ctakesHome);
-		environmentVariables.set("CTAKES_HOME", ctakesHome.toString());
+		environmentVariables.set(AlternateLvgAnnotator.CTAKES_HOME, ctakesHome.toString());
 	}
 
 	@After
