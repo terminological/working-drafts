@@ -156,8 +156,9 @@ public class AlternateLvgAnnotator {
 		final String relativePath = "org/apache/ctakes/lvg/data/config/lvg.properties";
 		String lvgProperties = null;
 	final String cTakesHome = System.getenv( CTAKES_HOME );
+	logger.info("Looking for lvgProperties at {}, {}",cTakesHome,relativePath);
     if ( cTakesHome != null && !cTakesHome.isEmpty() ) {
-    	logger.info("Looking for lvgProperties at {}, {}",cTakesHome,relativePath);
+    	
        File file = new File( cTakesHome, relativePath );
        if ( file.exists() ) {
           lvgProperties = createDiscoveredPath( relativePath, file, "under $CTAKES_HOME" );
