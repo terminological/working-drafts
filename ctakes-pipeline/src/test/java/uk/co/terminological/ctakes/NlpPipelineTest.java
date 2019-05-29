@@ -18,7 +18,9 @@ import org.apache.uima.UIMAException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +37,7 @@ public class NlpPipelineTest {
 
 	  @Test
 	  public void setEnvironmentVariable() {
-	    environmentVariables.set("name", "value");
-	    assertEquals("value", System.getenv("name"));
+	    
 	  }
 	
 	@BeforeClass
@@ -53,6 +54,9 @@ public class NlpPipelineTest {
 		p.load(Files.newInputStream(
 				Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/ctakes.prop")));
 		ctakes = new NlpPipeline(p.getProperty("umls.user"),p.getProperty("umls.pw"));
+		Path ctakesHome = Paths.get(System.getProperty("user.home"),p.getProperty("ctakes.resources"));
+		log.info("Ctakes resources at: "+ctakesHome);
+		environmentVariables.set("CTAKES_HOME", ctakesHome.toString());
 	}
 
 	@After
