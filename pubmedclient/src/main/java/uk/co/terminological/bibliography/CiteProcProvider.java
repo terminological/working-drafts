@@ -48,7 +48,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 			return this.stream().flatMap(it -> {
 				int i = this.indexOf(it);
 				Optional<String> tmp = getReference(it.getId());
-				return tmp.map(r -> Tuple.create(ids.get(i), r)).stream();
+				return Stream.of(tmp.map(r -> Tuple.create(ids.get(i), r)).get());
 			});
 		} catch (Exception e) {
 			//TODO: log this?
