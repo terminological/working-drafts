@@ -68,7 +68,7 @@ for example
 		 builder.add( SimpleSegmentAnnotator.createAnnotatorDescription() );
 	      builder.add( SentenceDetector.createAnnotatorDescription() );
 	      builder.add( TokenizerAnnotatorPTB.createAnnotatorDescription() );
-	      builder.add( LvgAnnotator.createAnnotatorDescription() );
+	      builder.add( AlternateLvgAnnotator.createAnnotatorDescription() );
 	      //builder.add( AlternateLvgAnnotator.createAnnotatorDescription(CACHE_DIR) );
 	      builder.add( ContextDependentTokenizerAnnotator.createAnnotatorDescription() );
 	      builder.add( POSTagger.createAnnotatorDescription() );
