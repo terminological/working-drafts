@@ -7,8 +7,10 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Comparator;
 
 import org.apache.commons.io.FileUtils;
@@ -131,6 +133,10 @@ public class AlternateLvgAnnotator {
 
 		}
 
+		return getLvgAnnotator(cacheDir.resolve(lvgProperties).toUri().toURL());
+	}
+
+	static AnalysisEngineDescription getLvgAnnotator(URL lvgPropLocation) throws ResourceInitializationException {
 		return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
 				LvgAnnotator.PARAM_USE_CMD_CACHE,
 				false,
@@ -146,7 +152,7 @@ public class AlternateLvgAnnotator {
 				false,
 				LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
 				ExternalResourceFactory.createExternalResourceDescription(
-						LvgCmdApiResourceImpl.class, cacheDir.resolve(lvgProperties).toUri().toURL()));
+						LvgCmdApiResourceImpl.class, lvgPropLocation));
 	}
 
 	static final String CTAKES_HOME = "CTAKES_HOME";
@@ -171,24 +177,8 @@ public class AlternateLvgAnnotator {
 		}
 
 
-
 		try {
-			return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
-					LvgAnnotator.PARAM_USE_CMD_CACHE,
-					false,
-					LvgAnnotator.PARAM_USE_LEMMA_CACHE,
-					false,
-					LvgAnnotator.PARAM_USE_SEGMENTS,
-					false,
-					LvgAnnotator.PARAM_LEMMA_CACHE_FREQUENCY_CUTOFF,
-					20,
-					LvgAnnotator.PARAM_LEMMA_FREQ_CUTOFF,
-					20,
-					LvgAnnotator.PARAM_POST_LEMMAS,
-					false,
-					LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
-					ExternalResourceFactory.createExternalResourceDescription(
-							LvgCmdApiResourceImpl.class, new File(lvgProperties).toURI().toURL()));
+			return getLvgAnnotator(new File(lvgProperties).toURI().toURL());
 		} catch (NullPointerException e) {
 			throw new ResourceInitializationException(e);
 		}
@@ -202,6 +192,34 @@ public class AlternateLvgAnnotator {
 		} catch ( IOException ioE ) {
 			logger.debug( relativePath + " discovered " + locationText + " as: " + file.getPath() );
 			return file.getPath();
+		}
+	}
+
+	public static AnalysisEngineDescription createAnnotatorDescription(String ctakesResourceLocation) throws ResourceInitializationException, MalformedURLException {
+		final String relativePath = "org/apache/ctakes/lvg/data/config/lvg.properties";
+		logger.info("Looking for lvgProperties at {}, {}",ctakesResourceLocation,relativePath);
+		Path cTakesHome = Paths.get(ctakesResourceLocation);
+		String lvgProperties = null;
+		if ( Files.isDirectory(cTakesHome) ) {
+
+			Path file = cTakesHome.resolve(relativePath);
+			if ( Files.isReadable(file) ) {
+				lvgProperties = createDiscoveredPath( relativePath, file.toFile(), "in classpath" );
+			} else {
+				// in an ide the resources/ dir may not be in classpath
+				file = cTakesHome.resolve("resources").resolve(relativePath);
+				if ( Files.isReadable(file) ) {
+					lvgProperties =  createDiscoveredPath( relativePath, file.toFile(), "under $CTAKES_HOME resources" );
+				} else {
+					throw new RuntimeException("Couldn't find lvgProperties file in resources directory: "+ctakesResourceLocation);
+				}
+			}
+		}
+
+		try {
+			return getLvgAnnotator(new File(lvgProperties).toURI().toURL());
+		} catch (NullPointerException e) {
+			throw new ResourceInitializationException(e);
 		}
 	}
 }

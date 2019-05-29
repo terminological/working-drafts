@@ -51,7 +51,7 @@ public class NlpPipeline {
 	static Path CACHE_DIR = Paths.get(System.getProperty("user.home"),"tmp/resources");
 
 	public NlpPipeline(String umlsUser, String umlsPw) throws ResourceInitializationException, MalformedURLException {
-		
+
 		/*
 If you plan to use the UMLS Resources, set/export env variables
 export ctakes.umlsuser=[username], ctakes.umlspw=[password]
@@ -62,34 +62,68 @@ or add the system properties to the java args
 for example
 -Dctakes.umlsuser=MYUSERNAME -Dctakes.umlspw=MYPASSWORD
 		 */
-		
+
 		System.setProperty("ctakes.umlsuser", umlsUser);
 		System.setProperty("ctakes.umlspw", umlsPw);
-		
+
 		AnalysisEngineDescription aed;
-		
+
 		AggregateBuilder builder = new AggregateBuilder();
 		// from ClinicalPipelineFactory.getTokenProcessingPipeline()
-		 builder.add( SimpleSegmentAnnotator.createAnnotatorDescription() );
-	      builder.add( SentenceDetector.createAnnotatorDescription() );
-	      builder.add( TokenizerAnnotatorPTB.createAnnotatorDescription() );
-	      builder.add( AlternateLvgAnnotator.createAnnotatorDescription() );
-	      //builder.add( AlternateLvgAnnotator.createAnnotatorDescription(CACHE_DIR) );
-	      builder.add( ContextDependentTokenizerAnnotator.createAnnotatorDescription() );
-	      builder.add( POSTagger.createAnnotatorDescription() );
-	      // from ClinicalPipelineFactory.getFastPipeline()
-	      builder.add( DefaultJCasTermAnnotator.createAnnotatorDescription() );
-	      builder.add( ClearNLPDependencyParserAE.createAnnotatorDescription() );
-	      builder.add( PolarityCleartkAnalysisEngine.createAnnotatorDescription() );
-	      builder.add( UncertaintyCleartkAnalysisEngine.createAnnotatorDescription() );
-	      builder.add( HistoryCleartkAnalysisEngine.createAnnotatorDescription() );
-	      builder.add( ConditionalCleartkAnalysisEngine.createAnnotatorDescription() );
-	      builder.add( GenericCleartkAnalysisEngine.createAnnotatorDescription() );
-	      builder.add( SubjectCleartkAnalysisEngine.createAnnotatorDescription() );
-	      aed = builder.createAggregateDescription();
-		
+		builder.add( SimpleSegmentAnnotator.createAnnotatorDescription() );
+		builder.add( SentenceDetector.createAnnotatorDescription() );
+		builder.add( TokenizerAnnotatorPTB.createAnnotatorDescription() );
+		//builder.add( AlternateLvgAnnotator.createAnnotatorDescription() );
+		builder.add( AlternateLvgAnnotator.createAnnotatorDescription(CACHE_DIR) );
+		builder.add( ContextDependentTokenizerAnnotator.createAnnotatorDescription() );
+		builder.add( POSTagger.createAnnotatorDescription() );
+		// from ClinicalPipelineFactory.getFastPipeline()
+		builder.add( DefaultJCasTermAnnotator.createAnnotatorDescription() );
+		builder.add( ClearNLPDependencyParserAE.createAnnotatorDescription() );
+		builder.add( PolarityCleartkAnalysisEngine.createAnnotatorDescription() );
+		builder.add( UncertaintyCleartkAnalysisEngine.createAnnotatorDescription() );
+		builder.add( HistoryCleartkAnalysisEngine.createAnnotatorDescription() );
+		builder.add( ConditionalCleartkAnalysisEngine.createAnnotatorDescription() );
+		builder.add( GenericCleartkAnalysisEngine.createAnnotatorDescription() );
+		builder.add( SubjectCleartkAnalysisEngine.createAnnotatorDescription() );
+		aed = builder.createAggregateDescription();
+
 		ResourceManager resMgr = UIMAFramework.newDefaultResourceManager();
 		aaeInst = UIMAFramework.produceAnalysisEngine(aed, resMgr, null);
+	}
+
+	public NlpPipeline(String umlsUser, String umlsPw, String ctakesResourceLocation) {
+		try {
+			NlpPipeline.addCtakesResources(ctakesResourceLocation);
+			System.setProperty("ctakes.umlsuser", umlsUser);
+			System.setProperty("ctakes.umlspw", umlsPw);
+			AnalysisEngineDescription aed;
+
+			AggregateBuilder builder = new AggregateBuilder();
+			// from ClinicalPipelineFactory.getTokenProcessingPipeline()
+			builder.add( SimpleSegmentAnnotator.createAnnotatorDescription() );
+			builder.add( SentenceDetector.createAnnotatorDescription() );
+			builder.add( TokenizerAnnotatorPTB.createAnnotatorDescription() );
+			builder.add( AlternateLvgAnnotator.createAnnotatorDescription(ctakesResourceLocation) );
+			//builder.add( AlternateLvgAnnotator.createAnnotatorDescription(CACHE_DIR) );
+			builder.add( ContextDependentTokenizerAnnotator.createAnnotatorDescription() );
+			builder.add( POSTagger.createAnnotatorDescription() );
+			// from ClinicalPipelineFactory.getFastPipeline()
+			builder.add( DefaultJCasTermAnnotator.createAnnotatorDescription() );
+			builder.add( ClearNLPDependencyParserAE.createAnnotatorDescription() );
+			builder.add( PolarityCleartkAnalysisEngine.createAnnotatorDescription() );
+			builder.add( UncertaintyCleartkAnalysisEngine.createAnnotatorDescription() );
+			builder.add( HistoryCleartkAnalysisEngine.createAnnotatorDescription() );
+			builder.add( ConditionalCleartkAnalysisEngine.createAnnotatorDescription() );
+			builder.add( GenericCleartkAnalysisEngine.createAnnotatorDescription() );
+			builder.add( SubjectCleartkAnalysisEngine.createAnnotatorDescription() );
+			aed = builder.createAggregateDescription();
+
+			ResourceManager resMgr = UIMAFramework.newDefaultResourceManager();
+			aaeInst = UIMAFramework.produceAnalysisEngine(aed, resMgr, null);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public String run(String sentence) throws UIMAException {
@@ -158,7 +192,7 @@ for example
 				sb.append( "], history=[" );
 				sb.append( entity.getHistoryOf() == CONST.NE_HISTORY_OF_PRESENT );
 				sb.append( "]\n");
-				entity.getFeatureValueAsString()
+
 			}
 		}
 		return sb.toString();
@@ -199,13 +233,13 @@ for example
 	}
 
 	public static void addCtakesResources(String s) throws Exception {
-	    File f = new File(s);
-	    URI u = f.toURI();
-	    URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-	    Class<URLClassLoader> urlClass = URLClassLoader.class;
-	    Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
-	    method.setAccessible(true);
-	    method.invoke(urlClassLoader, new Object[]{u.toURL()});
+		File f = new File(s);
+		URI u = f.toURI();
+		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+		Class<URLClassLoader> urlClass = URLClassLoader.class;
+		Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+		method.setAccessible(true);
+		method.invoke(urlClassLoader, new Object[]{u.toURL()});
 	}
 
 }
