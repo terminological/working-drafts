@@ -83,22 +83,22 @@ public class AlternateLvgAnnotator {
 					IOUtils.copy(stream, os);
 				} catch (IOException e) {
 
-					
+
 					throw new IOException("error copying " + path + " to " + cachePath.resolve(path) + ".", e);
 				}
 
 			}
 
 		} catch (IOException ioe) {
-			
+
 			try {
 				Files.walk(cachePath).sorted(Comparator.reverseOrder())
 				.peek(p -> logger.info("deleting "+p))
 				.forEach(AlternateLvgAnnotator::deleteIfPossible);
 			} catch (Exception e) {}
-			
+
 			throw new RuntimeException("fatal IO error occurred copying files to cache: ",ioe);
-			
+
 		}
 
 	}
@@ -150,58 +150,58 @@ public class AlternateLvgAnnotator {
 	}
 
 	static final String CTAKES_HOME = "CTAKES_HOME";
-	
+
 	public static AnalysisEngineDescription createAnnotatorDescription() throws ResourceInitializationException, MalformedURLException {
 
 		final String relativePath = "org/apache/ctakes/lvg/data/config/lvg.properties";
 		String lvgProperties = null;
-	final String cTakesHome = System.getenv( CTAKES_HOME );
-	logger.info("Looking for lvgProperties at {}, {}",cTakesHome,relativePath);
-    if ( cTakesHome != null && !cTakesHome.isEmpty() ) {
-    	
-       File file = new File( cTakesHome, relativePath );
-       if ( file.exists() ) {
-          lvgProperties = createDiscoveredPath( relativePath, file, "under $CTAKES_HOME" );
-       }
-       // in an ide the resources/ dir may not be in classpath
-       file = new File( cTakesHome, "resources/" + relativePath );
-       if ( file.exists() ) {
-    	  lvgProperties =  createDiscoveredPath( relativePath, file, "under $CTAKES_HOME resources" );
-       }
-    }
-    
-    
-    
-    try {
-		return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
-				LvgAnnotator.PARAM_USE_CMD_CACHE,
-				false,
-				LvgAnnotator.PARAM_USE_LEMMA_CACHE,
-				false,
-				LvgAnnotator.PARAM_USE_SEGMENTS,
-				false,
-				LvgAnnotator.PARAM_LEMMA_CACHE_FREQUENCY_CUTOFF,
-				20,
-				LvgAnnotator.PARAM_LEMMA_FREQ_CUTOFF,
-				20,
-				LvgAnnotator.PARAM_POST_LEMMAS,
-				false,
-				LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
-				ExternalResourceFactory.createExternalResourceDescription(
-						LvgCmdApiResourceImpl.class, new File(lvgProperties).toURI().toURL()));
-	} catch (NullPointerException e) {
-		throw new ResourceInitializationException(e);
+		final String cTakesHome = System.getenv( CTAKES_HOME );
+		logger.info("Looking for lvgProperties at {}, {}",cTakesHome,relativePath);
+		if ( cTakesHome != null && !cTakesHome.isEmpty() ) {
+
+			File file = new File( cTakesHome, relativePath );
+			if ( file.exists() ) {
+				lvgProperties = createDiscoveredPath( relativePath, file, "under $CTAKES_HOME" );
+			}
+			// in an ide the resources/ dir may not be in classpath
+			file = new File( cTakesHome, "resources/" + relativePath );
+			if ( file.exists() ) {
+				lvgProperties =  createDiscoveredPath( relativePath, file, "under $CTAKES_HOME resources" );
+			}
+		}
+
+
+
+		try {
+			return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
+					LvgAnnotator.PARAM_USE_CMD_CACHE,
+					false,
+					LvgAnnotator.PARAM_USE_LEMMA_CACHE,
+					false,
+					LvgAnnotator.PARAM_USE_SEGMENTS,
+					false,
+					LvgAnnotator.PARAM_LEMMA_CACHE_FREQUENCY_CUTOFF,
+					20,
+					LvgAnnotator.PARAM_LEMMA_FREQ_CUTOFF,
+					20,
+					LvgAnnotator.PARAM_POST_LEMMAS,
+					false,
+					LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
+					ExternalResourceFactory.createExternalResourceDescription(
+							LvgCmdApiResourceImpl.class, new File(lvgProperties).toURI().toURL()));
+		} catch (NullPointerException e) {
+			throw new ResourceInitializationException(e);
+		}
+
 	}
-    
-	}
-	
+
 	static private String createDiscoveredPath( final String relativePath, final File file, final String locationText ) {
-	      try {
-	         logger.debug( relativePath + " discovered " + locationText + " as: " + file.getCanonicalPath() );
-	         return file.getCanonicalPath();
-	      } catch ( IOException ioE ) {
-	         logger.debug( relativePath + " discovered " + locationText + " as: " + file.getPath() );
-	         return file.getPath();
-	      }
-	   }
+		try {
+			logger.debug( relativePath + " discovered " + locationText + " as: " + file.getCanonicalPath() );
+			return file.getCanonicalPath();
+		} catch ( IOException ioE ) {
+			logger.debug( relativePath + " discovered " + locationText + " as: " + file.getPath() );
+			return file.getPath();
+		}
+	}
 }

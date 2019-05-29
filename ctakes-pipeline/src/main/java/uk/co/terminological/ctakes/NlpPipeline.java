@@ -134,8 +134,7 @@ for example
 		aaeInst.process( jcas );
 
 		StringBuilder sb = new StringBuilder();
-		for (IdentifiedAnnotation entity : JCasUtil.select(jcas,
-				IdentifiedAnnotation.class)) {
+		for (IdentifiedAnnotation entity : JCasUtil.select(jcas, IdentifiedAnnotation.class)) {
 			for( String cui : getCUIs( entity ) ) {
 				sb.append( "cTAKESFast\t" );
 				sb.append( cui );
@@ -159,6 +158,7 @@ for example
 				sb.append( "], history=[" );
 				sb.append( entity.getHistoryOf() == CONST.NE_HISTORY_OF_PRESENT );
 				sb.append( "]\n");
+				entity.getFeatureValueAsString()
 			}
 		}
 		return sb.toString();
