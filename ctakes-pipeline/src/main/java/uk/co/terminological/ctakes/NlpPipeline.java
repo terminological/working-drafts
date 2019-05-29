@@ -4,7 +4,12 @@ package uk.co.terminological.ctakes;
 
 
 
+import java.io.File;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -193,6 +198,14 @@ for example
 		return cuiSet;
 	}
 
-
+	public static void addCtakesResources(String s) throws Exception {
+	    File f = new File(s);
+	    URI u = f.toURI();
+	    URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+	    Class<URLClassLoader> urlClass = URLClassLoader.class;
+	    Method method = urlClass.getDeclaredMethod("addURL", new Class[]{URL.class});
+	    method.setAccessible(true);
+	    method.invoke(urlClassLoader, new Object[]{u.toURL()});
+	}
 
 }
