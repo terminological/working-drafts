@@ -814,7 +814,8 @@ public class LitReviewAnalysis {
 		return result;
 	}
 
-
+	// -Xss68m
+	// stack size needs to be big enough to handle serialisation
 	@Test
 	public void plotTopicContent() {
 		try ( Session session = driver.session() ) {
