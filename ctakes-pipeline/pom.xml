@@ -159,11 +159,11 @@
 		<!-- <version>${ctakes.version}</version> -->
 		<!-- </dependency> -->
 		
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-snorx-hack</artifactId>
 			<version>${ctakes.version}</version>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>uk.co.terminological</groupId>
