@@ -35,11 +35,6 @@ public class NlpPipelineTest {
 	  public final EnvironmentVariables environmentVariables
 	    = new EnvironmentVariables();
 
-	  @Test
-	  public void setEnvironmentVariable() {
-	    
-	  }
-	
 	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {
 		testFilePath = Paths.get(ClassLoader.getSystemResource("mtsamplesMI.txt").toURI());

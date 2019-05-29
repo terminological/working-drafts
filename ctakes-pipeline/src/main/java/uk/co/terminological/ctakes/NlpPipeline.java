@@ -22,6 +22,7 @@ import org.apache.ctakes.core.ae.SimpleSegmentAnnotator;
 import org.apache.ctakes.core.ae.TokenizerAnnotatorPTB;
 import org.apache.ctakes.dependency.parser.ae.ClearNLPDependencyParserAE;
 import org.apache.ctakes.dictionary.lookup2.ae.DefaultJCasTermAnnotator;
+import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.postagger.POSTagger;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
@@ -67,7 +68,8 @@ for example
 		 builder.add( SimpleSegmentAnnotator.createAnnotatorDescription() );
 	      builder.add( SentenceDetector.createAnnotatorDescription() );
 	      builder.add( TokenizerAnnotatorPTB.createAnnotatorDescription() );
-	      builder.add( AlternateLvgAnnotator.createAnnotatorDescription(CACHE_DIR) );
+	      builder.add( LvgAnnotator.createAnnotatorDescription() );
+	      //builder.add( AlternateLvgAnnotator.createAnnotatorDescription(CACHE_DIR) );
 	      builder.add( ContextDependentTokenizerAnnotator.createAnnotatorDescription() );
 	      builder.add( POSTagger.createAnnotatorDescription() );
 	      // from ClinicalPipelineFactory.getFastPipeline()
