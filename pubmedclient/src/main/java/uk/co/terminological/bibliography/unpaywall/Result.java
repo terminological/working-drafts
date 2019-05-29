@@ -46,8 +46,8 @@ public class Result extends ExtensibleJson implements Record {
 	}
 	
 	public Optional<URI> getPdfUri() {
-		return this.streamPath("best_oa_location","url_for_pdf").findFirst()
-				.or(() -> this.streamPath("oa_locations","url_for_pdf").findFirst())
+		return Optional.ofNullable(this.streamPath("best_oa_location","url_for_pdf").findFirst()
+				.orElseGet(() -> this.streamPath("oa_locations","url_for_pdf").findFirst().orElse(null)))
 				.flatMap(n -> {
 					try {
 						return Optional.of(new URI(n.asString()));
