@@ -29,6 +29,16 @@ public class NlpPipelineTest {
 	
 	NlpPipeline ctakes;
 	
+	@Rule
+	  public final EnvironmentVariables environmentVariables
+	    = new EnvironmentVariables();
+
+	  @Test
+	  public void setEnvironmentVariable() {
+	    environmentVariables.set("name", "value");
+	    assertEquals("value", System.getenv("name"));
+	  }
+	
 	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {
 		testFilePath = Paths.get(ClassLoader.getSystemResource("mtsamplesMI.txt").toURI());
