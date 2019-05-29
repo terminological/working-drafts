@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.uima.UIMAException;
 import org.junit.After;
 import org.junit.Before;
@@ -41,6 +42,7 @@ public class NlpPipelineTest {
 		if (!Files.exists(testFilePath)) {
 			throw new RuntimeException("cannot find test file");
 		}
+		BasicConfigurator.configure();
 	}
 	
 	@Before
