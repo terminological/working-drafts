@@ -188,8 +188,8 @@ public class AlternateLvgAnnotator {
 				false,
 				LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
 				ExternalResourceFactory.createExternalResourceDescription(
-						LvgCmdApiResourceImpl.class, new URI(lvgProperties).toURL()));
-	} catch (URISyntaxException | NullPointerException e) {
+						LvgCmdApiResourceImpl.class, new File(lvgProperties).toURI().toURL()));
+	} catch (NullPointerException e) {
 		throw new ResourceInitializationException(e);
 	}
     
