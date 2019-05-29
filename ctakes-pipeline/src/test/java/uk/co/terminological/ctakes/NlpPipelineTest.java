@@ -12,9 +12,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.logging.Level;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.spi.Configurator;
 import org.apache.uima.UIMAException;
 import org.junit.After;
 import org.junit.Before;
