@@ -97,7 +97,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	         if (record.getFirstAuthor().isPresent()) {
 	        	 Author a = record.getFirstAuthor().get();
 	        	 builder.author(
-	        		a.getFirstName().or(() -> a.getInitials()).orElse("").replace("\n", " ").trim(),
+	        		a.getFirstName().orElseGet(() -> a.getInitials().orElse("").replace("\n", " ").trim()),
 	        		a.getLastName().replace("\n", " ").trim()
 	        	); 
 	         } else if (record.getFirstAuthorLastName().isPresent()) {
