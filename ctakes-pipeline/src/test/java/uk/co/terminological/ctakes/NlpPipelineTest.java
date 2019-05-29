@@ -52,10 +52,11 @@ public class NlpPipelineTest {
 		Properties p = new Properties();
 		p.load(Files.newInputStream(
 				Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/ctakes.prop")));
-		ctakes = new NlpPipeline(p.getProperty("umls.user"),p.getProperty("umls.pw"));
 		Path ctakesHome = Paths.get(System.getProperty("user.home"),p.getProperty("ctakes.resources"));
 		log.info("Ctakes resources at: "+ctakesHome);
 		environmentVariables.set(AlternateLvgAnnotator.CTAKES_HOME, ctakesHome.toString());
+		ctakes = new NlpPipeline(p.getProperty("umls.user"),p.getProperty("umls.pw"));
+		
 	}
 
 	@After
