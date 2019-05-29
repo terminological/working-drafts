@@ -166,7 +166,6 @@ public class AlternateLvgAnnotator {
        }
     }
     
-    
     try {
 		return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
 				LvgAnnotator.PARAM_USE_CMD_CACHE,
