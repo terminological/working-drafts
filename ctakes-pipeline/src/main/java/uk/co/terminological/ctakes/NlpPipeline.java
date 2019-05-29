@@ -43,7 +43,7 @@ import org.apache.uima.resource.ResourceManager;
 public class NlpPipeline {
 
 	AnalysisEngine aaeInst = null;
-	static Path CACHE_DIR = Paths.get("/home/robchallen/tmp/resources");
+	static Path CACHE_DIR = Paths.get(System.getProperty("user.home"),"tmp/resources");
 
 	public NlpPipeline(String umlsUser, String umlsPw) throws ResourceInitializationException, MalformedURLException {
 		
