@@ -127,9 +127,11 @@ for example
 	}
 
 	public String run(String sentence) throws UIMAException {
+		
 		final JCas jcas = JCasFactory.createJCas();
 		jcas.setDocumentText(sentence);
 		aaeInst.process( jcas );
+		
 
 		StringBuilder sb = new StringBuilder();
 		for (IdentifiedAnnotation entity : JCasUtil.select(jcas,
