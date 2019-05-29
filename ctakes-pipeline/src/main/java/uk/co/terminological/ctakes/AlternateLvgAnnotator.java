@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -166,22 +167,26 @@ public class AlternateLvgAnnotator {
     }
     
     
-    return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
-			LvgAnnotator.PARAM_USE_CMD_CACHE,
-			false,
-			LvgAnnotator.PARAM_USE_LEMMA_CACHE,
-			false,
-			LvgAnnotator.PARAM_USE_SEGMENTS,
-			false,
-			LvgAnnotator.PARAM_LEMMA_CACHE_FREQUENCY_CUTOFF,
-			20,
-			LvgAnnotator.PARAM_LEMMA_FREQ_CUTOFF,
-			20,
-			LvgAnnotator.PARAM_POST_LEMMAS,
-			false,
-			LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
-			ExternalResourceFactory.createExternalResourceDescription(
-					LvgCmdApiResourceImpl.class, URI.create(lvgProperties).toURL()));
+    try {
+		return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
+				LvgAnnotator.PARAM_USE_CMD_CACHE,
+				false,
+				LvgAnnotator.PARAM_USE_LEMMA_CACHE,
+				false,
+				LvgAnnotator.PARAM_USE_SEGMENTS,
+				false,
+				LvgAnnotator.PARAM_LEMMA_CACHE_FREQUENCY_CUTOFF,
+				20,
+				LvgAnnotator.PARAM_LEMMA_FREQ_CUTOFF,
+				20,
+				LvgAnnotator.PARAM_POST_LEMMAS,
+				false,
+				LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
+				ExternalResourceFactory.createExternalResourceDescription(
+						LvgCmdApiResourceImpl.class, new URI(lvgProperties).toURL()));
+	} catch (URISyntaxException e) {
+		throw new ResourceInitializationException(e);
+	}
     
 	}
 	
