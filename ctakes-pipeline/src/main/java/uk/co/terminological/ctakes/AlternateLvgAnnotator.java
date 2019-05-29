@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.ctakes.core.resource.FileLocator;
 import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.lvg.resource.LvgCmdApiResourceImpl;
 import org.apache.log4j.Logger;
@@ -108,7 +110,6 @@ public class AlternateLvgAnnotator {
 
 	public static AnalysisEngineDescription createAnnotatorDescription(Path cacheDir) throws ResourceInitializationException, MalformedURLException {
 
-		Logger logger = Logger.getLogger(LvgAnnotator.class.getName());
 		// Here if a pipeline is run from source, for example in Eclipse using a Run Configuration for project ctakes-clinical-pipeline,  
 		// the cwd might be, for example, C:\workspaces\cTAKES\ctakes\ctakes-clinical-pipeline
 		// Therefore we can no longer let LvgCmdApiResourceImpl use the current working directory to look for 
@@ -145,4 +146,52 @@ public class AlternateLvgAnnotator {
 						LvgCmdApiResourceImpl.class, cacheDir.resolve(lvgProperties).toUri().toURL()));
 	}
 
+	static private final String CTAKES_HOME = "CTAKES_HOME";
+	
+	public static AnalysisEngineDescription createAnnotatorDescription() throws ResourceInitializationException, MalformedURLException {
+
+		final String relativePath = "org/apache/ctakes/lvg/data/config/lvg.properties";
+		String lvgProperties = null;
+	final String cTakesHome = System.getenv( CTAKES_HOME );
+    if ( cTakesHome != null && !cTakesHome.isEmpty() ) {
+       File file = new File( cTakesHome, relativePath );
+       if ( file.exists() ) {
+          lvgProperties = createDiscoveredPath( relativePath, file, "under $CTAKES_HOME" );
+       }
+       // in an ide the resources/ dir may not be in classpath
+       file = new File( cTakesHome, "resources/" + relativePath );
+       if ( file.exists() ) {
+    	  lvgProperties =  createDiscoveredPath( relativePath, file, "under $CTAKES_HOME resources" );
+       }
+    }
+    
+    
+    return AnalysisEngineFactory.createEngineDescription(LvgAnnotator.class,
+			LvgAnnotator.PARAM_USE_CMD_CACHE,
+			false,
+			LvgAnnotator.PARAM_USE_LEMMA_CACHE,
+			false,
+			LvgAnnotator.PARAM_USE_SEGMENTS,
+			false,
+			LvgAnnotator.PARAM_LEMMA_CACHE_FREQUENCY_CUTOFF,
+			20,
+			LvgAnnotator.PARAM_LEMMA_FREQ_CUTOFF,
+			20,
+			LvgAnnotator.PARAM_POST_LEMMAS,
+			false,
+			LvgAnnotator.PARAM_LVGCMDAPI_RESRC_KEY,
+			ExternalResourceFactory.createExternalResourceDescription(
+					LvgCmdApiResourceImpl.class, URI.create(lvgProperties).toURL()));
+    
+	}
+	
+	static private String createDiscoveredPath( final String relativePath, final File file, final String locationText ) {
+	      try {
+	         logger.debug( relativePath + " discovered " + locationText + " as: " + file.getCanonicalPath() );
+	         return file.getCanonicalPath();
+	      } catch ( IOException ioE ) {
+	         logger.debug( relativePath + " discovered " + locationText + " as: " + file.getPath() );
+	         return file.getPath();
+	      }
+	   }
 }
