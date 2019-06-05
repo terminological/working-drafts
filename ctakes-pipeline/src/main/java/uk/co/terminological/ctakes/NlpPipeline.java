@@ -194,7 +194,7 @@ for example
 				sb.append( "], history=[" );
 				sb.append( entity.getHistoryOf() == CONST.NE_HISTORY_OF_PRESENT );
 				sb.append( "]\n");
-
+				
 			}
 		}
 		return sb.toString();

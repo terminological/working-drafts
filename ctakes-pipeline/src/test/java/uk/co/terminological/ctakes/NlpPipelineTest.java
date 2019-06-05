@@ -24,7 +24,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
+import org.apache.ctakes.assertion.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +35,6 @@ public class NlpPipelineTest {
 	static Path testFilePath;
 	
 	NlpPipeline ctakes;
-	
-	@Rule
-	  public final EnvironmentVariables environmentVariables
-	    = new EnvironmentVariables();
 
 	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {

@@ -165,18 +165,37 @@
 			<version>${ctakes.version}</version>
 		</dependency>-->
 
-<dependency>
-  <groupId>com.github.stefanbirkner</groupId>
-  <artifactId>system-rules</artifactId>
-  <version>1.19.0</version>
-  <scope>test</scope>
-</dependency>
+
 
 		<dependency>
 			<groupId>uk.co.terminological</groupId>
 			<artifactId>exotic-datatypes</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-core -->
+		<dependency>
+		    <groupId>com.j256.ormlite</groupId>
+		    <artifactId>ormlite-core</artifactId>
+		    <version>5.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>uk.co.terminological.javapig</groupId>
+			<artifactId>runtime</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.co.terminological.javapig</groupId>
+			<artifactId>plugin</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+			<version>7.2.2.jre8</version>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<plugins>
@@ -220,6 +239,49 @@
 							</execution>
 						</executions>
 					</plugin>
+					
+			<plugin>
+				<groupId>uk.co.terminological.javapig</groupId>
+				<artifactId>plugin</artifactId>
+				<version>1.0.0</version>
+				<executions>
+					<execution>
+						<id>build-java-from-sql</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>javaFromSql</goal>
+						</goals>
+						<configuration>
+							<connectionProperties>${user.home}/Dropbox/nlpCtakes/jdbc.prop</connectionProperties>
+							<targetDirectory>target/generated-sources/javapig</targetDirectory>
+							<!-- FOR SCANNING DIRECTORY FOR NAMED FILES: 
+							<baseDirectory>src/test/resources</baseDirectory>
+							<defaultTargetPackage>uk.co.terminological.fromsql</defaultTargetPackage>
+							<filenameFilter>*.sql</filenameFilter>
+							-->
+							<javaFromSqlExecutions>
+								<javaFromSqlExecution>
+									<sql>Select * from omop.dbo.note_nlp</sql>
+									<targetFQN>uk.co.terminological.omop.NoteNlp</targetFQN>
+								</javaFromSqlExecution>
+								<javaFromSqlExecution>
+									<sql>Select * from omopBuild.dbo.IdentifiableNote</sql>
+									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
+								</javaFromSqlExecution>
+							</javaFromSqlExecutions>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+					<dependency>
+					    <groupId>com.microsoft.sqlserver</groupId>
+					    <artifactId>mssql-jdbc</artifactId>
+					    <version>7.2.2.jre8</version>
+					</dependency>
+
+				</dependencies>
+				</plugin>
 				</plugins>
 			</build>
 		</profile>
