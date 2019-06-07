@@ -86,15 +86,20 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 		}
 		
 		public void plot(File outfile, String name) throws IOException, TemplateException {
-			Figure.Data<Double> figures = Figure.outputTo(outfile)
-					.withDefaultData(Figure.Parameter.fromRange(0,1));
+			Figure figures = Figure.outputTo(outfile);
+					//.withDefaultData(Figure.Parameter.fromRange(0,1));
 			
 			figures.withNewChart(name, ChartType.XY_LINE)
-				.bind(X, x -> x)
-				.bind(Y, x -> value(x))
-				.withAxes("x","cumulative")
-				.config().withTitle(this.toString())
-				.withXScale(0F, 1F)
+				.config()
+					.withXLabel("x")
+					.withYLabel("cumulative")
+					.withTitle(this.toString())
+					.withXScale(0F, 1F)
+				.done()
+				.withSeries(Figure.Parameter.fromRange(0, 1))
+					.bind(X, x -> x)
+					.bind(Y, x -> value(x))
+				.done()
 				.render();
 		}
 		
