@@ -254,18 +254,18 @@
 						<configuration>
 							<connectionProperties>${user.home}/Dropbox/nlpCtakes/jdbc.prop</connectionProperties>
 							<targetDirectory>target/generated-sources/javapig</targetDirectory>
+							<javaFromQueries>
+								<javaFromQuery>
+									<sql>Select * from omopBuild.dbo.IdentifiableNote where note_date&lt;? and note_date&gt;?</sql>
+									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
+								</javaFromQuery>
+							</javaFromQueries>
 							<javaFromTables>
 								<javaFromTable>
 									<name>omop.dbo.note_nlp</name>
 									<targetFQN>uk.co.terminological.omop.NoteNlp</targetFQN>
 								</javaFromTable>
 							</javaFromTables>
-							<javaFromSqlExecutions>
-								<javaFromSqlExecution>
-									<sql>Select * from omopBuild.dbo.IdentifiableNote</sql>
-									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
-								</javaFromSqlExecution>
-							</javaFromSqlExecutions>
 						</configuration>
 					</execution>
 				</executions>
