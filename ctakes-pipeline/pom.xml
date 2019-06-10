@@ -259,11 +259,13 @@
 							<defaultTargetPackage>uk.co.terminological.fromsql</defaultTargetPackage>
 							<filenameFilter>*.sql</filenameFilter>
 							-->
-							<javaFromSqlExecutions>
-								<javaFromSqlExecution>
-									<sql>Select * from omop.dbo.note_nlp</sql>
+							<javaFromTables>
+								<javaFromTable>
+									<name>omop.dbo.note_nlp</name>
 									<targetFQN>uk.co.terminological.omop.NoteNlp</targetFQN>
-								</javaFromSqlExecution>
+								</javaFromTable>
+							</javaFromTables>
+							<javaFromSqlExecutions>
 								<javaFromSqlExecution>
 									<sql>Select * from omopBuild.dbo.IdentifiableNote</sql>
 									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
