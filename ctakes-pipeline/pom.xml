@@ -254,11 +254,6 @@
 						<configuration>
 							<connectionProperties>${user.home}/Dropbox/nlpCtakes/jdbc.prop</connectionProperties>
 							<targetDirectory>target/generated-sources/javapig</targetDirectory>
-							<!-- FOR SCANNING DIRECTORY FOR NAMED FILES: 
-							<baseDirectory>src/test/resources</baseDirectory>
-							<defaultTargetPackage>uk.co.terminological.fromsql</defaultTargetPackage>
-							<filenameFilter>*.sql</filenameFilter>
-							-->
 							<javaFromTables>
 								<javaFromTable>
 									<name>omop.dbo.note_nlp</name>
