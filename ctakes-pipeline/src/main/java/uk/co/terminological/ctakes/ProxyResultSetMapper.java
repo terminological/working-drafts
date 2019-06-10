@@ -60,7 +60,7 @@ public class ProxyResultSetMapper {
 		final Map<String,Object> methodMap = new HashMap<>();
 		for (Method m: type.getMethods()) {
 			Column c = m.getAnnotation(Column.class);
-			methodMap.put(m.getName(), av.getObject(c.value(),m.getReturnType()));
+			methodMap.put(m.getName(), av.getObject(c.name(),m.getReturnType()));
 		}
 		
 		//TODO: https://jrebel.com/rebellabs/recognize-and-conquer-java-proxies-default-methods-and-method-handles/
@@ -95,21 +95,21 @@ public class ProxyResultSetMapper {
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new RuntimeException("couldn't read value",e);
 			}
-			fields.add(c.value());
+			fields.add(c.name());
 			if (fieldString.length()>0) fieldString.append(",");
-			fieldString.append(c.value());
+			fieldString.append(c.name());
 			if (valueString.length()>0) fieldString.append(",");
 			valueString.append("?");
 		}
         
-		String SQL = "INSERT INTO "+table+" ("+valueString.toString()+") "
+		String SQL = "INSERT INTO "+table+" ("+fieldString.toString()+") "
                 + "VALUES("+valueString.toString()+")";
  		
         long id = 0;
  
         try (PreparedStatement pstmt = conn.prepareStatement(SQL,
                 Statement.RETURN_GENERATED_KEYS)) {
- 
+        	pstmt.
             for (int i=0; i<values.size();i++) {
             	pstmt.setObject(i+1, values.get(i));
             }
