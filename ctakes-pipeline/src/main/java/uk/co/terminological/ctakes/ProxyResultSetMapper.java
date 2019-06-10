@@ -109,7 +109,7 @@ public class ProxyResultSetMapper {
  
         try (PreparedStatement pstmt = conn.prepareStatement(SQL,
                 Statement.RETURN_GENERATED_KEYS)) {
-        	pstmt.
+        	
             for (int i=0; i<values.size();i++) {
             	pstmt.setObject(i+1, values.get(i));
             }
