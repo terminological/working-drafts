@@ -160,7 +160,7 @@ Indices
 Standardized vocabulary
 
 ************************/
--- N.B. move to seperate file
+-- N.B. RJC move to seperate file
 
 --CREATE UNIQUE CLUSTERED INDEX idx_concept_concept_id ON concept (concept_id ASC);
 --CREATE INDEX idx_concept_code ON concept (concept_code ASC);
