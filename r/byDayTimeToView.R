@@ -8,7 +8,7 @@ library(cowplot)
 library(ggpubr)
 
 source_directory <- getSrcDirectory(function(dummy) {dummy});
-if (source_directory == "") source_directory="/home/robchallen/Git/working-drafts/src/main/r"
+if (source_directory == "") source_directory="/home/robchallen/Git/working-drafts/r"
 source(paste(source_directory,'/standardAxes.R',sep=""));
 source(paste(source_directory,'/utils.R',sep=""));
 createDirectory();

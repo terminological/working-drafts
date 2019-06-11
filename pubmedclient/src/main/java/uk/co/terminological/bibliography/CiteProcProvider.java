@@ -48,7 +48,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 			return this.stream().flatMap(it -> {
 				int i = this.indexOf(it);
 				Optional<String> tmp = getReference(it.getId());
-				return tmp.map(r -> Tuple.create(ids.get(i), r)).stream();
+				return tmp.map(r -> Tuple.create(ids.get(i), r)).map(t -> Stream.of(t)).orElse(Stream.empty());
 			});
 		} catch (Exception e) {
 			//TODO: log this?
@@ -97,7 +97,7 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	         if (record.getFirstAuthor().isPresent()) {
 	        	 Author a = record.getFirstAuthor().get();
 	        	 builder.author(
-	        		a.getFirstName().or(() -> a.getInitials()).orElse("").replace("\n", " ").trim(),
+	        		a.getFirstName().orElseGet(() -> a.getInitials().orElse("").replace("\n", " ").trim()),
 	        		a.getLastName().replace("\n", " ").trim()
 	        	); 
 	         } else if (record.getFirstAuthorLastName().isPresent()) {

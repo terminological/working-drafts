@@ -10,18 +10,21 @@ public class RareNgramIndex {
 
 	Counter counts = new Counter(100000, 10000);
 	
+	public int getCounts(int ngramId) {
+		return counts.value(ngramId);
+	}
 	
-	public void update(List<Ngram> ngrams, Description desc) {
-		//Map<Ngram,Mapping> freqs = new HashMap<>();
-		for (int seq = 0; seq < ngrams.size(); seq++) {
-			Ngram n = ngrams.get(seq);
-			int prevOrder = counts.value(n.index);
-			Mapping m = new Mapping(
-					counts.increment(n.index),
-					seq,
-					desc.getId());
-			
-		}
+	public void update(Ngram ngram, Description desc) {
+		int ngramId = ngram.getId();
+		int prevfreq = counts.value(ngramId);
+		int nextfreq = counts.increment(ngramId);
+		//TODO:
+		
+		
+		
+		//ngram.descs
+		
+		// Mapping m = new Mapping(n, seq,	desc);
 		/*freqs
 			.entrySet()
 			.stream()
@@ -35,16 +38,16 @@ public class RareNgramIndex {
 	}
 	
 	
-	private class Mapping {
-		public Mapping(int increment, int seq, int id) {
-			this.count = increment;
+	/*private class Mapping {
+		public Mapping(Ngram ng, int seq, Description desc) {
+			this.nGramId = ng.getId();
 			this.sequence = seq;
-			this.descId =id;
+			this.descId = desc.getId();
 		}
-		int count;
+		int nGramId;
 		int sequence;
 		int descId;
-	}
+	}*/
 	
 	private class Counter {
 		

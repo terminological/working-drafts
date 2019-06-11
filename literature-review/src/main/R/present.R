@@ -57,7 +57,8 @@ plotArticlesByPagerank_DateCitedBy
 figure1pg = plot_grid(plotArticlesByJournal_Count, 
           plot_grid(plotArticlesByPagerank_Date, plotArticlesByPagerank_DateCitedBy, labels=c("B","C"), ncol=1),
           labels=c("A",NA), ncol=2)
-save_plot("~/Dropbox/litReview/output/figure1.png", figure1pg, base_width = 5)
+save_plot("~/Dropbox/litReview/output/figure1.png", figure1pg, base_width = 7)
+save_plot("~/Dropbox/litReview/output/figure1.svg", figure1pg, base_width = 7)
 
 # plotArticlesByPagerank_DateDomainCitedBy <- ggplot(getArticlesByPagerank,
 #   aes(x=as.Date(date),y=domainCitedByCount))+
@@ -93,6 +94,8 @@ defaultLayout = function(hux) {
     set_all_padding(everywhere,everywhere,2) %>%
     set_valign(everywhere,everywhere,"top") )
 }
+
+
 
 mergeCells = function(hux) {
   tmpHux = hux
@@ -219,27 +222,26 @@ htAuthorsByCommunity = mergeCells(htAuthorsByCommunity)
 quick_html(htAuthorsByCommunity, file="~/Dropbox/litReview/output/top5AuthorsByCommunity.html")
 
 ##########################################################
-# confusion matrices
+# confusion matrices ----
 
 topicArticleGroupXmap = getTopicArticleCommunity %>% mutate(articleGroup = articleCommunity) %>% left_join(getArticleGroupLabels) %>%
   select(topic,articleGroup=label,totalScore)
 
-ggplot(topicArticleGroupXmap, aes(x=as.factor(topic), y=articleGroup, fill=totalScore)) +
+topicArticleConfusion <- ggplot(topicArticleGroupXmap, aes(x=as.factor(topic), y=articleGroup, fill=totalScore)) +
   geom_tile(colour = "white") +
-  scale_fill_gradient(low = "white",high = "steelblue") +
-  xlab("topic") + ylab("article group")
+  scale_fill_gradient(low = "white",high = "steelblue", position="bottom") +
+  xlab("topic") + ylab("article group") + theme(legend.position="none")
 
-chisq.test(xtabs(totalScore ~ as.factor(topic) + articleGroup, topicArticleGroupXmap), correct=TRUE)
+
 
 topicAuthorCommunityXmap = getTopicCommunity %>% mutate(authorCommunity = community) %>% left_join(getAuthorCommunityLabels) %>%
   select(topic,authorCommunity = label,totalScore)
 
-ggplot(topicAuthorCommunityXmap, aes(x=as.factor(topic), y=authorCommunity, fill=totalScore)) +
+topicAuthorConfusion <- ggplot(topicAuthorCommunityXmap, aes(x=as.factor(topic), y=authorCommunity, fill=totalScore)) +
   geom_tile(colour = "white") +
-  scale_fill_gradient(low = "white",high = "green") +
-  xlab("topic") + ylab("author community")
+  scale_fill_gradient(low = "white",high = "green", position="bottom") +
+  xlab("topic") + ylab("author community") + theme(legend.position="none")
 
-chisq.test(xtabs(totalScore ~ as.factor(topic) + authorCommunity, topicAuthorCommunityXmap), correct=TRUE)
 
 articleGroupAuthorCommunityXmap = getAuthorCommunityArticleGroup %>% 
   mutate(articleGroup = articleCommunity) %>% 
@@ -248,13 +250,41 @@ articleGroupAuthorCommunityXmap = getAuthorCommunityArticleGroup %>%
   left_join(getAuthorCommunityLabels) %>%
   select(articleGroup,authorCommunity = label,totalScore)
 
-ggplot(articleGroupAuthorCommunityXmap , aes(x=articleGroup, y=authorCommunity, fill=totalScore)) +
+articleAuthorConfusion <- ggplot(articleGroupAuthorCommunityXmap , aes(x=articleGroup, y=authorCommunity, fill=totalScore)) +
   geom_tile(colour = "white") +
-  scale_fill_gradient(low = "white",high = "orange") +
-  xlab("topic") + ylab("author community")
+  scale_fill_gradient(low = "white",high = "orange", position="bottom") +
+  xlab("article group") + ylab("author community") + theme(legend.position="none")
 
 table(articleGroupAuthorCommunityXmap)
-chisq.test(xtabs(totalScore ~ articleGroup + authorCommunity, articleGroupAuthorCommunityXmap), correct=TRUE)
+
+csq1 = chisq.test(xtabs(totalScore ~ articleGroup + authorCommunity, articleGroupAuthorCommunityXmap), correct=TRUE)
+csq2 = chisq.test(xtabs(totalScore ~ as.factor(topic) + articleGroup, topicArticleGroupXmap), correct=TRUE)
+csq3 = chisq.test(xtabs(totalScore ~ as.factor(topic) + authorCommunity, topicAuthorCommunityXmap), correct=TRUE)
+
+conv = function(tmp, name) {return(tibble(
+  "Comparison"=name,
+  "Chi-squared"=unname(tmp$statistic),
+  "Degrees"=unname(tmp$parameter),
+  "P value"=tmp$p.value
+))}
+
+chiSquaredTests = defaultLayout(huxtable(
+  rbind(
+    conv(csq1,"Article group vs Author community"),
+    conv(csq2,"NLP topic vs Article group"),
+    conv(csq3,"NLP topic versus Author community")
+  ),add_colnames = TRUE
+))
+quick_html(chiSquaredTests, file="~/Dropbox/litReview/output/chiSquaredTests.html")
+
+
+figure2pg = plot_grid(
+  topicArticleConfusion,
+  topicAuthorConfusion,
+  articleAuthorConfusion,
+  labels=c("A","B","C"), ncol=3)
+save_plot("~/Dropbox/litReview/output/figure2.png", figure2pg, base_width = 7, base_height = 2)
+save_plot("~/Dropbox/litReview/output/figure2.svg", figure2pg, base_width = 7, base_height = 2)
 
 ############################################################
 

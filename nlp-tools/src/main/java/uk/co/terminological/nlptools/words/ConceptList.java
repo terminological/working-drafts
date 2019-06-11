@@ -10,9 +10,22 @@ public class ConceptList extends ArrayList<Concept> {
 	protected DescriptionDictionary getDescDict() {
 		return descDict;
 	}
-	protected NGramDictionary getDict() {
+	
+	protected NGramDictionary getNGramDict() {
 		return dict;
 	}
 	
+	public ConceptList() {
+		this(new DescriptionDictionary(), new NGramDictionary() );
+	}
+
+	public ConceptList(DescriptionDictionary descriptionDictionary, NGramDictionary nGramDictionary) {
+		this.descDict = descriptionDictionary;
+		this.dict = nGramDictionary;
+	}
+
+	public Concept createConcept() {
+		return new Concept(this);
+	}
 	
 }

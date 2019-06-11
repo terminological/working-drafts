@@ -52,7 +52,7 @@ public class TestEndToEnd {
 				LocalDate.of(2016, 01, 1), 
 				LocalDate.of(2017, 01, 1)).execute().get();
 		
-		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds().collect(Collectors.toList())).stream().flatMap(pme -> pme.getDoi().stream()).collect(Collectors.toList());
+		List<String> dois2 = pubmed.getPMEntriesByPMIds(result.getIds().collect(Collectors.toList())).stream().flatMap(pme -> pme.getDoi().map(o -> Stream.of(o)).orElse(Stream.empty())).collect(Collectors.toList());
 		Map<String,String> dois = mapper.getDoisByIdAndType(result.getIds().collect(Collectors.toList()), IdType.PMID);
 
 		List<String> tmp = new ArrayList<>(dois2);
@@ -71,7 +71,7 @@ public class TestEndToEnd {
 			.forEach(res -> System.out.println(res.getIdentifier().orElse("?")+"\t"+res.getTitle()+"\t"+res.getPdfUri()));
 		
 		Stream<Work> work = dois2.stream().flatMap(doi -> {
-			return xref.getByDoi(doi).stream();
+			return xref.getByDoi(doi).map(o -> Stream.of(o)).orElse(Stream.empty());
 		})
 				.map(sr -> sr.getWork());
 		work.forEach(w -> System.out.println(w.getTitle()));

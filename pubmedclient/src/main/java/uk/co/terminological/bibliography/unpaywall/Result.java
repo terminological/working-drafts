@@ -21,8 +21,8 @@ public class Result extends ExtensibleJson implements Record {
 	public Result(JsonNode node) {super(node);}
 	
 	public Optional<String> getIdentifier() {return this.asString("doi");}
-	public Optional<String> getTitle() {return this.streamPath("title").findFirst().map(
-			n -> n.asString()).or(() -> getJournal());}
+	public Optional<String> getTitle() {return Optional.ofNullable(this.streamPath("title").findFirst().map(
+			n -> n.asString()).orElseGet(() -> getJournal().orElse(null)));}
 	public String getFirstAuthorName() {
 		return this.getFirstAuthor().map(o -> o.getLastName()).orElse("n/a");
 	}
@@ -46,8 +46,8 @@ public class Result extends ExtensibleJson implements Record {
 	}
 	
 	public Optional<URI> getPdfUri() {
-		return this.streamPath("best_oa_location","url_for_pdf").findFirst()
-				.or(() -> this.streamPath("oa_locations","url_for_pdf").findFirst())
+		return Optional.ofNullable(this.streamPath("best_oa_location","url_for_pdf").findFirst()
+				.orElseGet(() -> this.streamPath("oa_locations","url_for_pdf").findFirst().orElse(null)))
 				.flatMap(n -> {
 					try {
 						return Optional.of(new URI(n.asString()));
