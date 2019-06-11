@@ -195,7 +195,13 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<version>7.2.2.jre8</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>uk.co.terminological</groupId>
+			<artifactId>fluentxml</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>maven-plugin</type>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -254,16 +260,28 @@
 						<configuration>
 							<connectionProperties>${user.home}/Dropbox/nlpCtakes/jdbc.prop</connectionProperties>
 							<targetDirectory>target/generated-sources/javapig</targetDirectory>
-							<javaFromQueries>
+							<baseDirectory>src/main/resources</baseDirectory>
+							<defaultTargetPackage>uk.co.terminological.omop</defaultTargetPackage>
+							
+							<!-- <javaFromQueries>
 								<javaFromQuery>
 									<sql>Select * from omopBuild.dbo.IdentifiableNote where note_date&lt;? and note_date&gt;?</sql>
 									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
 								</javaFromQuery>
-							</javaFromQueries>
+								
+							</javaFromQueries> -->
 							<javaFromTables>
 								<javaFromTable>
 									<name>omop.dbo.note_nlp</name>
 									<targetFQN>uk.co.terminological.omop.NoteNlp</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omop.dbo.note</name>
+									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omopBuild.dbo.CuiOmopMap</name>
+									<targetFQN>uk.co.terminological.omop.CuiOmopMap</targetFQN>
 								</javaFromTable>
 							</javaFromTables>
 						</configuration>
