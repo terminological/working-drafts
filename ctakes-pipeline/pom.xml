@@ -135,11 +135,11 @@
 		<!-- ctakes-relation-extractor will add ctakes-pos-tagger, ctakes-chunker, 
 			ctakes-lvg, ctakes-dictionary-lookup, ctakes-context-tokenizer, ctakes-constituency-parser, 
 			ctakes-dependency-parser, ctakes-ne-contexts. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-relation-extractor</artifactId> -->
-		<!-- <version>${ctakes.version}</version> -->
-		<!-- </dependency> -->
+		<dependency>
+		<groupId>org.apache.ctakes</groupId>
+		<artifactId>ctakes-relation-extractor</artifactId>
+		<version>${ctakes.version}</version>
+		</dependency>
 		<!-- ctakes-temporal discovers entities, temporal expressions, temporal 
 			relations, and document-creation-time relativity. -->
 		<!-- ctakes-temporal will add ctakes-pos-tagger, ctakes-chunker, ctakes-lvg, 
@@ -259,7 +259,7 @@
 						</goals>
 						<configuration>
 							<connectionProperties>${user.home}/Dropbox/nlpCtakes/jdbc.prop</connectionProperties>
-							<targetDirectory>target/generated-sources/javapig</targetDirectory>
+							<targetDirectory>src/main/java</targetDirectory>
 							<baseDirectory>src/main/resources</baseDirectory>
 							<defaultTargetPackage>uk.co.terminological.omop</defaultTargetPackage>
 							
@@ -278,6 +278,26 @@
 								<javaFromTable>
 									<name>omop.dbo.note</name>
 									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omop.dbo.condition_occurrence</name>
+									<targetFQN>uk.co.terminological.omop.ConditionOccurrence</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omop.dbo.measurement</name>
+									<targetFQN>uk.co.terminological.omop.Measurement</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omop.dbo.observation</name>
+									<targetFQN>uk.co.terminological.omop.Observation</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omop.dbo.procedure_occurrence</name>
+									<targetFQN>uk.co.terminological.omop.ProcedureOccurrence</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omop.dbo.drug_exposure</name>
+									<targetFQN>uk.co.terminological.omop.DrugExposure</targetFQN>
 								</javaFromTable>
 								<javaFromTable>
 									<name>omopBuild.dbo.CuiOmopMap</name>

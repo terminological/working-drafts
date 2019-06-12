@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.After;
@@ -14,9 +15,11 @@ import org.junit.Test;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlTransforms;
+import uk.co.terminological.omop.CuiOmopMap;
 import uk.co.terminological.omop.Database;
 import uk.co.terminological.omop.Factory;
 import uk.co.terminological.omop.Note;
+import uk.co.terminological.omop.NoteNlp;
 
 public class DatabaseReader {
 
@@ -31,7 +34,12 @@ public class DatabaseReader {
 	@Test
 	public void test() throws SQLException {
 		Database db = new Database(Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/jdbc.prop"));
-		db.query().streamUnprocessedNotes().forEach(
+		HashMap<String,CuiOmopMap> cuiIndex = new HashMap<>();
+		db.read().streamCuiOmopMap().forEach(
+			com -> cuiIndex.put(com.getCui(),com)
+		);
+		
+		db.query().streamUnprocessedNote().forEach(
 				n -> {
 					//System.out.println(ReflectionToStringBuilder.toString(n));
 					try {
@@ -40,7 +48,7 @@ public class DatabaseReader {
 						String clean = html.doTransform(XmlTransforms.XHTML_TO_TEXT).asString();
 						System.out.println(clean);
 						
-						Note newNote = Factory.Mutable.createNote()
+						/*Note newNote = Factory.Mutable.createNote()
 							.withEncodingConceptId(n.getEncodingConceptId())
 							.withLanguageConceptId(n.getLanguageConceptId())
 							.withNoteClassConceptId(n.getNoteClassConceptId())
@@ -58,8 +66,15 @@ public class DatabaseReader {
 							.withVisitDetailId(n.getVisitDetailId())
 							.withVisitOccurrenceId(n.getVisitOccurrenceId());
 							
-						db.write().writeNote(newNote);
-					} catch (XmlException | SQLException  e) {
+						db.write().writeNote(newNote);*/
+						
+						
+						
+						NoteNlp nlp = Factory.Mutable.createNoteNlp();
+								
+						
+						
+					} catch (XmlException  e) {
 						e.printStackTrace();
 					}
 				});

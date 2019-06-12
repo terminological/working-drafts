@@ -12,7 +12,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.ctakes.assertion.medfacts.cleartk.ConditionalCleartkAnalysisEngine;
@@ -29,6 +31,7 @@ import org.apache.ctakes.dependency.parser.ae.ClearNLPDependencyParserAE;
 import org.apache.ctakes.dictionary.lookup2.ae.DefaultJCasTermAnnotator;
 import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.postagger.POSTagger;
+import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -38,15 +41,24 @@ import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.factory.AggregateBuilder;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.JCasFactory;
+import org.apache.uima.fit.util.CasIOUtil;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.TOP;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.resource.ResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.co.terminological.omop.NoteNlp;
+import uk.co.terminological.omop.UnprocessedNote;
 
 public class NlpPipeline {
 
+	Logger log = LoggerFactory.getLogger(NlpPipeline.class);
 	AnalysisEngine aaeInst = null;
 	static Path CACHE_DIR = Paths.get(System.getProperty("user.home"),"tmp/resources");
 
@@ -117,7 +129,16 @@ for example
 			builder.add( ConditionalCleartkAnalysisEngine.createAnnotatorDescription() );
 			builder.add( GenericCleartkAnalysisEngine.createAnnotatorDescription() );
 			builder.add( SubjectCleartkAnalysisEngine.createAnnotatorDescription() );
+			
+			//TODO: ask how to do this
+			
+			//String path = this.getClass().getClassLoader().getResource("desc/analysis_engine/RelationExtractorAggregate.xml").toExternalForm();
+			//AnalysisEngineDescription relationExtractor = AnalysisEngineFactory.createEngineDescriptionFromPath(path);
+			//https://github.com/apache/ctakes/blob/trunk/ctakes-relation-extractor/desc/analysis_engine/RelationExtractorAggregate.xml
+			//builder.add(relationExtractor);
+			
 			aed = builder.createAggregateDescription();
+			
 
 			ResourceManager resMgr = UIMAFramework.newDefaultResourceManager();
 			aaeInst = UIMAFramework.produceAnalysisEngine(aed, resMgr, null);
@@ -126,13 +147,16 @@ for example
 		}
 	}
 
-	public String run(String sentence) throws UIMAException {
+	public String runDocument(String sentence) throws UIMAException {
 		
+		long time = System.currentTimeMillis();
 		final JCas jcas = JCasFactory.createJCas();
 		jcas.setDocumentText(sentence);
 		aaeInst.process( jcas );
-		
-
+		log.debug("Parsed document in "+(System.currentTimeMillis()-time)+" ms");
+		for( TOP t: JCasUtil.selectAll(jcas)) {
+			System.out.println(t.getClass());
+		}
 		StringBuilder sb = new StringBuilder();
 		for (IdentifiedAnnotation entity : JCasUtil.select(jcas,
 				IdentifiedAnnotation.class)) {
@@ -159,45 +183,27 @@ for example
 				sb.append( "], history=[" );
 				sb.append( entity.getHistoryOf() == CONST.NE_HISTORY_OF_PRESENT );
 				sb.append( "]\n");
+				
 			}
+			// CasIOUtil.writeXCas(jcas, aFile);
 		}
 		return sb.toString();
 	}
 
-	public String runDocument(String doc) throws UIMAException {
+	public List<NoteNlp> runNote(UnprocessedNote note, JcasOmopMapper mapper) throws UIMAException {
+		
+		long time = System.currentTimeMillis();
 		final JCas jcas = JCasFactory.createJCas();
-		jcas.setDocumentText( doc );
+		jcas.setDocumentText( note.getNoteText() );
 		aaeInst.process( jcas );
-
-		StringBuilder sb = new StringBuilder();
+		log.debug("Parsed document in "+(System.currentTimeMillis()-time)+" ms");
+		List<NoteNlp> out = new ArrayList<>();
+		
 		for (IdentifiedAnnotation entity : JCasUtil.select(jcas, IdentifiedAnnotation.class)) {
-			for( String cui : getCUIs( entity ) ) {
-				sb.append( "cTAKESFast\t" );
-				sb.append( cui );
-				sb.append( "\t" );
-				sb.append( entity.getBegin() );
-				sb.append( "\t" );
-				sb.append( entity.getEnd() );
-				sb.append( "\t" );
-				sb.append( entity.getCoveredText() );
-				sb.append( "\t" );
-				sb.append( "polarity:[" );
-				sb.append( entity.getPolarity() );
-				sb.append( "], uncertain=[" );
-				sb.append( entity.getUncertainty() == CONST.NE_UNCERTAINTY_PRESENT );
-				sb.append( "], subject=[" );
-				sb.append( entity.getSubject() );
-				sb.append( "], generic=[" );
-				sb.append( entity.getGeneric() == CONST.NE_GENERIC_TRUE );
-				sb.append( "], condition=[" );
-				sb.append( entity.getConditional() == CONST.NE_CONDITIONAL_TRUE );
-				sb.append( "], history=[" );
-				sb.append( entity.getHistoryOf() == CONST.NE_HISTORY_OF_PRESENT );
-				sb.append( "]\n");
-				
-			}
+			 out.add(mapper.mapNote(note, entity));
 		}
-		return sb.toString();
+		
+		return out;
 	}
 
 	static private Set<String> getCUIs(

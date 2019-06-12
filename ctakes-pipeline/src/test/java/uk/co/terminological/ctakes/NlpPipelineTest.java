@@ -11,6 +11,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -29,12 +31,22 @@ import org.apache.ctakes.assertion.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import uk.co.terminological.omop.Database;
+import uk.co.terminological.omop.Factory;
+import uk.co.terminological.omop.NoteNlp;
+import uk.co.terminological.omop.UnprocessedNote;
+
 public class NlpPipelineTest {
 
 	static Logger log = LoggerFactory.getLogger(NlpPipelineTest.class);
 	static Path testFilePath;
 	
 	NlpPipeline ctakes;
+	JcasOmopMapper mapper;
+	Database db; 
 
 	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {
@@ -55,8 +67,9 @@ public class NlpPipelineTest {
 		Path ctakesHome = Paths.get(System.getProperty("user.home"),p.getProperty("ctakes.resources"));
 		log.info("Ctakes resources at: "+ctakesHome);
 		//environmentVariables.set(AlternateLvgAnnotator.CTAKES_HOME, ctakesHome.toString());
+		db = new Database(Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/jdbc.prop"));
+		mapper = new JcasOmopMapper(db);
 		ctakes = new NlpPipeline(p.getProperty("umls.user"),p.getProperty("umls.pw"),ctakesHome.toString());
-		
 	}
 
 	@After
@@ -69,8 +82,17 @@ public class NlpPipelineTest {
 		long ts = System.currentTimeMillis();
 		String doc = new String(Files.readAllBytes(testFilePath));
 		log.info("starting parse at: "+ts);
-		String ret = ctakes.runDocument( doc );
-		System.out.println(ret);
+		UnprocessedNote test = Factory.Mutable.createUnprocessedNote()
+				.withEncodingConceptId(0)
+				.withLanguageConceptId(0)
+				.withNoteDate(Date.valueOf("2016-01-01"))
+				.withNoteText(doc)
+				.withNoteTitle("A test note");
+		List<NoteNlp> ret = ctakes.runNote( test ,mapper);
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
+		System.out.println(gson.toJson(ret));
 	}
 
 	/*@Test
