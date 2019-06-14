@@ -2,16 +2,21 @@ package uk.co.terminological.ctakes;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -36,8 +41,9 @@ import com.google.gson.GsonBuilder;
 
 import uk.co.terminological.omop.Database;
 import uk.co.terminological.omop.Factory;
+import uk.co.terminological.omop.Input;
+import uk.co.terminological.omop.NlpAudit;
 import uk.co.terminological.omop.NoteNlp;
-import uk.co.terminological.omop.UnprocessedNote;
 
 public class NlpPipelineTest {
 
@@ -47,6 +53,10 @@ public class NlpPipelineTest {
 	NlpPipeline ctakes;
 	JcasOmopMapper mapper;
 	Database db; 
+	
+	static String NLP_SYSTEM = "CTAKESv1";
+	static String NLP_SYSTEM_VERSION = "Pipeline tester";
+	static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {
@@ -68,7 +78,7 @@ public class NlpPipelineTest {
 		log.info("Ctakes resources at: "+ctakesHome);
 		//environmentVariables.set(AlternateLvgAnnotator.CTAKES_HOME, ctakesHome.toString());
 		db = new Database(Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/jdbc.prop"));
-		mapper = new JcasOmopMapper(db);
+		mapper = new JcasOmopMapper(db,NLP_SYSTEM);
 		ctakes = new NlpPipeline(p.getProperty("umls.user"),p.getProperty("umls.pw"),ctakesHome.toString());
 	}
 
@@ -77,12 +87,12 @@ public class NlpPipelineTest {
 	}
 
 	@Test
-	public void testRun() throws IOException, UIMAException {
+	public void testRunNote() throws IOException, UIMAException {
 		//fail("Not yet implemented");
 		long ts = System.currentTimeMillis();
 		String doc = new String(Files.readAllBytes(testFilePath));
 		log.info("starting parse at: "+ts);
-		UnprocessedNote test = Factory.Mutable.createUnprocessedNote()
+		Input test = Factory.Mutable.createInput()
 				.withEncodingConceptId(0)
 				.withLanguageConceptId(0)
 				.withNoteDate(Date.valueOf("2016-01-01"))
@@ -90,52 +100,72 @@ public class NlpPipelineTest {
 				.withNoteTitle("A test note");
 		List<NoteNlp> ret = ctakes.runNote( test ,mapper);
 		
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		
 		System.out.println(gson.toJson(ret));
 	}
 
-	/*@Test
-	public void testRunDocument() {
-		fail("Not yet implemented");
+	@Test
+	public void testRunDocument() throws IOException, UIMAException {
+		//fail("Not yet implemented");
+		long ts = System.currentTimeMillis();
+		Path tmp = Files.createTempFile("xmi", "xmi");
+		String doc = new String(Files.readAllBytes(testFilePath));
+		log.info("starting parse at: "+ts);
+		String ret = ctakes.runDocument( doc,tmp);
+		System.out.println(ret);
+	}
+	
+	@Test
+	public void testRealNote() throws SQLException {
+		db.query().fromInput(NLP_SYSTEM).forEachRemaining(
+			in -> {
+				//System.out.println(in.getNoteText());
+				try {
+				
+					NlpAudit start = Factory.Mutable.createNlpAudit()
+						.withEventTime(Timestamp.valueOf(LocalDateTime.now()))
+						.withEventType(NlpPipeline.Status.PROCESSING)
+						.withNlpSystem(NLP_SYSTEM)
+						.withNlpSystemInstance(NLP_SYSTEM_VERSION)
+						.withNoteId(in.getNoteId());
+					db.write().writeNlpAudit(start);
+					
+					NlpAudit outcome;
+					try {
+						List<NoteNlp> ret = ctakes.runNote(in, mapper);
+						System.out.println(gson.toJson(ret));
+						db.write().writeBatchNoteNlp(ret);
+						
+						outcome = Factory.Mutable.createNlpAudit()
+								.withEventTime(Timestamp.valueOf(LocalDateTime.now()))
+								.withEventType(NlpPipeline.Status.COMPLETE)
+								.withNlpSystem(NLP_SYSTEM)
+								.withNlpSystemInstance(NLP_SYSTEM_VERSION)
+								.withNoteId(in.getNoteId());
+						
+					} catch (Exception e) {
+						
+						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						PrintStream ps = new PrintStream(baos);
+						e.printStackTrace(ps);
+						outcome = Factory.Mutable.createNlpAudit()
+								.withEventTime(Timestamp.valueOf(LocalDateTime.now()))
+								.withEventType(NlpPipeline.Status.FAILED)
+								.withNlpSystem(NLP_SYSTEM)
+								.withNlpSystemInstance(NLP_SYSTEM_VERSION)
+								.withNoteId(in.getNoteId())
+								.withEventDetail(baos.toString());
+						
+					}
+					
+					db.write().writeNlpAudit(outcome);
+				} catch (SQLException e) {
+					//Problem writing audit log
+					throw new RuntimeException(e);
+				}
+			}
+		);
 	}
 
-	@Test
-	public void test( String[] argv ) throws IllegalAccessException, InvocationTargetException, Exception {
-		long ts = 0;
-		long ts1 = 0;
-		int count = 0;
-		
-		ts = System.currentTimeMillis();
-		 
-		ts1 += System.currentTimeMillis() - ts;
-		System.out.println( "ctakes, " + count + ", " + ts1 / 1000 + " seconds.");
-		
-		
-		
-		File indir = new File( "input/" );
-		for( File file : indir.listFiles() ) {
-			if( file.getName().startsWith( "." ) ) {
-				continue;
-			}
-			if( !file.getName().endsWith( ".txt" ) ) {
-				continue;
-			}
-			System.out.println( file.getName() );
-
-			String doc = IOUtils.toString( new FileReader( file ) );
-			FileWriter outfile = new FileWriter( new File( "output/" + file.getName() ) );
-
-			ts = System.currentTimeMillis();
-			String ret = ctakes.runDocument( doc );
-			ts1 += System.currentTimeMillis() - ts;
-			count += 1;
-			System.out.println( "ctakes, " + count + ", " + ts1 / 1000 + " seconds.");
-			outfile.write( ret );
-			outfile.close();
-		
-		}
-		return;
-	}*/
+	
 	
 }

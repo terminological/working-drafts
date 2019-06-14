@@ -12,18 +12,21 @@ import uk.co.terminological.omop.NoteNlpFluentImpl;
 import uk.co.terminological.omop.ProcedureOccurrence;
 import uk.co.terminological.omop.ProcedureOccurrenceFluent;
 import uk.co.terminological.omop.ProcedureOccurrenceFluentImpl;
+import uk.co.terminological.omop.NlpAudit;
+import uk.co.terminological.omop.NlpAuditFluent;
+import uk.co.terminological.omop.NlpAuditFluentImpl;
 import uk.co.terminological.omop.ConditionOccurrence;
 import uk.co.terminological.omop.ConditionOccurrenceFluent;
 import uk.co.terminological.omop.ConditionOccurrenceFluentImpl;
 import uk.co.terminological.omop.Observation;
 import uk.co.terminological.omop.ObservationFluent;
 import uk.co.terminological.omop.ObservationFluentImpl;
+import uk.co.terminological.omop.Input;
+import uk.co.terminological.omop.InputFluent;
+import uk.co.terminological.omop.InputFluentImpl;
 import uk.co.terminological.omop.Measurement;
 import uk.co.terminological.omop.MeasurementFluent;
 import uk.co.terminological.omop.MeasurementFluentImpl;
-import uk.co.terminological.omop.UnprocessedNote;
-import uk.co.terminological.omop.UnprocessedNoteFluent;
-import uk.co.terminological.omop.UnprocessedNoteFluentImpl;
 import uk.co.terminological.omop.Note;
 import uk.co.terminological.omop.NoteFluent;
 import uk.co.terminological.omop.NoteFluentImpl;
@@ -50,6 +53,10 @@ public class Factory {
 			return ProcedureOccurrenceFluentImpl.create();
 		}
 		
+		public static NlpAuditFluent createNlpAudit() {
+			return NlpAuditFluentImpl.create();
+		}
+		
 		public static ConditionOccurrenceFluent createConditionOccurrence() {
 			return ConditionOccurrenceFluentImpl.create();
 		}
@@ -58,12 +65,12 @@ public class Factory {
 			return ObservationFluentImpl.create();
 		}
 		
-		public static MeasurementFluent createMeasurement() {
-			return MeasurementFluentImpl.create();
+		public static InputFluent createInput() {
+			return InputFluentImpl.create();
 		}
 		
-		public static UnprocessedNoteFluent createUnprocessedNote() {
-			return UnprocessedNoteFluentImpl.create();
+		public static MeasurementFluent createMeasurement() {
+			return MeasurementFluentImpl.create();
 		}
 		
 		public static NoteFluent createNote() {

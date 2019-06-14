@@ -31,6 +31,7 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 	private String _termTemporal;
 	private String _termModifiers;
 	private Integer _noteNlpSourceConceptId;
+	private Integer _customCode;
 
 	// Public constructor
 	// ==================
@@ -51,7 +52,8 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		String _termExists,
 		String _termTemporal,
 		String _termModifiers,
-		Integer _noteNlpSourceConceptId
+		Integer _noteNlpSourceConceptId,
+		Integer _customCode
 	) {
 		this._noteNlpId = _noteNlpId;
 		this._noteId = _noteId;
@@ -67,6 +69,7 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		this._termTemporal = _termTemporal;
 		this._termModifiers = _termModifiers;
 		this._noteNlpSourceConceptId = _noteNlpSourceConceptId;
+		this._customCode = _customCode;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -85,6 +88,7 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		this._termTemporal = clone.getTermTemporal();
 		this._termModifiers = clone.getTermModifiers();
 		this._noteNlpSourceConceptId = clone.getNoteNlpSourceConceptId();
+		this._customCode = clone.getCustomCode();
 	}
 	
 	public NoteNlpFluentImpl clone() {
@@ -135,6 +139,9 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 	}
 	public Integer getNoteNlpSourceConceptId() {
 		return _noteNlpSourceConceptId;
+	}
+	public Integer getCustomCode() {
+		return _customCode;
 	}
 	
 	// POJO Setters
@@ -224,6 +231,12 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		this.notifyObservers();
 	}
 	
+	public void setCustomCode(Integer value) {
+		this._customCode = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
 	
 	// Fluent setters
 	// ==============
@@ -284,6 +297,10 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		setNoteNlpSourceConceptId(value);
 		return this;
 	}
+	public NoteNlpFluent withCustomCode(Integer value) {
+		setCustomCode(value);
+		return this;
+	}
 
 	// hashCode and equals
 	// ===================
@@ -306,6 +323,7 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		result = prime * result + ((getTermTemporal() == null) ? 0 : getTermTemporal().hashCode());
 		result = prime * result + ((getTermModifiers() == null) ? 0 : getTermModifiers().hashCode());
 		result = prime * result + ((getNoteNlpSourceConceptId() == null) ? 0 : getNoteNlpSourceConceptId().hashCode());
+		result = prime * result + ((getCustomCode() == null) ? 0 : getCustomCode().hashCode());
 		return result;
 	}
 
@@ -387,6 +405,11 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		if (this.getNoteNlpSourceConceptId() == null ^ other.getNoteNlpSourceConceptId()==null) return false;
 		if (this.getNoteNlpSourceConceptId() != null && other.getNoteNlpSourceConceptId()!=null) {
 			if (!this.getNoteNlpSourceConceptId().equals(other.getNoteNlpSourceConceptId())) return false;
+		}
+		//testing this.getCustomCode()
+		if (this.getCustomCode() == null ^ other.getCustomCode()==null) return false;
+		if (this.getCustomCode() != null && other.getCustomCode()!=null) {
+			if (!this.getCustomCode().equals(other.getCustomCode())) return false;
 		}
 		return true;
 	}

@@ -17,7 +17,7 @@ public class CuiOmopMapSql extends CuiOmopMapFluentImpl implements CuiOmopMap {
 	public CuiOmopMapSql(ResultSet resultSet) throws SQLException {
 		super(
 			resultSet.getObject("CUI",String.class),
-			resultSet.getObject("CODE",String.class),
+			resultSet.getObject("source_concept_id",Integer.class),
 			resultSet.getObject("concept_id",Integer.class)			
 		);
 	}

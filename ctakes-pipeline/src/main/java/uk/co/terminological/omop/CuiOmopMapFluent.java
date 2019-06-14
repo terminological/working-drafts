@@ -12,7 +12,7 @@ public interface CuiOmopMapFluent extends CuiOmopMap {
 
 	public void setCui(String value);
 
-	public void setCode(String value);
+	public void setSourceConceptId(Integer value);
 
 	public void setConceptId(Integer value);
 
@@ -22,7 +22,7 @@ public interface CuiOmopMapFluent extends CuiOmopMap {
 	
 	public CuiOmopMapFluent withCui(String value);
 	
-	public CuiOmopMapFluent withCode(String value);
+	public CuiOmopMapFluent withSourceConceptId(Integer value);
 	
 	public CuiOmopMapFluent withConceptId(Integer value);
 	

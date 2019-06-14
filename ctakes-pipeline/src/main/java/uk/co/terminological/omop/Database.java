@@ -11,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 
 import uk.co.terminological.omop.DrugExposure;
 import uk.co.terminological.omop.DrugExposureSql;
@@ -18,14 +19,16 @@ import uk.co.terminological.omop.NoteNlp;
 import uk.co.terminological.omop.NoteNlpSql;
 import uk.co.terminological.omop.ProcedureOccurrence;
 import uk.co.terminological.omop.ProcedureOccurrenceSql;
+import uk.co.terminological.omop.NlpAudit;
+import uk.co.terminological.omop.NlpAuditSql;
 import uk.co.terminological.omop.ConditionOccurrence;
 import uk.co.terminological.omop.ConditionOccurrenceSql;
 import uk.co.terminological.omop.Observation;
 import uk.co.terminological.omop.ObservationSql;
+import uk.co.terminological.omop.Input;
+import uk.co.terminological.omop.InputSql;
 import uk.co.terminological.omop.Measurement;
 import uk.co.terminological.omop.MeasurementSql;
-import uk.co.terminological.omop.UnprocessedNote;
-import uk.co.terminological.omop.UnprocessedNoteSql;
 import uk.co.terminological.omop.Note;
 import uk.co.terminological.omop.NoteSql;
 import uk.co.terminological.omop.CuiOmopMap;
@@ -62,7 +65,13 @@ public class Database {
 	
 	private static <X, E extends Exception> Stream<X> streamResultSet(ResultSet rs, FunctionWithException<ResultSet,X, E> mapper) {
 		Iterable<X> iterable = () -> iterateResultSet(rs,mapper);
-		return StreamSupport.stream(iterable.spliterator(), false);
+		return StreamSupport.stream(iterable.spliterator(), false).onClose(() -> {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				//we tried;
+			}
+		});
 	}
 	
 	private static <X, E extends Exception> Iterator<X> iterateResultSet(ResultSet rs, FunctionWithException<ResultSet,X,E> mapper) {
@@ -93,6 +102,39 @@ public class Database {
 		};
 	}
 	
+	private static Map<String,Object> rowToMap(ResultSet rs) throws SQLException {
+		Map<String, Object> out = new HashMap<>();
+		ResultSetMetaData rsm = rs.getMetaData();
+		for (int i=0; i<rsm.getColumnCount(); i++) {
+			out.put(
+				rsm.getColumnName(i+1), 
+				rs.getObject(i+1)
+			);
+		}
+		return out;
+	}
+	
+	/*************** GENERAL DB FUNCTIONS **************************/
+	
+	public int apply(String preparedSql, Object... parameters) throws SQLException {
+		int i = 1;
+		PreparedStatement pst = conn.prepareStatement(preparedSql);
+		for (Object parameter: parameters) {
+			pst.setObject(i, parameter);
+		}
+    	return pst.executeUpdate();
+	}
+	
+	public Stream<Map<String,Object>> retrieve(String preparedSql, Object... parameters) throws SQLException {
+		int i = 1;
+		PreparedStatement pst = conn.prepareStatement(preparedSql);
+		for (Object parameter: parameters) {
+			pst.setObject(i, parameter);
+		}
+    	ResultSet rs = pst.executeQuery();
+    	return streamResultSet(rs,r -> rowToMap(r));
+	}
+	
 	/*************** TABLE READERS **************************/
 	
 	public Reader read() throws SQLException {
@@ -108,6 +150,7 @@ public class Database {
 		PreparedStatement pstDrugExposure;
 		PreparedStatement pstNoteNlp;
 		PreparedStatement pstProcedureOccurrence;
+		PreparedStatement pstNlpAudit;
 		PreparedStatement pstConditionOccurrence;
 		PreparedStatement pstObservation;
 		PreparedStatement pstMeasurement;
@@ -118,6 +161,7 @@ public class Database {
 			pstDrugExposure = conn.prepareStatement("select * from omop.dbo.drug_exposure");
 			pstNoteNlp = conn.prepareStatement("select * from omop.dbo.note_nlp");
 			pstProcedureOccurrence = conn.prepareStatement("select * from omop.dbo.procedure_occurrence");
+			pstNlpAudit = conn.prepareStatement("select * from omopBuild.dbo.NlpAudit");
 			pstConditionOccurrence = conn.prepareStatement("select * from omop.dbo.condition_occurrence");
 			pstObservation = conn.prepareStatement("select * from omop.dbo.observation");
 			pstMeasurement = conn.prepareStatement("select * from omop.dbo.measurement");
@@ -187,6 +231,27 @@ public class Database {
 			if (limit >= 0) pstProcedureOccurrence.setMaxRows(limit);
     		ResultSet rs = pstProcedureOccurrence.executeQuery();
     		return streamResultSet(rs,r -> new ProcedureOccurrenceSql(rs));
+		}
+	
+		public Iterator<NlpAudit> fromNlpAudit() throws SQLException {
+			return fromNlpAudit(0);
+		}
+
+		public Iterator<NlpAudit> fromNlpAudit(int limit) throws SQLException {
+			if (limit >= 0) pstNlpAudit.setMaxRows(limit);
+    		ResultSet rs = pstNlpAudit.executeQuery();
+    		return iterateResultSet(rs,r -> new NlpAuditSql(rs));
+    	}
+	
+	
+		public Stream<NlpAudit> streamNlpAudit() throws SQLException {
+			return streamNlpAudit(0);
+		}
+		
+		public Stream<NlpAudit> streamNlpAudit(int limit) throws SQLException {
+			if (limit >= 0) pstNlpAudit.setMaxRows(limit);
+    		ResultSet rs = pstNlpAudit.executeQuery();
+    		return streamResultSet(rs,r -> new NlpAuditSql(rs));
 		}
 	
 		public Iterator<ConditionOccurrence> fromConditionOccurrence() throws SQLException {
@@ -310,6 +375,7 @@ public class Database {
 		PreparedStatement pstDrugExposure;
 		PreparedStatement pstNoteNlp;
 		PreparedStatement pstProcedureOccurrence;
+		PreparedStatement pstNlpAudit;
 		PreparedStatement pstConditionOccurrence;
 		PreparedStatement pstObservation;
 		PreparedStatement pstMeasurement;
@@ -322,12 +388,16 @@ public class Database {
 				" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 			);
 			pstNoteNlp = conn.prepareStatement("insert into omop.dbo.note_nlp "+
-				"(note_nlp_id,note_id,section_concept_id,snippet,offset,lexical_variant,note_nlp_concept_id,nlp_system,nlp_date,nlp_datetime,term_exists,term_temporal,term_modifiers,note_nlp_source_concept_id)"+
+				"(note_id,section_concept_id,snippet,offset,lexical_variant,note_nlp_concept_id,nlp_system,nlp_date,nlp_datetime,term_exists,term_temporal,term_modifiers,note_nlp_source_concept_id,custom_code)"+
 				" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 			);
 			pstProcedureOccurrence = conn.prepareStatement("insert into omop.dbo.procedure_occurrence "+
 				"(procedure_occurrence_id,person_id,procedure_concept_id,procedure_date,procedure_datetime,procedure_type_concept_id,modifier_concept_id,quantity,provider_id,visit_occurrence_id,visit_detail_id,procedure_source_value,procedure_source_concept_id,modifier_source_value)"+
 				" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+			);
+			pstNlpAudit = conn.prepareStatement("insert into omopBuild.dbo.NlpAudit "+
+				"(note_id,event_time,nlp_system,nlp_system_instance,event_type,event_detail)"+
+				" values (?,?,?,?,?,?)"
 			);
 			pstConditionOccurrence = conn.prepareStatement("insert into omop.dbo.condition_occurrence "+
 				"(condition_occurrence_id,person_id,condition_concept_id,condition_start_date,condition_start_datetime,condition_end_date,condition_end_datetime,condition_type_concept_id,condition_status_concept_id,stop_reason,provider_id,visit_occurrence_id,visit_detail_id,condition_source_value,condition_source_concept_id,condition_status_source_value)"+
@@ -346,7 +416,7 @@ public class Database {
 				" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 			);
 			pstCuiOmopMap = conn.prepareStatement("insert into omopBuild.dbo.CuiOmopMap "+
-				"(CUI,CODE,concept_id)"+
+				"(CUI,source_concept_id,concept_id)"+
 				" values (?,?,?)"
 			);
 		}
@@ -452,20 +522,20 @@ public class Database {
 	
 		public int writeNoteNlp(NoteNlp input) throws SQLException {
 			pstNoteNlp.clearParameters();
-    		pstNoteNlp.setObject(1, input.getNoteNlpId());
-    		pstNoteNlp.setObject(2, input.getNoteId());
-    		pstNoteNlp.setObject(3, input.getSectionConceptId());
-    		pstNoteNlp.setObject(4, input.getSnippet());
-    		pstNoteNlp.setObject(5, input.getOffset());
-    		pstNoteNlp.setObject(6, input.getLexicalVariant());
-    		pstNoteNlp.setObject(7, input.getNoteNlpConceptId());
-    		pstNoteNlp.setObject(8, input.getNlpSystem());
-    		pstNoteNlp.setObject(9, input.getNlpDate());
-    		pstNoteNlp.setObject(10, input.getNlpDatetime());
-    		pstNoteNlp.setObject(11, input.getTermExists());
-    		pstNoteNlp.setObject(12, input.getTermTemporal());
-    		pstNoteNlp.setObject(13, input.getTermModifiers());
-    		pstNoteNlp.setObject(14, input.getNoteNlpSourceConceptId());
+    		pstNoteNlp.setObject(1, input.getNoteId());
+    		pstNoteNlp.setObject(2, input.getSectionConceptId());
+    		pstNoteNlp.setObject(3, input.getSnippet());
+    		pstNoteNlp.setObject(4, input.getOffset());
+    		pstNoteNlp.setObject(5, input.getLexicalVariant());
+    		pstNoteNlp.setObject(6, input.getNoteNlpConceptId());
+    		pstNoteNlp.setObject(7, input.getNlpSystem());
+    		pstNoteNlp.setObject(8, input.getNlpDate());
+    		pstNoteNlp.setObject(9, input.getNlpDatetime());
+    		pstNoteNlp.setObject(10, input.getTermExists());
+    		pstNoteNlp.setObject(11, input.getTermTemporal());
+    		pstNoteNlp.setObject(12, input.getTermModifiers());
+    		pstNoteNlp.setObject(13, input.getNoteNlpSourceConceptId());
+    		pstNoteNlp.setObject(14, input.getCustomCode());
     		return pstNoteNlp.executeUpdate();
     	}
 	
@@ -478,20 +548,20 @@ public class Database {
 			int current = 0;
 			for (NoteNlp input: inputs) {
 				pstNoteNlp.clearParameters();
-    			pstNoteNlp.setObject(1, input.getNoteNlpId());
-    			pstNoteNlp.setObject(2, input.getNoteId());
-    			pstNoteNlp.setObject(3, input.getSectionConceptId());
-    			pstNoteNlp.setObject(4, input.getSnippet());
-    			pstNoteNlp.setObject(5, input.getOffset());
-    			pstNoteNlp.setObject(6, input.getLexicalVariant());
-    			pstNoteNlp.setObject(7, input.getNoteNlpConceptId());
-    			pstNoteNlp.setObject(8, input.getNlpSystem());
-    			pstNoteNlp.setObject(9, input.getNlpDate());
-    			pstNoteNlp.setObject(10, input.getNlpDatetime());
-    			pstNoteNlp.setObject(11, input.getTermExists());
-    			pstNoteNlp.setObject(12, input.getTermTemporal());
-    			pstNoteNlp.setObject(13, input.getTermModifiers());
-    			pstNoteNlp.setObject(14, input.getNoteNlpSourceConceptId());
+    			pstNoteNlp.setObject(1, input.getNoteId());
+    			pstNoteNlp.setObject(2, input.getSectionConceptId());
+    			pstNoteNlp.setObject(3, input.getSnippet());
+    			pstNoteNlp.setObject(4, input.getOffset());
+    			pstNoteNlp.setObject(5, input.getLexicalVariant());
+    			pstNoteNlp.setObject(6, input.getNoteNlpConceptId());
+    			pstNoteNlp.setObject(7, input.getNlpSystem());
+    			pstNoteNlp.setObject(8, input.getNlpDate());
+    			pstNoteNlp.setObject(9, input.getNlpDatetime());
+    			pstNoteNlp.setObject(10, input.getTermExists());
+    			pstNoteNlp.setObject(11, input.getTermTemporal());
+    			pstNoteNlp.setObject(12, input.getTermModifiers());
+    			pstNoteNlp.setObject(13, input.getNoteNlpSourceConceptId());
+    			pstNoteNlp.setObject(14, input.getCustomCode());
     			pstNoteNlp.addBatch();
     			if (max > 0 && current >= max) {
     				affected += IntStream.of(pstNoteNlp.executeBatch()).sum();
@@ -565,6 +635,56 @@ public class Database {
     			}
     		} 
     		affected += IntStream.of(pstProcedureOccurrence.executeBatch()).sum();
+    		return affected;
+		}
+		public Consumer<NlpAudit> ofNlpAudit(final boolean rethrow) {
+    		return new Consumer<NlpAudit>() {
+    			@Override
+    			public void accept(NlpAudit input) {
+    				try {
+    					writeNlpAudit(input);
+    				} catch (SQLException e) {
+    					if (rethrow) {
+    						throw new RuntimeException(e);
+    					}
+    				}
+				}
+			};
+    	}
+	
+		public int writeNlpAudit(NlpAudit input) throws SQLException {
+			pstNlpAudit.clearParameters();
+    		pstNlpAudit.setObject(1, input.getNoteId());
+    		pstNlpAudit.setObject(2, input.getEventTime());
+    		pstNlpAudit.setObject(3, input.getNlpSystem());
+    		pstNlpAudit.setObject(4, input.getNlpSystemInstance());
+    		pstNlpAudit.setObject(5, input.getEventType());
+    		pstNlpAudit.setObject(6, input.getEventDetail());
+    		return pstNlpAudit.executeUpdate();
+    	}
+	
+		public int writeBatchNlpAudit(Collection<NlpAudit> inputs) throws SQLException {
+			return writeBatchNlpAudit(inputs,0);
+		}
+	
+		public int writeBatchNlpAudit(Collection<NlpAudit> inputs, int max) throws SQLException {
+			int affected = 0;
+			int current = 0;
+			for (NlpAudit input: inputs) {
+				pstNlpAudit.clearParameters();
+    			pstNlpAudit.setObject(1, input.getNoteId());
+    			pstNlpAudit.setObject(2, input.getEventTime());
+    			pstNlpAudit.setObject(3, input.getNlpSystem());
+    			pstNlpAudit.setObject(4, input.getNlpSystemInstance());
+    			pstNlpAudit.setObject(5, input.getEventType());
+    			pstNlpAudit.setObject(6, input.getEventDetail());
+    			pstNlpAudit.addBatch();
+    			if (max > 0 && current >= max) {
+    				affected += IntStream.of(pstNlpAudit.executeBatch()).sum();
+    				current = 0;
+    			}
+    		} 
+    		affected += IntStream.of(pstNlpAudit.executeBatch()).sum();
     		return affected;
 		}
 		public Consumer<ConditionOccurrence> ofConditionOccurrence(final boolean rethrow) {
@@ -883,7 +1003,7 @@ public class Database {
 		public int writeCuiOmopMap(CuiOmopMap input) throws SQLException {
 			pstCuiOmopMap.clearParameters();
     		pstCuiOmopMap.setObject(1, input.getCui());
-    		pstCuiOmopMap.setObject(2, input.getCode());
+    		pstCuiOmopMap.setObject(2, input.getSourceConceptId());
     		pstCuiOmopMap.setObject(3, input.getConceptId());
     		return pstCuiOmopMap.executeUpdate();
     	}
@@ -898,7 +1018,7 @@ public class Database {
 			for (CuiOmopMap input: inputs) {
 				pstCuiOmopMap.clearParameters();
     			pstCuiOmopMap.setObject(1, input.getCui());
-    			pstCuiOmopMap.setObject(2, input.getCode());
+    			pstCuiOmopMap.setObject(2, input.getSourceConceptId());
     			pstCuiOmopMap.setObject(3, input.getConceptId());
     			pstCuiOmopMap.addBatch();
     			if (max > 0 && current >= max) {
@@ -923,23 +1043,25 @@ public class Database {
 	@Generated({"uk.co.terminological.javapig.JModelWriter"})
 	public class Query {
 	
-		PreparedStatement pstUnprocessedNote;
+		PreparedStatement pstInput;
 		 
 	
 		Query(Connection conn) throws SQLException {
-			pstUnprocessedNote = conn.prepareStatement("SELECT n.*  FROM omopBuild.dbo.IdentifiableNote n LEFT OUTER JOIN omop.dbo.note_nlp nlp ON n.note_id = nlp.note_id  WHERE nlp.note_id IS NULL ORDER BY n.note_id OFFSET 0 ROWS FETCH FIRST 100 ROWS ONLY;");
+			pstInput = conn.prepareStatement("SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where nlp_system=?");
 		}
 	
 	
 		
-		public Iterator<UnprocessedNote> fromUnprocessedNote() throws SQLException  {
-    		ResultSet rs = pstUnprocessedNote.executeQuery();
-    		return iterateResultSet(rs,r -> new UnprocessedNoteSql(rs));
+		public Iterator<Input> fromInput(String param1) throws SQLException  {
+    		pstInput.setObject(1, param1);
+    		ResultSet rs = pstInput.executeQuery();
+    		return iterateResultSet(rs,r -> new InputSql(rs));
     	}
 	
-		public Stream<UnprocessedNote> streamUnprocessedNote() throws SQLException {
-    		ResultSet rs = pstUnprocessedNote.executeQuery();
-    		return streamResultSet(rs,r -> new UnprocessedNoteSql(rs));
+		public Stream<Input> streamInput(String param1) throws SQLException {
+    		pstInput.setObject(1, param1);
+    		ResultSet rs = pstInput.executeQuery();
+    		return streamResultSet(rs,r -> new InputSql(rs));
 		}
 	
 	}

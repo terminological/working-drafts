@@ -31,7 +31,8 @@ public class NoteNlpSql extends NoteNlpFluentImpl implements NoteNlp {
 			resultSet.getObject("term_exists",String.class),
 			resultSet.getObject("term_temporal",String.class),
 			resultSet.getObject("term_modifiers",String.class),
-			resultSet.getObject("note_nlp_source_concept_id",Integer.class)			
+			resultSet.getObject("note_nlp_source_concept_id",Integer.class),
+			resultSet.getObject("custom_code",Integer.class)			
 		);
 	}
 	

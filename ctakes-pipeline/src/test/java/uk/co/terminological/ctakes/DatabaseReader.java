@@ -23,6 +23,8 @@ import uk.co.terminological.omop.NoteNlp;
 
 public class DatabaseReader {
 
+	static String NLP_SYSTEM = "CTAKESv1";
+	
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -39,7 +41,7 @@ public class DatabaseReader {
 			com -> cuiIndex.put(com.getCui(),com)
 		);
 		
-		db.query().streamUnprocessedNote().forEach(
+		db.query().streamInput(NLP_SYSTEM).forEach(
 				n -> {
 					//System.out.println(ReflectionToStringBuilder.toString(n));
 					try {

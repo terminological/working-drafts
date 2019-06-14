@@ -4,14 +4,14 @@ import javax.annotation.Generated;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.*;
-import uk.co.terminological.omop.UnprocessedNoteFluent;
+import uk.co.terminological.omop.InputFluent;
 
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})
-public class UnprocessedNoteFluentImpl extends Observable implements UnprocessedNote, UnprocessedNoteFluent  {
+public class InputFluentImpl extends Observable implements Input, InputFluent  {
 
-	public static UnprocessedNoteFluent create() {
-		return new UnprocessedNoteFluentImpl();
+	public static InputFluent create() {
+		return new InputFluentImpl();
 	}
 
 	// Fields
@@ -33,14 +33,18 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 	private Long _visitOccurrenceId;
 	private Long _visitDetailId;
 	private String _noteSourceValue;
+	private String _nlpEventType;
+	private String _nlpSystem;
+	private String _nlpSystemInstance;
+	private Timestamp _nlpEventTime;
 	private Integer _rowNumber;
 
 	// Public constructor
 	// ==================
 
-	public UnprocessedNoteFluentImpl() {}
+	public InputFluentImpl() {}
 
-	public UnprocessedNoteFluentImpl(
+	public InputFluentImpl(
 		Long _noteId,
 		Long _personId,
 		Long _noteEventId,
@@ -57,6 +61,10 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 		Long _visitOccurrenceId,
 		Long _visitDetailId,
 		String _noteSourceValue,
+		String _nlpEventType,
+		String _nlpSystem,
+		String _nlpSystemInstance,
+		Timestamp _nlpEventTime,
 		Integer _rowNumber
 	) {
 		this._noteId = _noteId;
@@ -75,11 +83,15 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 		this._visitOccurrenceId = _visitOccurrenceId;
 		this._visitDetailId = _visitDetailId;
 		this._noteSourceValue = _noteSourceValue;
+		this._nlpEventType = _nlpEventType;
+		this._nlpSystem = _nlpSystem;
+		this._nlpSystemInstance = _nlpSystemInstance;
+		this._nlpEventTime = _nlpEventTime;
 		this._rowNumber = _rowNumber;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public UnprocessedNoteFluentImpl(UnprocessedNote clone) {
+	public InputFluentImpl(Input clone) {
 		this._noteId = clone.getNoteId();
 		this._personId = clone.getPersonId();
 		this._noteEventId = clone.getNoteEventId();
@@ -96,11 +108,15 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 		this._visitOccurrenceId = clone.getVisitOccurrenceId();
 		this._visitDetailId = clone.getVisitDetailId();
 		this._noteSourceValue = clone.getNoteSourceValue();
+		this._nlpEventType = clone.getNlpEventType();
+		this._nlpSystem = clone.getNlpSystem();
+		this._nlpSystemInstance = clone.getNlpSystemInstance();
+		this._nlpEventTime = (Timestamp) clone.getNlpEventTime().clone();
 		this._rowNumber = clone.getRowNumber();
 	}
 	
-	public UnprocessedNoteFluentImpl clone() {
-		return new UnprocessedNoteFluentImpl(this); 
+	public InputFluentImpl clone() {
+		return new InputFluentImpl(this); 
 	}
 	
 	// POJO Getters
@@ -153,6 +169,18 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 	}
 	public String getNoteSourceValue() {
 		return _noteSourceValue;
+	}
+	public String getNlpEventType() {
+		return _nlpEventType;
+	}
+	public String getNlpSystem() {
+		return _nlpSystem;
+	}
+	public String getNlpSystemInstance() {
+		return _nlpSystemInstance;
+	}
+	public Timestamp getNlpEventTime() {
+		return _nlpEventTime;
 	}
 	public Integer getRowNumber() {
 		return _rowNumber;
@@ -257,6 +285,30 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 		this.notifyObservers();
 	}
 	
+	public void setNlpEventType(String value) {
+		this._nlpEventType = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
+	public void setNlpSystem(String value) {
+		this._nlpSystem = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
+	public void setNlpSystemInstance(String value) {
+		this._nlpSystemInstance = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
+	public void setNlpEventTime(Timestamp value) {
+		this._nlpEventTime = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
 	public void setRowNumber(Integer value) {
 		this._rowNumber = value;
 		this.setChanged();
@@ -267,71 +319,87 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 	// Fluent setters
 	// ==============
 	
-	public UnprocessedNoteFluent withNoteId(Long value) {
+	public InputFluent withNoteId(Long value) {
 		setNoteId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withPersonId(Long value) {
+	public InputFluent withPersonId(Long value) {
 		setPersonId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteEventId(Long value) {
+	public InputFluent withNoteEventId(Long value) {
 		setNoteEventId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteEventFieldConceptId(Integer value) {
+	public InputFluent withNoteEventFieldConceptId(Integer value) {
 		setNoteEventFieldConceptId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteDate(Date value) {
+	public InputFluent withNoteDate(Date value) {
 		setNoteDate(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteDatetime(Timestamp value) {
+	public InputFluent withNoteDatetime(Timestamp value) {
 		setNoteDatetime(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteTypeConceptId(Integer value) {
+	public InputFluent withNoteTypeConceptId(Integer value) {
 		setNoteTypeConceptId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteClassConceptId(Integer value) {
+	public InputFluent withNoteClassConceptId(Integer value) {
 		setNoteClassConceptId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteTitle(String value) {
+	public InputFluent withNoteTitle(String value) {
 		setNoteTitle(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteText(String value) {
+	public InputFluent withNoteText(String value) {
 		setNoteText(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withEncodingConceptId(Integer value) {
+	public InputFluent withEncodingConceptId(Integer value) {
 		setEncodingConceptId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withLanguageConceptId(Integer value) {
+	public InputFluent withLanguageConceptId(Integer value) {
 		setLanguageConceptId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withProviderId(Long value) {
+	public InputFluent withProviderId(Long value) {
 		setProviderId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withVisitOccurrenceId(Long value) {
+	public InputFluent withVisitOccurrenceId(Long value) {
 		setVisitOccurrenceId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withVisitDetailId(Long value) {
+	public InputFluent withVisitDetailId(Long value) {
 		setVisitDetailId(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withNoteSourceValue(String value) {
+	public InputFluent withNoteSourceValue(String value) {
 		setNoteSourceValue(value);
 		return this;
 	}
-	public UnprocessedNoteFluent withRowNumber(Integer value) {
+	public InputFluent withNlpEventType(String value) {
+		setNlpEventType(value);
+		return this;
+	}
+	public InputFluent withNlpSystem(String value) {
+		setNlpSystem(value);
+		return this;
+	}
+	public InputFluent withNlpSystemInstance(String value) {
+		setNlpSystemInstance(value);
+		return this;
+	}
+	public InputFluent withNlpEventTime(Timestamp value) {
+		setNlpEventTime(value);
+		return this;
+	}
+	public InputFluent withRowNumber(Integer value) {
 		setRowNumber(value);
 		return this;
 	}
@@ -359,6 +427,10 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 		result = prime * result + ((getVisitOccurrenceId() == null) ? 0 : getVisitOccurrenceId().hashCode());
 		result = prime * result + ((getVisitDetailId() == null) ? 0 : getVisitDetailId().hashCode());
 		result = prime * result + ((getNoteSourceValue() == null) ? 0 : getNoteSourceValue().hashCode());
+		result = prime * result + ((getNlpEventType() == null) ? 0 : getNlpEventType().hashCode());
+		result = prime * result + ((getNlpSystem() == null) ? 0 : getNlpSystem().hashCode());
+		result = prime * result + ((getNlpSystemInstance() == null) ? 0 : getNlpSystemInstance().hashCode());
+		result = prime * result + ((getNlpEventTime() == null) ? 0 : getNlpEventTime().hashCode());
 		result = prime * result + ((getRowNumber() == null) ? 0 : getRowNumber().hashCode());
 		return result;
 	}
@@ -371,7 +443,7 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 			return false;
 		if (this.getClass() != obj.getClass())
 			return false;
-		UnprocessedNoteFluentImpl other = (UnprocessedNoteFluentImpl) obj;
+		InputFluentImpl other = (InputFluentImpl) obj;
 		//testing this.getNoteId()
 		if (this.getNoteId() == null ^ other.getNoteId()==null) return false;
 		if (this.getNoteId() != null && other.getNoteId()!=null) {
@@ -451,6 +523,26 @@ public class UnprocessedNoteFluentImpl extends Observable implements Unprocessed
 		if (this.getNoteSourceValue() == null ^ other.getNoteSourceValue()==null) return false;
 		if (this.getNoteSourceValue() != null && other.getNoteSourceValue()!=null) {
 			if (!this.getNoteSourceValue().equals(other.getNoteSourceValue())) return false;
+		}
+		//testing this.getNlpEventType()
+		if (this.getNlpEventType() == null ^ other.getNlpEventType()==null) return false;
+		if (this.getNlpEventType() != null && other.getNlpEventType()!=null) {
+			if (!this.getNlpEventType().equals(other.getNlpEventType())) return false;
+		}
+		//testing this.getNlpSystem()
+		if (this.getNlpSystem() == null ^ other.getNlpSystem()==null) return false;
+		if (this.getNlpSystem() != null && other.getNlpSystem()!=null) {
+			if (!this.getNlpSystem().equals(other.getNlpSystem())) return false;
+		}
+		//testing this.getNlpSystemInstance()
+		if (this.getNlpSystemInstance() == null ^ other.getNlpSystemInstance()==null) return false;
+		if (this.getNlpSystemInstance() != null && other.getNlpSystemInstance()!=null) {
+			if (!this.getNlpSystemInstance().equals(other.getNlpSystemInstance())) return false;
+		}
+		//testing this.getNlpEventTime()
+		if (this.getNlpEventTime() == null ^ other.getNlpEventTime()==null) return false;
+		if (this.getNlpEventTime() != null && other.getNlpEventTime()!=null) {
+			if (!this.getNlpEventTime().equals(other.getNlpEventTime())) return false;
 		}
 		//testing this.getRowNumber()
 		if (this.getRowNumber() == null ^ other.getRowNumber()==null) return false;

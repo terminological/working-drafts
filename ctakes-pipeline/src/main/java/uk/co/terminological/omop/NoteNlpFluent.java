@@ -40,6 +40,8 @@ public interface NoteNlpFluent extends NoteNlp {
 
 	public void setNoteNlpSourceConceptId(Integer value);
 
+	public void setCustomCode(Integer value);
+
 	
 	// Fluent setters
 	// ==============
@@ -71,5 +73,7 @@ public interface NoteNlpFluent extends NoteNlp {
 	public NoteNlpFluent withTermModifier(String value);
 	
 	public NoteNlpFluent withNoteNlpSourceConceptId(Integer value);
+	
+	public NoteNlpFluent withCustomCode(Integer value);
 	
 }

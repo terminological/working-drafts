@@ -5,6 +5,7 @@ package uk.co.terminological.ctakes;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -29,21 +30,21 @@ import org.apache.ctakes.core.ae.SimpleSegmentAnnotator;
 import org.apache.ctakes.core.ae.TokenizerAnnotatorPTB;
 import org.apache.ctakes.dependency.parser.ae.ClearNLPDependencyParserAE;
 import org.apache.ctakes.dictionary.lookup2.ae.DefaultJCasTermAnnotator;
-import org.apache.ctakes.lvg.ae.LvgAnnotator;
 import org.apache.ctakes.postagger.POSTagger;
-import org.apache.ctakes.relationextractor.ae.RelationExtractorAnnotator;
 import org.apache.ctakes.typesystem.type.constants.CONST;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
+import org.apache.ctakes.typesystem.type.textsem.DiseaseDisorderMention;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.ctakes.typesystem.type.textsem.MedicationMention;
+import org.apache.ctakes.typesystem.type.textsem.ProcedureMention;
+import org.apache.ctakes.typesystem.type.textsem.SignSymptomMention;
 import org.apache.uima.UIMAException;
 import org.apache.uima.UIMAFramework;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.factory.AggregateBuilder;
-import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.JCasFactory;
-import org.apache.uima.fit.util.CasIOUtil;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
@@ -53,8 +54,9 @@ import org.apache.uima.resource.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.co.terminological.omop.Input;
 import uk.co.terminological.omop.NoteNlp;
-import uk.co.terminological.omop.UnprocessedNote;
+
 
 public class NlpPipeline {
 
@@ -147,7 +149,7 @@ for example
 		}
 	}
 
-	public String runDocument(String sentence) throws UIMAException {
+	public String runDocument(String sentence, Path xmi) throws UIMAException, IOException {
 		
 		long time = System.currentTimeMillis();
 		final JCas jcas = JCasFactory.createJCas();
@@ -185,12 +187,18 @@ for example
 				sb.append( "]\n");
 				
 			}
-			// CasIOUtil.writeXCas(jcas, aFile);
+			
 		}
+		//Files.createDirectories(xmi.getParent());
+		// CasIOUtil.writeXCas(jcas, xmi.toFile());
+		//System.out.println(xmi.toAbsolutePath().toString());
+		// CasIOUtil.writeXCas(jcas, aFile);
+		//Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		//return gson.toJson(jcas);
 		return sb.toString();
 	}
 
-	public List<NoteNlp> runNote(UnprocessedNote note, JcasOmopMapper mapper) throws UIMAException {
+	public List<NoteNlp> runNote(Input note, JcasOmopMapper mapper) throws UIMAException {
 		
 		long time = System.currentTimeMillis();
 		final JCas jcas = JCasFactory.createJCas();
@@ -200,7 +208,7 @@ for example
 		List<NoteNlp> out = new ArrayList<>();
 		
 		for (IdentifiedAnnotation entity : JCasUtil.select(jcas, IdentifiedAnnotation.class)) {
-			 out.add(mapper.mapNote(note, entity));
+			 mapper.mapNote(note, entity).forEach(x -> out.add(x));
 		}
 		
 		return out;
@@ -250,4 +258,15 @@ for example
 		method.invoke(urlClassLoader, new Object[]{u.toURL()});
 	}
 
+	public static class Status {
+		static final String PENDING="PENDING";
+		static final String PROCESSING="PROCESSING";
+		static final String RETRY="RETRY";
+		static final String COMPLETE="COMPLETE";
+		static final String CANCELLED="CANCELLED";
+		static final String FAILED="FAILED";
+	}
+	
+	
+	
 }

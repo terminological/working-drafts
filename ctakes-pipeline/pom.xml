@@ -263,13 +263,12 @@
 							<baseDirectory>src/main/resources</baseDirectory>
 							<defaultTargetPackage>uk.co.terminological.omop</defaultTargetPackage>
 							
-							<!-- <javaFromQueries>
+							<javaFromQueries>
 								<javaFromQuery>
-									<sql>Select * from omopBuild.dbo.IdentifiableNote where note_date&lt;? and note_date&gt;?</sql>
-									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
+									<sql>SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where nlp_system=?</sql>
+									<targetFQN>uk.co.terminological.omop.Input</targetFQN>
 								</javaFromQuery>
-								
-							</javaFromQueries> -->
+							</javaFromQueries>
 							<javaFromTables>
 								<javaFromTable>
 									<name>omop.dbo.note_nlp</name>
@@ -302,6 +301,10 @@
 								<javaFromTable>
 									<name>omopBuild.dbo.CuiOmopMap</name>
 									<targetFQN>uk.co.terminological.omop.CuiOmopMap</targetFQN>
+								</javaFromTable>
+								<javaFromTable>
+									<name>omopBuild.dbo.NlpAudit</name>
+									<targetFQN>uk.co.terminological.omop.NlpAudit</targetFQN>
 								</javaFromTable>
 							</javaFromTables>
 						</configuration>

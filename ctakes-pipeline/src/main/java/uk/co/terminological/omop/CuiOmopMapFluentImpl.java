@@ -16,7 +16,7 @@ public class CuiOmopMapFluentImpl extends Observable implements CuiOmopMap, CuiO
 	// ======
 
 	private String _cui;
-	private String _code;
+	private Integer _sourceConceptId;
 	private Integer _conceptId;
 
 	// Public constructor
@@ -26,17 +26,17 @@ public class CuiOmopMapFluentImpl extends Observable implements CuiOmopMap, CuiO
 
 	public CuiOmopMapFluentImpl(
 		String _cui,
-		String _code,
+		Integer _sourceConceptId,
 		Integer _conceptId
 	) {
 		this._cui = _cui;
-		this._code = _code;
+		this._sourceConceptId = _sourceConceptId;
 		this._conceptId = _conceptId;
 	}
 	
 	public CuiOmopMapFluentImpl(CuiOmopMap clone) {
 		this._cui = clone.getCui();
-		this._code = clone.getCode();
+		this._sourceConceptId = clone.getSourceConceptId();
 		this._conceptId = clone.getConceptId();
 	}
 	
@@ -50,8 +50,8 @@ public class CuiOmopMapFluentImpl extends Observable implements CuiOmopMap, CuiO
 	public String getCui() {
 		return _cui;
 	}
-	public String getCode() {
-		return _code;
+	public Integer getSourceConceptId() {
+		return _sourceConceptId;
 	}
 	public Integer getConceptId() {
 		return _conceptId;
@@ -66,8 +66,8 @@ public class CuiOmopMapFluentImpl extends Observable implements CuiOmopMap, CuiO
 		this.notifyObservers();
 	}
 	
-	public void setCode(String value) {
-		this._code = value;
+	public void setSourceConceptId(Integer value) {
+		this._sourceConceptId = value;
 		this.setChanged();
 		this.notifyObservers();
 	}
@@ -86,8 +86,8 @@ public class CuiOmopMapFluentImpl extends Observable implements CuiOmopMap, CuiO
 		setCui(value);
 		return this;
 	}
-	public CuiOmopMapFluent withCode(String value) {
-		setCode(value);
+	public CuiOmopMapFluent withSourceConceptId(Integer value) {
+		setSourceConceptId(value);
 		return this;
 	}
 	public CuiOmopMapFluent withConceptId(Integer value) {
@@ -103,7 +103,7 @@ public class CuiOmopMapFluentImpl extends Observable implements CuiOmopMap, CuiO
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((getCui() == null) ? 0 : getCui().hashCode());
-		result = prime * result + ((getCode() == null) ? 0 : getCode().hashCode());
+		result = prime * result + ((getSourceConceptId() == null) ? 0 : getSourceConceptId().hashCode());
 		result = prime * result + ((getConceptId() == null) ? 0 : getConceptId().hashCode());
 		return result;
 	}
@@ -122,10 +122,10 @@ public class CuiOmopMapFluentImpl extends Observable implements CuiOmopMap, CuiO
 		if (this.getCui() != null && other.getCui()!=null) {
 			if (!this.getCui().equals(other.getCui())) return false;
 		}
-		//testing this.getCode()
-		if (this.getCode() == null ^ other.getCode()==null) return false;
-		if (this.getCode() != null && other.getCode()!=null) {
-			if (!this.getCode().equals(other.getCode())) return false;
+		//testing this.getSourceConceptId()
+		if (this.getSourceConceptId() == null ^ other.getSourceConceptId()==null) return false;
+		if (this.getSourceConceptId() != null && other.getSourceConceptId()!=null) {
+			if (!this.getSourceConceptId().equals(other.getSourceConceptId())) return false;
 		}
 		//testing this.getConceptId()
 		if (this.getConceptId() == null ^ other.getConceptId()==null) return false;

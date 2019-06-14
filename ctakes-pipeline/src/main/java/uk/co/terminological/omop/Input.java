@@ -4,14 +4,15 @@ import javax.annotation.Generated;
 import java.sql.Date;
 import java.sql.JDBCType;
 import java.sql.Timestamp;
+import javax.persistence.Id;
 import uk.co.terminological.javapig.sqlloader.Column;
-import uk.co.terminological.javapig.sqlloader.Table;
+import uk.co.terminological.javapig.sqlloader.Query;
 
-import uk.co.terminological.omop.Note;
+import uk.co.terminological.omop.Input;
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})
-@Table(schema="", name="omop.dbo.note")
-public interface Note  {
+@Query(sql="SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where nlp_system=?", parameterTypes={java.lang.String.class})
+public interface Input  {
 
 	@Column(isAutoIncrement=false, isNullable=false, jdbcType=JDBCType.BIGINT, name="note_id", length=19)
 	public Long getNoteId();
@@ -45,5 +46,15 @@ public interface Note  {
 	public Long getVisitDetailId();
 	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="note_source_value", length=50)
 	public String getNoteSourceValue();
+	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="nlp_event_type", length=20)
+	public String getNlpEventType();
+	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="nlp_system", length=250)
+	public String getNlpSystem();
+	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="nlp_system_instance", length=250)
+	public String getNlpSystemInstance();
+	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.TIMESTAMP, name="nlp_event_time", length=23)
+	public Timestamp getNlpEventTime();
+	@Id
+	public Integer getRowNumber();
 	
 }

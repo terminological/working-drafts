@@ -11,11 +11,11 @@ import uk.co.terminological.omop.CuiOmopMap;
 @Table(schema="", name="omopBuild.dbo.CuiOmopMap")
 public interface CuiOmopMap  {
 
-	@Column(isNullable=false, isAutoIncrement=false, jdbcType=JDBCType.CHAR, name="CUI", length=8)
+	@Column(isAutoIncrement=false, isNullable=false, jdbcType=JDBCType.CHAR, name="CUI", length=8)
 	public String getCui();
-	@Column(isNullable=false, isAutoIncrement=false, jdbcType=JDBCType.VARCHAR, name="CODE", length=100)
-	public String getCode();
-	@Column(isNullable=false, isAutoIncrement=false, jdbcType=JDBCType.INTEGER, name="concept_id", length=10)
+	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.INTEGER, name="source_concept_id", length=10)
+	public Integer getSourceConceptId();
+	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.INTEGER, name="concept_id", length=10)
 	public Integer getConceptId();
 	
 }
