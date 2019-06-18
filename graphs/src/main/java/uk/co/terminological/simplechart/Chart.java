@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import uk.co.terminological.datatypes.Triple;
-import uk.co.terminological.datatypes.Tuple;
 
 //TODO: integrate with https://github.com/jtablesaw/tablesaw
 public class Chart {

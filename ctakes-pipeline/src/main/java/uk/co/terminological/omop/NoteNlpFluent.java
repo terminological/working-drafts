@@ -3,7 +3,6 @@ package uk.co.terminological.omop;
 import javax.annotation.Generated;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.*;
 import uk.co.terminological.omop.NoteNlp;
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})

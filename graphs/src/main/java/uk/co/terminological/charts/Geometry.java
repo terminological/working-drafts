@@ -1,7 +1,5 @@
 package uk.co.terminological.charts;
 
-import static uk.co.terminological.charts.Dimension.*;
-
 public enum Geometry {
 
 	LINE, //(1,new Dimension[] {X,Y,Z}),

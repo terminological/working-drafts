@@ -2,7 +2,6 @@ package uk.co.terminological.omop;
 
 import javax.annotation.Generated;
 import java.sql.Timestamp;
-import java.util.*;
 import uk.co.terminological.omop.NlpAudit;
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})

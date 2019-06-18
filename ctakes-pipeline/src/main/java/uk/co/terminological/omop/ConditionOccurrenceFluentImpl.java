@@ -75,7 +75,7 @@ public class ConditionOccurrenceFluentImpl extends Observable implements Conditi
 		this._conditionStatusSourceValue = _conditionStatusSourceValue;
 	}
 	
-	@SuppressWarnings("unchecked")
+	//SuppressWarnings("unchecked")
 	public ConditionOccurrenceFluentImpl(ConditionOccurrence clone) {
 		this._conditionOccurrenceId = clone.getConditionOccurrenceId();
 		this._personId = clone.getPersonId();

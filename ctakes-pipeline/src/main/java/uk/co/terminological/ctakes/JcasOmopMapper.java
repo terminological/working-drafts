@@ -58,11 +58,15 @@ public class JcasOmopMapper {
 		return Factory.Mutable.createCuiOmopMap().withSourceConceptId(0).withConceptId(0).withCui(CUI);
 	}
 	
-	public JcasOmopMapper(Database db, String version) throws SQLException {
+	public JcasOmopMapper(Database db, String version) {
 		conceptMapper = new OneToManyMap<>();
-		db.read().streamCuiOmopMap().forEach(
-			com -> conceptMapper.putItem(com.getCui(),com)
-		);
+		try {
+			db.read().streamCuiOmopMap().forEach(
+				com -> conceptMapper.putItem(com.getCui(),com)
+			);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 		this.version = version;
 	}
 	

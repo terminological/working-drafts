@@ -3,7 +3,6 @@ package uk.co.terminological.omop;
 import javax.annotation.Generated;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.*;
 import uk.co.terminological.omop.Input;
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})
@@ -52,6 +51,8 @@ public interface InputFluent extends Input {
 
 	public void setNlpEventTime(Timestamp value);
 
+	public void setNlpEventDetail(String value);
+
 	public void setRowNumber(Integer value);
 
 	
@@ -97,6 +98,8 @@ public interface InputFluent extends Input {
 	public InputFluent withNlpSystemInstance(String value);
 	
 	public InputFluent withNlpEventTime(Timestamp value);
+	
+	public InputFluent withNlpEventDetail(String value);
 	
 	public InputFluent withRowNumber(Integer value);
 	

@@ -37,6 +37,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 	private String _nlpSystem;
 	private String _nlpSystemInstance;
 	private Timestamp _nlpEventTime;
+	private String _nlpEventDetail;
 	private Integer _rowNumber;
 
 	// Public constructor
@@ -65,6 +66,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		String _nlpSystem,
 		String _nlpSystemInstance,
 		Timestamp _nlpEventTime,
+		String _nlpEventDetail,
 		Integer _rowNumber
 	) {
 		this._noteId = _noteId;
@@ -87,6 +89,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		this._nlpSystem = _nlpSystem;
 		this._nlpSystemInstance = _nlpSystemInstance;
 		this._nlpEventTime = _nlpEventTime;
+		this._nlpEventDetail = _nlpEventDetail;
 		this._rowNumber = _rowNumber;
 	}
 	
@@ -112,6 +115,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		this._nlpSystem = clone.getNlpSystem();
 		this._nlpSystemInstance = clone.getNlpSystemInstance();
 		this._nlpEventTime = (Timestamp) clone.getNlpEventTime().clone();
+		this._nlpEventDetail = clone.getNlpEventDetail();
 		this._rowNumber = clone.getRowNumber();
 	}
 	
@@ -181,6 +185,9 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 	}
 	public Timestamp getNlpEventTime() {
 		return _nlpEventTime;
+	}
+	public String getNlpEventDetail() {
+		return _nlpEventDetail;
 	}
 	public Integer getRowNumber() {
 		return _rowNumber;
@@ -309,6 +316,12 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		this.notifyObservers();
 	}
 	
+	public void setNlpEventDetail(String value) {
+		this._nlpEventDetail = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
 	public void setRowNumber(Integer value) {
 		this._rowNumber = value;
 		this.setChanged();
@@ -399,6 +412,10 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		setNlpEventTime(value);
 		return this;
 	}
+	public InputFluent withNlpEventDetail(String value) {
+		setNlpEventDetail(value);
+		return this;
+	}
 	public InputFluent withRowNumber(Integer value) {
 		setRowNumber(value);
 		return this;
@@ -431,6 +448,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		result = prime * result + ((getNlpSystem() == null) ? 0 : getNlpSystem().hashCode());
 		result = prime * result + ((getNlpSystemInstance() == null) ? 0 : getNlpSystemInstance().hashCode());
 		result = prime * result + ((getNlpEventTime() == null) ? 0 : getNlpEventTime().hashCode());
+		result = prime * result + ((getNlpEventDetail() == null) ? 0 : getNlpEventDetail().hashCode());
 		result = prime * result + ((getRowNumber() == null) ? 0 : getRowNumber().hashCode());
 		return result;
 	}
@@ -543,6 +561,11 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		if (this.getNlpEventTime() == null ^ other.getNlpEventTime()==null) return false;
 		if (this.getNlpEventTime() != null && other.getNlpEventTime()!=null) {
 			if (!this.getNlpEventTime().equals(other.getNlpEventTime())) return false;
+		}
+		//testing this.getNlpEventDetail()
+		if (this.getNlpEventDetail() == null ^ other.getNlpEventDetail()==null) return false;
+		if (this.getNlpEventDetail() != null && other.getNlpEventDetail()!=null) {
+			if (!this.getNlpEventDetail().equals(other.getNlpEventDetail())) return false;
 		}
 		//testing this.getRowNumber()
 		if (this.getRowNumber() == null ^ other.getRowNumber()==null) return false;

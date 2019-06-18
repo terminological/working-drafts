@@ -7,178 +7,75 @@
 		<artifactId>ctakes</artifactId>
 		<version>4.0.0</version>
 	</parent>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j-version>1.7.22</slf4j-version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
-	
+
 	<artifactId>ctakes-pipeline</artifactId>
 
 
 	<dependencies>
-		<!-- ctakes-core contains core classes, utilities, and commonly-used readers, 
-			writers and analysis engines. -->
-		<!-- ctakes-core will pull from maven central basic requirements: uima, 
-			uimafit, cleartk, type system ... -->
-		<!-- All other modules require ctakes-core. -->
 		<dependency>
 			<groupId>org.apache.ctakes</groupId>
 			<artifactId>ctakes-core</artifactId>
-			<version>${ctakes.version}</version>
 		</dependency>
-		<!-- ctakes-pos-tagger tags parts of speech for tokens in text. -->
-		<!-- ctakes-pos-tagger is required for ctakes-dictionary-lookup and ctakes-dictionary-lookup-fast. -->
 		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-pos-tagger</artifactId>
-		</dependency>
-		<!-- ctakes-chunker chunks tokens with parts of speech into phrases. -->
-		<!-- ctakes-chunker is required for the old ctakes-dictionary-lookup. -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-chunker</artifactId>
-		</dependency>
-		<!-- ctakes-lvg generates lexical variants of tokens in text. -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-lvg</artifactId>
-		</dependency>
-		<!-- ctakes-dictionary-lookup-fast discovers concepts in text and normalizes 
-			them to standard codes. -->
-		<!-- ctakes-dictionary-lookup-fast is much improved over the original ctakes-dictionary-lookup. -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-dictionary-lookup-fast</artifactId>
-		</dependency>
-		<!-- ctakes-dictionary-lookup discovers concepts in text and normalizes 
-			them to standard codes. -->
-		<!-- *NOTE: ctakes-dictionary-lookup is not more accurate than ctakes-dictionary-lookup-fast. -->
-		<!-- *NOTE: ctakes-dictionary-lookup is extremely slow. The newer -fast 
-			module is recommended. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-dictionary-lookup</artifactId> -->
-		<!-- </dependency> -->
-		<!-- ctakes-assertion contains rule-based and machine-learning engines 
-			to discover entity attributes. -->
-		<!-- attributes: polarity, uncertainty, history_of, conditional, generic, 
-			subject -->
-		<!-- ctakes-assertion discovers more attributes than the ctakes-ne-contexts 
-			module. -->
-		<!-- ctakes-assertion will add ctakes-constituency-parser and ctakes-dependency-parser 
-			modules. -->
-		<!-- ctakes-assertion module requires mitre libraries that are not in maven 
-			central. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-assertion</artifactId> -->
-		<!-- </dependency> -->
-		<!-- ctakes-ne-contexts contains rule-based engines to discover entity 
-			attributes. -->
-		<!-- attributes: polarity, status -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-ne-contexts</artifactId>
-		</dependency>
-		<!-- ctakes-drug-ner discovers Medications and related attributes such 
-			as strength, dosage, frequency, etc. -->
-		<!-- ctakes-drug-ner will add ctakes-chunker, ctakes-lvg, ctakes-dictionary-lookup, 
-			ctakes-context-tokenizer, ctakes-ne-contexts modules. -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-drug-ner</artifactId>
-		</dependency>
-		<!-- ctakes-side-effect discovers side effects due to medications, etc. -->
-		<!-- ctakes-side-effect will add ctakes-dictionary-lookup and ctakes-drug-ner 
-			modules. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-side-effect</artifactId> -->
-		<!-- </dependency> -->
-		<!-- ctakes-smoking-status detects the smoking status of a patient. -->
-		<!-- ctakes-smoking-status will add ctakes-dictionary-lookup and ctakes-drug-ner 
-			modules. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-smoking-status</artifactId> -->
-		<!-- <version>${ctakes.version}</version> -->
-		<!-- </dependency> -->
-		<!-- ctakes-preprocessor is not necessary unless CDA is being processed. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-preprocessor</artifactId> -->
-		<!-- </dependency> -->
-		<!-- ctakes-ytex and ctakes-ytex-uima are a collection of ctakes extensions. -->
-		<!-- ctakes-ytex-uima will add ctakes-pos-tagger, ctakes-chunker, ctakes-lvg, 
-			ctakes-dictionary-lookup, ctakes-context-tokenizer, ctakes-constituency-parser, 
-			ctakes-dependency-parser, ctakes-assertion, ctakes-ne-contexts. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-ytex</artifactId> -->
-		<!-- </dependency> -->
-		<!-- ctakes-clinical-pipeline contributes very little on its own, but loads 
-			many other modules. -->
-		<!-- ctakes-temporal will add ctakes-preprocessor, ctakes-pos-tagger, ctakes-chunker, 
-			ctakes-lvg, ctakes-dictionary-lookup-fast, ctakes-context-tokenizer, ctakes-constituency-parser, 
-			ctakes-dependency-parser, ctakes-assertion, ctakes-ne-contexts, ctakes-drug-ner, 
-			ctakes-ytex-uima. -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-clinical-pipeline</artifactId>
-		<version>${ctakes.version}</version>
-		</dependency>
-		<!-- ctakes-relation-extractor can extract relations between entities such 
-			as location and degree. -->
-		<!-- ctakes-relation-extractor will add ctakes-pos-tagger, ctakes-chunker, 
-			ctakes-lvg, ctakes-dictionary-lookup, ctakes-context-tokenizer, ctakes-constituency-parser, 
-			ctakes-dependency-parser, ctakes-ne-contexts. -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-relation-extractor</artifactId>
-		<version>${ctakes.version}</version>
-		</dependency>
-		<!-- ctakes-temporal discovers entities, temporal expressions, temporal 
-			relations, and document-creation-time relativity. -->
-		<!-- ctakes-temporal will add ctakes-pos-tagger, ctakes-chunker, ctakes-lvg, 
-			ctakes-dictionary-lookup-fast, ctakes-context-tokenizer, ctakes-constituency-parser, 
-			ctakes-dependency-parser, ctakes-relation-extractor, ctakes-clinical-pipeline. -->
-		<dependency>
-		<groupId>org.apache.ctakes</groupId>
-		<artifactId>ctakes-temporal</artifactId>
-		<version>${ctakes.version}</version>
-		</dependency>
-		<!-- ctakes-coreference discovers coreferent entities in text. -->
-		<!-- ctakes-coreference will add ctakes-constituency-parser, ctakes-dictionary-lookup, 
-			ctakes-assertion, ctakes-temporal and a large UMLS database. -->
-		<!-- <dependency> -->
-		<!-- <groupId>org.apache.ctakes</groupId> -->
-		<!-- <artifactId>ctakes-coreference</artifactId> -->
-		<!-- <version>${ctakes.version}</version> -->
-		<!-- </dependency> -->
-		
-		<!-- <dependency>
 			<groupId>org.apache.ctakes</groupId>
-			<artifactId>ctakes-snorx-hack</artifactId>
-			<version>${ctakes.version}</version>
-		</dependency>-->
-
-
+			<artifactId>ctakes-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-context-tokenizer</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-preprocessor</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-lvg</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-chunker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-ne-contexts</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-pos-tagger</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-drug-ner</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-dictionary-lookup-fast</artifactId>
+		</dependency>
+        <dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-clinical-pipeline-res</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ctakes</groupId>
+			<artifactId>ctakes-assertion</artifactId>
+		</dependency>
+		
 
 		<dependency>
 			<groupId>uk.co.terminological</groupId>
 			<artifactId>exotic-datatypes</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-core -->
-		<dependency>
-		    <groupId>com.j256.ormlite</groupId>
-		    <artifactId>ormlite-core</artifactId>
-		    <version>5.1</version>
-		</dependency>
 		
+
 		<dependency>
 			<groupId>uk.co.terminological.javapig</groupId>
 			<artifactId>runtime</artifactId>
@@ -245,81 +142,107 @@
 							</execution>
 						</executions>
 					</plugin>
-					
-			<plugin>
-				<groupId>uk.co.terminological.javapig</groupId>
-				<artifactId>plugin</artifactId>
-				<version>1.0.0</version>
-				<executions>
-					<execution>
-						<id>build-java-from-sql</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>javaFromSql</goal>
-						</goals>
-						<configuration>
-							<connectionProperties>${user.home}/Dropbox/nlpCtakes/jdbc.prop</connectionProperties>
-							<targetDirectory>src/main/java</targetDirectory>
-							<baseDirectory>src/main/resources</baseDirectory>
-							<defaultTargetPackage>uk.co.terminological.omop</defaultTargetPackage>
-							
-							<javaFromQueries>
-								<javaFromQuery>
-									<sql>SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where nlp_system=?</sql>
-									<targetFQN>uk.co.terminological.omop.Input</targetFQN>
-								</javaFromQuery>
-							</javaFromQueries>
-							<javaFromTables>
-								<javaFromTable>
-									<name>omop.dbo.note_nlp</name>
-									<targetFQN>uk.co.terminological.omop.NoteNlp</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omop.dbo.note</name>
-									<targetFQN>uk.co.terminological.omop.Note</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omop.dbo.condition_occurrence</name>
-									<targetFQN>uk.co.terminological.omop.ConditionOccurrence</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omop.dbo.measurement</name>
-									<targetFQN>uk.co.terminological.omop.Measurement</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omop.dbo.observation</name>
-									<targetFQN>uk.co.terminological.omop.Observation</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omop.dbo.procedure_occurrence</name>
-									<targetFQN>uk.co.terminological.omop.ProcedureOccurrence</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omop.dbo.drug_exposure</name>
-									<targetFQN>uk.co.terminological.omop.DrugExposure</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omopBuild.dbo.CuiOmopMap</name>
-									<targetFQN>uk.co.terminological.omop.CuiOmopMap</targetFQN>
-								</javaFromTable>
-								<javaFromTable>
-									<name>omopBuild.dbo.NlpAudit</name>
-									<targetFQN>uk.co.terminological.omop.NlpAudit</targetFQN>
-								</javaFromTable>
-							</javaFromTables>
-						</configuration>
-					</execution>
-				</executions>
-				<dependencies>
-					<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
-					<dependency>
-					    <groupId>com.microsoft.sqlserver</groupId>
-					    <artifactId>mssql-jdbc</artifactId>
-					    <version>7.2.2.jre8</version>
-					</dependency>
 
-				</dependencies>
-				</plugin>
+					<plugin>
+						<groupId>uk.co.terminological.javapig</groupId>
+						<artifactId>plugin</artifactId>
+						<version>1.0.0</version>
+						<executions>
+							<execution>
+								<id>build-java-from-sql</id>
+								<phase>generate-sources</phase>
+								<goals>
+									<goal>javaFromSql</goal>
+								</goals>
+								<configuration>
+									<connectionProperties>${user.home}/Dropbox/nlpCtakes/jdbc.prop</connectionProperties>
+									<targetDirectory>src/main/java</targetDirectory>
+									<baseDirectory>src/main/resources</baseDirectory>
+									<defaultTargetPackage>uk.co.terminological.omop</defaultTargetPackage>
+
+									<javaFromQueries>
+										<javaFromQuery>
+											<sql>SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where
+												nlp_system=?</sql>
+											<targetFQN>uk.co.terminological.omop.Input</targetFQN>
+										</javaFromQuery>
+									</javaFromQueries>
+									<javaFromTables>
+										<javaFromTable>
+											<name>omop.dbo.note_nlp</name>
+											<targetFQN>uk.co.terminological.omop.NoteNlp</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omop.dbo.note</name>
+											<targetFQN>uk.co.terminological.omop.Note</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omop.dbo.condition_occurrence</name>
+											<targetFQN>uk.co.terminological.omop.ConditionOccurrence</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omop.dbo.measurement</name>
+											<targetFQN>uk.co.terminological.omop.Measurement</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omop.dbo.observation</name>
+											<targetFQN>uk.co.terminological.omop.Observation</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omop.dbo.procedure_occurrence</name>
+											<targetFQN>uk.co.terminological.omop.ProcedureOccurrence</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omop.dbo.drug_exposure</name>
+											<targetFQN>uk.co.terminological.omop.DrugExposure</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omopBuild.dbo.CuiOmopMap</name>
+											<targetFQN>uk.co.terminological.omop.CuiOmopMap</targetFQN>
+										</javaFromTable>
+										<javaFromTable>
+											<name>omopBuild.dbo.NlpAudit</name>
+											<targetFQN>uk.co.terminological.omop.NlpAudit</targetFQN>
+										</javaFromTable>
+									</javaFromTables>
+								</configuration>
+							</execution>
+						</executions>
+						<dependencies>
+							<!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+							<dependency>
+								<groupId>com.microsoft.sqlserver</groupId>
+								<artifactId>mssql-jdbc</artifactId>
+								<version>7.2.2.jre8</version>
+							</dependency>
+
+						</dependencies>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<version>3.1.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<archive>
+										<manifest>
+											<mainClass>
+												uk.co.terminological.ctakes.PipelineExecutor
+											</mainClass>
+										</manifest>
+									</archive>
+									<descriptorRefs>
+										<descriptorRef>jar-with-dependencies</descriptorRef>
+									</descriptorRefs>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
 				</plugins>
 			</build>
 		</profile>

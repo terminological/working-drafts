@@ -12,17 +12,17 @@ import uk.co.terminological.omop.NlpAudit;
 @Table(schema="", name="omopBuild.dbo.NlpAudit")
 public interface NlpAudit  {
 
-	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.BIGINT, name="note_id", length=19)
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.BIGINT, name="note_id", length=19)
 	public Long getNoteId();
-	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.TIMESTAMP, name="event_time", length=23)
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.TIMESTAMP, name="event_time", length=23)
 	public Timestamp getEventTime();
-	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="nlp_system", length=250)
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.VARCHAR, name="nlp_system", length=250)
 	public String getNlpSystem();
-	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="nlp_system_instance", length=250)
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.VARCHAR, name="nlp_system_instance", length=250)
 	public String getNlpSystemInstance();
-	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="event_type", length=20)
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.VARCHAR, name="event_type", length=20)
 	public String getEventType();
-	@Column(isAutoIncrement=false, isNullable=true, jdbcType=JDBCType.VARCHAR, name="event_detail", length=2147483647)
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.VARCHAR, name="event_detail", length=512)
 	public String getEventDetail();
 	
 }

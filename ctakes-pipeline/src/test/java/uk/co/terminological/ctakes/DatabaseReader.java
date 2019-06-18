@@ -1,13 +1,10 @@
 package uk.co.terminological.ctakes;
 
-import static org.junit.Assert.*;
-
 import java.io.ByteArrayInputStream;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +15,6 @@ import uk.co.terminological.fluentxml.XmlTransforms;
 import uk.co.terminological.omop.CuiOmopMap;
 import uk.co.terminological.omop.Database;
 import uk.co.terminological.omop.Factory;
-import uk.co.terminological.omop.Note;
 import uk.co.terminological.omop.NoteNlp;
 
 public class DatabaseReader {
@@ -35,7 +31,7 @@ public class DatabaseReader {
 
 	@Test
 	public void test() throws SQLException {
-		Database db = new Database(Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/jdbc.prop"));
+		Database db = Database.from(Paths.get(System.getProperty("user.home"),"Dropbox/nlpCtakes/jdbc.prop"));
 		HashMap<String,CuiOmopMap> cuiIndex = new HashMap<>();
 		db.read().streamCuiOmopMap().forEach(
 			com -> cuiIndex.put(com.getCui(),com)

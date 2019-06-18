@@ -1,6 +1,8 @@
 package uk.co.terminological.omop;
 
 import javax.annotation.Generated;
+
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -46,17 +48,28 @@ public class Database {
 	
 	Connection conn;
 	
-	public Database(Path config) {
-		try {
+	public static Database from(Path config) {
+		
 			Properties prop =  new Properties();
-			prop.load(Files.newInputStream(config));
+			try {
+				prop.load(Files.newInputStream(config));
+			} catch (IOException e) {
+				throw new RuntimeException("exception loading properties file: "+e.getLocalizedMessage(), e);
+			}
+			
+			return new Database(prop);
+			
+	}
+	
+	public Database(Properties prop) {
+		try {
 			Class.forName(prop.getProperty("driver"));
 			conn = DriverManager.getConnection(prop.getProperty("url"), prop);
 		} catch (Exception e) {
 			throw new RuntimeException("exception setting up database connection: "+e.getLocalizedMessage(), e);
 		}
 	}
-	
+
 	/*************** RESULT SET UTILITY FUNCTIONS **************************/
 	
 	private static interface FunctionWithException<T, R, E extends Exception> {

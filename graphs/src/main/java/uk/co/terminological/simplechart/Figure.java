@@ -3,11 +3,7 @@ package uk.co.terminological.simplechart;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 
 import org.apache.commons.lang3.NotImplementedException;
