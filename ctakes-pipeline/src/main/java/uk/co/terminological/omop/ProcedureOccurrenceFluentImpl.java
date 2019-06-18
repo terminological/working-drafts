@@ -69,7 +69,6 @@ public class ProcedureOccurrenceFluentImpl extends Observable implements Procedu
 		this._modifierSourceValue = _modifierSourceValue;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public ProcedureOccurrenceFluentImpl(ProcedureOccurrence clone) {
 		this._procedureOccurrenceId = clone.getProcedureOccurrenceId();
 		this._personId = clone.getPersonId();

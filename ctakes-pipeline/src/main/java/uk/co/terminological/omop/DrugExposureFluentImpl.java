@@ -96,7 +96,6 @@ public class DrugExposureFluentImpl extends Observable implements DrugExposure, 
 		this._doseUnitSourceValue = _doseUnitSourceValue;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public DrugExposureFluentImpl(DrugExposure clone) {
 		this._drugExposureId = clone.getDrugExposureId();
 		this._personId = clone.getPersonId();

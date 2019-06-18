@@ -90,7 +90,6 @@ public class ObservationFluentImpl extends Observable implements Observation, Ob
 		this._valueAsDatetime = _valueAsDatetime;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public ObservationFluentImpl(Observation clone) {
 		this._observationId = clone.getObservationId();
 		this._personId = clone.getPersonId();

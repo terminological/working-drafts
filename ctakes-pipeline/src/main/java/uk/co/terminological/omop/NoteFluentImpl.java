@@ -75,7 +75,6 @@ public class NoteFluentImpl extends Observable implements Note, NoteFluent  {
 		this._noteSourceValue = _noteSourceValue;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public NoteFluentImpl(Note clone) {
 		this._noteId = clone.getNoteId();
 		this._personId = clone.getPersonId();

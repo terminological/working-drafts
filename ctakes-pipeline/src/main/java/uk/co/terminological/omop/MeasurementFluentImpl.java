@@ -87,7 +87,6 @@ public class MeasurementFluentImpl extends Observable implements Measurement, Me
 		this._valueSourceValue = _valueSourceValue;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public MeasurementFluentImpl(Measurement clone) {
 		this._measurementId = clone.getMeasurementId();
 		this._personId = clone.getPersonId();

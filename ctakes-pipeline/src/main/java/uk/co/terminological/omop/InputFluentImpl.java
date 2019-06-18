@@ -96,7 +96,6 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		this._rowNumber = _rowNumber;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public InputFluentImpl(Input clone) {
 		this._noteId = clone.getNoteId();
 		this._personId = clone.getPersonId();

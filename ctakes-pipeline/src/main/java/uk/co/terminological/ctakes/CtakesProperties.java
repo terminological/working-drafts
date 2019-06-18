@@ -47,7 +47,7 @@ public class CtakesProperties extends Properties {
 		
 		System.setProperty("logfile.name",logLocation());
 		URL log = CtakesProperties.class.getClassLoader().getResource("log4j.properties");
-		PropertyConfigurator.configure(log.getFile());
+		PropertyConfigurator.configure(log);
 
 	}
 	

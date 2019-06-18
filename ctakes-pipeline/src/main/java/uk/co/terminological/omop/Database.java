@@ -1,7 +1,6 @@
 package uk.co.terminological.omop;
 
 import javax.annotation.Generated;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,6 +67,10 @@ public class Database {
 		} catch (Exception e) {
 			throw new RuntimeException("exception setting up database connection: "+e.getLocalizedMessage(), e);
 		}
+	}
+	
+	public Database(Connection conn) {
+		this.conn = conn;
 	}
 	
 	/*************** RESULT SET UTILITY FUNCTIONS **************************/

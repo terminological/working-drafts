@@ -47,7 +47,6 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		this._priority = _priority;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public NlpAuditFluentImpl(NlpAudit clone) {
 		this._noteId = clone.getNoteId();
 		this._eventTime = (Timestamp) clone.getEventTime().clone();

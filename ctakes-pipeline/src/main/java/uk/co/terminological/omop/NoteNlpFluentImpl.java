@@ -72,7 +72,6 @@ public class NoteNlpFluentImpl extends Observable implements NoteNlp, NoteNlpFlu
 		this._customCode = _customCode;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public NoteNlpFluentImpl(NoteNlp clone) {
 		this._noteNlpId = clone.getNoteNlpId();
 		this._noteId = clone.getNoteId();
