@@ -1,6 +1,7 @@
 package uk.co.terminological.omop;
 
 import javax.annotation.Generated;
+import java.util.*;
 import uk.co.terminological.omop.CuiOmopMap;
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})

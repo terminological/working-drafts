@@ -34,13 +34,13 @@ public class PipelineExecutor {
 		}
 
 		Logger log = LoggerFactory.getLogger(PipelineExecutor.class);
-		checkpoint("Engine configuration loaded");
+		checkpoint("Engine configuration loaded",log);
 
 		Database db = new Database(p);
 		JcasOmopMapper mapper = new JcasOmopMapper(db,p.nlpSystem());
 		NlpPipeline ctakes = new NlpPipeline(p,true);
 
-		checkpoint("Engine loaded and ready to parse");
+		checkpoint("Engine loaded and ready to parse",log);
 
 
 		while (true) {
@@ -144,7 +144,7 @@ public class PipelineExecutor {
 
 	static long timestamp = System.currentTimeMillis(); 
 
-	private static void checkpoint(String string) {
+	private static void checkpoint(String string,Logger log) {
 		long timeTake = System.currentTimeMillis()-timestamp;
 		log.info("CHECKPOINT: "+timeTake+" ms: "+string);
 		timestamp = System.currentTimeMillis();

@@ -69,7 +69,7 @@ public class Database {
 			throw new RuntimeException("exception setting up database connection: "+e.getLocalizedMessage(), e);
 		}
 	}
-
+	
 	/*************** RESULT SET UTILITY FUNCTIONS **************************/
 	
 	private static interface FunctionWithException<T, R, E extends Exception> {
@@ -409,8 +409,8 @@ public class Database {
 				" values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
 			);
 			pstNlpAudit = conn.prepareStatement("insert into omopBuild.dbo.NlpAudit "+
-				"(note_id,event_time,nlp_system,nlp_system_instance,event_type,event_detail)"+
-				" values (?,?,?,?,?,?)"
+				"(note_id,event_time,nlp_system,nlp_system_instance,event_type,event_detail,priority)"+
+				" values (?,?,?,?,?,?,?)"
 			);
 			pstConditionOccurrence = conn.prepareStatement("insert into omop.dbo.condition_occurrence "+
 				"(condition_occurrence_id,person_id,condition_concept_id,condition_start_date,condition_start_datetime,condition_end_date,condition_end_datetime,condition_type_concept_id,condition_status_concept_id,stop_reason,provider_id,visit_occurrence_id,visit_detail_id,condition_source_value,condition_source_concept_id,condition_status_source_value)"+
@@ -673,6 +673,7 @@ public class Database {
     		pstNlpAudit.setObject(4, input.getNlpSystemInstance());
     		pstNlpAudit.setObject(5, input.getEventType());
     		pstNlpAudit.setObject(6, input.getEventDetail());
+    		pstNlpAudit.setObject(7, input.getPriority());
     		return pstNlpAudit.executeUpdate();
     	}
 	
@@ -691,6 +692,7 @@ public class Database {
     			pstNlpAudit.setObject(4, input.getNlpSystemInstance());
     			pstNlpAudit.setObject(5, input.getEventType());
     			pstNlpAudit.setObject(6, input.getEventDetail());
+    			pstNlpAudit.setObject(7, input.getPriority());
     			pstNlpAudit.addBatch();
     			if (max > 0 && current >= max) {
     				affected += IntStream.of(pstNlpAudit.executeBatch()).sum();
@@ -1060,7 +1062,7 @@ public class Database {
 		 
 	
 		Query(Connection conn) throws SQLException {
-			pstInput = conn.prepareStatement("SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where nlp_system=?");
+			pstInput = conn.prepareStatement("SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where 												nlp_system=? ORDER BY nlp_priority, nlp_event_time");
 		}
 	
 	

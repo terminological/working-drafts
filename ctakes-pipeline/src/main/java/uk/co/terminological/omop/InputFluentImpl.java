@@ -38,6 +38,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 	private String _nlpSystemInstance;
 	private Timestamp _nlpEventTime;
 	private String _nlpEventDetail;
+	private Integer _nlpPriority;
 	private Integer _rowNumber;
 
 	// Public constructor
@@ -67,6 +68,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		String _nlpSystemInstance,
 		Timestamp _nlpEventTime,
 		String _nlpEventDetail,
+		Integer _nlpPriority,
 		Integer _rowNumber
 	) {
 		this._noteId = _noteId;
@@ -90,6 +92,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		this._nlpSystemInstance = _nlpSystemInstance;
 		this._nlpEventTime = _nlpEventTime;
 		this._nlpEventDetail = _nlpEventDetail;
+		this._nlpPriority = _nlpPriority;
 		this._rowNumber = _rowNumber;
 	}
 	
@@ -116,6 +119,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		this._nlpSystemInstance = clone.getNlpSystemInstance();
 		this._nlpEventTime = (Timestamp) clone.getNlpEventTime().clone();
 		this._nlpEventDetail = clone.getNlpEventDetail();
+		this._nlpPriority = clone.getNlpPriority();
 		this._rowNumber = clone.getRowNumber();
 	}
 	
@@ -188,6 +192,9 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 	}
 	public String getNlpEventDetail() {
 		return _nlpEventDetail;
+	}
+	public Integer getNlpPriority() {
+		return _nlpPriority;
 	}
 	public Integer getRowNumber() {
 		return _rowNumber;
@@ -322,6 +329,12 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		this.notifyObservers();
 	}
 	
+	public void setNlpPriority(Integer value) {
+		this._nlpPriority = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
 	public void setRowNumber(Integer value) {
 		this._rowNumber = value;
 		this.setChanged();
@@ -416,6 +429,10 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		setNlpEventDetail(value);
 		return this;
 	}
+	public InputFluent withNlpPriority(Integer value) {
+		setNlpPriority(value);
+		return this;
+	}
 	public InputFluent withRowNumber(Integer value) {
 		setRowNumber(value);
 		return this;
@@ -449,6 +466,7 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		result = prime * result + ((getNlpSystemInstance() == null) ? 0 : getNlpSystemInstance().hashCode());
 		result = prime * result + ((getNlpEventTime() == null) ? 0 : getNlpEventTime().hashCode());
 		result = prime * result + ((getNlpEventDetail() == null) ? 0 : getNlpEventDetail().hashCode());
+		result = prime * result + ((getNlpPriority() == null) ? 0 : getNlpPriority().hashCode());
 		result = prime * result + ((getRowNumber() == null) ? 0 : getRowNumber().hashCode());
 		return result;
 	}
@@ -566,6 +584,11 @@ public class InputFluentImpl extends Observable implements Input, InputFluent  {
 		if (this.getNlpEventDetail() == null ^ other.getNlpEventDetail()==null) return false;
 		if (this.getNlpEventDetail() != null && other.getNlpEventDetail()!=null) {
 			if (!this.getNlpEventDetail().equals(other.getNlpEventDetail())) return false;
+		}
+		//testing this.getNlpPriority()
+		if (this.getNlpPriority() == null ^ other.getNlpPriority()==null) return false;
+		if (this.getNlpPriority() != null && other.getNlpPriority()!=null) {
+			if (!this.getNlpPriority().equals(other.getNlpPriority())) return false;
 		}
 		//testing this.getRowNumber()
 		if (this.getRowNumber() == null ^ other.getRowNumber()==null) return false;

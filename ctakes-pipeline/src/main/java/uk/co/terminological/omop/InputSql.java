@@ -38,7 +38,8 @@ public class InputSql extends InputFluentImpl implements Input {
 			resultSet.getObject("nlp_system",String.class),
 			resultSet.getObject("nlp_system_instance",String.class),
 			resultSet.getObject("nlp_event_time",Timestamp.class),
-			resultSet.getObject("nlp_event_detail",String.class)			,
+			resultSet.getObject("nlp_event_detail",String.class),
+			resultSet.getObject("nlp_priority",Integer.class)			,
 			resultSet.getRow()
 		);
 	}

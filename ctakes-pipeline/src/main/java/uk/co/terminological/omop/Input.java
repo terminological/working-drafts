@@ -11,7 +11,7 @@ import uk.co.terminological.javapig.sqlloader.Query;
 import uk.co.terminological.omop.Input;
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})
-@Query(sql="SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where nlp_system=?", parameterTypes={java.lang.String.class})
+@Query(sql="SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where \t\t\t\t\t\t\t\t\t\t\t\tnlp_system=? ORDER BY nlp_priority, nlp_event_time", parameterTypes={java.lang.String.class})
 public interface Input  {
 
 	@Column(isNullable=false, isAutoIncrement=false, jdbcType=JDBCType.BIGINT, name="note_id", length=19)
@@ -56,6 +56,8 @@ public interface Input  {
 	public Timestamp getNlpEventTime();
 	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.VARCHAR, name="nlp_event_detail", length=512)
 	public String getNlpEventDetail();
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.INTEGER, name="nlp_priority", length=10)
+	public Integer getNlpPriority();
 	@Id
 	public Integer getRowNumber();
 	

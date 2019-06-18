@@ -22,6 +22,7 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 	private String _nlpSystemInstance;
 	private String _eventType;
 	private String _eventDetail;
+	private Integer _priority;
 
 	// Public constructor
 	// ==================
@@ -34,7 +35,8 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		String _nlpSystem,
 		String _nlpSystemInstance,
 		String _eventType,
-		String _eventDetail
+		String _eventDetail,
+		Integer _priority
 	) {
 		this._noteId = _noteId;
 		this._eventTime = _eventTime;
@@ -42,6 +44,7 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		this._nlpSystemInstance = _nlpSystemInstance;
 		this._eventType = _eventType;
 		this._eventDetail = _eventDetail;
+		this._priority = _priority;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -52,6 +55,7 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		this._nlpSystemInstance = clone.getNlpSystemInstance();
 		this._eventType = clone.getEventType();
 		this._eventDetail = clone.getEventDetail();
+		this._priority = clone.getPriority();
 	}
 	
 	public NlpAuditFluentImpl clone() {
@@ -78,6 +82,9 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 	}
 	public String getEventDetail() {
 		return _eventDetail;
+	}
+	public Integer getPriority() {
+		return _priority;
 	}
 	
 	// POJO Setters
@@ -119,6 +126,12 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		this.notifyObservers();
 	}
 	
+	public void setPriority(Integer value) {
+		this._priority = value;
+		this.setChanged();
+		this.notifyObservers();
+	}
+	
 	
 	// Fluent setters
 	// ==============
@@ -147,6 +160,10 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		setEventDetail(value);
 		return this;
 	}
+	public NlpAuditFluent withPriority(Integer value) {
+		setPriority(value);
+		return this;
+	}
 
 	// hashCode and equals
 	// ===================
@@ -161,6 +178,7 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		result = prime * result + ((getNlpSystemInstance() == null) ? 0 : getNlpSystemInstance().hashCode());
 		result = prime * result + ((getEventType() == null) ? 0 : getEventType().hashCode());
 		result = prime * result + ((getEventDetail() == null) ? 0 : getEventDetail().hashCode());
+		result = prime * result + ((getPriority() == null) ? 0 : getPriority().hashCode());
 		return result;
 	}
 
@@ -202,6 +220,11 @@ public class NlpAuditFluentImpl extends Observable implements NlpAudit, NlpAudit
 		if (this.getEventDetail() == null ^ other.getEventDetail()==null) return false;
 		if (this.getEventDetail() != null && other.getEventDetail()!=null) {
 			if (!this.getEventDetail().equals(other.getEventDetail())) return false;
+		}
+		//testing this.getPriority()
+		if (this.getPriority() == null ^ other.getPriority()==null) return false;
+		if (this.getPriority() != null && other.getPriority()!=null) {
+			if (!this.getPriority().equals(other.getPriority())) return false;
 		}
 		return true;
 	}

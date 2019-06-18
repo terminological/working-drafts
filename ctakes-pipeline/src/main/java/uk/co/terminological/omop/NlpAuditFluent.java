@@ -2,6 +2,7 @@ package uk.co.terminological.omop;
 
 import javax.annotation.Generated;
 import java.sql.Timestamp;
+import java.util.*;
 import uk.co.terminological.omop.NlpAudit;
 
 @Generated({"uk.co.terminological.javapig.JModelWriter"})
@@ -22,6 +23,8 @@ public interface NlpAuditFluent extends NlpAudit {
 
 	public void setEventDetail(String value);
 
+	public void setPriority(Integer value);
+
 	
 	// Fluent setters
 	// ==============
@@ -37,5 +40,7 @@ public interface NlpAuditFluent extends NlpAudit {
 	public NlpAuditFluent withEventType(String value);
 	
 	public NlpAuditFluent withEventDetail(String value);
+	
+	public NlpAuditFluent withPriority(Integer value);
 	
 }

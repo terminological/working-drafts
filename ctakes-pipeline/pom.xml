@@ -163,7 +163,7 @@
 									<javaFromQueries>
 										<javaFromQuery>
 											<sql>SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where
-												nlp_system=?</sql>
+												nlp_system=? ORDER BY nlp_priority, nlp_event_time</sql>
 											<targetFQN>uk.co.terminological.omop.Input</targetFQN>
 										</javaFromQuery>
 									</javaFromQueries>

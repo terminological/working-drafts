@@ -24,5 +24,7 @@ public interface NlpAudit  {
 	public String getEventType();
 	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.VARCHAR, name="event_detail", length=512)
 	public String getEventDetail();
+	@Column(isNullable=true, isAutoIncrement=false, jdbcType=JDBCType.INTEGER, name="priority", length=10)
+	public Integer getPriority();
 	
 }

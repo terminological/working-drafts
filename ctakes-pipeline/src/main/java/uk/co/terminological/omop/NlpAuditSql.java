@@ -22,7 +22,8 @@ public class NlpAuditSql extends NlpAuditFluentImpl implements NlpAudit {
 			resultSet.getObject("nlp_system",String.class),
 			resultSet.getObject("nlp_system_instance",String.class),
 			resultSet.getObject("event_type",String.class),
-			resultSet.getObject("event_detail",String.class)			
+			resultSet.getObject("event_detail",String.class),
+			resultSet.getObject("priority",Integer.class)			
 		);
 	}
 	
