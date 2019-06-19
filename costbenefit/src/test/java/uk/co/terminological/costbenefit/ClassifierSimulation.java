@@ -25,7 +25,7 @@ public class ClassifierSimulation {
 	Figure figures;
 	
 	@BeforeClass
-	public void init() {
+	public void setUpBeforeClass() {
 		BasicConfigurator.configure();
 	}
 	
