@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -83,7 +84,11 @@ public class GnuplotWriter extends Writer {
 	}
 	
 	private static String toGnuPlotString(Object o) {
-		if (o instanceof Double && (((Double) o).isNaN() || ((Double) o).isInfinite())) return "";
+		DecimalFormat df = new DecimalFormat("0.000000"); 
+		if (o instanceof Double) {
+			if (((Double) o).isNaN() || ((Double) o).isInfinite()) return "";
+			return df.format((Double) o);
+		}
 		return o.toString();
 	}
 	
