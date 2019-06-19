@@ -57,7 +57,7 @@ public class GnuplotWriter extends Writer {
 	}
 
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		
 		File f = getChart().getFile("gplot");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
@@ -76,8 +76,10 @@ public class GnuplotWriter extends Writer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
 		Chart.log.info("Ending GNUPlot...");
+		return f.toPath();
+		
+		
 	}
 	
 	
