@@ -80,7 +80,7 @@ public abstract class GgplotWriter extends Writer {
 	}
 	
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		
 		getRoot().put("plots", getPlots());
 		//TODO: how to control this?
@@ -107,6 +107,7 @@ public abstract class GgplotWriter extends Writer {
 		}
 		
 		Chart.log.info("Ending R...");
+		return f.toPath();
 	}
 	
 	public static class BarChart extends GgplotWriter {
