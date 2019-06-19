@@ -32,7 +32,7 @@ public class WordcloudWriter extends Writer {
 	}
 	
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		
 		File f = getChart().getFile("png");
 		final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
@@ -52,7 +52,7 @@ public class WordcloudWriter extends Writer {
 		wordCloud.writeToFile(f.getAbsolutePath());
 		
 		Chart.log.info("Writing word cloud to: "+f.getAbsolutePath());
-		
+		return f.toPath();
 	}
 
 	@SuppressWarnings("unchecked")
