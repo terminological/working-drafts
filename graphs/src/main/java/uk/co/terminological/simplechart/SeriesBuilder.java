@@ -47,7 +47,7 @@ public class SeriesBuilder<X> {
 		return range(from,to,increment);
 	}
 	
-	public static Stream<Double> range(RangeDefinition rd) {
+	public static Stream<Double> range(Range rd) {
 		return range(rd.getFirst(), rd.getSecond(), rd.getThird());
 	}
 	
@@ -66,10 +66,10 @@ public class SeriesBuilder<X> {
 		return range(xMin,xMax,xDivs).flatMap(x -> range(yMin,yMax,yDivs).map(y-> Coordinate.create(x, y)));
 	}
 	
-	public static Stream<List<Double>> space(RangeDefinition... definitions) {
+	public static Stream<List<Double>> space(Range... definitions) {
 		if (definitions.length == 0) return Stream.empty();
 		Stream<List<Double>> out = null;
-		for (RangeDefinition rd: definitions) {
+		for (Range rd: definitions) {
 			if (out != null) {
 				out = out.flatMap(l -> range(rd).map(d -> {
 					l.add(d);
@@ -86,14 +86,14 @@ public class SeriesBuilder<X> {
 		return out;
 	}
 	
-	public static class RangeDefinition extends Triple<Double,Double,Long> {
+	public static class Range extends Triple<Double,Double,Long> {
 
-		private RangeDefinition(Double item1, Double item2, Long item3) {
+		private Range(Double item1, Double item2, Long item3) {
 			super(item1, item2, item3);
 		}
 		
-		public static RangeDefinition of(Double from, Double to, Long values) {
-			return new RangeDefinition(from,to,values);
+		public static Range of(Double from, Double to, Long values) {
+			return new Range(from,to,values);
 		}
 		
 	}
