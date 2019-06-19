@@ -66,23 +66,23 @@ public class SeriesBuilder<X> {
 		return range(xMin,xMax,xDivs).flatMap(x -> range(yMin,yMax,yDivs).map(y-> Coordinate.create(x, y)));
 	}
 	
-	public static Stream<List<Double>> space(Range... definitions) {
+	public static Stream<double[]> space(Range... definitions) {
 		if (definitions.length == 0) return Stream.empty();
 		final int size = definitions.length+1; 
-		Stream<List<Double>> out = null;
+		Stream<double[]> out = null;
 		int i = 0;
 		for (Range rd: definitions) {
 			
 			int level = i;
 			if (i == 0) {
 				out = range(rd).map(d -> {
-					List<Double> l = new ArrayList<>(size);
-					l.set(level,d);
+					double[] l = new double[size];
+					l[level]=d;
 					return l;
 				});
 			} else {
 				out = out.flatMap(l -> range(rd).map(d -> {
-					l.set(level,d);
+					l[level]=d;
 					return l;
 				}));
 			}
