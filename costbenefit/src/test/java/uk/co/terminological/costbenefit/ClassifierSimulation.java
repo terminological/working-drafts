@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.stream.Stream;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,8 +23,14 @@ public class ClassifierSimulation {
 	
 	Figure figures;
 	
+	@BeforeClass
+	public void init() {
+		BasicConfigurator.configure();
+	}
+	
 	@Before
 	public void setUp() throws Exception {
+		
 		figures = Figure.outputTo(Files.createTempDirectory("diag"));
 	}
 
