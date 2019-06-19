@@ -5,6 +5,8 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
@@ -32,8 +34,9 @@ public class ClassifierSimulation {
 	
 	@Before
 	public void setUp() throws Exception {
-		
-		figures = Figure.outputTo(Files.createTempDirectory("diag"));
+		Path dir = Paths.get("/home/terminological/tmp/graph");
+		Files.createDirectories(dir);
+		figures = Figure.outputTo(dir);
 	}
 
 	@Test
