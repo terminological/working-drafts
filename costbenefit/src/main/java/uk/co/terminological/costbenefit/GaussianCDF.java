@@ -12,7 +12,7 @@ public class GaussianCDF implements ParametricUnivariateFunction {
 	
 	@Override
 	public double value(double x, double... parameters) {
-		return integrator.integrate(5, new Gaussian(parameters[0], parameters[1]), Double.NEGATIVE_INFINITY, x);
+		return integrator.integrate(20, new Gaussian(parameters[0], parameters[1]), Double.NEGATIVE_INFINITY, x);
 	}
 
 	@Override
