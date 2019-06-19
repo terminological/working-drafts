@@ -17,7 +17,7 @@ ${command};
 <#list config.getSeries() as series>
 plot \
 	<#list series.indexesOf("Y") as yIndex>
-"$data" index ${series?index} using ${series.indexOf("X")}:${yIndex} title '${series.labelFor(yIndex)}' with lines, \
+"$data" index ${series?index} ls ${series?index+1} using ${series.indexOf("X")}:${yIndex} title '${series.labelFor(yIndex)}' with lines, \
 	</#list>
 </#list>
 

@@ -18,10 +18,10 @@ ${command};
 </#list>
 plot \
 <#if series.hasDimension("Y_FIT")>
-"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y_FIT")} with lines, \
-"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
+"$data" index 0 ls 1 using ${series.indexOf("X")}:${series.indexOf("Y_FIT")} with lines, \
+"$data" index 0 ls 1 using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
 <#else>
-"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with lines;
+"$data" index 0 ls 1 using ${series.indexOf("X")}:${series.indexOf("Y")} with lines;
 </#if>
 
 <#-- 
