@@ -54,7 +54,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void testCoords() {
-		SeriesBuilder.grid(-1D, 1D, -1D, 1D, 50).forEach(System.out::println);
+		SeriesBuilder.grid(-1D, 1D, 0D, 1D, 50).forEach(System.out::println);
 	}
 	
 	@Test
