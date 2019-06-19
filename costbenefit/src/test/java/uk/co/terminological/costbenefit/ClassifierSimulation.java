@@ -15,6 +15,7 @@ import freemarker.template.TemplateException;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.SeriesBuilder;
+import uk.co.terminological.simplechart.SeriesBuilder.Range;
 
 public class ClassifierSimulation {
 
@@ -55,6 +56,13 @@ public class ClassifierSimulation {
 	@Test
 	public void testCoords() {
 		SeriesBuilder.grid(-1D, 1D, 0D, 1D, 50).forEach(System.out::println);
+	}
+	
+	@Test
+	public void testSpace() {
+		SeriesBuilder.space(
+				Range.of(-1D, 1D, 3)
+				).forEach(System.out::println);
 	}
 	
 	@Test
