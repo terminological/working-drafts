@@ -20,13 +20,13 @@ public abstract class D3JSWriter extends Writer {
 	}
 	
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		File f = getChart().getFile("html");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		getTemplate().get().process(getRoot(), out);
 		out.close();
 		Chart.log.info("Writing html to: "+f.getAbsolutePath());
-		
+		return f.toPath();
 		//TODO: Kick of a headless chrome instance and simulate click on download SVG item
 		// or just get user to open file in chrome
 	}
