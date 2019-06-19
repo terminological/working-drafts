@@ -53,6 +53,11 @@ public class ClassifierSimulation {
 	}
 	
 	@Test
+	public void testCoords() {
+		SeriesBuilder.grid(-1D, 1D, -1D, 1D, 50).forEach(System.out::println);
+	}
+	
+	@Test
 	public void plotKumaraswarmy() {
 		
 	}
