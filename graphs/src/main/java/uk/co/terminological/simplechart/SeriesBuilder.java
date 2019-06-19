@@ -56,17 +56,21 @@ public class SeriesBuilder<X> {
 		return StreamSupport.stream(tmpIt.spliterator(),false);
 	}
 	
-	public static Stream<Double> range(Double from, Double to, int divisions) {
+	public static Stream<Double> range(Double from, Double to, long divisions) {
 		Double increment = (to-from)/divisions;
+		return range(from,to,increment);
+	}
+	
+	public static Stream<Double> range(Double from, Double to, Double increment) {
 		return start(from).repeat(d -> d+increment).untilFalse(d -> {
 			if (increment>0) return d <= to;
 			else if (increment<0) return d >= to;
 			else return false;
 		}).build();
-		
 	}
 	
 	public static Stream<Coordinate> grid(Double xMin, Double xMax, Double yMin, Double yMax, int gridPoints) {
-		
+		Double increment = Math.sqrt( (Math.abs(xMax - xMin)*Math.abs(yMax - yMin))/gridPoints );
+		return range(xMin,xMax,increment).flatMap(x -> range(yMin,yMax,increment).map(y-> Coordinate.create(x, y)));
 	}
 }
