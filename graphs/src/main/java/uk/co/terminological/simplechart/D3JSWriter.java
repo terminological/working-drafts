@@ -55,9 +55,9 @@ public abstract class D3JSWriter extends Writer {
 		}
 		
 		protected <X,Y> String extractData(Series<Y> edges) {
-			Function<Y, Object> xGenerator = edges.functionFor(Dimension.ID, "source");
-			Function<Y, Object> yGenerator = edges.functionFor(Dimension.ID, "target");
-			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.STRENGTH);
+			Function<Y, ? extends Object> xGenerator = edges.functionFor(Dimension.ID, "source");
+			Function<Y, ? extends Object> yGenerator = edges.functionFor(Dimension.ID, "target");
+			Function<Y, ? extends Object> valueGenerator = edges.functionFor(Dimension.STRENGTH);
 			
 			EavMap<Object,Object,Object> tmp = new EavMap<>();
 			edges.getData().forEach(y -> {
@@ -119,12 +119,12 @@ public abstract class D3JSWriter extends Writer {
 		protected <X,Y> String extractData(Series<X> nodes, Series<Y> edges) {
 			StringBuilder builder = new StringBuilder();
 			
-			Function<X, Object> labelGenerator = nodes.functionFor(Dimension.LABEL);
-			Function<X, Object> idGenerator = nodes.functionFor(Dimension.ID);
+			Function<X, ? extends Object> labelGenerator = nodes.functionFor(Dimension.LABEL);
+			Function<X, ? extends Object> idGenerator = nodes.functionFor(Dimension.ID);
 			
-			Function<Y, Object> sourceIdGenerator = edges.functionFor(Dimension.ID, "source");
-			Function<Y, Object> targetIdGenerator = edges.functionFor(Dimension.ID, "target");
-			Function<Y, Object> weightGenerator = edges.functionFor(Dimension.STRENGTH);
+			Function<Y, ? extends Object> sourceIdGenerator = edges.functionFor(Dimension.ID, "source");
+			Function<Y, ? extends Object> targetIdGenerator = edges.functionFor(Dimension.ID, "target");
+			Function<Y, ? extends Object> weightGenerator = edges.functionFor(Dimension.STRENGTH);
 			
 			//TODO: Could probably have an optional<function<x,y>> accessor here... would it be useful though
 			//for elements such as size, or fill or other node or relationship properties
