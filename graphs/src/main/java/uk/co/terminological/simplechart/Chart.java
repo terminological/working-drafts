@@ -83,7 +83,7 @@ public class Chart {
 			}
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException |IOException e) {
+				| NoSuchMethodException | SecurityException |IOException | TemplateException e) {
 			throw new RuntimeException(e);
 		} 
 		
