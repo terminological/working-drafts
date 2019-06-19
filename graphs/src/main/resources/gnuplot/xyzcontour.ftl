@@ -1,4 +1,6 @@
 #!/usr/bin/gnuplot -p
+<#assign series = config.getSeries()?first>
+${series.getScheme().getGnuplotPalette(8)}
 $data << EOD
 ${data}
 EOD
@@ -19,7 +21,7 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
-<#assign series = config.getSeries()?first>
+
 splot \
 "$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")}:${series.indexOf("Z")} with lines ;
 
