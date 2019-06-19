@@ -66,7 +66,7 @@ public class Chart {
 	
 	public Config config() {return config;}
 	
-	public void render() throws IOException, TemplateException {
+	public void render() {
 		Writer writer;
 		try {
 			writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
@@ -83,9 +83,9 @@ public class Chart {
 			}
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+				| NoSuchMethodException | SecurityException |IOException e) {
 			throw new RuntimeException(e);
-		}
+		} 
 		
 		
 		

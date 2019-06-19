@@ -5,6 +5,7 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
@@ -71,6 +72,25 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotKumaraswarmy() {
-		
+		Range aRange = Range.of(-1D, 1D, 5);
+		Range bRange = Range.of(-1D, 1D, 5);
+		Range xRange = Range.of(0D, 1D, 100);
+		DecimalFormat df = new DecimalFormat("#.00"); 
+		SeriesBuilder.space(aRange,bRange).forEach(arr -> {
+			Double a = arr[0];
+			Double b = arr[1];
+			String title = "a="+df.format(a)+" b="+df.format(b);
+			figures.withNewChart(title, ChartType.XY_LINE)
+			.config().withXScale(-1F, 1F)
+			.withXLabel("x")
+			.withYLabel("gauss")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(SeriesBuilder.range(-1D, 1D, 1000))
+			.bind(X, t -> t)
+			.bind(Y, GaussianCDF.fn(0, 1))
+			.done()
+			.render();
+		});
 	}
 }
