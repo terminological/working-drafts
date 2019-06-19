@@ -77,7 +77,7 @@ public class GnuplotWriter extends Writer {
 		}
 		
 		Chart.log.info("Ending GNUPlot...");
-		return f.toPath();
+		return getChart().getFile("png").toPath();
 		
 		
 	}
