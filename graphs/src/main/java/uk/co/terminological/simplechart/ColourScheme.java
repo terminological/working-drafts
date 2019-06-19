@@ -182,7 +182,7 @@ public class ColourScheme {
 			String col = cols.get(i).toHex();
 			styles.append("set style line "+(i+1)+" lt 1 lc rgb '"+col+"'\n");
 			if (i>0) palette.append(",\\\n"); 
-			palette.append(""+(i+1)+" '"+col+"'");
+			palette.append(""+i+" \""+col+"\"");
 		};
 		return styles.toString()+"\n"+palette.toString()+")\n";
 	}
