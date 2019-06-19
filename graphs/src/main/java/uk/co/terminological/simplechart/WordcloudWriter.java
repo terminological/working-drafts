@@ -69,7 +69,7 @@ public class WordcloudWriter extends Writer {
 	protected <Y> String extractData(Series<Y> series) {
 		List<Color> colors = series.getScheme().values(8).stream().map(c -> c.toAwt()).collect(Collectors.toList());
 		pallette = new ColorPalette(colors);
-		Function<Y, Object> xGenerator = series.functionFor(Dimension.TEXT);
+		Function<Y, ? extends Object> xGenerator = series.functionFor(Dimension.TEXT);
 		text = new ArrayList<>();
 		series.getData().stream().map(xGenerator).map(o -> o.toString()).forEach(s-> text.add(s));
 		return "";
