@@ -76,8 +76,8 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotKumaraswarmy() {
-		Range aRange = Range.of(0.3D, 0.7D, 4);
-		Range bRange = Range.of(0.3D, 0.7D, 4);
+		Range aRange = Range.of(2D, 5D, 4);
+		Range bRange = Range.of(2D, 5D, 4);
 		Range xRange = Range.of(0D, 1D, 100);
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		
