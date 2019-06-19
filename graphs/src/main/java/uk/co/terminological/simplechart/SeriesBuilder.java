@@ -1,16 +1,21 @@
 package uk.co.terminological.simplechart;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import uk.co.terminological.datatypes.Triple;
 
 public class SeriesBuilder<X> {
 	
 	X start;
-	Function<X,X> next;
+	UnaryOperator<X> next;
 	Predicate<X> whileTrue;
 	
 	public SeriesBuilder(X start) {
@@ -21,7 +26,7 @@ public class SeriesBuilder<X> {
 		return new SeriesBuilder<Y>(start);
 	}
 	
-	public SeriesBuilder<X> repeat(Function<X,X> fn) {
+	public SeriesBuilder<X> repeat(UnaryOperator<X> fn) {
 		this.next = fn;
 		return this;
 	}
@@ -32,35 +37,18 @@ public class SeriesBuilder<X> {
 	}
 	
 	public Stream<X> build() {
-		Iterator<X> tmp = new Iterator<X>() {
-
-			X nextVal = start;
-			
-			@Override
-			public boolean hasNext() {
-				return whileTrue.test(nextVal);
-			}
-
-			@Override
-			public X next() {
-				if (hasNext()) {
-					X tmp = nextVal;
-					nextVal = next.apply(tmp);
-					return tmp;
-				}
-				throw new NoSuchElementException();
-			}
-			
-		};
-		Iterable<X> tmpIt = () -> tmp;
-		return StreamSupport.stream(tmpIt.spliterator(),false);
+		return Stream.iterate(start, whileTrue, next);
 	}
 	
-	public static Stream<Double> range(Double from, Double to, long divisions) {
-		divisions = Math.abs(divisions);
+	public static Stream<Double> range(Double from, Double to, long values) {
+		long divisions = Math.abs(values)-1;
 		if (divisions < 1) divisions=1;
 		Double increment = (to-from)/divisions;
 		return range(from,to,increment);
+	}
+	
+	public static Stream<Double> range(RangeDefinition rd) {
+		return range(rd.getFirst(), rd.getSecond(), rd.getThird());
 	}
 	
 	public static Stream<Double> range(Double from, Double to, Double increment) {
@@ -73,8 +61,42 @@ public class SeriesBuilder<X> {
 	
 	public static Stream<Coordinate> grid(Double xMin, Double xMax, Double yMin, Double yMax, int gridPoints) {
 		Double increment = Math.sqrt( (Math.abs(xMax - xMin)*Math.abs(yMax - yMin))/gridPoints );
-		long xDivs = (long) Math.floor(Math.abs(xMax-xMin)/increment) -1;
-		long yDivs = (long) Math.floor(Math.abs(yMax-yMin)/increment) -1;
+		long xDivs = (long) Math.floor(Math.abs(xMax-xMin)/increment);
+		long yDivs = (long) Math.floor(Math.abs(yMax-yMin)/increment);
 		return range(xMin,xMax,xDivs).flatMap(x -> range(yMin,yMax,yDivs).map(y-> Coordinate.create(x, y)));
 	}
+	
+	public static Stream<List<Double>> space(RangeDefinition... definitions) {
+		if (definitions.length == 0) return Stream.empty();
+		Stream<List<Double>> out = null;
+		for (RangeDefinition rd: definitions) {
+			if (out != null) {
+				out = out.flatMap(l -> range(rd).map(d -> {
+					l.add(d);
+					return l;
+				}));
+			} else {
+				out = range(rd).map(d -> {
+					List<Double> l = new ArrayList<>();
+					l.add(d);
+					return l;
+				});
+			}
+		}
+		return out;
+	}
+	
+	public static class RangeDefinition extends Triple<Double,Double,Long> {
+
+		private RangeDefinition(Double item1, Double item2, Long item3) {
+			super(item1, item2, item3);
+		}
+		
+		public static RangeDefinition of(Double from, Double to, Long values) {
+			return new RangeDefinition(from,to,values);
+		}
+		
+	}
+	
+	
 }
