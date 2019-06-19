@@ -46,7 +46,7 @@ public abstract class GgplotWriter extends Writer {
 		dfConstruct.append("df <- data.frame(order");
 		
 		
-		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
+		for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
 			String varName = binding.getFirst().name()+
 					(binding.getThird() == "" ? "" : "_"+binding.getThird());
 			
