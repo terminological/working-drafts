@@ -66,5 +66,7 @@ public class SeriesBuilder<X> {
 		
 	}
 	
-	
+	public static Stream<Coordinate> grid(Double xMin, Double xMax, Double yMin, Double yMax, int gridPoints) {
+		
+	}
 }
