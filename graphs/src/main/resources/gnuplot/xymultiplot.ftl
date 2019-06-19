@@ -2,7 +2,7 @@
 <#assign series = config.getSeries()?first>
 <#assign seriesCount = series.indexesOf("Y")?size>
 ${series.getScheme().getGnuplotPalette(seriesCount)}
-set datafile missing "NaN"
+<#-- set datafile missing "NaN"-->
 $data << EOD
 ${data}
 EOD
