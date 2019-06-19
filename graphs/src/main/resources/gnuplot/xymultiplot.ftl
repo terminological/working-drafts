@@ -1,6 +1,7 @@
 #!/usr/bin/gnuplot -p
 <#assign series = config.getSeries()?first>
-${series.getScheme().getGnuplotPalette(series.indexesOf("Y").size())}
+<#assign seriesCount = series.indexesOf("Y")?size>
+${series.getScheme().getGnuplotPalette(seriesCount)}
 $data << EOD
 ${data}
 EOD
