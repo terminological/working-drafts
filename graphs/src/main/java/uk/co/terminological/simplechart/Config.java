@@ -7,8 +7,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import freemarker.template.TemplateException;
-import uk.co.terminological.datatypes.Triple;
-import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class Config {
 

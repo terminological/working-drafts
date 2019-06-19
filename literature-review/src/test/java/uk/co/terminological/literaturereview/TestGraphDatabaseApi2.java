@@ -10,8 +10,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +18,7 @@ import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
-import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 import uk.co.terminological.nlptools.Corpus;
-import uk.co.terminological.nlptools.Similarity;
-import uk.co.terminological.nlptools.StringCrossMapper;
 import uk.co.terminological.nlptools.WordCloudBuilder;
 
 

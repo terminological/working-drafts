@@ -1,10 +1,7 @@
 package uk.co.terminological.literaturereview;
 
 import static uk.co.terminological.datatypes.StreamExceptions.tryRethrow;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ARTICLE;
 import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.EXPAND;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Labels.ORIGINAL_SEARCH;
-import static uk.co.terminological.literaturereview.PubMedGraphSchema.Prop.PMID;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.lookupDoisForUnreferenced;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapCermineReferences;
 import static uk.co.terminological.literaturereview.PubMedGraphUtils.mapCrossRefReferences;

@@ -6,40 +6,27 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.BasicConfigurator;
 
-import edu.stanford.nlp.coref.data.CorefChain;
 import edu.stanford.nlp.ie.NERClassifierCombiner;
 import edu.stanford.nlp.ie.crf.CRFClassifier;
-import edu.stanford.nlp.ie.util.RelationTriple;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.pipeline.AnnotationPipeline;
 import edu.stanford.nlp.pipeline.CoreDocument;
-import edu.stanford.nlp.pipeline.CoreEntityMention;
-import edu.stanford.nlp.pipeline.CoreQuote;
 import edu.stanford.nlp.pipeline.CoreSentence;
 import edu.stanford.nlp.pipeline.NERCombinerAnnotator;
 import edu.stanford.nlp.pipeline.POSTaggerAnnotator;
-import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.pipeline.TokenizerAnnotator;
 import edu.stanford.nlp.pipeline.WordsToSentencesAnnotator;
-import edu.stanford.nlp.semgraph.SemanticGraph;
-import edu.stanford.nlp.sequences.SeqClassifierFlags;
-import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.StringUtils;
 import uk.co.terminological.datatypes.Triple;
-import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
-import uk.co.terminological.fluentxml.XmlNode;
 import uk.co.terminological.fluentxml.XmlText;
 
 @Deprecated

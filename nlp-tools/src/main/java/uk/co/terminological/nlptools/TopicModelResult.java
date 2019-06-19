@@ -10,7 +10,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import cc.mallet.topics.MarginalProbEstimator;
 import cc.mallet.topics.ParallelTopicModel;
 import cc.mallet.topics.TopicInferencer;
 import cc.mallet.topics.TopicModelDiagnostics;
