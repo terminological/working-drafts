@@ -40,7 +40,7 @@ public class GnuplotWriter extends Writer {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("# ");
 		
-		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
+		for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
 			tmp.append(binding.getFirst().toString()+
 					binding.getThird() == null ? "" : " ("+binding.getThird()+")"
 					+"\t");
@@ -48,7 +48,7 @@ public class GnuplotWriter extends Writer {
 		
 		for (X item: series.getData()) {
 			tmp.append("\n");
-			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
+			for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
 				tmp.append(binding.getSecond().apply(item).toString()+"\t");
 			}
 		}
