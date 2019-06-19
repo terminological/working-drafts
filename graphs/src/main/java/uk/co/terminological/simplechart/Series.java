@@ -17,7 +17,7 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 public class Series<X> {
 
 	private List<X> data;
-	private List<Triple<Dimension,Function<X,Object>,String>> bindings = new ArrayList<>();
+	private List<Triple<Dimension,Function<X,? extends Object>,String>> bindings = new ArrayList<>();
 	private Map<Dimension,Comparator<Object>> sorters = new HashMap<>();
 	private ColourScheme scheme = ColourScheme.PiYG;
 	private Chart chart;
@@ -29,12 +29,12 @@ public class Series<X> {
 		this.chart = chart;
 	}
 	
-	public Series<X> bind(Dimension dimension, Function<X,Object> binding) {
+	public Series<X> bind(Dimension dimension, Function<X,? extends Object> binding) {
 		bindings.add(Triple.create(dimension, binding, ""));
 		return this;
 	};
 	
-	public Series<X> bind(Dimension dimension, Function<X,Object> binding, String label) {
+	public Series<X> bind(Dimension dimension, Function<X,? extends Object> binding, String label) {
 		bindings.add(Triple.create(dimension, binding, label));
 		return this;
 	};
@@ -60,7 +60,7 @@ public class Series<X> {
 		return data;
 	}
 
-	protected List<Triple<Dimension, Function<X, Object>, String>> getBindings() {
+	protected List<Triple<Dimension, Function<X, ? extends Object>, String>> getBindings() {
 		return bindings;
 	}
 
@@ -104,14 +104,14 @@ public class Series<X> {
 		return getData().stream().map(functionFor(dim,name)).map(o -> (Y) o).collect(Collectors.toList());
 	}
 	
-	public Function<X,Object> functionFor(Dimension dim, String name) {
+	public Function<X,? extends Object> functionFor(Dimension dim, String name) {
 		return bindings.stream()
 			.filter(trip -> trip.firstEquals(dim) && trip.thirdEquals(name))
 			.map(trip -> trip.getSecond())
 			.findFirst().get();
 	}
 	
-	public Function<X,Object> functionFor(Dimension dim) {
+	public Function<X,? extends Object> functionFor(Dimension dim) {
 		return functionFor(dim, "");
 	}
 	

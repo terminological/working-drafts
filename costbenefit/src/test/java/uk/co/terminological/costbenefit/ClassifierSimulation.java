@@ -42,13 +42,13 @@ public class ClassifierSimulation {
 		.done()
 		.withSeries(SeriesBuilder.range(-1D, 1D, 1000))
 		.bind(X, t -> t)
-		.bind(Y, t -> GaussianCDF.value(0, 1))
+		.bind(Y, GaussianCDF.fn(0, 1))
 		.done()
 		.render();
 	}
 
 	@Test
 	public void testSeries() {
-		SeriesBuilder.range(-1D, 1D, 1000).forEach(System.out::println);
+		SeriesBuilder.range(-1D, 1D, 1000).map(mapper).forEach(System.out::println);
 	}
 }

@@ -20,7 +20,7 @@ public class GaussianCDF implements ParametricUnivariateFunction {
 		return new double[] {new Gaussian(parameters[0], parameters[1]).value(x)};
 	}
 
-	static Function<Double,Double> value(double mean, double variance) {
+	static Function<Double,Double> fn(double mean, double variance) {
 		return d -> new GaussianCDF().value(d, mean, variance);
 	}
 	
