@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import uk.co.terminological.simplechart.Coordinate;
+
 public class CoordinateFinder {
 
 	public static class Interceptions {

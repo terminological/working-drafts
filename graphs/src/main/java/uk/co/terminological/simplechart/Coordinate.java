@@ -1,4 +1,4 @@
-package uk.co.terminological.costbenefit;
+package uk.co.terminological.simplechart;
 
 import uk.co.terminological.datatypes.Tuple;
 

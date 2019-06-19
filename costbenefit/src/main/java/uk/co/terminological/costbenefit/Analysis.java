@@ -25,6 +25,7 @@ import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.parser.ParserException;
 import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.Coordinate;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.Series;
 import uk.co.terminological.tabular.Delimited;
