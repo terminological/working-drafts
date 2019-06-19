@@ -5,6 +5,7 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
@@ -65,7 +66,7 @@ public class ClassifierSimulation {
 				Range.of(-1D, 1D, 5),
 				Range.of(-1D, 1D, 7),
 				Range.of(-1D, 1D, 9)
-				).forEach(System.out::println);
+				).map(l -> Arrays.toString(l)).forEach(System.out::println);
 	}
 	
 	@Test
