@@ -5,6 +5,7 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Function;
 
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.exception.DimensionMismatchException;
@@ -13,6 +14,7 @@ import org.apache.commons.math3.exception.NullArgumentException;
 import freemarker.template.TemplateException;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.Figure;
+import uk.co.terminological.simplechart.SeriesBuilder;
 
 /**
  * Implementation of a parametric Kumaraswamy distribution where we fit the cumulative distribution function
@@ -24,6 +26,10 @@ import uk.co.terminological.simplechart.Figure;
  */
 public class Kumaraswamy implements ParametricUnivariateFunction {
 
+	public static Function<Double,Double> fn(Double a, Double b) {
+		return x -> new Kumaraswamy().value(x,a,b);
+	}
+	
 	/**
 	 * dx/da = b*x^a*(1-x^a)^(b-1)*log(x)
 	 * 
@@ -96,7 +102,7 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 					.withTitle(this.toString())
 					.withXScale(0F, 1F)
 				.done()
-				.withSeries(Figure.Parameter.fromRange(0, 1))
+				.withSeries(SeriesBuilder.range(0D, 1D, 1000))
 					.bind(X, x -> x)
 					.bind(Y, x -> value(x))
 				.done()

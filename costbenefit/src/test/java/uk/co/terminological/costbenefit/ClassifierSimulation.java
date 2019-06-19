@@ -51,4 +51,9 @@ public class ClassifierSimulation {
 	public void testSeries() {
 		SeriesBuilder.range(-1D, 1D, 1000).forEach(System.out::println);
 	}
+	
+	@Test
+	public void plotKumaraswarmy() {
+		
+	}
 }

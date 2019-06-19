@@ -22,22 +22,6 @@ import freemarker.template.TemplateExceptionHandler;
  */
 public class Figure {
 
-	public static class Parameter {
-
-		public static List<Double> fromRange(double start, double end) {
-			return fromRange(start,end,1000);
-		}
-		
-		public static List<Double> fromRange(double start, double end, int samples) {
-			List<Double> out = new ArrayList<>();
-			double delta = (end-start)/samples;
-			for (double s = start; s <= end; s+=delta) {
-				out.add(s);
-			}
-			return out;
-		}
-	}
-
 	List<Chart> charts = new ArrayList<>();
 	File workingDirectory;
 	String title;
