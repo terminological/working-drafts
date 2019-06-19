@@ -2,6 +2,7 @@ package uk.co.terminological.simplechart;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -147,6 +148,10 @@ public class Figure {
 			this.charts.add(out);
 			return out;
 		}*/
+	}
+
+	public static Figure outputTo(Path path) {
+		return outputTo(path.toFile());
 	}
 
 }
