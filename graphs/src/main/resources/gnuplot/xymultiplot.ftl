@@ -5,6 +5,7 @@ ${series.getScheme().getGnuplotPalette(seriesCount)}
 $data << EOD
 ${data}
 EOD
+set datafile missing "NaN"
 set title "${config.getTitle()}";
 set xlabel "${config.getXLabel()}"; 
 set ylabel "${config.getYLabel()}";

@@ -49,7 +49,7 @@ public class GnuplotWriter extends Writer {
 		for (X item: series.getData()) {
 			tmp.append("\n");
 			for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
-				tmp.append(binding.getSecond().apply(item).toString()+"\t");
+				tmp.append(toGnuPlotString(binding.getSecond().apply(item))+"\t");
 			}
 		}
 		
@@ -82,6 +82,10 @@ public class GnuplotWriter extends Writer {
 		
 	}
 	
-	
+	private static String toGnuPlotString(Object o) {
+		if (o.equals(Double.NEGATIVE_INFINITY)) return "NaN";
+		if (o.equals(Double.POSITIVE_INFINITY)) return "NaN";
+		return o.toString();
+	}
 	
 }
