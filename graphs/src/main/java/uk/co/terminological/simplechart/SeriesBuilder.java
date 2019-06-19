@@ -68,7 +68,7 @@ public class SeriesBuilder<X> {
 	
 	public static Stream<double[]> space(Range... definitions) {
 		if (definitions.length == 0) return Stream.empty();
-		final int size = definitions.length+1; 
+		final int size = definitions.length; 
 		Stream<double[]> out = null;
 		int i = 0;
 		for (Range rd: definitions) {
