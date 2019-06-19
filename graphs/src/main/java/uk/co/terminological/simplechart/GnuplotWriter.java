@@ -83,8 +83,10 @@ public class GnuplotWriter extends Writer {
 	}
 	
 	private static String toGnuPlotString(Object o) {
-		if (o.equals(Double.NEGATIVE_INFINITY)) return "NaN";
-		if (o.equals(Double.POSITIVE_INFINITY)) return "NaN";
+		if (
+			o.equals(Double.NEGATIVE_INFINITY)
+			|| o.equals(Double.POSITIVE_INFINITY)
+				) return "NaN";
 		return o.toString();
 	}
 	
