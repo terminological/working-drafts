@@ -144,4 +144,6 @@ public class Series<X> {
 	public String getLabelFor(int i) {
 		return bindings.get(i-1).getThird();
 	}
+	
+	 
 }
