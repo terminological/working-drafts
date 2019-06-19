@@ -77,6 +77,7 @@ public class Chart {
 				if (!h.equals(out)) {
 					BufferedWriter w = Files.newBufferedWriter(h);
 					w.write("<html><head></head><body><img src='"+out.toFile().toURI()+"'></body></html>");
+					w.close();
 				}
 			    Desktop.getDesktop().browse(h.toUri());
 			}

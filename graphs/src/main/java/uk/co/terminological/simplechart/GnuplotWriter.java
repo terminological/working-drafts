@@ -65,17 +65,17 @@ public class GnuplotWriter extends Writer {
 		out.close();
 		Chart.log.info("Starting GNUPlot...");
 		
-		Process process2 = new ProcessBuilder("/usr/bin/gnuplot","-c",f.getAbsolutePath())
-		.redirectOutput(Redirect.INHERIT)
-		.start();
-		
-		
-		
 		try {
-			System.out.println(process2.waitFor());
+			Process process2 = new ProcessBuilder("/usr/bin/gnuplot","-c",f.getAbsolutePath())
+			.redirectOutput(Redirect.INHERIT)
+			.start();
+			
+			System.out.println("Gnuplot status: "+process2.waitFor());
+			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
 		Chart.log.info("Ending GNUPlot...");
 		return f.toPath();
 		
