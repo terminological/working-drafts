@@ -1,13 +1,10 @@
 package uk.co.terminological.costbenefit;
 
-import static org.junit.Assert.*;
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
-import static uk.co.terminological.simplechart.Chart.Dimension.Y_FIT;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
