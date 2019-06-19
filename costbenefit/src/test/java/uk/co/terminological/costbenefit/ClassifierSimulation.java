@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import freemarker.template.TemplateException;
