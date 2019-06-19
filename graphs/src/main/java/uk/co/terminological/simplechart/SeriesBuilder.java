@@ -59,11 +59,15 @@ public class SeriesBuilder<X> {
 		}).build();
 	}
 	
+	public static Stream<Coordinate> grid(Range xRange, Range yRange) {
+		return space(xRange,yRange).map(arr-> Coordinate.create(arr[0], arr[1]));
+	}
+	
 	public static Stream<Coordinate> grid(Double xMin, Double xMax, Double yMin, Double yMax, int gridPoints) {
 		Double increment = Math.sqrt( (Math.abs(xMax - xMin)*Math.abs(yMax - yMin))/gridPoints );
 		long xDivs = (long) Math.floor(Math.abs(xMax-xMin)/increment);
 		long yDivs = (long) Math.floor(Math.abs(yMax-yMin)/increment);
-		return range(xMin,xMax,xDivs).flatMap(x -> range(yMin,yMax,yDivs).map(y-> Coordinate.create(x, y)));
+		return grid(Range.of(xMin,xMax,xDivs),Range.of(yMin,yMax,yDivs));
 	}
 	
 	public static Stream<double[]> space(Range... definitions) {
