@@ -88,8 +88,8 @@ public abstract class GgplotWriter extends Writer {
 		//TODO: colour schemes?
 		getRoot().put("schemeName", getChart().getSeries().stream().map(s -> s.getScheme().getName()).findFirst().orElse("Set1"));
 		
-		
-		getRoot().put("output", getChart().getFile("png").getAbsolutePath());
+		File outFile = getChart().getFile("png");
+		getRoot().put("output", outFile.getAbsolutePath());
 		
 		File f = getChart().getFile("R");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
@@ -108,7 +108,7 @@ public abstract class GgplotWriter extends Writer {
 		}
 		
 		Chart.log.info("Ending R...");
-		return f.toPath();
+		return outFile.toPath();
 	}
 	
 	public static class BarChart extends GgplotWriter {
