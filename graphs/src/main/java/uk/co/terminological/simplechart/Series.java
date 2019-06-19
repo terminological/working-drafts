@@ -19,7 +19,7 @@ public class Series<X> {
 	private List<X> data;
 	private List<Triple<Dimension,Function<X,? extends Object>,String>> bindings = new ArrayList<>();
 	private Map<Dimension,Comparator<Object>> sorters = new HashMap<>();
-	private ColourScheme scheme = ColourScheme.PiYG;
+	private ColourScheme scheme = ColourScheme.Accent;
 	private Chart chart;
 	
 	// ========= Fluent contructors ==========
