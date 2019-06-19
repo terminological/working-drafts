@@ -1,10 +1,14 @@
 package uk.co.terminological.simplechart;
 
+import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,6 +68,8 @@ public class GnuplotWriter extends Writer {
 		Process process2 = new ProcessBuilder("/usr/bin/gnuplot","-c",f.getAbsolutePath())
 		.redirectOutput(Redirect.INHERIT)
 		.start();
+		
+		
 		
 		try {
 			System.out.println(process2.waitFor());

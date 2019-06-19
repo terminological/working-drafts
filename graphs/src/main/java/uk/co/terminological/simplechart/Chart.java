@@ -1,8 +1,12 @@
 package uk.co.terminological.simplechart;
 
+import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -66,11 +70,23 @@ public class Chart {
 		Writer writer;
 		try {
 			writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
-			writer.process();
+			Path out = writer.process();
+			
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+				Path h = this.getFile("html").toPath();
+				if (!h.equals(out)) {
+					BufferedWriter w = Files.newBufferedWriter(h);
+					w.write("<html><head></head><body><img src='"+out.toFile().toURI()+"'></body></html>");
+				}
+			    Desktop.getDesktop().browse(h.toUri());
+			}
+			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
+		
+		
 		
 	}
 	

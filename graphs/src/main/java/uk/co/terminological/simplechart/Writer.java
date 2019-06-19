@@ -1,6 +1,8 @@
 package uk.co.terminological.simplechart;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,7 +43,7 @@ public abstract class Writer {
 		return root.get("data").toString();
 	}
 	
-	protected abstract void process() throws IOException, TemplateException;
+	protected abstract Path process() throws IOException, TemplateException;
 
 	protected abstract String extractData();
 
