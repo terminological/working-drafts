@@ -71,8 +71,8 @@ public class SeriesBuilder<X> {
 	
 	public static Stream<Coordinate> grid(Double xMin, Double xMax, Double yMin, Double yMax, int gridPoints) {
 		Double increment = Math.sqrt( (Math.abs(xMax - xMin)*Math.abs(yMax - yMin))/gridPoints );
-		long xDivs = (long) Math.floor(Math.abs(xMax-xMin)/increment);
-		long yDivs = (long) Math.floor(Math.abs(yMax-yMin)/increment);
+		long xDivs = (long) Math.floor(Math.abs(xMax-xMin)/increment) -1;
+		long yDivs = (long) Math.floor(Math.abs(yMax-yMin)/increment) -1;
 		return range(xMin,xMax,xDivs).flatMap(x -> range(yMin,yMax,yDivs).map(y-> Coordinate.create(x, y)));
 	}
 }
