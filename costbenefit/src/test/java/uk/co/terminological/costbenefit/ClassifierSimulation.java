@@ -47,4 +47,8 @@ public class ClassifierSimulation {
 		.render();
 	}
 
+	@Test
+	public void testSeries() {
+		SeriesBuilder.range(-1D, 1D, 1000).forEach(System.out::println);
+	}
 }
