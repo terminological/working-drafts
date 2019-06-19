@@ -37,7 +37,7 @@ public class ClassifierSimulation {
 
 	@Test
 	public final void test() throws IOException, TemplateException {
-		figures.withNewChart("hx", ChartType.XY_LINE)
+		figures.withNewChart("normal", ChartType.XY_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("x")
 		.withYLabel("gauss")
