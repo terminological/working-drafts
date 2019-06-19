@@ -75,7 +75,7 @@ public class SeriesBuilder<X> {
 			int level = i;
 			if (i == 0) {
 				out = range(rd).map(d -> {
-					List<Double> l = new ArrayList<>(definitions.length);
+					List<Double> l = new ArrayList<>(definitions.length+1);
 					l.set(level,d);
 					return l;
 				});
