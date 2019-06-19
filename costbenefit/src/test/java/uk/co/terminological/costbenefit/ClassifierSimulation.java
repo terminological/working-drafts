@@ -22,7 +22,7 @@ public class ClassifierSimulation {
 	Figure figures;
 	
 	@BeforeClass
-	public void setUpBeforeClass() {
+	public static void setUpBeforeClass() {
 		BasicConfigurator.configure();
 	}
 	
