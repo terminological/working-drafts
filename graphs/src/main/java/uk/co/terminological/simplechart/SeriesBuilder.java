@@ -96,6 +96,9 @@ public class SeriesBuilder<X> {
 			return new Range(from,to,values);
 		}
 		
+		public static Range of(Double from, Double to, Integer values) {
+			return new Range(from,to,values.longValue());
+		}
 	}
 	
 	

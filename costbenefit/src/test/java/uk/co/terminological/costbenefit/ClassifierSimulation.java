@@ -61,7 +61,10 @@ public class ClassifierSimulation {
 	@Test
 	public void testSpace() {
 		SeriesBuilder.space(
-				Range.of(-1D, 1D, 3)
+				Range.of(-1.0, 1.0, 3),
+				Range.of(-1D, 1D, 5),
+				Range.of(-1D, 1D, 7),
+				Range.of(-1D, 1D, 9)
 				).forEach(System.out::println);
 	}
 	
