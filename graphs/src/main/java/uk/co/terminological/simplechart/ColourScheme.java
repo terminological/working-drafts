@@ -178,11 +178,11 @@ public class ColourScheme {
 		StringBuilder styles = new StringBuilder("# line styles\n");
 		StringBuilder palette = new StringBuilder("# palette\n set palette defined ( \\\n");
 		List<Colour> cols = values(categories);
-		for (int i=1; i<=cols.size(); i++) {
+		for (int i=0; i<cols.size(); i++) {
 			String col = cols.get(i).toHex();
-			styles.append("set style line "+i+" lt 1 lc rgb '"+col+"'\n");
+			styles.append("set style line "+(i+1)+" lt 1 lc rgb '"+col+"'\n");
 			if (i>0) palette.append(",\\\n"); 
-			palette.append(""+i+" '"+col+"'");
+			palette.append(""+(i+1)+" '"+col+"'");
 		};
 		return styles.toString()+"\n"+palette.toString()+")\n";
 	}
