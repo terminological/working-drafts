@@ -49,6 +49,6 @@ public class ClassifierSimulation {
 
 	@Test
 	public void testSeries() {
-		SeriesBuilder.range(-1D, 1D, 1000).map(mapper).forEach(System.out::println);
+		SeriesBuilder.range(-1D, 1D, 1000).forEach(System.out::println);
 	}
 }
