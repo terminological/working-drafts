@@ -83,12 +83,12 @@ public class ClassifierSimulation {
 			figures.withNewChart(title, ChartType.XY_LINE)
 			.config().withXScale(-1F, 1F)
 			.withXLabel("x")
-			.withYLabel("gauss")
+			.withYLabel("kumaraswamy")
 			.withYScale(0F, 1F)
 			.done()
-			.withSeries(SeriesBuilder.range(-1D, 1D, 1000))
+			.withSeries(SeriesBuilder.range(xRange))
 			.bind(X, t -> t)
-			.bind(Y, GaussianCDF.fn(0, 1))
+			.bind(Y, Kumaraswamy.fn(a,b))
 			.done()
 			.render();
 		});
