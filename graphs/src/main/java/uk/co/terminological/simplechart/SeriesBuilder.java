@@ -68,6 +68,7 @@ public class SeriesBuilder<X> {
 	
 	public static Stream<List<Double>> space(Range... definitions) {
 		if (definitions.length == 0) return Stream.empty();
+		final int size = definitions.length+1; 
 		Stream<List<Double>> out = null;
 		int i = 0;
 		for (Range rd: definitions) {
@@ -75,7 +76,7 @@ public class SeriesBuilder<X> {
 			int level = i;
 			if (i == 0) {
 				out = range(rd).map(d -> {
-					List<Double> l = new ArrayList<>(definitions.length+1);
+					List<Double> l = new ArrayList<>(size);
 					l.set(level,d);
 					return l;
 				});
