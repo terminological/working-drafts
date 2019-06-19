@@ -69,19 +69,24 @@ public class SeriesBuilder<X> {
 	public static Stream<List<Double>> space(Range... definitions) {
 		if (definitions.length == 0) return Stream.empty();
 		Stream<List<Double>> out = null;
+		int i = 0;
 		for (Range rd: definitions) {
-			if (out != null) {
-				out = out.flatMap(l -> range(rd).map(d -> {
-					l.add(d);
-					return l;
-				}));
-			} else {
+			
+			int level = i;
+			if (i == 0) {
 				out = range(rd).map(d -> {
-					List<Double> l = new ArrayList<>();
-					l.add(d);
+					List<Double> l = new ArrayList<>(definitions.length);
+					l.set(level,d);
 					return l;
 				});
+			} else {
+				out = out.flatMap(l -> range(rd).map(d -> {
+					l.set(level,d);
+					return l;
+				}));
 			}
+			
+			i++;
 		}
 		return out;
 	}
