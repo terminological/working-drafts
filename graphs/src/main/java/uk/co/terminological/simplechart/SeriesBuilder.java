@@ -57,7 +57,7 @@ public class SeriesBuilder<X> {
 	}
 	
 	public static Stream<Double> range(Double from, Double to, int divisions) {
-		Double increment = (from-to)/divisions;
+		Double increment = (to-from)/divisions;
 		return start(from).repeat(d -> d+increment).untilFalse(d -> {
 			if (increment>0) return d <= to;
 			else if (increment<0) return d >= to;
