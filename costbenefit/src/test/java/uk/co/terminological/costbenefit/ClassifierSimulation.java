@@ -76,7 +76,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotKumaraswarmy() {
-		Range aRange = Range.of(1.1D, 20D, 8);
+		Range spreadRange = Range.of(1.1D, 20D, 8);
 		//Range bRange = Range.of(2D, 5D, 4);
 		Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
@@ -92,9 +92,9 @@ public class ClassifierSimulation {
 			.done()
 			.withSeries(SeriesBuilder.range(xRange))
 			.bind(X, t -> t);
-			SeriesBuilder.space(aRange,modeRange).forEach(arr -> {
-				Double a = arr[0]*arr[1];
-				Double b = KumaraswamyCDF.b(a, arr[1]);
+			SeriesBuilder.space(spreadRange,modeRange).forEach(arr -> {
+				Double a = KumaraswamyCDF.a(arr[0],arr[1]);
+				Double b = KumaraswamyCDF.b(arr[0],arr[1]);
 				String title = "a="+df.format(a)+" b="+df.format(b);
 				tmp.bind(Y, KumaraswamyCDF.pdf(a,b),title);
 			});
