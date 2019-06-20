@@ -76,8 +76,10 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotKumaraswarmy() {
-		Range aRange = Range.of(2D, 5D, 4);
-		Range bRange = Range.of(2D, 5D, 4);
+		Range aRange = Range.of(2D, 5D, 8);
+		//Range bRange = Range.of(2D, 5D, 4);
+		Range modeRange = Range.of(0.1, 0.9, 9);
+		//Double mode = 0.75D;
 		Range xRange = Range.of(0D, 1D, 100);
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		
@@ -90,10 +92,10 @@ public class ClassifierSimulation {
 			.done()
 			.withSeries(SeriesBuilder.range(xRange))
 			.bind(X, t -> t);
-			SeriesBuilder.space(aRange,bRange).forEach(arr -> {
+			SeriesBuilder.space(aRange,modeRange).forEach(arr -> {
 				Double a = arr[0];
-				Double b = arr[1];
-				String title = "a="+df.format(a)+" b="+df.format(b);
+				Double b = KumaraswamyCDF.b(a, arr[1]);
+				String title = "a="+df.format(a)+" mode="+df.format(arr[1]);
 				tmp.bind(Y, KumaraswamyCDF.fn(a,b),title);
 			});
 			tmp.done().render();

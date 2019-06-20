@@ -9,7 +9,7 @@ public class Simulator {
 
 	
 	
-	public Stream<Patient> generate(int n, List<FeatureType> features) {
+	public Stream<Patient> generatePatient(int n, List<FeatureType> features) {
 		return null;
 	}
 	
