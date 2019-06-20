@@ -34,6 +34,10 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 		return y -> Math.pow((1-Math.pow((1-y), 1/b)), 1/a);
 	}
 	
+	public static Function<Double,Double> pdf(Double a, Double b) {
+		return x -> a*b*Math.pow(x, a-1)*Math.pow(1-Math.pow(x, a), b-1);
+	}
+	
 	/**
 	 * dx/da = b*x^a*(1-x^a)^(b-1)*log(x)
 	 * 
