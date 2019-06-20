@@ -76,7 +76,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotKumaraswarmy() {
-		Range aRange = Range.of(1.1D, 50D, 8);
+		Range aRange = Range.of(1.1D, 20D, 8);
 		//Range bRange = Range.of(2D, 5D, 4);
 		Range modeRange = Range.of(0.1, 0.9, 1);
 		//Double mode = 0.75D;
