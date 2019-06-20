@@ -30,7 +30,7 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 		return x -> new KumaraswamyCDF().value(x,a,b);
 	}
 	
-	public static Function<Double,Double> inv(Double a, Double b) {
+	public static Function<Double,Double> invCdf(Double a, Double b) {
 		return y -> Math.pow((1-Math.pow((1-y), 1/b)), 1/a);
 	}
 	
