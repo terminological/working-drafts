@@ -96,7 +96,7 @@ public class ClassifierSimulation {
 				Double a = arr[0];
 				Double b = KumaraswamyCDF.b(a, arr[1]);
 				String title = "a="+df.format(a)+" mode="+df.format(arr[1]);
-				tmp.bind(Y, KumaraswamyCDF.cdf(a,b),title);
+				tmp.bind(Y, KumaraswamyCDF.pdf(a,b),title);
 			});
 			tmp.done().render();
 	}
