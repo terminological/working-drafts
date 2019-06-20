@@ -86,9 +86,9 @@ public class Simulator {
 		@Override
 		public Double sample(boolean givenDisease) {
 			if (givenDisease) {
-				return KumaraswamyCDF.inv(aGivenDisease,b(aGivenDisease,modeGivenDisease)).apply(rand.nextDouble());
+				return KumaraswamyCDF.inv(aGivenDisease,KumaraswamyCDF.b(aGivenDisease,modeGivenDisease)).apply(rand.nextDouble());
 			} else {
-				return KumaraswamyCDF.inv(aGivenNoDisease,b(aGivenNoDisease,modeGivenNoDisease)).apply(rand.nextDouble());
+				return KumaraswamyCDF.inv(aGivenNoDisease,KumaraswamyCDF.b(aGivenNoDisease,modeGivenNoDisease)).apply(rand.nextDouble());
 			}
 		}
 		
