@@ -88,7 +88,7 @@ public class ClassifierSimulation {
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
 			.withYLabel("kumaraswamy")
-			.withYScale(0F, 1F)
+			.withYScale(0F, 10F)
 			.done()
 			.withSeries(SeriesBuilder.range(xRange))
 			.bind(X, t -> t);
