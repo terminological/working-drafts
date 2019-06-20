@@ -78,17 +78,23 @@ public class Simulator {
 
 		private Random rand = new Random();
 		public Double modeGivenDisease;
-		public Double aGivenDisease;
+		public Double spreadGivenDisease;
 		public Double modeGivenNoDisease;
-		public Double aGivenNoDisease;
+		public Double spreadGivenNoDisease;
 		
 		
 		@Override
 		public Double sample(boolean givenDisease) {
 			if (givenDisease) {
-				return KumaraswamyCDF.invCdf(aGivenDisease,KumaraswamyCDF.b(aGivenDisease,modeGivenDisease)).apply(rand.nextDouble());
+				return KumaraswamyCDF.invCdf(
+						KumaraswamyCDF.a(spreadGivenDisease,modeGivenDisease),
+						KumaraswamyCDF.b(spreadGivenDisease,modeGivenDisease)
+					).apply(rand.nextDouble());
 			} else {
-				return KumaraswamyCDF.invCdf(aGivenNoDisease,KumaraswamyCDF.b(aGivenNoDisease,modeGivenNoDisease)).apply(rand.nextDouble());
+				return KumaraswamyCDF.invCdf(
+						KumaraswamyCDF.a(spreadGivenNoDisease,modeGivenNoDisease),
+						KumaraswamyCDF.b(spreadGivenNoDisease,modeGivenNoDisease)
+					).apply(rand.nextDouble());
 			}
 		}
 		
