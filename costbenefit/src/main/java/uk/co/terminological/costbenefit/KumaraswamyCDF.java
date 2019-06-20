@@ -59,7 +59,7 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 	}
 	
 	public static Double a(Double spread, Double mode) {
-		return (1+14*mode+8*spread)/(1+8*spread);
+		return (1+mode+spread)/(1+spread);
 	}
 	
 	public static Double b(Double spread, Double mode) {
