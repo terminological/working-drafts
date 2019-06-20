@@ -77,10 +77,22 @@ public class Simulator {
 	public static class KumuraswamyFeature implements Feature {
 
 		private Random rand = new Random();
+		public Double modeGivenDisease;
+		public Double aGivenDisease;
+		public Double modeGivenNoDisease;
+		public Double aGivenNoDisease;
+		
+		private Double b(Double a,Double mode) {
+			return (-1+a+Math.pow(mode, a))/(a*Math.pow(mode, a));
+		}
 		
 		@Override
-		public Double sample(boolean diseaseStatus) {
-			return KumaraswamyCDF.inv(a,b).apply(rand.nextDouble());
+		public Double sample(boolean givenDisease) {
+			if (givenDisease) {
+				return KumaraswamyCDF.inv(aGivenDisease,b(aGivenDisease,modeGivenDisease)).apply(rand.nextDouble());
+			} else {
+				return KumaraswamyCDF.inv(aGivenNoDisease,b(aGivenNoDisease,modeGivenNoDisease)).apply(rand.nextDouble());
+			}
 		}
 		
 	}
