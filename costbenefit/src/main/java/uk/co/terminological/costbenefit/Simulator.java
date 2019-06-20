@@ -82,9 +82,6 @@ public class Simulator {
 		public Double modeGivenNoDisease;
 		public Double aGivenNoDisease;
 		
-		private Double b(Double a,Double mode) {
-			return (-1+a+Math.pow(mode, a))/(a*Math.pow(mode, a));
-		}
 		
 		@Override
 		public Double sample(boolean givenDisease) {

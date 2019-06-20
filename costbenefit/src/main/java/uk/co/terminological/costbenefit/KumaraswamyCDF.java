@@ -53,6 +53,11 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 		};
 		
 	}
+	
+	public static Double b(Double a, Double mode) {
+		return (-1+a+Math.pow(mode, a))/(a*Math.pow(mode, a));
+	}
+	
 
 	/**
 	 * y = 1-(1-x^a)^b
