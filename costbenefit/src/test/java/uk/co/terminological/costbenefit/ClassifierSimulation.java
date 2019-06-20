@@ -95,7 +95,7 @@ public class ClassifierSimulation {
 			SeriesBuilder.space(aRange,modeRange).forEach(arr -> {
 				Double a = arr[0];
 				Double b = KumaraswamyCDF.b(a, arr[1]);
-				String title = "a="+df.format(a)+" mode="+df.format(arr[1]);
+				String title = "a="+df.format(a)+" b="+df.format(b);
 				tmp.bind(Y, KumaraswamyCDF.pdf(a,b),title);
 			});
 			tmp.done().render();
