@@ -77,8 +77,8 @@ public class ClassifierResult {
 		return c;
 	}
 	
-	public Kumaraswamy.Fitted getFittedSensitivity() {
-		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
+	public KumaraswamyCDF.Fitted getFittedSensitivity() {
+		SimpleCurveFitter fitter = SimpleCurveFitter.create(new KumaraswamyCDF(), new double[] {1D,1D});
 		WeightedObservedPoints points = new WeightedObservedPoints();
 		
 		PeekingIterator<Prediction> preds = new PeekingIterator<>(getPredictions().iterator()); 
@@ -95,11 +95,11 @@ public class ClassifierResult {
 		}
 		// this.getCutoffs(0.01D).stream().forEach(c -> points.add(c.getValue(), 1-c.sensitivity()));
 		
-		return new Kumaraswamy.Fitted(fitter.fit(points.toList()), true);
+		return new KumaraswamyCDF.Fitted(fitter.fit(points.toList()), true);
 	}
 
-	public Kumaraswamy.Fitted getFittedSpecificity() {
-		SimpleCurveFitter fitter = SimpleCurveFitter.create(new Kumaraswamy(), new double[] {1D,1D});
+	public KumaraswamyCDF.Fitted getFittedSpecificity() {
+		SimpleCurveFitter fitter = SimpleCurveFitter.create(new KumaraswamyCDF(), new double[] {1D,1D});
 		WeightedObservedPoints points = new WeightedObservedPoints();
 		
 		PeekingIterator<Prediction> preds = new PeekingIterator<>(getPredictions().iterator()); 
@@ -115,7 +115,7 @@ public class ClassifierResult {
 			points.add(pred.getPredicted(), specificity(trueNeg));
 		}
 		
-		return new Kumaraswamy.Fitted(fitter.fit(points.toList()), false);
+		return new KumaraswamyCDF.Fitted(fitter.fit(points.toList()), false);
 	}
 	
 	public double sensitivity(int falseNeg) {

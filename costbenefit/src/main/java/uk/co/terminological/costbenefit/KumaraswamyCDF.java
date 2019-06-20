@@ -24,10 +24,14 @@ import uk.co.terminological.simplechart.SeriesBuilder;
  * @author rc538
  *
  */
-public class Kumaraswamy implements ParametricUnivariateFunction {
+public class KumaraswamyCDF implements ParametricUnivariateFunction {
 
 	public static Function<Double,Double> fn(Double a, Double b) {
-		return x -> new Kumaraswamy().value(x,a,b);
+		return x -> new KumaraswamyCDF().value(x,a,b);
+	}
+	
+	public static Function<Double,Double> inv(Double a, Double b) {
+		return y -> Math.pow((1-Math.pow((1-y), 1/b)), 1/a);
 	}
 	
 	/**
@@ -64,7 +68,7 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 				,b);
 	}
 
-	public static class Fitted extends Kumaraswamy {
+	public static class Fitted extends KumaraswamyCDF {
 		
 		double a;
 		double b;

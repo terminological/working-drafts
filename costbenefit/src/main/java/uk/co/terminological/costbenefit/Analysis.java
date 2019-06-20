@@ -19,7 +19,7 @@ import com.google.common.collect.Lists;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
-import uk.co.terminological.costbenefit.Kumaraswamy.Fitted;
+import uk.co.terminological.costbenefit.KumaraswamyCDF.Fitted;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
