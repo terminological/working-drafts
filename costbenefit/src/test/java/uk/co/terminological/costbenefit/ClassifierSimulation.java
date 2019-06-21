@@ -152,6 +152,7 @@ public class ClassifierSimulation {
 					.bind(Y, t -> t.matrix().specificity())
 					.done()
 					.render();
+			space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
 			figures.withNewChart(c.name()+" pr", ChartType.XY_MULTI_LINE)
 				.config().withXScale(0F, 1F)
 				.withXLabel("precision")
