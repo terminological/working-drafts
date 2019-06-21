@@ -111,6 +111,7 @@ public class ClassifierSimulation {
 			
 			tmp.bind(Y, pos,"pos");
 			tmp.bind(Y, neg,"neg");
+			tmp.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"neg");
 			tmp.done().render();
 	}
 	
