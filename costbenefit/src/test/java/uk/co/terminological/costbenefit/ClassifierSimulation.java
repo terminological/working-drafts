@@ -16,6 +16,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import freemarker.template.TemplateException;
+import uk.co.terminological.costbenefit.ClassifierModel.ClassifierConfigEnum;
+import uk.co.terminological.costbenefit.ClassifierModel.CostModelEnum;
+import uk.co.terminological.costbenefit.ClassifierModel.ParameterSet;
+import uk.co.terminological.costbenefit.ClassifierModel.ParameterSpace;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.Series;
@@ -99,5 +103,23 @@ public class ClassifierSimulation {
 				tmp.bind(Y, KumaraswamyCDF.pdf(a,b),title);
 			});
 			tmp.done().render();
+	}
+	
+	@Test
+	public void plotRoc() {
+		ParameterSet defaults = new ParameterSet(0.1,ClassifierConfigEnum.HIGH_INFORMATION,CostModelEnum.EARLY_STAGE_CANCER,null);
+		ParameterSpace space = new ParameterSpace(defaults);
+		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
+		figures.withNewChart("roc", ChartType.XYSCATTER)
+				.config().withXScale(0F, 1F)
+				.withXLabel("sensitivity")
+				.withYLabel("specificity")
+				.withYScale(0F, 1F)
+				.done()
+				.withSeries(space.stream())
+				.bind(X, t -> t.matrix().sensitivity())
+				.bind(Y, t -> t.matrix().specificity())
+				.done()
+				.render();
 	}
 }

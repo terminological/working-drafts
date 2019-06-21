@@ -271,6 +271,14 @@ public abstract class ClassifierModel<X> {
 			return new ParameterSet(prevalence, centralityIfPositive, spreadIfPositive, centralityIfNegative, 
 					spreadIfNegative, tpValue, tnValue, fpCost, fnCost, cutOff);
 		}
+		
+		public Kumaraswamy model() {
+			return new Kumaraswamy(centralityIfPositive, centralityIfNegative, spreadIfPositive, spreadIfNegative, prevalence);
+		}
+		
+		public ConfusionMatrix2D matrix() {
+			return model().matrix(cutOff)
+		}
 	}
 	
 	
