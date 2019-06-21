@@ -34,6 +34,8 @@ public class Simulator {
 	}
 	
 	public static class BinomialFeature implements Feature {
+		
+		
 		private Random rand = new Random();
 		public Double featureProbGivenDisease;
 		public Double featureProbGivenNoDisease;
@@ -51,6 +53,14 @@ public class Simulator {
 	}
 	
 	public static class LogGaussianFeature implements Feature {
+		
+		public LogGaussianFeature(Double meanGivenDisease, Double varGivenDisease, Double meanGivenNoDisease, Double varGivenNoDisease) {
+			this.meanGivenDisease = meanGivenDisease;
+			this.varGivenDisease = varGivenDisease;
+			this.meanGivenNoDisease = meanGivenNoDisease;
+			this.varGivenNoDisease = varGivenNoDisease;
+		}
+
 		private Random rand = new Random();
 		public Double meanGivenDisease;
 		public Double varGivenDisease;
@@ -74,7 +84,7 @@ public class Simulator {
 		}
 	}
 	
-	public static class KumuraswamyFeature implements Feature {
+	public static class KumaraswamyFeature implements Feature {
 
 		private Random rand = new Random();
 		public Double modeGivenDisease;
