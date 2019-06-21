@@ -199,12 +199,12 @@ public abstract class ClassifierModel<X> {
 	
 	public static enum CostModelEnum implements CostModel {
 		EARLY_STAGE_CANCER(10.0,1.0,-0.1,-100.0),
-		LASTE_STAGE_CANCER(2.0,10.0,-2.0,-2.0),
+		CANCER_IS_UNTREATABLE(2.0,10.0,-10.0,-0.5),
 		DIABETES(4.0,0.1,-1.0,-0.1),
-		SEPSIS(5.0,0.1,-0.1,-5.0),
+		SEPSIS(10.0,0.0,0.0,-5.0),
 		EARLY_STAGE_DEMENTIA(2.0,5.0,-2.0,-1.0),
 		NON_ACCIDENTAL_INJURY(100.0,1.0,-20.0,-20.0),
-		IMMINENT_END_OF_LIFE(2.0,1.0,-1.0,-0.1),
+		IMMINENT_END_OF_LIFE(2.0,0.0,-1.0,-0.1),
 		ENDOSCOPY_UNINFORMATIVE(2.0,0.1,-1.0,-2.0)
 		;
 		
