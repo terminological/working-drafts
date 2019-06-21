@@ -277,7 +277,7 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		public ConfusionMatrix2D matrix() {
-			return model().matrix(cutOff)
+			return model().matrix(cutOff);
 		}
 	}
 	
