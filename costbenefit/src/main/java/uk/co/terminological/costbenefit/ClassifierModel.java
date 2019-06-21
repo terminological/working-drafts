@@ -3,7 +3,7 @@ package uk.co.terminological.costbenefit;
 public abstract class ClassifierModel<X> {
 
 	ClassifierModel(Double prevalence) {prev=prevalence;}
-	public abstract ConfusionMatrix matrix(X param);
+	public abstract ConfusionMatrix2D matrix(X param);
 	
 	Double prev = 0.2;
 	
@@ -14,14 +14,14 @@ public abstract class ClassifierModel<X> {
 		}
 
 		@Override
-		public ConfusionMatrix matrix(Void param) {
+		public ConfusionMatrix2D matrix(Void param) {
 			
 			Double tp = prev;
 			Double tn = 0D;
 			Double fp = 1-prev;
 			Double fn = 0D;
 			
-			return new ConfusionMatrix(tp,tn,fp,fn);
+			return new ConfusionMatrix2D(tp,tn,fp,fn);
 		}
 
 		
@@ -50,7 +50,7 @@ public abstract class ClassifierModel<X> {
 			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
 		}
 		
-		public ConfusionMatrix matrix(Double cutoff) {
+		public ConfusionMatrix2D matrix(Double cutoff) {
 			
 			Double cdfPos = KumaraswamyCDF.cdf(aPos,bPos).apply(cutoff);
 			Double cdfNeg = KumaraswamyCDF.cdf(aNeg,bNeg).apply(cutoff);
@@ -62,7 +62,7 @@ public abstract class ClassifierModel<X> {
 			
 			//TODO: prevalence is independent of cutoff - this should be correct. Classifier model accounts for prevalence by.
 			
-			return new ConfusionMatrix(eTp,eTn,eFp,eFn);
+			return new ConfusionMatrix2D(eTp,eTn,eFp,eFn);
 		}
 	}
 	
@@ -73,14 +73,14 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		@Override
-		public ConfusionMatrix matrix(Void param) {
+		public ConfusionMatrix2D matrix(Void param) {
 			
 			Double tp = 0D;
 			Double tn = 1-prev;
 			Double fp = 0D;
 			Double fn = prev;
 			
-			return new ConfusionMatrix(tp,tn,fp,fn);
+			return new ConfusionMatrix2D(tp,tn,fp,fn);
 		}
 	}
 }
