@@ -1,5 +1,7 @@
 package uk.co.terminological.costbenefit;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import uk.co.terminological.simplechart.SeriesBuilder;
@@ -96,62 +98,62 @@ public abstract class ClassifierModel<X> {
 	
 	public static class ParameterSpace {
 		public ParameterSpace(ParameterSet defaults) {
-			this.prevalence = Stream.ofNullable(defaults.prevalence);
-			this.centralityIfPositive = Stream.ofNullable(defaults.centralityIfPositive);
-			this.spreadIfPositive = Stream.ofNullable(defaults.spreadIfPositive);
-			this.centralityIfNegative = Stream.ofNullable(defaults.centralityIfNegative);
-			this.spreadIfNegative = Stream.ofNullable(defaults.spreadIfNegative);
-			this.tpValue = Stream.ofNullable(defaults.tpValue);
-			this.tnValue = Stream.ofNullable(defaults.tnValue);
-			this.fpCost = Stream.ofNullable(defaults.fpCost);
-			this.fnCost = Stream.ofNullable(defaults.fnCost);
-			this.cutOff = Stream.ofNullable(defaults.cutOff);
+			this.prevalence = Collections.singletonList(defaults.prevalence);
+			this.centralityIfPositive = Collections.singletonList(defaults.centralityIfPositive);
+			this.spreadIfPositive = Collections.singletonList(defaults.spreadIfPositive);
+			this.centralityIfNegative = Collections.singletonList(defaults.centralityIfNegative);
+			this.spreadIfNegative = Collections.singletonList(defaults.spreadIfNegative);
+			this.tpValue = Collections.singletonList(defaults.tpValue);
+			this.tnValue = Collections.singletonList(defaults.tnValue);
+			this.fpCost = Collections.singletonList(defaults.fpCost);
+			this.fnCost = Collections.singletonList(defaults.fnCost);
+			this.cutOff = Collections.singletonList(defaults.cutOff);
 		}
 
 
 
-		Stream<Double> prevalence;
-		Stream<Double> centralityIfPositive;
-		Stream<Double> spreadIfPositive;
-		Stream<Double> centralityIfNegative;
-		Stream<Double> spreadIfNegative;
-		Stream<Double> tpValue;
-		Stream<Double> tnValue;
-		Stream<Double> fpCost;
-		Stream<Double> fnCost;
-		Stream<Double> cutOff;
+		List<Double> prevalence;
+		List<Double> centralityIfPositive;
+		List<Double> spreadIfPositive;
+		List<Double> centralityIfNegative;
+		List<Double> spreadIfNegative;
+		List<Double> tpValue;
+		List<Double> tnValue;
+		List<Double> fpCost;
+		List<Double> fnCost;
+		List<Double> cutOff;
 		
 		
 		
 		public Stream<ParameterSet> stream() {
 			ParameterSet tmp = new ParameterSet();
-			return prevalence.flatMap(p -> {
+			return prevalence.stream().flatMap(p -> {
 				tmp.prevalence = p;
-				return centralityIfPositive;
+				return centralityIfPositive.stream(); //TODO: gets consumed.
 			}).flatMap(cPos -> {
 				tmp.centralityIfPositive = cPos;
-				return spreadIfPositive;
+				return spreadIfPositive.stream();
 			}).flatMap(sPos -> {
 				tmp.spreadIfPositive = sPos;
-				return centralityIfNegative;
+				return centralityIfNegative.stream();
 			}).flatMap(cNeg -> {
 				tmp.centralityIfNegative = cNeg;
-				return spreadIfNegative;
+				return spreadIfNegative.stream();
 			}).flatMap(sNeg -> {
 				tmp.spreadIfNegative = sNeg;
-				return tpValue;
+				return tpValue.stream();
 			}).flatMap(tpVal -> {
 				tmp.tpValue = tpVal;
-				return tnValue;
+				return tnValue.stream();
 			}).flatMap(tnVal -> {
 				tmp.tnValue = tnVal;
-				return fpCost;
+				return fpCost.stream();
 			}).flatMap(fpC -> {
 				tmp.fpCost = fpC;
-				return fnCost;
+				return fnCost.stream();
 			}).flatMap(fnC -> {
 				tmp.fnCost = fnC;
-				return cutOff;
+				return cutOff.stream();
 			}).map(co -> {
 				tmp.cutOff = co;
 				return tmp.clone();
