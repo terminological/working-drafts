@@ -157,7 +157,8 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotDebug() {
-		ParameterSet defaults = new ParameterSet(0.1,ClassifierConfigEnum.LOW_INFORMATION,CostModelEnum.EARLY_STAGE_CANCER,null);
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
 		figures.withNewChart("roc", ChartType.XY_MULTI_LINE)
@@ -178,5 +179,6 @@ public class ClassifierSimulation {
 				.bind(Y, t -> t.matrix().realtiveValue(),"value")
 				.done()
 				.render();
+		});
 	}
 }
