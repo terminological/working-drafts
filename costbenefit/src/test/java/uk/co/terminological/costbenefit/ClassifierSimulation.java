@@ -171,7 +171,7 @@ public class ClassifierSimulation {
 	@Test
 	public void plotDebug() {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
+		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.DIABETES,null);
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
 		figures.withNewChart(c.name()+" measures", ChartType.XY_MULTI_LINE)
