@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.function.Function;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
@@ -81,14 +82,13 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotKumaraswarmy() {
-		Range spreadRange = Range.of(0.1D,1D, 6);
+		//Range spreadRange = Range.of(0.1D,1D, 6);
 		//Range bRange = Range.of(2D, 5D, 4);
-		Range modeRange = Range.of(0.1, 0.9, 3);
+		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
-		Range xRange = Range.of(0D, 1D, 100);
+		Range xRange = Range.of(0D, 1D, 1000);
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		
-			
 			Series<Double> tmp = figures.withNewChart("plots", ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
@@ -97,12 +97,18 @@ public class ClassifierSimulation {
 			.done()
 			.withSeries(SeriesBuilder.range(xRange))
 			.bind(X, t -> t);
-			SeriesBuilder.space(spreadRange,modeRange).forEach(arr -> {
-				Double a = KumaraswamyCDF.a(arr[0],arr[1]);
-				Double b = KumaraswamyCDF.b(arr[0],arr[1]);
-				String title = "a="+df.format(a)+" b="+df.format(b);
-				tmp.bind(Y, KumaraswamyCDF.pdf(a,b),title);
-			});
+			
+			Function<Double,Double> pos = KumaraswamyCDF.pdf(
+				KumaraswamyCDF.a(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfPositive,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfPositive),
+				KumaraswamyCDF.b(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfPositive,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfPositive));
+			
+
+			Function<Double,Double> neg = KumaraswamyCDF.pdf(
+				KumaraswamyCDF.a(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfNegative,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfNegative),
+				KumaraswamyCDF.b(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfNegative,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfNegative));
+			
+			tmp.bind(Y, pos,"pos");
+			tmp.bind(Y, neg,"neg");
 			tmp.done().render();
 	}
 	
