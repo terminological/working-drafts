@@ -142,7 +142,7 @@ public class ClassifierSimulation {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
 			ParameterSpace space = new ParameterSpace(defaults);
-			space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
+			space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
 			figures.withNewChart(c.name()+" roc", ChartType.XY_MULTI_LINE)
 					.config().withXScale(0F, 1F)
 					.withXLabel("1-sens")
