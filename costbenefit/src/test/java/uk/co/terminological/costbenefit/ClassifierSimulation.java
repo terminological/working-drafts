@@ -110,15 +110,18 @@ public class ClassifierSimulation {
 		ParameterSet defaults = new ParameterSet(0.1,ClassifierConfigEnum.LOW_INFORMATION,CostModelEnum.EARLY_STAGE_CANCER,null);
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
-		figures.withNewChart("roc", ChartType.XY_SCATTER)
+		figures.withNewChart("roc", ChartType.XY_MULTI_LINE)
 				.config().withXScale(0F, 1F)
-				.withXLabel("sensitivity")
-				.withYLabel("specificity")
+				.withXLabel("cutoff")
+				.withYLabel("rates")
 				.withYScale(0F, 1F)
 				.done()
 				.withSeries(space.stream())
-				.bind(X, t -> t.matrix().sensitivity())
-				.bind(Y, t -> t.matrix().specificity())
+				.bind(X, t -> t.cutOff)
+				.bind(Y, t -> t.matrix().tp,"tp")
+				.bind(Y, t -> t.matrix().tn,"tn")
+				.bind(Y, t -> t.matrix().fp,"fp")
+				.bind(Y, t -> t.matrix().fn,"fn")
 				.done()
 				.render();
 	}
