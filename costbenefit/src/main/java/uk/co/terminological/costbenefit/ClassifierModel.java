@@ -12,6 +12,7 @@ public abstract class ClassifierModel<X> {
 	
 	Double prev = 0.2;
 	
+	
 	public static class AlwaysPositive extends ClassifierModel<Void> {
 
 		AlwaysPositive(Double prevalence) {
@@ -95,16 +96,16 @@ public abstract class ClassifierModel<X> {
 	
 	public static class ParameterSpace {
 		public ParameterSpace(ParameterSet defaults) {
-			this.prevalence = Stream.of(defaults.prevalence);
-			this.centralityIfPositive = Stream.of(defaults.centralityIfPositive);
-			this.spreadIfPositive = Stream.of(defaults.spreadIfPositive);
-			this.centralityIfNegative = Stream.of(defaults.centralityIfNegative);
-			this.spreadIfNegative = Stream.of(defaults.spreadIfNegative);
-			this.tpValue = Stream.of(defaults.tpValue);
-			this.tnValue = Stream.of(defaults.tnValue);
-			this.fpCost = Stream.of(defaults.fpCost);
-			this.fnCost = Stream.of(defaults.fnCost);
-			this.cutOff = Stream.of(defaults.cutOff);
+			this.prevalence = Stream.ofNullable(defaults.prevalence);
+			this.centralityIfPositive = Stream.ofNullable(defaults.centralityIfPositive);
+			this.spreadIfPositive = Stream.ofNullable(defaults.spreadIfPositive);
+			this.centralityIfNegative = Stream.ofNullable(defaults.centralityIfNegative);
+			this.spreadIfNegative = Stream.ofNullable(defaults.spreadIfNegative);
+			this.tpValue = Stream.ofNullable(defaults.tpValue);
+			this.tnValue = Stream.ofNullable(defaults.tnValue);
+			this.fpCost = Stream.ofNullable(defaults.fpCost);
+			this.fnCost = Stream.ofNullable(defaults.fnCost);
+			this.cutOff = Stream.ofNullable(defaults.cutOff);
 		}
 
 
@@ -165,6 +166,30 @@ public abstract class ClassifierModel<X> {
 		Double spreadIfNegative();
 	}
 	
+	public static enum ClassifierConfigEnum implements ClassifierConfig {
+		HIGH_INFORMATION(0.8,0.1,0.2,0.1),
+		LOW_INFORMATION(0.6,0.5,0.4,0.5),
+		;
+		
+		private ClassifierConfigEnum(Double centralityIfPositive, Double spreadIfPositive, Double centralityIfNegative,	Double spreadIfNegative) {
+			this.centralityIfPositive = centralityIfPositive;
+			this.spreadIfPositive = spreadIfPositive;
+			this.centralityIfNegative = centralityIfNegative;
+			this.spreadIfNegative = spreadIfNegative;
+		}
+		
+		Double centralityIfPositive;
+		Double spreadIfPositive;
+		Double centralityIfNegative;
+		Double spreadIfNegative;
+		
+		@Override public Double centralityIfPositive() {return centralityIfPositive;}
+		@Override public Double spreadIfPositive() {return spreadIfPositive;}
+		@Override public Double centralityIfNegative() {return centralityIfNegative;}
+		@Override public Double spreadIfNegative() {return centralityIfNegative;}
+		
+	}
+	
 	public static interface CostModel {
 		Double tpValue(); 
 		Double tnValue();
@@ -172,20 +197,63 @@ public abstract class ClassifierModel<X> {
 		Double fnCost();
 	}
 	
+	public static enum CostModelEnum implements CostModel {
+		EARLY_STAGE_CANCER(10.0,1.0,-0.1,-100.0),
+		LASTE_STAGE_CANCER(2.0,10.0,-2.0,-2.0),
+		DIABETES(4.0,0.1,-1.0,-0.1),
+		SEPSIS(5.0,0.1,-0.1,-5.0),
+		EARLY_STAGE_DEMENTIA(2.0,5.0,-2.0,-1.0),
+		NON_ACCIDENTAL_INJURY(100.0,1.0,-20.0,-20.0),
+		IMMINENT_END_OF_LIFE(2.0,1.0,-1.0,-0.1),
+		ENDOSCOPY_UNINFORMATIVE(2.0,0.1,-1.0,-2.0)
+		;
+		
+		private CostModelEnum(Double tpValue, Double tnValue, Double fpCost, Double fnCost) {
+			this.tpValue = tpValue;
+			this.tnValue = tnValue;
+			this.fpCost = fpCost;
+			this.fnCost = fnCost;
+		}
+		
+		Double tpValue;
+		Double tnValue;
+		Double fpCost;
+		Double fnCost;
+		
+		@Override public Double tpValue() {return tpValue;}
+		@Override public Double tnValue() {return tnValue;}
+		@Override public Double fpCost() {return fpCost;}
+		@Override public Double fnCost() {return fpCost;}
+		
+	}
+	
 	public static class ParameterSet {
+		public ParameterSet(Double prevalence, Double centralityIfPositive, Double spreadIfPositive,
+				Double centralityIfNegative, Double spreadIfNegative, Double tpValue, Double tnValue, Double fpCost,
+				Double fnCost, Double cutOff) {
+			this.prevalence = prevalence;
+			this.centralityIfPositive = centralityIfPositive;
+			this.spreadIfPositive = spreadIfPositive;
+			this.centralityIfNegative = centralityIfNegative;
+			this.spreadIfNegative = spreadIfNegative;
+			this.tpValue = tpValue;
+			this.tnValue = tnValue;
+			this.fpCost = fpCost;
+			this.fnCost = fnCost;
+			this.cutOff = cutOff;
+		}
 		public ParameterSet() {}
 		public ParameterSet(Double prevalence, ClassifierConfig classifier, CostModel cost, Double cutOff) {
-			
-			this.prevalence = prevalence;
-			this.centralityIfPositive = classifier.centralityIfPositive();
-			this.spreadIfPositive = classifier.spreadIfPositive();
-			this.centralityIfNegative = classifier.centralityIfNegative();
-			this.spreadIfNegative = classifier.spreadIfNegative();
-			this.tpValue = cost.tpValue();
-			this.tnValue = cost.tnValue();
-			this.fpCost = cost.fpCost();
-			this.fnCost = cost.fnCost();
-			this.cutOff = cutOff;
+			this(prevalence,
+					classifier.centralityIfPositive(),
+					classifier.spreadIfPositive(),
+					classifier.centralityIfNegative(),
+					classifier.spreadIfNegative(),
+					cost.tpValue(),
+					cost.tnValue(),
+					cost.fpCost(),
+					cost.fnCost(),
+					cutOff);
 		}
 
 		Double prevalence;
@@ -204,4 +272,6 @@ public abstract class ClassifierModel<X> {
 					spreadIfNegative, tpValue, tnValue, fpCost, fnCost, cutOff);
 		}
 	}
+	
+	
 }
