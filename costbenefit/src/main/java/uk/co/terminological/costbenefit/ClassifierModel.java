@@ -168,6 +168,7 @@ public abstract class ClassifierModel<X> {
 	
 	public static enum ClassifierConfigEnum implements ClassifierConfig {
 		HIGH_INFORMATION(0.8,0.1,0.2,0.1),
+		MID_INFORMATION(0.7,0.3,0.3,0.3),
 		LOW_INFORMATION(0.6,0.5,0.4,0.5),
 		;
 		
