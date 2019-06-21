@@ -3,6 +3,7 @@ package uk.co.terminological.costbenefit;
 public abstract class ClassifierModel<X> {
 
 	ClassifierModel(Double prevalence) {prev=prevalence;}
+	
 	public abstract ConfusionMatrix2D matrix(X param);
 	
 	Double prev = 0.2;
