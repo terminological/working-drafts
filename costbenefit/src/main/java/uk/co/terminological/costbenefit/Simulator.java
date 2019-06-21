@@ -86,6 +86,15 @@ public class Simulator {
 	
 	public static class KumaraswamyFeature implements Feature {
 
+		public KumaraswamyFeature(Double modeGivenDisease, Double spreadGivenDisease, Double modeGivenNoDisease,
+				Double spreadGivenNoDisease) {
+			this.modeGivenDisease = modeGivenDisease;
+			this.spreadGivenDisease = spreadGivenDisease;
+			this.modeGivenNoDisease = modeGivenNoDisease;
+			this.spreadGivenNoDisease = spreadGivenNoDisease;
+		}
+
+
 		private Random rand = new Random();
 		public Double modeGivenDisease;
 		public Double spreadGivenDisease;
