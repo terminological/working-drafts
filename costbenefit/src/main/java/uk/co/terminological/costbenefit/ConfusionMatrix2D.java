@@ -75,7 +75,7 @@ public class ConfusionMatrix2D {
 		return absoluteValue(tpValue, tnValue, fpCost, fnCost);
 	}
 	
-	public double realtiveValue() {
+	public double relativeValue() {
 		return relativeValue(tpValue, tnValue, fpCost, fnCost, prevalence);
 	}
 	

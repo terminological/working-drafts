@@ -176,7 +176,7 @@ public class ClassifierSimulation {
 				.bind(Y, t -> t.matrix().accuracy(),"accuracy")
 				.bind(Y, t -> t.matrix().sensitivity(),"sens")
 				.bind(Y, t -> t.matrix().specificity(),"spec")
-				.bind(Y, t -> t.matrix().realtiveValue(),"value")
+				.bind(Y, t -> t.matrix().relativeValue(),"value")
 				.done()
 				.render();
 		});
