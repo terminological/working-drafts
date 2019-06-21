@@ -21,6 +21,7 @@ import uk.co.terminological.costbenefit.ClassifierModel.CostModelEnum;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSet;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSpace;
 import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.Series;
 import uk.co.terminological.simplechart.SeriesBuilder;
@@ -116,12 +117,13 @@ public class ClassifierSimulation {
 				.withYLabel("rates")
 				.withYScale(0F, 1F)
 				.done()
-				.withSeries(space.stream())
+				.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
 				.bind(X, t -> t.cutOff)
 				.bind(Y, t -> t.matrix().tp,"tp")
 				.bind(Y, t -> t.matrix().tn,"tn")
 				.bind(Y, t -> t.matrix().fp,"fp")
 				.bind(Y, t -> t.matrix().fn,"fn")
+				.bind(Y, t -> t.matrix().accuracy(),"accuracy")
 				.done()
 				.render();
 	}
