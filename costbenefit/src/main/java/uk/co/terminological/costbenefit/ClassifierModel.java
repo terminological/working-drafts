@@ -61,10 +61,10 @@ public abstract class ClassifierModel<X> {
 			Double cdfPos = KumaraswamyCDF.cdf(aPos,bPos).apply(cutoff);
 			Double cdfNeg = KumaraswamyCDF.cdf(aNeg,bNeg).apply(cutoff);
 			
-			Double eTp = prev*(1 - cdfPos);
-			Double eTn = (1-prev)*cdfNeg;
-			Double eFp = prev*cdfPos;
-			Double eFn = (1-prev)*1-cdfPos;
+			Double eTp = prev*cdfPos;
+			Double eTn = (1-prev)*(1-cdfNeg);
+			Double eFp = prev*(1-cdfPos);
+			Double eFn = (1-prev)*cdfPos;
 			
 			//TODO: prevalence is independent of cutoff - this should be correct. Classifier model accounts for prevalence by.
 			
