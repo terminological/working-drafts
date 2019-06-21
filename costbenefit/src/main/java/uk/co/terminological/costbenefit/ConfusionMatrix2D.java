@@ -35,7 +35,7 @@ public class ConfusionMatrix2D {
 		fn = FNR;
 	}
 	
-	public ConfusionMatrix2D withCostModel(double tpValue, double tnValue, double fpCost, double fnCost) {
+	public ConfusionMatrix2D withCostModel(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {
 		this.tpValue = tpValue;
 		this.tnValue = tnValue;
 		this.fpCost = fpCost;
