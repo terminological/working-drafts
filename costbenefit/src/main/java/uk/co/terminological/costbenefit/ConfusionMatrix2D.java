@@ -2,10 +2,10 @@ package uk.co.terminological.costbenefit;
 
 public class ConfusionMatrix2D {
 
-	Double tp;
-	Double tn;
-	Double fp;
-	Double fn;
+	double tp;
+	double tn;
+	double fp;
+	double fn;
 	
 	int total;
 	
@@ -26,53 +26,53 @@ public class ConfusionMatrix2D {
 		fn = FNR;
 	}
 	
-	public Double sensitivity() {return truePositiveRate();}
-	public Double specificity() {return trueNegativeRate();}
+	public double sensitivity() {return truePositiveRate();}
+	public double specificity() {return trueNegativeRate();}
 	
 	
-	public Double recall() {return truePositiveRate();}
-	public Double precision() {return positivePredictiveValue();}
+	public double recall() {return truePositiveRate();}
+	public double precision() {return positivePredictiveValue();}
 	
 	
-	public Double truePositiveRate() {return tp/(tp+fn);}
-	public Double trueNegativeRate() {return tn/(tn+fp);}
-	public Double falseNegativeRate() {return fn/(fn+tp);}
-	public Double falsePositiveRate() {return fp/(fp+tn);}
+	public double truePositiveRate() {return tp/(tp+fn);}
+	public double trueNegativeRate() {return tn/(tn+fp);}
+	public double falseNegativeRate() {return fn/(fn+tp);}
+	public double falsePositiveRate() {return fp/(fp+tn);}
 	
-	public Double positivePredictiveValue() {return tp/(tp+fp);}
-	public Double negativePredictiveValue() {return tn/(tn+fn);}
-	public Double falseDiscoveryRate() {return fp/(fp+tp);}
-	public Double falseOmissionRate() {return fn/(fn+tn);}
+	public double positivePredictiveValue() {return tp/(tp+fp);}
+	public double negativePredictiveValue() {return tn/(tn+fn);}
+	public double falseDiscoveryRate() {return fp/(fp+tp);}
+	public double falseOmissionRate() {return fn/(fn+tn);}
 	
-	public Double accuracy() {return (tp+tn)/total;}
-	public Double matthewsCorrelationCoefficient() {return (tp*tn-fp*fn)/Math.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));}
-	public Double fScore(Double beta) {
-		Double b2 = Math.pow(beta, 2);
+	public double accuracy() {return (tp+tn)/total;}
+	public double matthewsCorrelationCoefficient() {return (tp*tn-fp*fn)/Math.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn));}
+	public double fScore(double beta) {
+		double b2 = Math.pow(beta, 2);
 		return ((1+b2)*tp)/((1+b2)*tp+b2*fn+fp);
 	}
-	public Double f1Score() {return fScore(1D);}
-	public Double youdensJ() {return truePositiveRate()+trueNegativeRate()-1;}
+	public double f1Score() {return fScore(1D);}
+	public double youdensJ() {return truePositiveRate()+trueNegativeRate()-1;}
 	
-	public Double absoluteValue(Double tpValue, Double tnValue, Double fpCost, Double fnCost) {
+	public double absoluteValue(double tpValue, double tnValue, double fpCost, double fnCost) {
 		if (tpValue < 0 || tnValue < 0) throw new ConstraintViolationException("Values of true positives and negatives must be larger than zero");
 		if (fpCost > 0 || fnCost > 0) throw new ConstraintViolationException("Costs of false positives and negatives must be smaller than zero");
 		return tpValue*tp+tnValue*tn+fpCost*fp+fnCost*fn;
 	}
 	
-	public Double relativeValue(Double tpValue, Double tnValue, Double fpCost, Double fnCost, Double prevalence) {
-		Double maxValue = tpValue*prevalence + tnValue*(1-prevalence);
-		Double minCost = fnCost*prevalence + fpCost*(1-prevalence);
+	public double relativeValue(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {
+		double maxValue = tpValue*prevalence + tnValue*(1-prevalence);
+		double minCost = fnCost*prevalence + fpCost*(1-prevalence);
 		return (absoluteValue(tpValue,tnValue,fpCost,fnCost)-minCost)/(maxValue-minCost);
 	}
 	
-	private Double pmi(double pxy, double px, double py) {
+	private double pmi(double pxy, double px, double py) {
 		if (pxy < 0D || pxy > 1D || px < 0D || px > 1D || py < 0D || py > 1D || pxy > px || pxy > py ) throw new RuntimeException("Parameters invalid");
 		if (px==0 || py==0) return 0D; //pxy must also be zero at this point. could return NaN...
 		if (pxy == 0) return Double.NEGATIVE_INFINITY;
 		return Math.log(pxy/(px*py));
 	}
 	
-	public Double mi() {
+	public double mi() {
 		double px1y1 = tp;
 		double px0y1 = fn;
 		double px1y0 = fp;
