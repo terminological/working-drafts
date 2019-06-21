@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
@@ -154,7 +155,7 @@ public class ClassifierSimulation {
 					.done()
 					.render();
 			ParameterSpace space2 = new ParameterSpace(defaults);
-			space2.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
+			space2.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
 			figures.withNewChart(c.name()+" pr", ChartType.XY_MULTI_LINE)
 				.config().withXScale(0F, 1F)
 				.withXLabel("precision")
@@ -174,8 +175,8 @@ public class ClassifierSimulation {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.DIABETES,null);
 		ParameterSpace space = new ParameterSpace(defaults);
-		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
-		space.prevalence = SeriesBuilder.range(0.05,0.5,0.05);
+		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
+		space.prevalence = SeriesBuilder.range(0.05,0.5,0.05).collect(Collectors.toList());
 		figures.withNewChart(c.name()+" measures", ChartType.XY_GROUPED_LINE)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
