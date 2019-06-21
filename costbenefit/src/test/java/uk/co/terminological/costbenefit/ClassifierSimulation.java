@@ -152,14 +152,15 @@ public class ClassifierSimulation {
 					.bind(Y, t -> t.matrix().specificity())
 					.done()
 					.render();
-			space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
+			ParameterSpace space2 = new ParameterSpace(defaults);
+			space2.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
 			figures.withNewChart(c.name()+" pr", ChartType.XY_MULTI_LINE)
 				.config().withXScale(0F, 1F)
 				.withXLabel("precision")
 				.withYLabel("recall")
 				.withYScale(0F, 1F)
 				.done()
-				.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
+				.withSeries(space2.stream()).withColourScheme(ColourScheme.Dark2)
 				.bind(X, t -> 1-t.matrix().precision())
 				.bind(Y, t -> t.matrix().recall())
 				.done()
