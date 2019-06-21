@@ -109,7 +109,7 @@ public class ClassifierSimulation {
 			.bind(X, t -> t)
 			.bind(Y, pos,"pos")
 			.bind(Y, neg,"neg")
-			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint")
+			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint @ 10% prev")
 			.done().render();
 		});
 		
@@ -130,7 +130,7 @@ public class ClassifierSimulation {
 			.bind(X, t -> t)
 			.bind(Y, pos,"pos")
 			.bind(Y, neg,"neg")
-			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint")
+			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint @ 10% prev")
 			.done().render();
 		});
 	}
