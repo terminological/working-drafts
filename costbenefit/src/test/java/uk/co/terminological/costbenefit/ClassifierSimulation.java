@@ -113,13 +113,13 @@ public class ClassifierSimulation {
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
 		figures.withNewChart("roc", ChartType.XY_MULTI_LINE)
 				.config().withXScale(0F, 1F)
-				.withXLabel("sens")
-				.withYLabel("1-spec")
+				.withXLabel("1-sens")
+				.withYLabel("spec")
 				.withYScale(0F, 1F)
 				.done()
 				.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
-				.bind(X, t -> t.matrix().sensitivity())
-				.bind(Y, t -> 1-t.matrix().specificity())
+				.bind(X, t -> 1-t.matrix().sensitivity())
+				.bind(Y, t -> t.matrix().specificity())
 				.done()
 				.render();
 	}
