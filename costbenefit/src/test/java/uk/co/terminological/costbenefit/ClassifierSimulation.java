@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import freemarker.template.TemplateException;
+import uk.co.terminological.costbenefit.ClassifierModel.ClassifierConfig;
 import uk.co.terminological.costbenefit.ClassifierModel.ClassifierConfigEnum;
 import uk.co.terminological.costbenefit.ClassifierModel.CostModelEnum;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSet;
@@ -98,14 +99,15 @@ public class ClassifierSimulation {
 			.withSeries(SeriesBuilder.range(xRange))
 			.bind(X, t -> t);
 			
+			ClassifierConfig c = ClassifierConfigEnum.LOW_INFORMATION;
 			Function<Double,Double> pos = KumaraswamyCDF.pdf(
-				KumaraswamyCDF.a(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfPositive,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfPositive),
-				KumaraswamyCDF.b(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfPositive,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfPositive));
+				KumaraswamyCDF.a(c.spreadIfPositive(),c.centralityIfPositive()),
+				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
 			
 
 			Function<Double,Double> neg = KumaraswamyCDF.pdf(
-				KumaraswamyCDF.a(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfNegative,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfNegative),
-				KumaraswamyCDF.b(ClassifierConfigEnum.HIGH_INFORMATION.spreadIfNegative,ClassifierConfigEnum.HIGH_INFORMATION.centralityIfNegative));
+				KumaraswamyCDF.a(c.spreadIfNegative(),c.centralityIfNegative()),
+				KumaraswamyCDF.b(c.spreadIfNegative(),c.centralityIfNegative()));
 			
 			tmp.bind(Y, pos,"pos");
 			tmp.bind(Y, neg,"neg");
