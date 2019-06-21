@@ -11,7 +11,8 @@ public enum ChartType {
 	XYBAR("ggplot.ftl",GgplotWriter.BarChart.class), 
 	XYSCATTER("ggplot.ftl",GgplotWriter.Scatter.class),
 	STACKEDYBAR("ggplot.ftl",GgplotWriter.PieChart.class),
-	MULTISTACKEDYBAR("ggplot.ftl",GgplotWriter.MultiPieChart.class),
+	MULTISTACKEDYBAR("ggplot.ftl",GgplotWriter.MultiPieChart.class), 
+	XY_GROUPED_LINE("ggplot.ftl",GgplotWriter.GroupedLineChart.class),
 	;
 
 	String templateFilename;

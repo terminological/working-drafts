@@ -23,6 +23,7 @@ import uk.co.terminological.costbenefit.ClassifierModel.ClassifierConfigEnum;
 import uk.co.terminological.costbenefit.ClassifierModel.CostModelEnum;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSet;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSpace;
+import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
@@ -174,7 +175,8 @@ public class ClassifierSimulation {
 		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.DIABETES,null);
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000);
-		figures.withNewChart(c.name()+" measures", ChartType.XY_MULTI_LINE)
+		space.prevalence = SeriesBuilder.range(0.05,0.5,0.05);
+		figures.withNewChart(c.name()+" measures", ChartType.XY_GROUPED_LINE)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
 				.withYLabel("rates")
@@ -187,9 +189,7 @@ public class ClassifierSimulation {
 				//.bind(Y, t -> t.matrix().fp,"fp")
 				//.bind(Y, t -> t.matrix().fn,"fn")
 				.bind(Y, t -> t.matrix().accuracy(),"accuracy")
-				.bind(Y, t -> t.matrix().sensitivity(),"sens")
-				.bind(Y, t -> t.matrix().specificity(),"spec")
-				.bind(Y, t -> t.matrix().relativeValue(),"value")
+				.bind(Dimension.COLOUR, t -> t.prevalence,"prevalence")
 				.done()
 				.render();
 		});

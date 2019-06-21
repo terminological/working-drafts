@@ -160,6 +160,22 @@ public abstract class GgplotWriter extends Writer {
 		
 	}
 	
+
+	public class GroupedLineChart extends GgplotWriter {
+
+		public GroupedLineChart(Chart chart) {
+			super(chart);
+		}
+		
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_line(stat='identity', aes(x=X, y=Y, colour=COLOUR))",
+					"scale_colour_brewer(palette=schemeName)"
+				);
+		}
+	}
+
+	
 	public static class PieChart extends GgplotWriter {
 
 		public PieChart(Chart chart) {
