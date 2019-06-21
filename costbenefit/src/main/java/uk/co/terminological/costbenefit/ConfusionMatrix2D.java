@@ -25,7 +25,7 @@ public class ConfusionMatrix2D {
 	
 	public ConfusionMatrix2D(double TPR, double TNR, double FPR, double FNR) {
 		total = 1;
-		if (TPR+TNR+FPR+FNR != 1) 
+		if (TPR+TNR+FPR+FNR != 1.0) 
 			throw new ConstraintViolationException("Sum of paramters must be 1");
 		tp = TPR;
 		fp = FPR;
