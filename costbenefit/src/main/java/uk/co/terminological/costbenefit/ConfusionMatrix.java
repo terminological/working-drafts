@@ -53,4 +53,15 @@ public class ConfusionMatrix {
 	public Double f1Score() {return fScore(1D);}
 	public Double youdensJ() {return truePositiveRate()+trueNegativeRate()-1;}
 	
+	public Double absoluteValueModel(Double tpValue, Double tnValue, Double fpCost, Double fnCost) {
+		if (tpValue < 0 || tnValue < 0) throw new ConstraintViolationException("Values of true positives and negatives must be larger than zero");
+		if (fpCost > 0 || fnCost > 0) throw new ConstraintViolationException("Costs of false positives and negatives must be smaller than zero");
+		return tpValue*tp+tnValue*tn+fpCost*fp+fnCost*fn;
+	}
+	
+	public Double relativeValueModel(Double tpValue, Double tnValue, Double fpCost, Double fnCost, Double prevalence) {
+		Double maxValue = tpValue*prevalence + tnValue*(1-prevalence);
+		Double minCost = fnCost*prevalence + fpCost*(1-prevalence);
+		return (absoluteValueModel(tpValue,tnValue,fpCost,fnCost)-minCost)/(maxValue-minCost);
+	}
 }

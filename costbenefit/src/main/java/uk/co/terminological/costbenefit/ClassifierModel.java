@@ -2,18 +2,23 @@ package uk.co.terminological.costbenefit;
 
 public abstract class ClassifierModel<X> {
 
+	ClassifierModel(Double prevalence) {prev=prevalence;}
 	public abstract ConfusionMatrix matrix(X param);
 	
-	Double prevalence = 0.2;
+	Double prev = 0.2;
 	
 	public static class AlwaysPositive extends ClassifierModel<Void> {
+
+		AlwaysPositive(Double prevalence) {
+			super(prevalence);
+		}
 
 		@Override
 		public ConfusionMatrix matrix(Void param) {
 			
-			Double tp = prevalence;
+			Double tp = prev;
 			Double tn = 0D;
-			Double fp = 1-prevalence;
+			Double fp = 1-prev;
 			Double fn = 0D;
 			
 			return new ConfusionMatrix(tp,tn,fp,fn);
@@ -22,25 +27,40 @@ public abstract class ClassifierModel<X> {
 		
 	}
 	
+	
 	public static class Kumaraswamy extends ClassifierModel<Double> {
 		
-		Double spreadPos = 0.5;
-		Double modePos = 0.9;
-		Double spreadNeg = 0.8;
-		Double modeNeg = 0.7;
-		Double prev = 0.1;
+		Double aPos;
+		Double bPos;
+		Double aNeg;
+		Double bNeg;
+		
+		
+		
+		public Kumaraswamy(Double modePos, Double modeNeg, Double spreadPos, Double spreadNeg, Double prevalence) {
+			super(prevalence);
+			if (!(modePos > 0 && modePos < 1 &&
+					modeNeg > 0 && modeNeg < 1 &&
+					spreadPos > 0 && 
+					spreadNeg > 0 && 
+					modePos > modeNeg)) throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero");
+			aPos = KumaraswamyCDF.a(spreadPos, modePos);
+			bPos = KumaraswamyCDF.b(spreadPos, modePos);
+			aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
+			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
+		}
 		
 		public ConfusionMatrix matrix(Double cutoff) {
 			
-			Double cdfPos = KumaraswamyCDF.cdf(KumaraswamyCDF.a(spreadPos, modePos),KumaraswamyCDF.a(spreadPos, modePos)).apply(cutoff);
-			Double cdfNeg = KumaraswamyCDF.cdf(KumaraswamyCDF.a(spreadNeg, modeNeg),KumaraswamyCDF.a(spreadNeg, modeNeg)).apply(cutoff);
+			Double cdfPos = KumaraswamyCDF.cdf(aPos,bPos).apply(cutoff);
+			Double cdfNeg = KumaraswamyCDF.cdf(aNeg,bNeg).apply(cutoff);
 			
 			Double eTp = prev*(1 - cdfPos);
 			Double eTn = (1-prev)*cdfNeg;
 			Double eFp = prev*cdfPos;
 			Double eFn = (1-prev)*1-cdfPos;
 			
-			//TODO: prevalence is independent of cutoff - this should be correct. Classifier model accounts for prevalence.
+			//TODO: prevalence is independent of cutoff - this should be correct. Classifier model accounts for prevalence by.
 			
 			return new ConfusionMatrix(eTp,eTn,eFp,eFn);
 		}
@@ -48,13 +68,17 @@ public abstract class ClassifierModel<X> {
 	
 	public static class AlwaysNegative extends ClassifierModel<Void> {
 
+		AlwaysNegative(Double prevalence) {
+			super(prevalence);
+		}
+		
 		@Override
 		public ConfusionMatrix matrix(Void param) {
 			
 			Double tp = 0D;
-			Double tn = 1-prevalence;
+			Double tn = 1-prev;
 			Double fp = 0D;
-			Double fn = prevalence;
+			Double fn = prev;
 			
 			return new ConfusionMatrix(tp,tn,fp,fn);
 		}
