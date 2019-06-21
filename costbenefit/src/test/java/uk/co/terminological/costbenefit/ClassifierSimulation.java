@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.apache.log4j.BasicConfigurator;
 import org.junit.Before;
@@ -90,29 +91,48 @@ public class ClassifierSimulation {
 		Range xRange = Range.of(0D, 1D, 1000);
 		DecimalFormat df = new DecimalFormat("0.00"); 
 		
-			Series<Double> tmp = figures.withNewChart("plots", ChartType.XY_MULTI_LINE)
-			.config().withXScale(0F, 1F)
-			.withXLabel("x")
-			.withYLabel("kumaraswamy")
-			.withYScale(0F, 10F)
-			.done()
-			.withSeries(SeriesBuilder.range(xRange))
-			.bind(X, t -> t);
-			
-			ClassifierConfig c = ClassifierConfigEnum.LOW_INFORMATION;
+		
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Function<Double,Double> pos = KumaraswamyCDF.pdf(
 				KumaraswamyCDF.a(c.spreadIfPositive(),c.centralityIfPositive()),
 				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
-			
-
 			Function<Double,Double> neg = KumaraswamyCDF.pdf(
 				KumaraswamyCDF.a(c.spreadIfNegative(),c.centralityIfNegative()),
 				KumaraswamyCDF.b(c.spreadIfNegative(),c.centralityIfNegative()));
-			
-			tmp.bind(Y, pos,"pos");
-			tmp.bind(Y, neg,"neg");
-			tmp.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint");
-			tmp.done().render();
+			figures.withNewChart(c.name()+" pdf", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("x")
+			.withYLabel("density")
+			.withYScale(0F, 10F)
+			.done()
+			.withSeries(SeriesBuilder.range(xRange))
+			.bind(X, t -> t)
+			.bind(Y, pos,"pos")
+			.bind(Y, neg,"neg")
+			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint")
+			.done().render();
+		});
+		
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			Function<Double,Double> pos = KumaraswamyCDF.cdf(
+				KumaraswamyCDF.a(c.spreadIfPositive(),c.centralityIfPositive()),
+				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
+			Function<Double,Double> neg = KumaraswamyCDF.cdf(
+				KumaraswamyCDF.a(c.spreadIfNegative(),c.centralityIfNegative()),
+				KumaraswamyCDF.b(c.spreadIfNegative(),c.centralityIfNegative()));
+			figures.withNewChart(c.name()+" cdf", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("x")
+			.withYLabel("cumulative density")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(SeriesBuilder.range(xRange))
+			.bind(X, t -> t)
+			.bind(Y, pos,"pos")
+			.bind(Y, neg,"neg")
+			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint")
+			.done().render();
+		});
 	}
 	
 	@Test

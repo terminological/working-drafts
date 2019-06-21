@@ -43,7 +43,7 @@ public abstract class ClassifierModel<X> {
 		
 		
 		
-		public Kumaraswamy(Double modePos, Double modeNeg, Double spreadPos, Double spreadNeg, Double prevalence) {
+		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, Double prevalence) {
 			super(prevalence);
 			if (!(modePos > 0 && modePos < 1 &&
 					modeNeg > 0 && modeNeg < 1 &&
@@ -273,7 +273,7 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		public Kumaraswamy model() {
-			return new Kumaraswamy(centralityIfPositive, centralityIfNegative, spreadIfPositive, spreadIfNegative, prevalence);
+			return new Kumaraswamy(centralityIfPositive, spreadIfPositive, centralityIfNegative, spreadIfNegative, prevalence);
 		}
 		
 		public ConfusionMatrix2D matrix() {
