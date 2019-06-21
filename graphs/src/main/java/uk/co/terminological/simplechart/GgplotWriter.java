@@ -161,7 +161,7 @@ public abstract class GgplotWriter extends Writer {
 	}
 	
 
-	public class GroupedLineChart extends GgplotWriter {
+	public static class GroupedLineChart extends GgplotWriter {
 
 		public GroupedLineChart(Chart chart) {
 			super(chart);
