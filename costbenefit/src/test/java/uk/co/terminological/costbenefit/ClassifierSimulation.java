@@ -175,7 +175,7 @@ public class ClassifierSimulation {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.DIABETES,null);
 		ParameterSpace space = new ParameterSpace(defaults);
-		space.cutOff = SeriesBuilder.range(0.0, 1.0, 10).collect(Collectors.toList());
+		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
 		space.prevalence = SeriesBuilder.range(0.05,0.5,0.05).collect(Collectors.toList());
 		figures.withNewChart(c.name()+" measures", ChartType.XY_GROUPED_LINE)
 				.config().withXScale(0F, 1F)
@@ -183,13 +183,13 @@ public class ClassifierSimulation {
 				.withYLabel("rates")
 				.withYScale(0F, 1F)
 				.done()
-				.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
+				.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
 				.bind(X, t -> t.cutOff)
 				//.bind(Y, t -> t.matrix().tp,"tp")
 				//.bind(Y, t -> t.matrix().tn,"tn")
 				//.bind(Y, t -> t.matrix().fp,"fp")
 				//.bind(Y, t -> t.matrix().fn,"fn")
-				.bind(Y, t -> t.matrix().accuracy(),"accuracy")
+				.bind(Y, t -> t.matrix().relativeValue(),"value")
 				.bind(Dimension.COLOUR, t -> t.prevalence,"prevalence")
 				.done()
 				.render();
