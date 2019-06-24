@@ -172,11 +172,12 @@ public class ClassifierSimulation {
 	@Test
 	public void plotDebug() {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
+			Stream.of(CostModelEnum.values()).forEach( cm-> {
+		ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
 		space.prevalence = SeriesBuilder.range(0.05,0.95,0.1).collect(Collectors.toList());
-		figures.withNewChart(c.name()+" value", ChartType.XYZ_CONTOUR)
+		figures.withNewChart(c.name()+" "+cm.name()+" value", ChartType.XYZ_CONTOUR)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
 				.withYLabel("value")
@@ -192,6 +193,7 @@ public class ClassifierSimulation {
 				.bind(Y, t -> t.prevalence,"prevalence")
 				.done()
 				.render();
+			});
 		});
 	}
 }
