@@ -180,7 +180,7 @@ public class ClassifierSimulation {
 		figures.withNewChart(c.name()+" "+cm.name()+" value", ChartType.XYZ_CONTOUR)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
-				.withYLabel("value")
+				.withYLabel("prevalence")
 				.withYScale(0F, 1F)
 				.done()
 				.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
