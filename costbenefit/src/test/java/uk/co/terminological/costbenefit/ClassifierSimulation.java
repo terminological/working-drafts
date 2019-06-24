@@ -175,7 +175,7 @@ public class ClassifierSimulation {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 		ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.DIABETES,null);
 		ParameterSpace space = new ParameterSpace(defaults);
-		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
+		space.cutOff = SeriesBuilder.range(0.0, 1.0, 10).collect(Collectors.toList());
 		space.prevalence = SeriesBuilder.range(0.05,0.5,0.05).collect(Collectors.toList());
 		figures.withNewChart(c.name()+" measures", ChartType.XY_GROUPED_LINE)
 				.config().withXScale(0F, 1F)
