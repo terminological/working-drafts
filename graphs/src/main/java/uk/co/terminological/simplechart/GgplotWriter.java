@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 
@@ -101,6 +103,8 @@ public abstract class GgplotWriter extends Writer {
 		.redirectOutput(Redirect.INHERIT)
 		.start();
 		
+		IOUtils.copy(process2.getErrorStream(),System.out);
+		
 		try {
 			System.out.println(process2.waitFor());
 		} catch (InterruptedException e) {
@@ -169,7 +173,7 @@ public abstract class GgplotWriter extends Writer {
 		
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_line(stat='identity', aes(x=X, y=Y, colour=COLOUR))",
+					"geom_line(stat='identity', aes(x=X, y=Y, colour=factor(COLOUR, levels=rev(COLOUR)))",
 					"scale_colour_brewer(palette=schemeName)"
 				);
 		}
