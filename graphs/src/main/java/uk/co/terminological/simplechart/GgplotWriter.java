@@ -173,7 +173,7 @@ public abstract class GgplotWriter extends Writer {
 		
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_line(stat='identity', aes(x=X, y=Y, colour=factor(COLOUR, levels=rev(COLOUR)))",
+					"geom_line(stat='identity', aes(x=X, y=Y, colour=factor(COLOUR, levels=rev(COLOUR))))",
 					"scale_colour_brewer(palette=schemeName)"
 				);
 		}
