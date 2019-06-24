@@ -47,8 +47,8 @@ public abstract class GgplotWriter extends Writer {
 		
 		
 		for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
-			String varName = binding.getFirst().name()+
-					(binding.getThird() == "" ? "" : "_"+binding.getThird());
+			String varName = binding.getFirst().name(); //+
+					//(binding.getThird() == "" ? "" : "_"+binding.getThird());
 			
 			//Object seriesType = series.getData().stream().map(binding.getSecond()).findFirst().get();
 			
