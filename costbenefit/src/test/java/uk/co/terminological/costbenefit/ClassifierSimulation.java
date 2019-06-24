@@ -177,7 +177,7 @@ public class ClassifierSimulation {
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
 		space.prevalence = SeriesBuilder.range(0.05,0.5,0.05).collect(Collectors.toList());
-		figures.withNewChart(c.name()+" measures", ChartType.XY_GROUPED_LINE)
+		figures.withNewChart(c.name()+" value", ChartType.XY_GROUPED_LINE)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
 				.withYLabel("rates")
