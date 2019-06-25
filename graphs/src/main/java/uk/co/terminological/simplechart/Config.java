@@ -44,6 +44,10 @@ public class Config {
 		return labels.get(Dimension.Y);
 	}
 
+	public String getLabel(String dimension) {
+		return labels.get(Dimension.valueOf(dimension));
+	}
+	
 	public String getXScale() {
 		return xScale;
 	}
