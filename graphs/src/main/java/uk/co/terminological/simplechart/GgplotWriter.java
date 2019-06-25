@@ -198,4 +198,20 @@ public abstract class GgplotWriter extends Writer {
 		
 	}
 	
+	public static class HeatMap extends GgplotWriter {
+
+		public HeatMap(Chart chart) {
+			super(chart);
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_tile(stat='identity', aes(x=X, y=Y, fill=Z))",
+					"scale_fill_distiller(palette=schemeName)",
+					);
+		}
+		
+	}
+	
 }
