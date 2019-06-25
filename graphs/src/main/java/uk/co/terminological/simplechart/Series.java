@@ -30,7 +30,7 @@ public class Series<X> {
 	}
 	
 	public Series<X> bind(Dimension dimension, Function<X,? extends Object> binding) {
-		bindings.add(Triple.create(dimension, binding, ""));
+		bindings.add(Triple.create(dimension, binding, chart.config.getLabel(dimension)));
 		return this;
 	};
 	

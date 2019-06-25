@@ -129,4 +129,8 @@ public class Config {
 	public void render() throws IOException, TemplateException {
 		chart.render();
 	}
+
+	public String getLabel(Dimension dimension) {
+		return labels.getOrDefault(dimension, dimension.toString());
+	}
 }
