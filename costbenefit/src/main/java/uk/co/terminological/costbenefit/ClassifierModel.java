@@ -191,7 +191,7 @@ public abstract class ClassifierModel<X> {
 		@Override public Double centralityIfNegative() {return centralityIfNegative;}
 		@Override public Double spreadIfNegative() {return centralityIfNegative;}
 		
-		public String toString() { return this.name().toLowerCase().replace("_", " ");
+		public String toString() { return this.name().toLowerCase().replace("_", " "); }
 		
 	}
 	
@@ -230,7 +230,7 @@ public abstract class ClassifierModel<X> {
 		@Override public Double fpCost() {return fpCost;}
 		@Override public Double fnCost() {return fpCost;}
 		
-		public String toString() { return this.name().toLowerCase().replace("_", " ");
+		public String toString() { return this.name().toLowerCase().replace("_", " "); }
 		
 	}
 	
