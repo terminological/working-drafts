@@ -5,7 +5,7 @@ public enum ChartType {
 	XY_MULTI_LINE("xymultiplot.ftl",GnuplotWriter.class), 
 	XY_SCATTER("xyscatter.ftl",GnuplotWriter.class),
 	XYZ_CONTOUR("xyzcontour.ftl",GnuplotWriter.class),
-	XYZ_HEATMAP("ggplot.ftl",GnuplotWriter.HeatMap.class), 
+	XYZ_HEATMAP("ggplot.ftl",GgplotWriter.HeatMap.class), 
 	NETWORK("d3Network.ftl",D3JSWriter.Nodes.class), 
 	CHORD("d3Chord.ftl",D3JSWriter.Matrix.class),
 	WORDCLOUD(null,WordcloudWriter.class), 
