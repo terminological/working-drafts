@@ -112,7 +112,7 @@ public class Series<X> {
 	}
 	
 	public Function<X,? extends Object> functionFor(Dimension dim) {
-		return functionFor(dim, "");
+		return functionFor(dim, chart.config.getLabel(dim));
 	}
 	
 	// ======= Freemarker accessories ======
