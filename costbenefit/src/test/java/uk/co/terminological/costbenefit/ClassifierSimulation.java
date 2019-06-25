@@ -100,7 +100,7 @@ public class ClassifierSimulation {
 			Function<Double,Double> neg = KumaraswamyCDF.pdf(
 				KumaraswamyCDF.a(c.spreadIfNegative(),c.centralityIfNegative()),
 				KumaraswamyCDF.b(c.spreadIfNegative(),c.centralityIfNegative()));
-			figures.withNewChart(c.name()+" pdf", ChartType.XY_MULTI_LINE)
+			figures.withNewChart(c+" pdf", ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
 			.withYLabel("density")
@@ -121,7 +121,7 @@ public class ClassifierSimulation {
 			Function<Double,Double> neg = KumaraswamyCDF.cdf(
 				KumaraswamyCDF.a(c.spreadIfNegative(),c.centralityIfNegative()),
 				KumaraswamyCDF.b(c.spreadIfNegative(),c.centralityIfNegative()));
-			figures.withNewChart(c.name()+" cdf", ChartType.XY_MULTI_LINE)
+			figures.withNewChart(c+" cdf", ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
 			.withYLabel("cumulative density")
@@ -142,7 +142,7 @@ public class ClassifierSimulation {
 			ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
 			ParameterSpace space = new ParameterSpace(defaults);
 			space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
-			figures.withNewChart(c.name()+" roc", ChartType.XY_MULTI_LINE)
+			figures.withNewChart(c+" roc", ChartType.XY_MULTI_LINE)
 					.config().withXScale(0F, 1F)
 					.withXLabel("1-sens")
 					.withYLabel("spec")
