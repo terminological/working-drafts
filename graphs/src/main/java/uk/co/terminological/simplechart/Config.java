@@ -3,17 +3,19 @@ package uk.co.terminological.simplechart;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
 import freemarker.template.TemplateException;
+import uk.co.terminological.datatypes.FluentMap;
+import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class Config {
 
 	Chart chart;
 	String title;
-	String xLabel = "x";
-	String yLabel = "y";
+	Map<Dimension,String> labels = FluentMap.with(Dimension.X, "x").and(Dimension.Y, "y");
 	String xScale;
 	String yScale;
 	OutputTarget target = OutputTarget.SCREEN;
@@ -35,11 +37,11 @@ public class Config {
 	}
 	
 	public String getXLabel() {
-		return xLabel;
+		return labels.get(Dimension.X);
 	}
 	
 	public String getYLabel() {
-		return yLabel;
+		return labels.get(Dimension.Y);
 	}
 
 	public String getXScale() {
@@ -83,14 +85,17 @@ public class Config {
 		return this;
 	}
 
-	public Config withXLabel(String xLabel) {
-		this.xLabel = xLabel;
+	public Config withLabel(Dimension dim, String label) {
+		this.labels.put(dim, label);
 		return this;
+	}
+	
+	public Config withXLabel(String xLabel) {
+		return withLabel(Dimension.X, xLabel);
 	}
 
 	public Config withYLabel(String yLabel) {
-		this.yLabel = yLabel;
-		return this;
+		return withLabel(Dimension.Y, yLabel);
 	}
 	
 	public Config withXScale(float start, float end) {
