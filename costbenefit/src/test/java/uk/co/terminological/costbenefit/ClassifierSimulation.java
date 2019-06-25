@@ -177,10 +177,11 @@ public class ClassifierSimulation {
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 		space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-		figures.withNewChart(c.name()+" "+cm.name()+" value", ChartType.XYZ_CONTOUR)
+		figures.withNewChart(c+" "+cm+" value", ChartType.XYZ_CONTOUR)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
 				.withYLabel("prevalence")
+				.withLabel(Z, "value")
 				.withYScale(0F, 1F)
 				.done()
 				.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
