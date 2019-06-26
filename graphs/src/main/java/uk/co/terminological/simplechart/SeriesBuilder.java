@@ -67,7 +67,7 @@ public class SeriesBuilder<X> {
 		Double increment = Math.sqrt( (Math.abs(xMax - xMin)*Math.abs(yMax - yMin))/gridPoints );
 		long xDivs = (long) Math.floor(Math.abs(xMax-xMin)/increment);
 		long yDivs = (long) Math.floor(Math.abs(yMax-yMin)/increment);
-		return grid(Range.of(xMin,xMax,xDivs),Range.of(yMin,yMax,yDivs));
+		return grid(Range.of(xMin,xMax,increment),Range.of(yMin,yMax,increment));
 	}
 	
 	public static Stream<double[]> space(Range... definitions) {
@@ -96,18 +96,22 @@ public class SeriesBuilder<X> {
 		return out;
 	}
 	
-	public static class Range extends Triple<Double,Double,Long> {
+	public static class Range extends Triple<Double,Double,Double> {
 
-		private Range(Double item1, Double item2, Long item3) {
+		private Range(Double item1, Double item2, Double item3) {
 			super(item1, item2, item3);
 		}
 		
+		public static Range of(Double from, Double to, Double increment) {
+			return new Range(from,to,increment);
+		}
+		
 		public static Range of(Double from, Double to, Long values) {
-			return new Range(from,to,values);
+			return new Range(from,to,Math.floor(Math.abs(from-to)/values));
 		}
 		
 		public static Range of(Double from, Double to, Integer values) {
-			return new Range(from,to,values.longValue());
+			return of(from,to,values.longValue());
 		}
 	}
 	
