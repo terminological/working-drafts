@@ -246,7 +246,7 @@ public class ClassifierSimulation {
 					.config().withXScale(0F, 1F)
 					.withXLabel("cutoff")
 					.withYLabel("prevalence")
-					.withLabel(Z, "value")
+					.withLabel(Z, "value-accuracy")
 					.withYScale(0F, 1F)
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
@@ -255,7 +255,7 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
-					.bind(Z, t -> t.matrix().relativeValue()-t.matrix().accuracy(),"value-accuracy")
+					.bind(Z, t -> t.matrix().relativeValue()-t.matrix().accuracy())
 					.bind(Y, t -> t.prevalence,"prevalence")
 					.done()
 					.render();
