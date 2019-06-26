@@ -13,7 +13,6 @@ import uk.co.terminological.datatypes.EavMap;
 
 public class Interpolator3D<IN> implements Collector<IN, EavMap<Double,Double,Double>, Result> {
 
-	EavMap<Double,Double,Double> coords = new EavMap<>();
 	Function<IN,Double> xAdaptor;
 	Function<IN,Double> yAdaptor;
 	Function<IN,Double> zAdaptor;
@@ -37,22 +36,21 @@ public class Interpolator3D<IN> implements Collector<IN, EavMap<Double,Double,Do
 
 	@Override
 	public Supplier<EavMap<Double, Double, Double>> supplier() {
-		// TODO Auto-generated method stub
-		return null;
+		return () -> new EavMap<Double,Double,Double>();
 	}
 
 
 	@Override
 	public BiConsumer<EavMap<Double, Double, Double>, IN> accumulator() {
-		// TODO Auto-generated method stub
-		return null;
+		return (map, input) -> {
+			map.add(xAdaptor.apply(input), yAdaptor.apply(input), zAdaptor.apply(input));
+		};
 	}
 
 
 	@Override
 	public BinaryOperator<EavMap<Double, Double, Double>> combiner() {
-		// TODO Auto-generated method stub
-		return null;
+		return (map1,map2) -> map1.addAll(map2);
 	}
 
 
