@@ -97,16 +97,16 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 					xvals[j][i] = map.get(i).get(j+1);
 				}
 			}
-			Interpolation<IN> out = new Interpolation<IN>();
-			out.interp = new MicrosphereProjectionInterpolator(dimensions,
-                    (int) Math.pow(elementsPerDimension,dimensions),
-                    maxDarkFraction,
-                    darkThreshold,
-                    sum/coordinates,
-                    exponent,
-                    sharedSphere,
-                    noInterpolationTolerance);
-			out.adaptors = inputAdaptors;
+			Interpolation<IN> out = new Interpolation<IN>(
+					new MicrosphereProjectionInterpolator(dimensions,
+	                    (int) Math.pow(elementsPerDimension,dimensions),
+	                    maxDarkFraction,
+	                    darkThreshold,
+	                    sum/coordinates,
+	                    exponent,
+	                    sharedSphere,
+	                    noInterpolationTolerance), 
+					inputAdaptors);
 			return out;
 		};
 	}
