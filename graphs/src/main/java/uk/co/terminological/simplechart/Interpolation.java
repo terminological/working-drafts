@@ -3,7 +3,10 @@ package uk.co.terminological.simplechart;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.commons.math3.analysis.MultivariateFunction;
 import org.apache.commons.math3.analysis.UnivariateFunction;
@@ -88,6 +91,31 @@ public class Interpolation<IN> {
 			out.add(uvdf.get(i).value(xDS).getPartialDerivative(1));
 		}
 		return out;
+	}
+	
+	public <X,Y> Function<X,Y> streamInterpolater(
+			Function<X,Y> mapper,
+			BiConsumer<Y,Double> valueSetter,
+			BiConsumer<Y,List<Double>> derivativeSetter,
+			@SuppressWarnings("unchecked") Function<X,Double>... parameterAdaptors
+			) {
+				return new Function<X,Y>() {
+					@Override
+					public Y apply(X input) {
+						
+						double[] current = new double[parameterAdaptors.length];
+						for (int i=0; i<current.length; i++) {
+							current[i] = parameterAdaptors[i].apply(input);
+						}
+						
+						Y y = mapper.apply(input);
+						valueSetter.accept(y, interpolate(current));
+						derivativeSetter.accept(y, partialDerivatives(current));
+						return y;
+					}
+					
+				};
+		
 	}
 
 }
