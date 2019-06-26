@@ -81,7 +81,6 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 	}
 
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Function<List<List<Double>>, Interpolation<IN>> finisher() {
 		return (map) -> {
