@@ -108,7 +108,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<sourceCodeDirectory>${project.build.directory}/src/main/java</sourceCodeDirectory>
+					<sourceCodeDirectory>${project.build.directory}/graphs/src/main/java</sourceCodeDirectory>
 					<targetDirectory>${project.build.directory}/generated-sources/annotations</targetDirectory>
 				</configuration> 
 			</plugin>
