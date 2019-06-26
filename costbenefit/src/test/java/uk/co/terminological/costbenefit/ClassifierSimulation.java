@@ -210,7 +210,7 @@ public class ClassifierSimulation {
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 		space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-		figures.withNewChart(c+" "+cm+" value", ChartType.XYZ_HEATMAP)
+		figures.withNewChart(c+" "+cm+" accuracy", ChartType.XYZ_HEATMAP)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
 				.withYLabel("prevalence")
@@ -239,7 +239,7 @@ public class ClassifierSimulation {
 		ParameterSpace space = new ParameterSpace(defaults);
 		space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 		space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-		figures.withNewChart(c+" "+cm+" value", ChartType.XYZ_HEATMAP)
+		figures.withNewChart(c+" "+cm+" value vs accuracy", ChartType.XYZ_HEATMAP)
 				.config().withXScale(0F, 1F)
 				.withXLabel("cutoff")
 				.withYLabel("prevalence")
