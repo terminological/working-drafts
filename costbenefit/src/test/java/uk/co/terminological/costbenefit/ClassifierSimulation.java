@@ -166,7 +166,7 @@ public class ClassifierSimulation {
 				.withYScale(0F, 1F)
 				.done()
 				.withSeries(space2.stream()).withColourScheme(ColourScheme.Dark2)
-				.bind(X, t -> 1-t.matrix().precision())
+				.bind(X, t -> t.matrix().precision())
 				.bind(Y, t -> t.matrix().recall())
 				.done()
 				.render();
@@ -195,7 +195,7 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
-					.bind(Z, t -> t.matrix().relativeValue(),"value")
+					.bind(Z, t -> t.matrix().relativeValue())
 					.bind(Y, t -> t.prevalence,"prevalence")
 					.done()
 					.render();
@@ -216,7 +216,7 @@ public class ClassifierSimulation {
 						.config().withXScale(0F, 1F)
 						.withXLabel("cutoff")
 						.withYLabel("prevalence")
-						.withLabel(Z, "value")
+						.withLabel(Z, "accuracy")
 						.withYScale(0F, 1F)
 						.done()
 						.withSeries(space.stream()).withColourScheme(ColourScheme.Blues)
@@ -225,7 +225,7 @@ public class ClassifierSimulation {
 						//.bind(Y, t -> t.matrix().tn,"tn")
 						//.bind(Y, t -> t.matrix().fp,"fp")
 						//.bind(Y, t -> t.matrix().fn,"fn")
-						.bind(Z, t -> t.matrix().accuracy(),"accuracy")
+						.bind(Z, t -> t.matrix().accuracy())
 						.bind(Y, t -> t.prevalence,"prevalence")
 						.done()
 						.render();
