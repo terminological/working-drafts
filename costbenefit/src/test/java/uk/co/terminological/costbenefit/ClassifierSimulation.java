@@ -188,13 +188,42 @@ public class ClassifierSimulation {
 				.withLabel(Z, "value")
 				.withYScale(0F, 1F)
 				.done()
-				.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
+				.withSeries(space.stream()).withColourScheme(ColourScheme.Greens)
 				.bind(X, t -> t.cutOff)
 				//.bind(Y, t -> t.matrix().tp,"tp")
 				//.bind(Y, t -> t.matrix().tn,"tn")
 				//.bind(Y, t -> t.matrix().fp,"fp")
 				//.bind(Y, t -> t.matrix().fn,"fn")
 				.bind(Z, t -> t.matrix().relativeValue(),"value")
+				.bind(Y, t -> t.prevalence,"prevalence")
+				.done()
+				.render();
+			});
+		});
+	}
+	
+	@Test
+	public void plotAccuracy() {
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			Stream.of(CostModelEnum.values()).forEach( cm-> {
+		ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
+		ParameterSpace space = new ParameterSpace(defaults);
+		space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
+		space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
+		figures.withNewChart(c+" "+cm+" value", ChartType.XYZ_HEATMAP)
+				.config().withXScale(0F, 1F)
+				.withXLabel("cutoff")
+				.withYLabel("prevalence")
+				.withLabel(Z, "value")
+				.withYScale(0F, 1F)
+				.done()
+				.withSeries(space.stream()).withColourScheme(ColourScheme.Blues)
+				.bind(X, t -> t.cutOff)
+				//.bind(Y, t -> t.matrix().tp,"tp")
+				//.bind(Y, t -> t.matrix().tn,"tn")
+				//.bind(Y, t -> t.matrix().fp,"fp")
+				//.bind(Y, t -> t.matrix().fn,"fn")
+				.bind(Z, t -> t.matrix().relativeValue()-t.matrix().accuracy(),"value-accuracy")
 				.bind(Y, t -> t.prevalence,"prevalence")
 				.done()
 				.render();
