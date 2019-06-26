@@ -203,17 +203,20 @@ public class ClassifierSimulation {
 		//});
 	}
 	
+	/**
+	 * N.B. accuracy is independent of condition
+	 */
 	@Test
 	public void plotAccuracy() {
-		//Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			ClassifierConfigEnum c = ClassifierConfigEnum.MID_INFORMATION;
-			Stream.of(CostModelEnum.values()).forEach( cm-> {
-			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			//ClassifierConfigEnum c = ClassifierConfigEnum.MID_INFORMATION;
+			//Stream.of(CostModelEnum.values()).forEach( cm-> {
+			CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
 				ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 				ParameterSpace space = new ParameterSpace(defaults);
 				space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 				space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-				figures.withNewChart(c+" "+cm+" accuracy", ChartType.XYZ_HEATMAP)
+				figures.withNewChart(c+" accuracy", ChartType.XYZ_HEATMAP)
 						.config().withXScale(0F, 1F)
 						.withXLabel("cutoff")
 						.withYLabel("prevalence")
