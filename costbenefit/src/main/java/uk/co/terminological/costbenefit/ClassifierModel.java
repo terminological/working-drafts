@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.apache.commons.math3.util.Precision;
+
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.SeriesBuilder;
 import uk.co.terminological.simplechart.SeriesBuilder.Range;
@@ -74,7 +76,10 @@ public abstract class ClassifierModel<X> {
 			return bestCutoff;
 		}
 		
-		public boolean screeningBeneficial
+		public boolean screeningBeneficial(CostModel model, Double prevalence) {
+			Double best = bestCutoff(mat -> mat.withCostModel(model, prevalence).relativeValue());
+			return !Precision.equals(best, 0.0D) && !Precision.equals(best, 1.0D);
+		}
 		
 		public ConfusionMatrix2D matrix(Double cutoff) {
 			
