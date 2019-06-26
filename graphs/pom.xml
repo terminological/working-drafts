@@ -90,23 +90,30 @@
 			<artifactId>runtime</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<dependency>
-			<groupId>uk.co.terminological.javapig</groupId>
-			<artifactId>generator</artifactId>
-			<version>1.0.0</version>
-			<type>provided</type>
-		</dependency>
+		
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
+			<plugin> 
+				<groupId>uk.co.terminological.javapig</groupId> 
+				<artifactId>generator</artifactId> 
+				<version>1.0.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<id>build-java-resources</id> 
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>javaGenerator</goal>
+						</goals> 
+					</execution>
+				</executions>
+				<configuration>
+					<sourceCodeDirectory>${project.build.directory}/src/main/java</sourceCodeDirectory>
+					<targetDirectory>${project.build.directory}/generated-sources/annotations</targetDirectory>
+				</configuration> 
 			</plugin>
 		</plugins>
-	</build>
+	</build> 
 </project>
 
 
