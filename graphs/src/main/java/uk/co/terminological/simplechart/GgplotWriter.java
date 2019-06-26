@@ -20,6 +20,7 @@ public abstract class GgplotWriter extends Writer {
 
 	
 
+	
 	public abstract List<String> getPlots();
 	
 	public GgplotWriter(Chart chart) {
@@ -214,5 +215,23 @@ public abstract class GgplotWriter extends Writer {
 		}
 		
 	}
+	
+	public static class VectorFieldChart extends GgplotWriter {
+
+		public VectorFieldChart(Chart chart) {
+			super(chart);
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_segment(aes(x=X, xend=X+DX, y=Y, yend=Y+DY),arrow = arrow(length = unit(0.1,\"cm\")))"//,
+					//"stat_contour(aes(x=X, y=Y, z=Z))",
+					//"scale_fill_distiller(palette=schemeName)"
+					);
+		}
+		
+	}
+
 	
 }

@@ -13,7 +13,8 @@ public enum ChartType {
 	XYSCATTER("ggplot.ftl",GgplotWriter.Scatter.class),
 	STACKEDYBAR("ggplot.ftl",GgplotWriter.PieChart.class),
 	MULTISTACKEDYBAR("ggplot.ftl",GgplotWriter.MultiPieChart.class), 
-	XY_GROUPED_LINE("ggplot.ftl",GgplotWriter.GroupedLineChart.class),
+	XY_GROUPED_LINE("ggplot.ftl",GgplotWriter.GroupedLineChart.class), 
+	XY_DXDY_VECTOR("ggplot.ftl",GgplotWriter.VectorFieldChart.class),
 	;
 
 	String templateFilename;

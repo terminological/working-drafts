@@ -233,7 +233,7 @@ public class ClassifierSimulation {
 					;
 				
 				
-				figures.withNewChart(c+" "+cm+" slope", ChartType.XYZ_CONTOUR)
+				figures.withNewChart(c+" "+cm+" slope", ChartType.XY_DXDY_VECTOR)
 						.config().withXScale(0F, 1F)
 						.withXLabel("cutoff")
 						.withYLabel("prevalence")
