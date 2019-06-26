@@ -9,12 +9,11 @@ import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
 import org.apache.commons.math3.analysis.differentiation.FiniteDifferencesDifferentiator;
 import org.apache.commons.math3.analysis.differentiation.UnivariateDifferentiableFunction;
-import org.apache.commons.math3.analysis.interpolation.MicrosphereProjectionInterpolator;
 
 public class Interpolation<IN> {
 
 	public static <Y> Interpolation<Y> empty() {
-		return new Interpolation<Y>(null,null);
+		return new Interpolation<Y>(null,null,null);
 	}
 
 	private MultivariateFunction interp;
