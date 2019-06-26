@@ -13,12 +13,6 @@ public class ConfusionMatrix2D {
 	
 	int total;
 	
-	double tpValue; 
-	double tnValue; 
-	double fpCost; 
-	double fnCost;
-	double prevalence;
-	
 	public ConfusionMatrix2D(int TP, int TN, int FP, int FN) {
 		total = TP+TN+FP+FN;
 		tp = TP/((double) total);
@@ -35,19 +29,6 @@ public class ConfusionMatrix2D {
 		fp = FPR;
 		tn = TNR;
 		fn = FNR;
-	}
-	
-	public ConfusionMatrix2D withCostModel(CostModel model, double prevalence) {
-		return withCostModel(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost(),prevalence);
-	}
-	
-	public ConfusionMatrix2D withCostModel(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {
-		this.tpValue = tpValue;
-		this.tnValue = tnValue;
-		this.fpCost = fpCost;
-		this.fnCost= fnCost;
-		this.prevalence= prevalence;
-		return this;
 	}
 	
 	public double sensitivity() {return truePositiveRate();}
@@ -76,16 +57,6 @@ public class ConfusionMatrix2D {
 	}
 	public double f1Score() {return fScore(1D);}
 	public double youdensJ() {return truePositiveRate()+trueNegativeRate()-1;}
-	
-	@Deprecated
-	public double absoluteValue() {
-		return absoluteValue(tpValue, tnValue, fpCost, fnCost);
-	}
-	
-	@Deprecated
-	public double relativeValue() {
-		return relativeValue(tpValue, tnValue, fpCost, fnCost, prevalence);
-	}
 	
 	public double absoluteValue(CostModel model) {
 		return absoluteValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost());
