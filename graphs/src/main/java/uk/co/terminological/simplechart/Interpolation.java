@@ -11,6 +11,8 @@ import org.apache.commons.math3.analysis.differentiation.DerivativeStructure;
 import org.apache.commons.math3.analysis.differentiation.FiniteDifferencesDifferentiator;
 import org.apache.commons.math3.analysis.differentiation.UnivariateDifferentiableFunction;
 
+import com.google.common.primitives.Doubles;
+
 public class Interpolation<IN> {
 
 	public static <Y> Interpolation<Y> empty() {
@@ -32,9 +34,17 @@ public class Interpolation<IN> {
 		for (int i=0; i<current.length; i++) {
 			current[i] = adaptors.get(i).apply(input);
 		}
-		return interp.value(current);
+		return interpolate(current);
 	}
 
+	public Double interpolate(List<Double> inputs) {
+		return interpolate(Doubles.toArray(inputs));
+	}
+	
+	public Double interpolate(double[] inputs) {
+		return interp.value(inputs);
+	}
+	
 	private List<UnivariateFunction> forPosition(final double[] coord) {
 		List<UnivariateFunction> out = new ArrayList<>();
 		for (int i = 0; i<coord.length; i++) {
