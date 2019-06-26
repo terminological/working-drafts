@@ -33,7 +33,7 @@ import uk.co.terminological.simplechart.Series;
 import uk.co.terminological.simplechart.SeriesBuilder;
 import uk.co.terminological.simplechart.SeriesBuilder.Range;
 import uk.co.terminological.simplechart.aesthetics.Factory;
-import uk.co.terminological.simplechart.aesthetics.XY;
+import uk.co.terminological.simplechart.aesthetics.XYZwithDiff;
 
 public class ClassifierSimulation {
 
@@ -240,14 +240,13 @@ public class ClassifierSimulation {
 						.withLabel(Z, "value")
 						.withYScale(0F, 1F)
 						.done()
-						.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
-						.bind(X, t -> t.cutOff)
-						//.bind(Y, t -> t.matrix().tp,"tp")
-						//.bind(Y, t -> t.matrix().tn,"tn")
-						//.bind(Y, t -> t.matrix().fp,"fp")
-						//.bind(Y, t -> t.matrix().fn,"fn")
-						.bind(Z, t -> t.matrix().relativeValue(),"value")
-						.bind(Y, t -> t.prevalence,"prevalence")
+						.withSeries(coords).withColourScheme(ColourScheme.BuGn)
+						.bind(X, t -> t.getX(),"cutoff")
+						.bind(Y, t -> t.getY(),"prevalence")
+						.bind(Z, t -> t.getZ(),"value")
+						.bind(DX, t -> t.getDzDx(),"dz/dx")
+						.bind(DY, t -> t.getDzDy(),"dz/dy")
+						
 						.done()
 						.render();
 					});
