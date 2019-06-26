@@ -233,7 +233,7 @@ public class ClassifierSimulation {
 					;
 				
 				
-				figures.withNewChart(c+" "+cm+" value", ChartType.XYZ_HEATMAP)
+				figures.withNewChart(c+" "+cm+" slope", ChartType.XYZ_CONTOUR)
 						.config().withXScale(0F, 1F)
 						.withXLabel("cutoff")
 						.withYLabel("prevalence")
