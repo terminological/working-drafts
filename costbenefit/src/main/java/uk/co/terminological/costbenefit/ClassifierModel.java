@@ -66,7 +66,7 @@ public abstract class ClassifierModel<X> {
 		public Double bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
 			Double value = Double.MIN_VALUE;
 			Double bestCutoff = Double.NaN;
-			for (Double d=0D; d<1.0D;d += 0.01) {
+			for (Double d=0D; d<1.0D;d += 0.001) {
 				ConfusionMatrix2D tmp = matrix(d);
 				if (feature.apply(tmp) > value) {
 					value = feature.apply(tmp);
