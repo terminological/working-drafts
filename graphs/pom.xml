@@ -109,7 +109,7 @@
 				</executions>
 				<configuration>
 					<sources>
-						<source>graphs/src/main/java/uk/co/terminological/simplechart/aesthetics</source>
+						<source>src/main/java/uk/co/terminological/simplechart/aesthetics</source>
 					</sources>
 					<targetDirectory>${project.build.directory}/generated-sources/annotations</targetDirectory>
 				</configuration> 
