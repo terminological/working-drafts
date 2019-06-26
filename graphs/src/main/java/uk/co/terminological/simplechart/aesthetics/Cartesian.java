@@ -2,10 +2,6 @@ package uk.co.terminological.simplechart.aesthetics;
 
 public interface Cartesian {
 	
-	public static interface X {
-		public Double getX();
-	}
-	
 	public static interface Y {
 		public Double getY();
 	}
