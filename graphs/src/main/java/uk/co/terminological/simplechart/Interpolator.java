@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolator;
@@ -112,8 +113,8 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 			}
 			
 			double[] diff = MathArrays.ebeSubtract(max,min);
-			double[] density = MathArrays.ebeDivide(diff,count);
-			
+			double[] seperation = MathArrays.ebeDivide(diff,count);
+			double minSeperation = DoubleStream.of(seperation).min().getAsDouble();
 			
 			Interpolation<IN> out = new Interpolation<IN>(
 					new MicrosphereProjectionInterpolator(dimensions,
@@ -123,9 +124,9 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 	                    sum/coordinates,
 	                    exponent,
 	                    sharedSphere,
-	                    noInterpolationTolerance).interpolate(xvals, yval), 
+	                    minSeperation/20).interpolate(xvals, yval), 
 					inputAdaptors,
-					density
+					seperation
 					);
 			return out;
 		};

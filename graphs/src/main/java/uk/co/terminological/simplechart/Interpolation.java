@@ -24,13 +24,13 @@ public class Interpolation<IN> {
 
 	private MultivariateFunction interp;
 	private List<Function<IN, Double>> adaptors;
-	private double[] density;
+	private double[] seperation;
 
 
-	public Interpolation(MultivariateFunction multivariateFunction, List<Function<IN, Double>> adaptors, double[] density) {
+	public Interpolation(MultivariateFunction multivariateFunction, List<Function<IN, Double>> adaptors, double[] seperation) {
 		this.interp = multivariateFunction;
 		this.adaptors = adaptors;
-		this.density = density;
+		this.seperation = seperation;
 	}
 
 	public Double interpolate(IN input) {
@@ -69,7 +69,7 @@ public class Interpolation<IN> {
 		List<UnivariateDifferentiableFunction> out = new ArrayList<>();
 		List<UnivariateFunction> uvf = forPosition(coord);
 		for (int i = 0; i<coord.length; i++) {
-			Double dimensionalDensity = density[i];
+			Double dimensionalDensity = seperation[i];
 			FiniteDifferencesDifferentiator fdd = new FiniteDifferencesDifferentiator(5,dimensionalDensity/10);
 			out.add(fdd.differentiate(uvf.get(i)));
 		}
