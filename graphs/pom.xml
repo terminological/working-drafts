@@ -109,7 +109,7 @@
 				</executions>
 				<configuration>
 					<sources>
-						<source>src/main/java/uk/co/terminological</source>
+						<source>graphs/src/main/java/uk/co/terminological</source>
 					</sources>
 					<targetDirectory>${project.build.directory}/generated-sources/annotations</targetDirectory>
 				</configuration> 
