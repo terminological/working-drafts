@@ -240,8 +240,8 @@ public class ClassifierSimulation {
 	@Test
 	public void plotValueVersusAccuracy() {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			//Stream.of(CostModelEnum.values()).forEach( cm-> {
-			CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
+			Stream.of(CostModelEnum.values()).forEach( cm-> {
+			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
 			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 			ParameterSpace space = new ParameterSpace(defaults);
 			space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
@@ -263,7 +263,7 @@ public class ClassifierSimulation {
 					.bind(Y, t -> t.prevalence,"prevalence")
 					.done()
 					.render();
-			//});
+			});
 		});
 	}
 	
