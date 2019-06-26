@@ -208,6 +208,7 @@ public abstract class GgplotWriter extends Writer {
 		public List<String> getPlots() {
 			return Arrays.asList(
 					"geom_tile(stat='identity', aes(x=X, y=Y, fill=Z))",
+					"geom_contour(aes(x=X, y=Y, fill=Z))",
 					"scale_fill_distiller(palette=schemeName)"
 					);
 		}

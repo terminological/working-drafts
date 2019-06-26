@@ -50,7 +50,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 	 */
 	
     int elementsPerDimension = 4;
-    double maxDarkFraction = 1.0;
+    double maxDarkFraction = 0.8;
     double darkThreshold = 0.0;
     double exponent = 2;
     boolean sharedSphere = false;
@@ -113,6 +113,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 			
 			double[] diff = MathArrays.ebeSubtract(max,min);
 			double[] density = MathArrays.ebeDivide(diff,count);
+			
 			
 			Interpolation<IN> out = new Interpolation<IN>(
 					new MicrosphereProjectionInterpolator(dimensions,
