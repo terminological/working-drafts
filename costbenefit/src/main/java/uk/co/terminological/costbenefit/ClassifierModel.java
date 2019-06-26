@@ -77,7 +77,7 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		public boolean screeningBeneficial(CostModel model, Double prevalence) {
-			Double best = bestCutoff(mat -> mat.withCostModel(model, prevalence).relativeValue());
+			Double best = bestCutoff(mat -> mat.relativeValue(model, prevalence));
 			return !Precision.equals(best, 0.0D) && !Precision.equals(best, 1.0D);
 		}
 		

@@ -77,18 +77,28 @@ public class ConfusionMatrix2D {
 	public double f1Score() {return fScore(1D);}
 	public double youdensJ() {return truePositiveRate()+trueNegativeRate()-1;}
 	
+	@Deprecated
 	public double absoluteValue() {
 		return absoluteValue(tpValue, tnValue, fpCost, fnCost);
 	}
 	
+	@Deprecated
 	public double relativeValue() {
 		return relativeValue(tpValue, tnValue, fpCost, fnCost, prevalence);
+	}
+	
+	public double absoluteValue(CostModel model) {
+		return absoluteValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost());
 	}
 	
 	public double absoluteValue(double tpValue, double tnValue, double fpCost, double fnCost) {
 		if (tpValue < 0 || tnValue < 0) throw new ConstraintViolationException("Values of true positives and negatives must be larger than zero");
 		if (fpCost > 0 || fnCost > 0) throw new ConstraintViolationException("Costs of false positives and negatives must be smaller than zero");
 		return tpValue*tp+tnValue*tn+fpCost*fp+fnCost*fn;
+	}
+	
+	public double relativeValue(CostModel model, double prevalence) {
+		return relativeValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost(),prevalence);
 	}
 	
 	public double relativeValue(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {
