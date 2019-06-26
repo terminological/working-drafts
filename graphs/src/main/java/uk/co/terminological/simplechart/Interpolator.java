@@ -53,7 +53,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
     int elementsPerDimension = 4;
     double maxDarkFraction = 0.8;
     double darkThreshold = 0.0;
-    double exponent = 1;
+    double exponent = 2;
     boolean sharedSphere = false;
     double noInterpolationTolerance = 0D;
 	
