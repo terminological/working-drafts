@@ -307,7 +307,7 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		public ConfusionMatrix2D matrix() {
-			return model().matrix(cutOff).withCostModel(tpValue, tnValue, fpCost, fnCost, prevalence);
+			return model().matrix(cutOff);
 		}
 	}
 	

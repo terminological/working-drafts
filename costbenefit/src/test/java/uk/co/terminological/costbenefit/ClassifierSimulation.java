@@ -195,7 +195,7 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
-					.bind(Z, t -> t.matrix().relativeValue())
+					.bind(Z, t -> t.matrix().relativeValue(cm,t.prevalence))
 					.bind(Y, t -> t.prevalence,"prevalence")
 					.done()
 					.render();
@@ -259,7 +259,7 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
-					.bind(Z, t -> t.matrix().relativeValue()-t.matrix().accuracy())
+					.bind(Z, t -> t.matrix().relativeValue(cm,t.prevalence)-t.matrix().accuracy())
 					.bind(Y, t -> t.prevalence,"prevalence")
 					.done()
 					.render();
@@ -279,7 +279,7 @@ public class ClassifierSimulation {
 				
 				Interpolation<ParameterSet> interp = Interpolator.fromStream(
 						space.stream(),
-						t -> t.matrix().relativeValue(),
+						t -> t.matrix().relativeValue(cm,t.prevalence),
 						t -> t.cutOff,
 						t -> t.prevalence
 						);
