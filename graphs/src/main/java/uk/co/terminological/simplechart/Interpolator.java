@@ -15,87 +15,108 @@ import java.util.stream.Stream;
 
 import org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.BivariateGridInterpolator;
+import org.apache.commons.math3.analysis.interpolation.MicrosphereProjectionInterpolator;
 import org.apache.commons.math3.analysis.interpolation.PiecewiseBicubicSplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.SmoothingPolynomialBicubicSplineInterpolator;
 
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.FluentSet;
 
-public class Interpolator<IN> implements Collector<IN, EavMap<Double,Double,Double>, Result> {
+public class Interpolator<IN> implements Collector<IN, List<List<Double>>, Result> {
 
 	List<Function<IN,Double>> inputAdaptors;
 	Function<IN,Double> valueAdaptor;
 	
-	int smoothing = 0;
-	
-	public Interpolator(Function<IN,Double> valueAdaptor, Function<IN,Double>... inputAdaptors) {
-		this.inputAdaptors = Arrays.asList(inputAdaptors);
+	public Interpolator(Function<IN,Double> valueAdaptor, @SuppressWarnings("unchecked") Function<IN,Double>... inputAdaptor) {
+		this.inputAdaptors = Arrays.asList(inputAdaptor);
 		this.valueAdaptor = valueAdaptor;
 	}
 	
-	public static <X> Result fromStream(Stream<X> input, Function<X,Double> xAdaptor, Function<X,Double> yAdaptor, Function<X,Double> zAdaptor) {
-		return input.collect(new Interpolator(xAdaptor,yAdaptor,zAdaptor));
+	public static <X> Result fromStream(Stream<X> input, Function<X,Double> valueAdaptor, Function<X,Double>... inputAdaptor) {
+		return input.collect(new Interpolator(valueAdaptor,inputAdaptor));
 	}
 	
-	public static <X> Result fromStream(Stream<X> input, Function<X,Double> xAdaptor, Function<X,Double> yAdaptor, Function<X,Double> zAdaptor, int smoothing) {
-		return input.collect(new Interpolator(xAdaptor,yAdaptor,zAdaptor).withSmoothing(smoothing));
-	}
+	/*
+dimension - Space dimension.
+elements - Number of surface elements of the microsphere.
+exponent - Exponent used in the power law that computes the
+maxDarkFraction - Maximum fraction of the facets that can be dark. If the fraction of "non-illuminated" facets is larger, no estimation of the value will be performed, and the background value will be returned instead.
+darkThreshold - Value of the illumination below which a facet is considered dark.
+background - Value returned when the maxDarkFraction threshold is exceeded.
+sharedSphere - Whether the sphere can be shared among the interpolating function instances. If true, the instances will share the same data, and thus will not be thread-safe.
+noInterpolationTolerance - When the distance between an interpolated point and one of the sample points is less than this value, no interpolation will be performed (the value of the sample will be returned).
+	 */
+	
+    int elementsPerDimension = 4;
+    double maxDarkFraction = 1.0;
+    double darkThreshold = 0.0;
+    double exponent = 2;
+    boolean sharedSphere = false;
+    double noInterpolationTolerance = 0D;
 	
 	
-	public Interpolator<IN> withSmoothing(int smoothing) {
-		this.smoothing = smoothing;
-		return this;
-	}
-
-
 	public static class Result {
+
+		public static Result empty() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 		
 	}
 
 
 	@Override
-	public Supplier<EavMap<Double, Double, Double>> supplier() {
-		return () -> new EavMap<Double,Double,Double>();
+	public Supplier<List<List<Double>>> supplier() {
+		return () -> new ArrayList<>();
 	}
 
 
 	@Override
-	public BiConsumer<EavMap<Double, Double, Double>, IN> accumulator() {
+	public BiConsumer<List<List<Double>>, IN> accumulator() {
 		return (map, input) -> {
-			map.add(xAdaptor.apply(input), yAdaptor.apply(input), zAdaptor.apply(input));
+			List<Double> current = new ArrayList<>();
+			current.add(valueAdaptor.apply(input));
+			inputAdaptors.forEach(fn -> current.add(fn.apply(input)));
+			map.add(current);
 		};
 	}
 
 
 	@Override
-	public BinaryOperator<EavMap<Double, Double, Double>> combiner() {
-		return (map1,map2) -> map1.addAll(map2);
+	public BinaryOperator<List<List<Double>>> combiner() {
+		return (map1,map2) -> {
+			map1.addAll(map2);
+			return map1;
+		};
 	}
 
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Function<EavMap<Double, Double, Double>, Result> finisher() {
+	public Function<List<List<Double>>, Result> finisher() {
 		return (map) -> {
-			
-			List<Double> xValues = new ArrayList<Double>(map.getEntitySet());
-			Collections.sort(xValues);
-			List<Double> yValues = new ArrayList<Double>(map.getAttributeSet());
-			Collections.sort(yValues);
-			double[][] matrix = new double[xValues.size()][yValues.size()];
-			for (int i = 0; i<xValues.size(); i++) {
-				for (int j = 0; j<yValues.size(); j++) {
-					matrix[i][j] = map.getOrElse(xValues.get(i), yValues.get(j), Double.NaN);
+			if (map.size() < 1) return Result.empty();
+			int coordinates = map.size();
+			double[] yval = new double[coordinates];
+			int dimensions = map.get(0).size()-1;
+			double[][] xvals = new double[dimensions][coordinates];
+			double sum = 0D;
+			for (int i = 0; i<coordinates; i++) {
+				yval[i] = map.get(i).get(0);
+				sum += yval[i]; 
+				for (int j=0; j<dimensions; j++) {
+					xvals[j][i] = map.get(i).get(j+1);
 				}
 			}
 			
-			BivariateGridInterpolator interp;
-			if (smoothing == 0) {
-				interp = new PiecewiseBicubicSplineInterpolator();
-			} else {
-				interp = new SmoothingPolynomialBicubicSplineInterpolator(smoothing);
-			}
-			
+			new MicrosphereProjectionInterpolator(dimensions,
+                    (int) Math.pow(elementsPerDimension,dimensions),
+                    maxDarkFraction,
+                    darkThreshold,
+                    sum/coordinates,
+                    exponent,
+                    sharedSphere,
+                    noInterpolationTolerance);
 			
 		};
 	}
