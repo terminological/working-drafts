@@ -282,7 +282,7 @@ public class ClassifierSimulation {
 					.withYLabel("best cutoff")
 					.withYScale(0F, 1F)
 					.done()
-					.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
+					.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
 					.bind(X, t -> t.prevalence)
 					.bind(Y, t -> t.model().bestCutoff(m -> m.relativeValue(cm, t.prevalence)),"rel value")
 					.bind(Y, t -> t.model().bestCutoff(m -> m.accuracy()),"accuracy")
