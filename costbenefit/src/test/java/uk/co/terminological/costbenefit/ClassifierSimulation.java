@@ -27,9 +27,13 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
+import uk.co.terminological.simplechart.Interpolation;
+import uk.co.terminological.simplechart.Interpolator;
 import uk.co.terminological.simplechart.Series;
 import uk.co.terminological.simplechart.SeriesBuilder;
 import uk.co.terminological.simplechart.SeriesBuilder.Range;
+import uk.co.terminological.simplechart.aesthetics.Factory;
+import uk.co.terminological.simplechart.aesthetics.XY;
 
 public class ClassifierSimulation {
 
@@ -196,5 +200,57 @@ public class ClassifierSimulation {
 				.render();
 			});
 		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void plotDebug2() {
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			Stream.of(CostModelEnum.values()).forEach( cm-> {
+				ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
+				ParameterSpace space = new ParameterSpace(defaults);
+				space.cutOff = SeriesBuilder.range(0.005, 0.995, 0.01).collect(Collectors.toList());
+				space.prevalence = SeriesBuilder.range(0.005,0.995, 0.01).collect(Collectors.toList());
+				
+				Interpolation<ParameterSet> interp = Interpolator.fromStream(
+						space.stream(),
+						t -> t.matrix().relativeValue(),
+						t -> t.cutOff,
+						t -> t.prevalence
+						);
+				
+				
+				Stream<XYZwithDiff> coords = SeriesBuilder.grid(0.005, 0.995, 0.005, 0.995, 10000)
+					.map(gxy -> Factory.Mutable.createXYZwithDiff()
+							.withX(gxy.getX())
+							.withY(gxy.getY()))
+					.map(interp.streamAugmenter(
+							(xzydiff,z) -> xzydiff.withZ(z),
+							(xzydiff,dz) -> xzydiff.withDzDx(dz.get(0)).withDzDy(dz.get(1)),
+							xzydiff -> xzydiff.getX(),
+							xzydiff -> xzydiff.getY()
+							))
+					;
+				
+				
+				figures.withNewChart(c+" "+cm+" value", ChartType.XYZ_HEATMAP)
+						.config().withXScale(0F, 1F)
+						.withXLabel("cutoff")
+						.withYLabel("prevalence")
+						.withLabel(Z, "value")
+						.withYScale(0F, 1F)
+						.done()
+						.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
+						.bind(X, t -> t.cutOff)
+						//.bind(Y, t -> t.matrix().tp,"tp")
+						//.bind(Y, t -> t.matrix().tn,"tn")
+						//.bind(Y, t -> t.matrix().fp,"fp")
+						//.bind(Y, t -> t.matrix().fn,"fn")
+						.bind(Z, t -> t.matrix().relativeValue(),"value")
+						.bind(Y, t -> t.prevalence,"prevalence")
+						.done()
+						.render();
+					});
+				});
 	}
 }
