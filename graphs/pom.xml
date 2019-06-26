@@ -84,6 +84,12 @@
 			<artifactId>kumo-core</artifactId>
 			<version>1.17</version>
 		</dependency>
+
+		<dependency>
+			<groupId>uk.co.terminological.javapig</groupId>
+			<artifactId>runtime</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
