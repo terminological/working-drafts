@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.math3.analysis.interpolation.BicubicSplineInterpolator;
@@ -18,6 +19,7 @@ import org.apache.commons.math3.analysis.interpolation.BivariateGridInterpolator
 import org.apache.commons.math3.analysis.interpolation.MicrosphereProjectionInterpolator;
 import org.apache.commons.math3.analysis.interpolation.PiecewiseBicubicSplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.SmoothingPolynomialBicubicSplineInterpolator;
+import org.apache.commons.math3.util.MathArrays;
 
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.FluentSet;
@@ -90,13 +92,28 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 			int dimensions = inputAdaptors.size();
 			double[][] xvals = new double[dimensions][coordinates];
 			double sum = 0D;
+			double max[] = new double[dimensions];
+			Arrays.fill(max, Double.MIN_VALUE);
+			double min[] = new double[dimensions];
+			Arrays.fill(min, Double.MAX_VALUE);
+			double count[] = new double[dimensions];
+			Arrays.fill(count, coordinates);
+			
 			for (int i = 0; i<coordinates; i++) {
 				yval[i] = map.get(i).get(0);
 				sum += yval[i]; 
+				
 				for (int j=0; j<dimensions; j++) {
-					xvals[j][i] = map.get(i).get(j+1);
+					double tmp = map.get(i).get(j+1);
+					xvals[j][i] = tmp;
+					if (min[j] > tmp) min[j] = tmp; 
+					if (max[j] < tmp) max[j] = tmp;
 				}
 			}
+			
+			double[] diff = MathArrays.ebeSubtract(max,min);
+			double[] density = MathArrays.ebeDivide(diff,count);
+			
 			Interpolation<IN> out = new Interpolation<IN>(
 					new MicrosphereProjectionInterpolator(dimensions,
 	                    (int) Math.pow(elementsPerDimension,dimensions),
@@ -106,7 +123,9 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 	                    exponent,
 	                    sharedSphere,
 	                    noInterpolationTolerance).interpolate(xvals, yval), 
-					inputAdaptors);
+					inputAdaptors,
+					Arrays.stream(density).boxed().collect(Collectors.toList())
+					);
 			return out;
 		};
 	}
