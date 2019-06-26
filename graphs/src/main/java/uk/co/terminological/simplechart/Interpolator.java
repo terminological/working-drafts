@@ -114,7 +114,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 			
 			double[] diff = MathArrays.ebeSubtract(max,min);
 			double[] seperation = MathArrays.ebeDivide(diff,count);
-			double minSeperation = DoubleStream.of(seperation).min().getAsDouble();
+			//double minSeperation = DoubleStream.of(seperation).min().getAsDouble();
 			
 			Interpolation<IN> out = new Interpolation<IN>(
 					new MicrosphereProjectionInterpolator(dimensions,
