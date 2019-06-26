@@ -72,6 +72,14 @@ public class Interpolation<IN> {
 		return out;
 	}
 	
+	public List<Double> partialDerivatives(IN input) {
+		double[] current = new double[adaptors.size()];
+		for (int i=0; i<current.length; i++) {
+			current[i] = adaptors.get(i).apply(input);
+		}
+		return partialDerivatives(current);
+	}
+	
 	public List<Double> partialDerivatives(final double[] coord) {
 		List<UnivariateDifferentiableFunction> uvdf = differentiateAt(coord);
 		List<Double> out = new ArrayList<>();
