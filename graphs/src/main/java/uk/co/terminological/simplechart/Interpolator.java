@@ -55,19 +55,6 @@ noInterpolationTolerance - When the distance between an interpolated point and o
     double noInterpolationTolerance = 0D;
 	
 	
-	public static class Interpolation<IN> {
-
-		public static <Y> Interpolation<Y> empty() {
-			return new Interpolation<Y>();
-		}
-
-		public MicrosphereProjectionInterpolator interp;
-		public List<Function<IN, Double>> adaptors;
-		
-		
-	}
-
-
 	@Override
 	public Supplier<List<List<Double>>> supplier() {
 		return () -> new ArrayList<>();
