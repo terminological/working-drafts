@@ -124,7 +124,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 	                    sum/coordinates,
 	                    exponent,
 	                    sharedSphere,
-	                    minSeperation/1000).interpolate(xvals, yval), 
+	                    0).interpolate(xvals, yval), 
 					inputAdaptors,
 					seperation
 					);
