@@ -108,7 +108,9 @@
 					</execution>
 				</executions>
 				<configuration>
-					<sourceCodeDirectory>${project.build.directory}/graphs/src/main/java</sourceCodeDirectory>
+					<sources>
+						<source>src/main/java/uk/co/terminological</source>
+					</sources>
 					<targetDirectory>${project.build.directory}/generated-sources/annotations</targetDirectory>
 				</configuration> 
 			</plugin>
