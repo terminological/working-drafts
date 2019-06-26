@@ -105,7 +105,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 	                    sum/coordinates,
 	                    exponent,
 	                    sharedSphere,
-	                    noInterpolationTolerance), 
+	                    noInterpolationTolerance).interpolate(xvals, yval), 
 					inputAdaptors);
 			return out;
 		};
