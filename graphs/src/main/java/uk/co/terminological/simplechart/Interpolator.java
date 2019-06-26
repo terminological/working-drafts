@@ -90,7 +90,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 			int coordinates = map.size();
 			double[] yval = new double[coordinates];
 			int dimensions = inputAdaptors.size();
-			double[][] xvals = new double[dimensions][coordinates];
+			double[][] xvals = new double[coordinates][dimensions];
 			double sum = 0D;
 			double max[] = new double[dimensions];
 			Arrays.fill(max, Double.MIN_VALUE);
@@ -105,7 +105,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 				
 				for (int j=0; j<dimensions; j++) {
 					double tmp = map.get(i).get(j+1);
-					xvals[j][i] = tmp;
+					xvals[i][j] = tmp;
 					if (min[j] > tmp) min[j] = tmp; 
 					if (max[j] < tmp) max[j] = tmp;
 				}
