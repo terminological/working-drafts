@@ -2,9 +2,12 @@ package uk.co.terminological.costbenefit;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.SeriesBuilder;
+import uk.co.terminological.simplechart.SeriesBuilder.Range;
 
 public abstract class ClassifierModel<X> {
 
@@ -57,6 +60,21 @@ public abstract class ClassifierModel<X> {
 			aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
 			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
 		}
+		
+		public Double bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
+			Double value = Double.MIN_VALUE;
+			Double bestCutoff = Double.NaN;
+			for (Double d=0D; d<1.0D;d += 0.01) {
+				ConfusionMatrix2D tmp = matrix(d);
+				if (feature.apply(tmp) > value) {
+					value = feature.apply(tmp);
+					bestCutoff = d;
+				}
+			}
+			return bestCutoff;
+		}
+		
+		public boolean screeningBeneficial
 		
 		public ConfusionMatrix2D matrix(Double cutoff) {
 			

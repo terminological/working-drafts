@@ -2,6 +2,8 @@ package uk.co.terminological.costbenefit;
 
 import org.apache.commons.math3.util.Precision;
 
+import uk.co.terminological.costbenefit.ClassifierModel.CostModel;
+
 public class ConfusionMatrix2D {
 
 	double tp;
@@ -33,6 +35,10 @@ public class ConfusionMatrix2D {
 		fp = FPR;
 		tn = TNR;
 		fn = FNR;
+	}
+	
+	public ConfusionMatrix2D withCostModel(CostModel model, double prevalence) {
+		return withCostModel(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost(),prevalence);
 	}
 	
 	public ConfusionMatrix2D withCostModel(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {
