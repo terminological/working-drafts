@@ -50,26 +50,32 @@ public class Config {
 	}
 	
 	public String getXmin() {
+		if (yScale == null) return null;
 		return Double.toString(xScale.getFirst());
 	}
 	
 	public String getYmin() {
+		if (yScale == null) return null;
 		return Double.toString(yScale.getFirst());
 	}
 	
 	public String getXmax() {
+		if (xScale == null) return null;
 		return Double.toString(xScale.getSecond());
 	}
 	
 	public String getYmax() {
+		if (xScale == null) return null;
 		return Double.toString(xScale.getSecond());
 	}
 	
 	public String getXScale() {
+		if (xScale == null) return null;
 		return "["+StringUtils.joinWith(":", Double.toString(xScale.getFirst()),Double.toString(xScale.getSecond()))+"]";
 	}
 	
 	public String getYScale() {
+		if (yScale == null) return null;
 		return "["+StringUtils.joinWith(":", Double.toString(yScale.getFirst()),Double.toString(yScale.getSecond()))+"]";
 	}
 
