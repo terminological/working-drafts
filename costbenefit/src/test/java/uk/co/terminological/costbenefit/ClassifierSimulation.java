@@ -220,7 +220,7 @@ public class ClassifierSimulation {
 						);
 				
 				
-				Stream<XYZwithDiff> coords = SeriesBuilder.grid(0.005, 0.995, 0.005, 0.995, 10000)
+				Stream<XYZwithDiff> coords = SeriesBuilder.grid(0.005, 0.995, 0.005, 0.995, 900)
 					.map(gxy -> Factory.Mutable.createXYZwithDiff()
 							.withX(gxy.getX())
 							.withY(gxy.getY()))
