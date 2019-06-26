@@ -250,7 +250,7 @@ public class ClassifierSimulation {
 					.config().withXScale(0F, 1F)
 					.withXLabel("cutoff")
 					.withYLabel("prevalence")
-					.withLabel(Z, "value-\naccuracy")
+					.withLabel(Z, "value-\\naccuracy")
 					.withYScale(0F, 1F)
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
