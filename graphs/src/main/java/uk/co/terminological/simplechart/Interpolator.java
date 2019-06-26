@@ -22,7 +22,7 @@ import org.apache.commons.math3.analysis.interpolation.SmoothingPolynomialBicubi
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.FluentSet;
 
-public class Interpolator<IN> implements Collector<IN, List<List<Double>>, Result<IN>> {
+public class Interpolator<IN> implements Collector<IN, List<List<Double>>, Interpolation<IN>> {
 
 	List<Function<IN,Double>> inputAdaptors;
 	Function<IN,Double> valueAdaptor;
@@ -32,7 +32,7 @@ public class Interpolator<IN> implements Collector<IN, List<List<Double>>, Resul
 		this.valueAdaptor = valueAdaptor;
 	}
 	
-	public static <X> Result<X> fromStream(Stream<X> input, Function<X,Double> valueAdaptor, @SuppressWarnings("unchecked") Function<X,Double>... inputAdaptor) {
+	public static <X> Interpolation<X> fromStream(Stream<X> input, Function<X,Double> valueAdaptor, @SuppressWarnings("unchecked") Function<X,Double>... inputAdaptor) {
 		return input.collect(new Interpolator<X>(valueAdaptor,inputAdaptor));
 	}
 	
@@ -55,10 +55,10 @@ noInterpolationTolerance - When the distance between an interpolated point and o
     double noInterpolationTolerance = 0D;
 	
 	
-	public static class Result<IN> {
+	public static class Interpolation<IN> {
 
-		public static <Y> Result<Y> empty() {
-			return new Result<Y>();
+		public static <Y> Interpolation<Y> empty() {
+			return new Interpolation<Y>();
 		}
 
 		public MicrosphereProjectionInterpolator interp;
@@ -96,9 +96,9 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Function<List<List<Double>>, Result<IN>> finisher() {
+	public Function<List<List<Double>>, Interpolation<IN>> finisher() {
 		return (map) -> {
-			if (map.size() < 1) return Result.empty();
+			if (map.size() < 1) return Interpolation.empty();
 			int coordinates = map.size();
 			double[] yval = new double[coordinates];
 			int dimensions = inputAdaptors.size();
@@ -111,7 +111,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 					xvals[j][i] = map.get(i).get(j+1);
 				}
 			}
-			Result<IN> out = new Result<IN>();
+			Interpolation<IN> out = new Interpolation<IN>();
 			out.interp = new MicrosphereProjectionInterpolator(dimensions,
                     (int) Math.pow(elementsPerDimension,dimensions),
                     maxDarkFraction,
