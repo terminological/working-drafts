@@ -115,7 +115,29 @@ public class Interpolation<IN> {
 					}
 					
 				};
-		
+	}
+	
+	public <X> Function<X,X> streamAugmenter(
+			BiConsumer<X,Double> valueSetter,
+			BiConsumer<X,List<Double>> derivativeSetter,
+			@SuppressWarnings("unchecked") Function<X,Double>... parameterAdaptors) {
+
+
+			return new Function<X,X>() {
+				@Override
+				public X apply(X input) {
+					
+					double[] current = new double[parameterAdaptors.length];
+					for (int i=0; i<current.length; i++) {
+						current[i] = parameterAdaptors[i].apply(input);
+					}
+					
+					valueSetter.accept(input, interpolate(current));
+					derivativeSetter.accept(input, partialDerivatives(current));
+					return input;
+				}
+				
+		};
 	}
 
 }
