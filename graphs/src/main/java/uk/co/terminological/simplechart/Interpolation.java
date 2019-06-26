@@ -8,11 +8,16 @@ import org.apache.commons.math3.analysis.interpolation.MicrosphereProjectionInte
 public class Interpolation<IN> {
 
 	public static <Y> Interpolation<Y> empty() {
-		return new Interpolation<Y>();
+		return new Interpolation<Y>(null,null);
 	}
 
-	public MicrosphereProjectionInterpolator interp;
-	public List<Function<IN, Double>> adaptors;
+	private MicrosphereProjectionInterpolator interp;
+	private List<Function<IN, Double>> adaptors;
 	
+	
+	public Interpolation(MicrosphereProjectionInterpolator interp, List<Function<IN, Double>> adaptors) {
+		this.interp = interp;
+		this.adaptors = adaptors;
+	}
 	
 }
