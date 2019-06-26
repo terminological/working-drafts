@@ -30,6 +30,7 @@ public class Interpolation<IN> {
 	public Interpolation(MultivariateFunction multivariateFunction, List<Function<IN, Double>> adaptors, double[] density) {
 		this.interp = multivariateFunction;
 		this.adaptors = adaptors;
+		this.density = density;
 	}
 
 	public Double interpolate(IN input) {
