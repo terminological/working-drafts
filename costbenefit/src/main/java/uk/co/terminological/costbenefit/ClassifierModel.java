@@ -63,7 +63,7 @@ public abstract class ClassifierModel<X> {
 			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
 		}
 		
-		public Double bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
+		public Tuple<Double,Double> bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
 			Double value = Double.MIN_VALUE;
 			Double bestCutoff = Double.NaN;
 			for (Double d=0D; d<1.0D;d += 0.001) {
@@ -73,11 +73,11 @@ public abstract class ClassifierModel<X> {
 					bestCutoff = d;
 				}
 			}
-			return bestCutoff;
+			return Tuple.create(bestCutoff,value);
 		}
 		
 		public boolean screeningBeneficial(CostModel model, Double prevalence) {
-			Double best = bestCutoff(mat -> mat.relativeValue(model, prevalence));
+			Double best = bestCutoff(mat -> mat.relativeValue(model, prevalence)).getFirst();
 			return !Precision.equals(best, 0.0D) && !Precision.equals(best, 1.0D);
 		}
 		

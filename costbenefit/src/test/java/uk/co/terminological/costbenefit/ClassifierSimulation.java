@@ -276,7 +276,7 @@ public class ClassifierSimulation {
 			ParameterSpace space = new ParameterSpace(defaults);
 			//space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-			figures.withNewChart(c+" "+cm+" value vs accuracy", ChartType.XY_MULTI_LINE)
+			figures.withNewChart(c+" "+cm+" best cutoff", ChartType.XY_MULTI_LINE)
 					.config().withXScale(0F, 1F)
 					.withXLabel("prevalence")
 					.withYLabel("best cutoff")
@@ -284,13 +284,46 @@ public class ClassifierSimulation {
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
 					.bind(X, t -> t.prevalence)
-					.bind(Y, t -> t.model().bestCutoff(m -> m.relativeValue(cm, t.prevalence)),"rel value")
-					.bind(Y, t -> t.model().bestCutoff(m -> m.accuracy()),"accuracy")
-					.bind(Y, t -> t.model().bestCutoff(m -> m.f1Score()),"f1 score")
-					.bind(Y, t -> t.model().bestCutoff(m -> m.fScore(4)),"f4 score")
-					.bind(Y, t -> t.model().bestCutoff(m -> m.fScore(0.25)),"f0.25 score")
-					.bind(Y, t -> t.model().bestCutoff(m -> m.matthewsCorrelationCoefficient()),"mcc")
-					.bind(Y, t -> t.model().bestCutoff(m -> m.youdensJ()),"youdens")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.relativeValue(cm, t.prevalence)).getFirst(),"rel value")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.accuracy()).getFirst(),"accuracy")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.f1Score()).getFirst(),"f1 score")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.fScore(4)).getFirst(),"f4 score")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.fScore(0.25)).getFirst(),"f0.25 score")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.matthewsCorrelationCoefficient()).getFirst(),"mcc")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.youdensJ()).getFirst(),"youdens")
+					//.bind(Y, t -> t.matrix().tn,"tn")
+					//.bind(Y, t -> t.matrix().fp,"fp")
+					//.bind(Y, t -> t.matrix().fn,"fn")
+					.done()
+					.render();
+			});
+		});
+	}
+	
+	@Test
+	public void plotValueAtBestCutoff() {
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			Stream.of(CostModelEnum.values()).forEach( cm-> {
+			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
+			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
+			ParameterSpace space = new ParameterSpace(defaults);
+			//space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
+			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
+			figures.withNewChart(c+" "+cm+" statistic at best cutoff", ChartType.XY_MULTI_LINE)
+					.config().withXScale(0F, 1F)
+					.withXLabel("prevalence")
+					.withYLabel("best cutoff")
+					.withYScale(0F, 1F)
+					.done()
+					.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
+					.bind(X, t -> t.prevalence)
+					.bind(Y, t -> t.model().bestCutoff(m -> m.relativeValue(cm, t.prevalence)).getSecond(),"rel value")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.accuracy()).getSecond(),"accuracy")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.f1Score()).getSecond(),"f1 score")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.fScore(4)).getSecond(),"f4 score")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.fScore(0.25)).getSecond(),"f0.25 score")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.matthewsCorrelationCoefficient()).getSecond(),"mcc")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.youdensJ()).getSecond(),"youdens")
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
