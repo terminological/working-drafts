@@ -223,7 +223,7 @@ public class ClassifierSimulation {
 				//.bind(Y, t -> t.matrix().tn,"tn")
 				//.bind(Y, t -> t.matrix().fp,"fp")
 				//.bind(Y, t -> t.matrix().fn,"fn")
-				.bind(Z, t -> t.matrix().relativeValue()-t.matrix().accuracy(),"value-accuracy")
+				.bind(Z, t -> t.matrix().accuracy(),"accuracy")
 				.bind(Y, t -> t.prevalence,"prevalence")
 				.done()
 				.render();
