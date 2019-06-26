@@ -22,7 +22,7 @@ import org.apache.commons.math3.analysis.interpolation.SmoothingPolynomialBicubi
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.FluentSet;
 
-public class Interpolator<IN> implements Collector<IN, List<List<Double>>, Result> {
+public class Interpolator<IN> implements Collector<IN, List<List<Double>>, Result<IN>> {
 
 	List<Function<IN,Double>> inputAdaptors;
 	Function<IN,Double> valueAdaptor;
@@ -32,8 +32,8 @@ public class Interpolator<IN> implements Collector<IN, List<List<Double>>, Resul
 		this.valueAdaptor = valueAdaptor;
 	}
 	
-	public static <X> Result fromStream(Stream<X> input, Function<X,Double> valueAdaptor, Function<X,Double>... inputAdaptor) {
-		return input.collect(new Interpolator(valueAdaptor,inputAdaptor));
+	public static <X> Result<X> fromStream(Stream<X> input, Function<X,Double> valueAdaptor, @SuppressWarnings("unchecked") Function<X,Double>... inputAdaptor) {
+		return input.collect(new Interpolator<X>(valueAdaptor,inputAdaptor));
 	}
 	
 	/*
@@ -55,12 +55,15 @@ noInterpolationTolerance - When the distance between an interpolated point and o
     double noInterpolationTolerance = 0D;
 	
 	
-	public static class Result {
+	public static class Result<IN> {
 
-		public static Result empty() {
-			// TODO Auto-generated method stub
-			return null;
+		public static <Y> Result<Y> empty() {
+			return new Result<Y>();
 		}
+
+		public MicrosphereProjectionInterpolator interp;
+		public List<Function<IN, Double>> adaptors;
+		
 		
 	}
 
@@ -93,12 +96,12 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Function<List<List<Double>>, Result> finisher() {
+	public Function<List<List<Double>>, Result<IN>> finisher() {
 		return (map) -> {
 			if (map.size() < 1) return Result.empty();
 			int coordinates = map.size();
 			double[] yval = new double[coordinates];
-			int dimensions = map.get(0).size()-1;
+			int dimensions = inputAdaptors.size();
 			double[][] xvals = new double[dimensions][coordinates];
 			double sum = 0D;
 			for (int i = 0; i<coordinates; i++) {
@@ -108,8 +111,8 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 					xvals[j][i] = map.get(i).get(j+1);
 				}
 			}
-			
-			new MicrosphereProjectionInterpolator(dimensions,
+			Result<IN> out = new Result<IN>();
+			out.interp = new MicrosphereProjectionInterpolator(dimensions,
                     (int) Math.pow(elementsPerDimension,dimensions),
                     maxDarkFraction,
                     darkThreshold,
@@ -117,7 +120,8 @@ noInterpolationTolerance - When the distance between an interpolated point and o
                     exponent,
                     sharedSphere,
                     noInterpolationTolerance);
-			
+			out.adaptors = inputAdaptors;
+			return out;
 		};
 	}
 
