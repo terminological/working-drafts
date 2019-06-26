@@ -23,16 +23,14 @@ import uk.co.terminological.datatypes.FluentSet;
 
 public class Interpolator<IN> implements Collector<IN, EavMap<Double,Double,Double>, Result> {
 
-	Function<IN,Double> xAdaptor;
-	Function<IN,Double> yAdaptor;
-	Function<IN,Double> zAdaptor;
+	List<Function<IN,Double>> inputAdaptors;
+	Function<IN,Double> valueAdaptor;
 	
 	int smoothing = 0;
 	
-	public Interpolator(Function<IN,Double> xAdaptor, Function<IN,Double> yAdaptor, Function<IN,Double> zAdaptor ) {
-		this.xAdaptor = xAdaptor;
-		this.yAdaptor = yAdaptor;
-		this.zAdaptor = zAdaptor;
+	public Interpolator(Function<IN,Double> valueAdaptor, Function<IN,Double>... inputAdaptors) {
+		this.inputAdaptors = Arrays.asList(inputAdaptors);
+		this.valueAdaptor = valueAdaptor;
 	}
 	
 	public static <X> Result fromStream(Stream<X> input, Function<X,Double> xAdaptor, Function<X,Double> yAdaptor, Function<X,Double> zAdaptor) {
