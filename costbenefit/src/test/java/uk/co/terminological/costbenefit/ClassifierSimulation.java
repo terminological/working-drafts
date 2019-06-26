@@ -234,11 +234,11 @@ public class ClassifierSimulation {
 				
 				
 				figures.withNewChart(c+" "+cm+" slope", ChartType.XY_DXDY_VECTOR)
-						.config().withXScale(0F, 1F)
+						.config().withXScale(0D, 1D)
 						.withXLabel("cutoff")
 						.withYLabel("prevalence")
 						.withLabel(Z, "value")
-						.withYScale(0F, 1F)
+						.withYScale(0D, 1D)
 						.done()
 						.withSeries(coords).withColourScheme(ColourScheme.BuGn)
 						.bind(X, t -> t.getX(),"cutoff")
