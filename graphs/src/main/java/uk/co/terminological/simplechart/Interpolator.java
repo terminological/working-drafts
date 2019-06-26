@@ -124,7 +124,7 @@ noInterpolationTolerance - When the distance between an interpolated point and o
 	                    sharedSphere,
 	                    noInterpolationTolerance).interpolate(xvals, yval), 
 					inputAdaptors,
-					Arrays.stream(density).boxed().collect(Collectors.toList())
+					density
 					);
 			return out;
 		};

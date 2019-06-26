@@ -19,10 +19,10 @@ public class Interpolation<IN> {
 
 	private MultivariateFunction interp;
 	private List<Function<IN, Double>> adaptors;
-	private List<Double> density;
+	private double[] density;
 
 
-	public Interpolation(MultivariateFunction multivariateFunction, List<Function<IN, Double>> adaptors, List<Double> density) {
+	public Interpolation(MultivariateFunction multivariateFunction, List<Function<IN, Double>> adaptors, double[] density) {
 		this.interp = multivariateFunction;
 		this.adaptors = adaptors;
 	}
@@ -55,7 +55,7 @@ public class Interpolation<IN> {
 		List<UnivariateDifferentiableFunction> out = new ArrayList<>();
 		List<UnivariateFunction> uvf = forPosition(coord);
 		for (int i = 0; i<coord.length; i++) {
-			Double dimensionalDensity = density.get(i);
+			Double dimensionalDensity = density[i];
 			FiniteDifferencesDifferentiator fdd = new FiniteDifferencesDifferentiator(5,dimensionalDensity/10);
 			out.add(fdd.differentiate(uvf.get(i)));
 		}
