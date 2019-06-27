@@ -88,7 +88,7 @@ SELECT
 	  , y.priority as nlp_priority
 FROM IdentifiableNote n
 INNER JOIN (
-		SELECT TOP(1) 
+		SELECT TOP(10000) 
 			n1.*
 		FROM
 			NlpAudit n1 LEFT OUTER JOIN
@@ -152,7 +152,7 @@ FROM IdentifiableNote n
 WHERE p.note_id IS NULL
 
 
-SELECT * FROM NlpWorklist order by nlp_priority
+SELECT * FROM NlpWorklist order by nlp_priority, note_datetime
 
 
 
