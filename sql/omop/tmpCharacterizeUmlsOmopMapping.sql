@@ -113,3 +113,84 @@ FROM
 	) tmp2
 GROUP BY mapping_count
 
+
+
+DROP TABLE IF EXISTS RobsDatabase.dbo.mappingFullUmlsOmopSCT;
+GO
+
+CREATE TABLE RobsDatabase.dbo.mappingFullUmlsOmopSCT (
+	[CUI] [char](8) NULL,
+	[source_concept_id] [int] NULL,
+	[concept_id] [int] NULL
+) ON [PRIMARY]
+GO
+
+INSERT INTO RobsDatabase.dbo.mappingFullUmlsOmopSCT
+SELECT CUI, source_concept_id, concept_id FROM (
+	SELECT 
+		u.CUI,
+		c.source_concept_id,
+		c.concept_id,
+		ROW_NUMBER() OVER(PARTITION BY u.CUI,c.concept_id ORDER BY c.source_concept_id) as uniquifier,
+		ROW_NUMBER() OVER(PARTITION BY u.CUI ORDER BY c.concept_id DESC) as filter
+	FROM 
+		(
+			SELECT *, LEFT(SAB,1) as src
+			 FROM omopBuild.dbo.UmlsMRCONSO WHERE SAB in ('SNOMEDCT_US','RXNORM') --AND ISPREF='Y'
+		) u
+		FULL OUTER JOIN 
+		(
+			SELECT 
+				c1.concept_id as source_concept_id, 
+				c1.concept_code, c1.concept_name, 
+				COALESCE(c2.concept_id,0) as concept_id,
+				LEFT(c1.vocabulary_id,1) as src
+			FROM
+			[omop].[dbo].[concept] c1 LEFT OUTER JOIN
+			[omop].[dbo].[concept_relationship] cr ON c1.concept_id = cr.concept_id_1  AND cr.relationship_id='Maps to' LEFT OUTER JOIN
+			[omop].[dbo].[concept] c2 ON c2.concept_id = cr.concept_id_2
+			WHERE c1.vocabulary_id in ('SNOMED','RxNorm') AND c1.invalid_reason IS NULL
+		) c
+		ON u.CODE = c.concept_code and u.src = c.src
+) x WHERE
+uniquifier = 1 and not ( concept_id = 0 and filter > 1 )
+
+
+USE RobsDatabase
+GO
+
+-- CUIS that are not mapped at all in OMOP
+-- I.e. the SCT subset and RxNorm subset does not contain any code that matches.
+-- Not quite clear what these are - retirements? new concepts?
+select * FROM omopBuild.dbo.UmlsMRCONSO c, dbo.mappingFullUmlsOmopSCT m
+where m.CUI = c.CUI and
+-- concept_id IS NULL
+m.CUI = ''
+and SAB in ('SNOMEDCT_US','RXNORM')
+
+DROP VIEW IF EXISTS dbo.mappingComparisonUmlsOmopSCT
+GO
+
+Create VIEW dbo.mappingComparisonUmlsOmopSCT AS
+SELECT
+	cui_map,
+	omop_map,
+	count(*) as mappings_count
+FROM 
+	dbo.mappingFullUmlsOmopSCT map LEFT JOIN
+	(
+		SELECT CUI,sum(iif(concept_id IS NOT NULL,1,0)) as cui_map FROM 
+		dbo.mappingFullUmlsOmopSCT
+		WHERE CUI IS NOT NULL
+		GROUP BY CUI
+	) cui2omop ON map.CUI = cui2omop.CUI 
+	FULL OUTER JOIN
+	(
+		SELECT concept_id,sum(iif(CUI IS NOT NULL,1,0)) as omop_map FROM 
+		dbo.mappingFullUmlsOmopSCT
+		WHERE concept_id IS NOT NULL
+		GROUP BY concept_id
+	) omop2cui ON map.concept_id=omop2cui.concept_id
+GROUP BY cui_map,omop_map
+
+select * from dbo.mappingComparisonUmlsOmopSCT order by cui_map, omop_map
