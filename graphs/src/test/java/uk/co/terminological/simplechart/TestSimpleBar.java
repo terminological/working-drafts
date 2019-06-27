@@ -9,7 +9,6 @@ import org.apache.log4j.BasicConfigurator;
 import freemarker.template.TemplateException;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.*;
-import static uk.co.terminological.simplechart.OutputTarget.*;
 import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.datatypes.Tuple;
 

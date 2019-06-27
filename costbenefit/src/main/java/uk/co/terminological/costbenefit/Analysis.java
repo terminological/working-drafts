@@ -18,16 +18,16 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Lists;
 
 import freemarker.template.TemplateException;
-import uk.co.terminological.costbenefit.CoordinateFinder.Coordinate;
 import uk.co.terminological.costbenefit.CoordinateFinder.Interceptions;
-import uk.co.terminological.costbenefit.Kumaraswamy.Fitted;
+import uk.co.terminological.costbenefit.KumaraswamyCDF.Fitted;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.parser.ParserException;
-import uk.co.terminological.simplechart.Chart;
 import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.Coordinate;
 import uk.co.terminological.simplechart.Figure;
+import uk.co.terminological.simplechart.Series;
 import uk.co.terminological.tabular.Delimited;
 
 public class Analysis {
@@ -68,86 +68,136 @@ public class Analysis {
 		Fitted fitSpec = res.getFittedSpecificity();
 		fitSpec.plot(output.toFile(),"fitted specificity");
 
-		Figure.Data<Cutoff> figures = Figure.outputTo(output.toFile())
-				.withDefaultData(binned);
+		Figure figures = 
+				Figure.outputTo(output.toFile());
+				//.withDefaultData(binned);
 		
 		figures.withNewChart("gx", ChartType.XY_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("cutoff")
+			.withYLabel("sensitivity - g(x)")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(binned)
 			.bind(X, t -> t.getValue())
 			.bind(Y_FIT, t -> fitSens.value(t.getValue())) //t.smoothedSensitivity())
 			.bind(Y, t -> t.sensitivity())
-			.withAxes("cutoff","sensitivity - g(x)")
-			.config().withXScale(0F, 1F)
-			.withYScale(0F, 1F)
+			.done()
 			.render();
 		
 		figures.withNewChart("hx", ChartType.XY_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("cutoff")
+			.withYLabel("specificity - h(x)")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(binned)
 			.bind(X, t -> t.getValue())
 			.bind(Y_FIT, t -> fitSpec.value(t.getValue()))//t.smoothedSpecificity())
 			.bind(Y, t -> t.specificity())
-			.withAxes("cutoff","specificity - h(x)")
-			.config().withXScale(0F, 1F).withYScale(0F, 1F)
+			.done()
 			.render();
 		
 		figures.withNewChart("roc", ChartType.XY_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("1-sensitivity")
+			.withYLabel("specificity")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(binned)
 			.bind(X, t -> 1-t.sensitivity())
 			.bind(Y, t -> t.specificity())
-			.withAxes("1-sensitivity","specificity")
-			.config().withXScale(0F, 1F).withYScale(0F, 1F)
+			.done()
 			.render();
 		
 		figures.withNewChart("fx", ChartType.XY_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("cutoff")
+			.withYLabel("density - f(x)")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(binned)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.probabilityDensity())
 			.bind(Y_FIT, t->t.smoothedProbabilityDensity())
-			.withAxes("cutoff","density - f(x)")
-			.config().withXScale(0F, 1F)
+			.done()
 			.render();
 		
 		figures.withNewChart("gprimex", ChartType.XY_LINE)
-		.bind(X, t -> t.getValue())
-		.bind(Y, t -> t.deltaSensitivity())
-		.bind(Y_FIT, t -> fitSens.gradient(t.getValue()))
-		.withAxes("cutoff","rate of change sensitivity: g'(x)")
-		.config().withXScale(0F, 1F)
-		.render();
+			.config().withXScale(0F, 1F)
+			.withXLabel("cutoff")
+			.withYLabel("rate of change sensitivity: g'(x)")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(binned)
+			.bind(X, t -> t.getValue())
+			.bind(Y, t -> t.deltaSensitivity())
+			.bind(Y_FIT, t -> fitSens.gradient(t.getValue()))
+			.done()
+			.config().withXScale(0F, 1F)
+			.render();
 	
 	figures.withNewChart("hprimex", ChartType.XY_LINE)
+		.config().withXScale(0F, 1F)
+		.withXLabel("cutoff")
+		.withYLabel("rate of change specificity: h'(x)")
+		.withYScale(0F, 1F)
+		.done()
+		.withSeries(binned)
 		.bind(X, t -> t.getValue())
 		.bind(Y, t -> t.deltaSpecificity())
 		.bind(Y_FIT, t -> fitSpec.gradient(t.getValue()))
-		.withAxes("cutoff","rate of change specificity: h'(x)")
-		.config().withXScale(0F, 1F)
+		.done()
 		.render();
 	
 	figures.withNewChart("gprimex plus hprimex", ChartType.XY_LINE)
+		.config().withXScale(0F, 1F)
+		.withXLabel("cutoff")
+		.withYLabel("rate of change specificity+sensitivity: g'(x)+h'(x)")
+		.withYScale(0F, 1F)
+		.done()
+		.withSeries(binned)
 		.bind(X, t -> t.getValue())
 		.bind(Y, t -> t.deltaSensitivity()+t.deltaSpecificity())
 		.bind(Y_FIT, t -> fitSens.gradient(t.getValue())+fitSpec.gradient(t.getValue()))
-		.withAxes("cutoff","rate of change specificity+sensitivity: g'(x)+h'(x)")
-		.config().withXScale(0F, 1F)
+		.done()
 		.render();
 		
 		figures.withNewChart("bigFx", ChartType.XY_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("cutoff")
+			.withYLabel("cumulative probability: F(x)")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(binned)
 			.bind(X, t -> t.getValue())
 			.bind(Y, t -> t.cumulativeProbability())
-			.withAxes("cutoff","cumulative probability: F(x)")
-			.config().withXScale(0F, 1F)
+			.done()
 			.render();
 		
 		figures.withNewChart("costExample", ChartType.XY_LINE)
-			.bind(X, t -> t.getValue())
+		.config().withXScale(0F, 1F)
+		.withXLabel("cutoff")
+		.withYLabel("value")
+		.withYScale(0F, 1F)
+		.done()
+		.withSeries(binned).bind(X, t -> t.getValue())
 			.bind(Y, t -> t.cost(0.35D, 100D, -1D, -10D, 11D))
-			.withAxes("cutoff","value")
-			.config().withXScale(0F, 1F)
+			.done()
 			.render();
 		
 		
 		
-		Chart<Cutoff> chart = 
+		Series<Cutoff> chart = 
 				figures.withNewChart("costByPrevalence", ChartType.XY_MULTI_LINE)
+				.config().withXScale(0F, 1F)
+				.withXLabel("cutoff")
+				.withYLabel("value")
+				.withYScale(0F, 1F)
+				.done()
+				.withSeries(binned)
 				.bind(X, t -> t.getValue())
-				.withAxes("cutoff","value");
-		chart.config().withXScale(0F, 1F);
+				;
 		
 		Double valueTP = 100D;
 		Double valueFN = -1D;
@@ -162,15 +212,15 @@ public class Analysis {
 			
 		}
 		
-	    chart.render();
+	    chart.done().render();
 	    
 	    
-	    figures.withNewChart("costExample", ChartType.XY_LINE)
+	    /*figures.withNewChart("costExample", ChartType.XY_LINE)
 		.bind(X, t -> t.getValue())
 		.bind(Y, t -> t.cost(0.1D, 100D, -1D, -10D, 11D))
 		.withAxes("cutoff","value")
 		.config().withXScale(0F, 1F)
-		.render();
+		.render();*/
 	    
 		/*BitmapEncoder.saveBitmapWithDPI(chart, output.resolve(chart.getTitle()).toString(), BitmapFormat.PNG, 300);
 		
@@ -210,11 +260,16 @@ public class Analysis {
 			}
 		}
 		
-		figures.withNewChart(data, "Operating points by prevalence", ChartType.XY_SCATTER)
+		figures.withNewChart("Operating points by prevalence", ChartType.XY_SCATTER)
+			.config().withXScale(0F, 1F)
+			.withXLabel("prevalence")
+			.withYLabel("operating point")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(data)
 			.bind(X, t -> t.getFirst())
 			.bind(Y, t -> t.getSecond().getValue())
-			.withAxes("prevalence","operating point")
-			.config().withXScale(0F, 1F)
+			.done()
 			.render();
 		
 		
@@ -225,12 +280,15 @@ public class Analysis {
 			}
 		}
 		
-		figures.withNewChart(tmpData, "Value surface rate of change", ChartType.XYZ_CONTOUR)
+		figures.withNewChart("Value surface rate of change", ChartType.XYZ_CONTOUR)
+		.withSeries(tmpData)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird())
-		.withAxes("prevalence","operating point")
+		.done()
 		.config()
+			.withXLabel("prevalence")
+			.withYLabel("operating point")
 			.withXScale(0F, 1F)
 			.withYScale(0F, 1F)
 			.withCustomCommand("set view 50,20")
@@ -274,12 +332,15 @@ public class Analysis {
 			}
 		}
 		
-		figures.withNewChart(tmpData2, "Value surface", ChartType.XYZ_CONTOUR)
+		figures.withNewChart("Value surface", ChartType.XYZ_CONTOUR)
+		.withSeries(tmpData2)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird())
-		.withAxes("prevalence","operating point")
+		.done()
 		.config()
+			.withXLabel("prevalence")
+			.withYLabel("operating point")
 			.withXScale(0F, 1F)
 			//.withYScale(0F, 1F)
 			//.withCustomCommand("set view 50,20")

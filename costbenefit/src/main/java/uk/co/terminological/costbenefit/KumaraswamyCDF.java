@@ -5,6 +5,7 @@ import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Function;
 
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.exception.DimensionMismatchException;
@@ -13,6 +14,7 @@ import org.apache.commons.math3.exception.NullArgumentException;
 import freemarker.template.TemplateException;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.Figure;
+import uk.co.terminological.simplechart.SeriesBuilder;
 
 /**
  * Implementation of a parametric Kumaraswamy distribution where we fit the cumulative distribution function
@@ -22,8 +24,20 @@ import uk.co.terminological.simplechart.Figure;
  * @author rc538
  *
  */
-public class Kumaraswamy implements ParametricUnivariateFunction {
+public class KumaraswamyCDF implements ParametricUnivariateFunction {
 
+	public static Function<Double,Double> cdf(Double a, Double b) {
+		return x -> new KumaraswamyCDF().value(x,a,b);
+	}
+	
+	public static Function<Double,Double> invCdf(Double a, Double b) {
+		return y -> Math.pow((1-Math.pow((1-y), 1/b)), 1/a);
+	}
+	
+	public static Function<Double,Double> pdf(Double a, Double b) {
+		return x -> a*b*Math.pow(x, a-1)*Math.pow(1-Math.pow(x, a), b-1);
+	}
+	
 	/**
 	 * dx/da = b*x^a*(1-x^a)^(b-1)*log(x)
 	 * 
@@ -43,6 +57,15 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 		};
 		
 	}
+	
+	public static Double a(Double spread, Double mode) {
+		return (mode+spread)/(spread);
+	}
+	
+	public static Double b(Double spread, Double mode) {
+		Double a = a(spread,mode);
+		return (-1+a+Math.pow(mode, a))/(a*Math.pow(mode, a));
+	}
 
 	/**
 	 * y = 1-(1-x^a)^b
@@ -58,7 +81,7 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 				,b);
 	}
 
-	public static class Fitted extends Kumaraswamy {
+	public static class Fitted extends KumaraswamyCDF {
 		
 		double a;
 		double b;
@@ -86,15 +109,20 @@ public class Kumaraswamy implements ParametricUnivariateFunction {
 		}
 		
 		public void plot(File outfile, String name) throws IOException, TemplateException {
-			Figure.Data<Double> figures = Figure.outputTo(outfile)
-					.withDefaultData(Figure.Parameter.fromRange(0,1));
+			Figure figures = Figure.outputTo(outfile);
+					//.withDefaultData(Figure.Parameter.fromRange(0,1));
 			
 			figures.withNewChart(name, ChartType.XY_LINE)
-				.bind(X, x -> x)
-				.bind(Y, x -> value(x))
-				.withAxes("x","cumulative")
-				.config().withTitle(this.toString())
-				.withXScale(0F, 1F)
+				.config()
+					.withXLabel("x")
+					.withYLabel("cumulative")
+					.withTitle(this.toString())
+					.withXScale(0F, 1F)
+				.done()
+				.withSeries(SeriesBuilder.range(0D, 1D, 1000))
+					.bind(X, x -> x)
+					.bind(Y, x -> value(x))
+				.done()
 				.render();
 		}
 		

@@ -1,11 +1,7 @@
 package uk.co.terminological.literaturereview;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.ID;
-import static uk.co.terminological.simplechart.Chart.Dimension.LABEL;
 import static uk.co.terminological.simplechart.Chart.Dimension.STRENGTH;
-import static uk.co.terminological.simplechart.Chart.Dimension.X;
-import static uk.co.terminological.simplechart.Chart.Dimension.Y;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -26,8 +22,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,9 +45,6 @@ import org.neo4j.driver.v1.Values;
 import org.neo4j.driver.v1.types.Node;
 import org.yaml.snakeyaml.Yaml;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.google.common.collect.Streams;
 
 import uk.co.terminological.bibliography.BibliographicApiException;

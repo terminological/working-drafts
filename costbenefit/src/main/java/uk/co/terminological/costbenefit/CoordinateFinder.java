@@ -4,23 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import uk.co.terminological.datatypes.Tuple;
+import uk.co.terminological.simplechart.Coordinate;
 
 public class CoordinateFinder {
 
-	public static class Coordinate extends Tuple<Double,Double> {
-
-		public Coordinate(Double item1, Double item2) {
-			super(item1, item2);
-		}
-		public static Coordinate create(Double x,Double y) {
-			return new Coordinate(x,y);
-		}
-		public Double getX() { return getFirst(); }
-		public Double getY() { return getSecond(); }
-		public String toString() {return "("+getX()+","+getY()+")";}
-	}
-	
 	public static class Interceptions {
 		List<Coordinate> intercepts = new ArrayList<>();
 		public List<Coordinate> getIntercepts() {

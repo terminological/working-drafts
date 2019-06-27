@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,13 +21,13 @@ public abstract class D3JSWriter extends Writer {
 	}
 	
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		File f = getChart().getFile("html");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
 		getTemplate().get().process(getRoot(), out);
 		out.close();
 		Chart.log.info("Writing html to: "+f.getAbsolutePath());
-		
+		return f.toPath();
 		//TODO: Kick of a headless chrome instance and simulate click on download SVG item
 		// or just get user to open file in chrome
 	}
@@ -54,9 +55,9 @@ public abstract class D3JSWriter extends Writer {
 		}
 		
 		protected <X,Y> String extractData(Series<Y> edges) {
-			Function<Y, Object> xGenerator = edges.functionFor(Dimension.ID, "source");
-			Function<Y, Object> yGenerator = edges.functionFor(Dimension.ID, "target");
-			Function<Y, Object> valueGenerator = edges.functionFor(Dimension.STRENGTH);
+			Function<Y, ? extends Object> xGenerator = edges.functionFor(Dimension.ID, "source");
+			Function<Y, ? extends Object> yGenerator = edges.functionFor(Dimension.ID, "target");
+			Function<Y, ? extends Object> valueGenerator = edges.functionFor(Dimension.STRENGTH);
 			
 			EavMap<Object,Object,Object> tmp = new EavMap<>();
 			edges.getData().forEach(y -> {
@@ -118,12 +119,12 @@ public abstract class D3JSWriter extends Writer {
 		protected <X,Y> String extractData(Series<X> nodes, Series<Y> edges) {
 			StringBuilder builder = new StringBuilder();
 			
-			Function<X, Object> labelGenerator = nodes.functionFor(Dimension.LABEL);
-			Function<X, Object> idGenerator = nodes.functionFor(Dimension.ID);
+			Function<X, ? extends Object> labelGenerator = nodes.functionFor(Dimension.LABEL);
+			Function<X, ? extends Object> idGenerator = nodes.functionFor(Dimension.ID);
 			
-			Function<Y, Object> sourceIdGenerator = edges.functionFor(Dimension.ID, "source");
-			Function<Y, Object> targetIdGenerator = edges.functionFor(Dimension.ID, "target");
-			Function<Y, Object> weightGenerator = edges.functionFor(Dimension.STRENGTH);
+			Function<Y, ? extends Object> sourceIdGenerator = edges.functionFor(Dimension.ID, "source");
+			Function<Y, ? extends Object> targetIdGenerator = edges.functionFor(Dimension.ID, "target");
+			Function<Y, ? extends Object> weightGenerator = edges.functionFor(Dimension.STRENGTH);
 			
 			//TODO: Could probably have an optional<function<x,y>> accessor here... would it be useful though
 			//for elements such as size, or fill or other node or relationship properties

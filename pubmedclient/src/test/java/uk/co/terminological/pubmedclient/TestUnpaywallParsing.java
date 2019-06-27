@@ -6,9 +6,6 @@ import java.io.InputStream;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-
-import uk.co.terminological.bibliography.crossref.ListResult;
 import uk.co.terminological.bibliography.unpaywall.Result;
 
 public class TestUnpaywallParsing {

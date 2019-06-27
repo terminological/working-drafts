@@ -102,14 +102,14 @@ public class ProxyResultSetMapper {
 			valueString.append("?");
 		}
         
-		String SQL = "INSERT INTO "+table+" ("+fieldString.toString()+") "
+		String SQL = "INSERT INTO "+table+" ("+valueString.toString()+") "
                 + "VALUES("+valueString.toString()+")";
  		
         long id = 0;
  
         try (PreparedStatement pstmt = conn.prepareStatement(SQL,
                 Statement.RETURN_GENERATED_KEYS)) {
-        	
+ 
             for (int i=0; i<values.size();i++) {
             	pstmt.setObject(i+1, values.get(i));
             }

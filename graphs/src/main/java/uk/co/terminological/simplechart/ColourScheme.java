@@ -180,9 +180,9 @@ public class ColourScheme {
 		List<Colour> cols = values(categories);
 		for (int i=0; i<cols.size(); i++) {
 			String col = cols.get(i).toHex();
-			styles.append("set style line "+i+" lt 1 lc rgb '"+col+"'\n");
+			styles.append("set style line "+(i+1)+" lt 1 lc rgb '"+col+"'\n");
 			if (i>0) palette.append(",\\\n"); 
-			palette.append(""+i+" '"+col+"'");
+			palette.append(""+i+" \""+col+"\"");
 		};
 		return styles.toString()+"\n"+palette.toString()+")\n";
 	}

@@ -1,12 +1,15 @@
 package uk.co.terminological.simplechart;
 
+import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,7 +41,7 @@ public class GnuplotWriter extends Writer {
 		StringBuilder tmp = new StringBuilder();
 		tmp.append("# ");
 		
-		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
+		for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
 			tmp.append(binding.getFirst().toString()+
 					binding.getThird() == null ? "" : " ("+binding.getThird()+")"
 					+"\t");
@@ -46,8 +49,8 @@ public class GnuplotWriter extends Writer {
 		
 		for (X item: series.getData()) {
 			tmp.append("\n");
-			for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
-				tmp.append(binding.getSecond().apply(item).toString()+"\t");
+			for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
+				tmp.append(toGnuPlotString(binding.getSecond().apply(item))+"\t");
 			}
 		}
 		
@@ -55,7 +58,7 @@ public class GnuplotWriter extends Writer {
 	}
 
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		
 		File f = getChart().getFile("gplot");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
@@ -63,19 +66,30 @@ public class GnuplotWriter extends Writer {
 		out.close();
 		Chart.log.info("Starting GNUPlot...");
 		
-		Process process2 = new ProcessBuilder("/usr/bin/gnuplot","-c",f.getAbsolutePath())
-		.redirectOutput(Redirect.INHERIT)
-		.start();
-		
 		try {
-			System.out.println(process2.waitFor());
+			Process process2 = new ProcessBuilder("/usr/bin/gnuplot","-c",f.getAbsolutePath())
+			.redirectOutput(Redirect.INHERIT)
+			.start();
+			
+			System.out.println("Gnuplot status: "+process2.waitFor());
+			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
 		Chart.log.info("Ending GNUPlot...");
+		return getChart().getFile("png").toPath();
+		
+		
 	}
 	
-	
+	private static String toGnuPlotString(Object o) {
+		DecimalFormat df = new DecimalFormat("0.000000"); 
+		if (o instanceof Double) {
+			if (((Double) o).isNaN() || ((Double) o).isInfinite()) return "";
+			return df.format((Double) o);
+		}
+		return o.toString();
+	}
 	
 }

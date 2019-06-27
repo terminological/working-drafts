@@ -1,7 +1,12 @@
 #!/usr/bin/gnuplot -p
+<#assign series = config.getSeries()?first>
+<#assign seriesCount = series.indexesOf("Y")?size>
+${series.getScheme().getGnuplotPalette(seriesCount)}
+<#-- set datafile missing "NaN"-->
 $data << EOD
 ${data}
 EOD
+
 set title "${config.getTitle()}";
 set xlabel "${config.getXLabel()}"; 
 set ylabel "${config.getYLabel()}";
@@ -14,9 +19,8 @@ ${command};
 </#list>
 <#list config.getSeries() as series>
 plot \
-	<#list series.indexesOf("Y") as yIndex>
-"$data" index ${series?index} using ${series.indexOf("X")}:${yIndex} title '${series.labelFor(yIndex)}' with lines, \
-	</#list>
+<#list series.indexesOf("Y") as yIndex>"$data" index ${series?index} using ${series.indexOf("X")}:${yIndex} title '${series.labelFor(yIndex)}' with lines ls ${yIndex?index+1}<#sep>, \
+</#sep></#list>;
 </#list>
 
 <#-- 

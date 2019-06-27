@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -32,7 +33,7 @@ public class WordcloudWriter extends Writer {
 	}
 	
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		
 		File f = getChart().getFile("png");
 		final FrequencyAnalyzer frequencyAnalyzer = new FrequencyAnalyzer();
@@ -52,7 +53,7 @@ public class WordcloudWriter extends Writer {
 		wordCloud.writeToFile(f.getAbsolutePath());
 		
 		Chart.log.info("Writing word cloud to: "+f.getAbsolutePath());
-		
+		return f.toPath();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -68,7 +69,7 @@ public class WordcloudWriter extends Writer {
 	protected <Y> String extractData(Series<Y> series) {
 		List<Color> colors = series.getScheme().values(8).stream().map(c -> c.toAwt()).collect(Collectors.toList());
 		pallette = new ColorPalette(colors);
-		Function<Y, Object> xGenerator = series.functionFor(Dimension.TEXT);
+		Function<Y, ? extends Object> xGenerator = series.functionFor(Dimension.TEXT);
 		text = new ArrayList<>();
 		series.getData().stream().map(xGenerator).map(o -> o.toString()).forEach(s-> text.add(s));
 		return "";

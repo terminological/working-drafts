@@ -1,4 +1,6 @@
 #!/usr/bin/gnuplot -p
+<#assign series = config.getSeries()?first>
+${series.getScheme().getGnuplotPalette(1)}
 $data << EOD
 ${data}
 EOD
@@ -13,9 +15,9 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
-<#assign series = config.getSeries()?first>
+
 plot \
-"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with points ls 1;
 
 
 <#-- 

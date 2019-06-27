@@ -1,7 +1,7 @@
 #!/usr/bin/gnuplot -p
 
-<#include "palettes/rdbu.pal" parse=false>
-
+<#assign series = config.getSeries()?first>
+${series.getScheme().getGnuplotPalette(1)}
 $data << EOD
 ${data}
 EOD
@@ -16,13 +16,12 @@ set output "${config.getOutputFile()}";
 <#list config.getCustomCommands() as command>
 ${command};
 </#list>
-<#assign series = config.getSeries()?first>
 plot \
 <#if series.hasDimension("Y_FIT")>
-"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y_FIT")} with lines, \
-"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with points;
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y_FIT")} with lines ls 1, \
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with points ls 1;
 <#else>
-"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with lines;
+"$data" index 0 using ${series.indexOf("X")}:${series.indexOf("Y")} with lines ls 1;
 </#if>
 
 <#-- 

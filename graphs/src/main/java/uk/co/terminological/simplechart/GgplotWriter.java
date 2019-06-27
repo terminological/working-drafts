@@ -5,18 +5,23 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
+import uk.co.terminological.simplechart.Chart.Dimension;
 
 public abstract class GgplotWriter extends Writer {
 
 	
 
+	
 	public abstract List<String> getPlots();
 	
 	public GgplotWriter(Chart chart) {
@@ -45,9 +50,9 @@ public abstract class GgplotWriter extends Writer {
 		dfConstruct.append("df <- data.frame(order");
 		
 		
-		for (Triple<Chart.Dimension,Function<X,Object>,String> binding: series.getBindings()) {
-			String varName = binding.getFirst().name()+
-					(binding.getThird() == "" ? "" : "_"+binding.getThird());
+		for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
+			String varName = binding.getFirst().name(); //+
+					//(binding.getThird() == "" ? "" : "_"+binding.getThird());
 			
 			//Object seriesType = series.getData().stream().map(binding.getSecond()).findFirst().get();
 			
@@ -80,15 +85,15 @@ public abstract class GgplotWriter extends Writer {
 	}
 	
 	@Override
-	protected void process() throws IOException, TemplateException {
+	protected Path process() throws IOException, TemplateException {
 		
 		getRoot().put("plots", getPlots());
 		//TODO: how to control this?
 		//TODO: colour schemes?
 		getRoot().put("schemeName", getChart().getSeries().stream().map(s -> s.getScheme().getName()).findFirst().orElse("Set1"));
 		
-		
-		getRoot().put("output", getChart().getFile("png").getAbsolutePath());
+		File outFile = getChart().getFile("png");
+		getRoot().put("output", outFile.getAbsolutePath());
 		
 		File f = getChart().getFile("R");
 		PrintWriter out = new PrintWriter(new FileWriter(f));
@@ -100,6 +105,8 @@ public abstract class GgplotWriter extends Writer {
 		.redirectOutput(Redirect.INHERIT)
 		.start();
 		
+		IOUtils.copy(process2.getErrorStream(),System.out);
+		
 		try {
 			System.out.println(process2.waitFor());
 		} catch (InterruptedException e) {
@@ -107,6 +114,7 @@ public abstract class GgplotWriter extends Writer {
 		}
 		
 		Chart.log.info("Ending R...");
+		return outFile.toPath();
 	}
 	
 	public static class BarChart extends GgplotWriter {
@@ -158,6 +166,22 @@ public abstract class GgplotWriter extends Writer {
 		
 	}
 	
+
+	public static class GroupedLineChart extends GgplotWriter {
+
+		public GroupedLineChart(Chart chart) {
+			super(chart);
+		}
+		
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_line(stat='identity', aes(x=X, y=Y, colour=factor(COLOUR)))",
+					"scale_colour_brewer(palette=schemeName)"
+				);
+		}
+	}
+
+	
 	public static class PieChart extends GgplotWriter {
 
 		public PieChart(Chart chart) {
@@ -175,5 +199,40 @@ public abstract class GgplotWriter extends Writer {
 		}
 		
 	}
+	
+	public static class HeatMap extends GgplotWriter {
+
+		public HeatMap(Chart chart) {
+			super(chart);
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_tile(stat='identity', aes(x=X, y=Y, fill=Z))",
+					"stat_contour(aes(x=X, y=Y, z=Z))",
+					"scale_fill_distiller(name=\""+this.getChart().getConfig().getLabel(Dimension.Z)+"\",palette=schemeName)"
+					);
+		}
+		
+	}
+	
+	public static class VectorFieldChart extends GgplotWriter {
+
+		public VectorFieldChart(Chart chart) {
+			super(chart);
+		}
+
+		@Override
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_segment(aes(x=X, xend=X+DX, y=Y, yend=Y+DY),arrow = arrow(length = unit(0.1,\"cm\")))"//,
+					//"stat_contour(aes(x=X, y=Y, z=Z))",
+					//"scale_fill_distiller(palette=schemeName)"
+					);
+		}
+		
+	}
+
 	
 }

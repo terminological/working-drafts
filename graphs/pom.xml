@@ -84,17 +84,38 @@
 			<artifactId>kumo-core</artifactId>
 			<version>1.17</version>
 		</dependency>
+
+		<dependency>
+			<groupId>uk.co.terminological.javapig</groupId>
+			<artifactId>runtime</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
+			<plugin> 
+				<groupId>uk.co.terminological.javapig</groupId> 
+				<artifactId>generator</artifactId> 
+				<version>1.0.0-SNAPSHOT</version>
+				<executions>
+					<execution>
+						<id>build-java-resources</id> 
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>javaGenerator</goal>
+						</goals> 
+					</execution>
+				</executions>
+				<configuration>
+					<sources>
+						<source>src/main/java/uk/co/terminological/simplechart/aesthetics</source>
+					</sources>
+					<targetDirectory>${project.build.directory}/generated-sources/annotations</targetDirectory>
+				</configuration> 
 			</plugin>
 		</plugins>
-	</build>
+	</build> 
 </project>
 
 

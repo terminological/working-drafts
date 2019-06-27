@@ -3,21 +3,22 @@ package uk.co.terminological.simplechart;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
 import freemarker.template.TemplateException;
-import uk.co.terminological.datatypes.Triple;
+import uk.co.terminological.datatypes.FluentMap;
+import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class Config {
 
 	Chart chart;
 	String title;
-	String xLabel = "x";
-	String yLabel = "y";
-	String xScale;
-	String yScale;
+	Map<Dimension,String> labels = FluentMap.with(Dimension.X, "x").and(Dimension.Y, "y");
+	Tuple<Double,Double> xScale;
+	Tuple<Double,Double> yScale;
 	OutputTarget target = OutputTarget.SCREEN;
 	List<String> customCommands = new ArrayList<>();
 
@@ -37,19 +38,45 @@ public class Config {
 	}
 	
 	public String getXLabel() {
-		return xLabel;
+		return labels.get(Dimension.X);
 	}
 	
 	public String getYLabel() {
-		return yLabel;
+		return labels.get(Dimension.Y);
 	}
 
+	public String getLabel(String dimension) {
+		return labels.get(Dimension.valueOf(dimension));
+	}
+	
+	public String getXmin() {
+		if (yScale == null) return null;
+		return Double.toString(xScale.getFirst());
+	}
+	
+	public String getYmin() {
+		if (yScale == null) return null;
+		return Double.toString(yScale.getFirst());
+	}
+	
+	public String getXmax() {
+		if (xScale == null) return null;
+		return Double.toString(xScale.getSecond());
+	}
+	
+	public String getYmax() {
+		if (xScale == null) return null;
+		return Double.toString(xScale.getSecond());
+	}
+	
 	public String getXScale() {
-		return xScale;
+		if (xScale == null) return null;
+		return "["+StringUtils.joinWith(":", Double.toString(xScale.getFirst()),Double.toString(xScale.getSecond()))+"]";
 	}
 	
 	public String getYScale() {
-		return yScale;
+		if (yScale == null) return null;
+		return "["+StringUtils.joinWith(":", Double.toString(yScale.getFirst()),Double.toString(yScale.getSecond()))+"]";
 	}
 
 	public List<String> getCustomCommands() {
@@ -85,23 +112,26 @@ public class Config {
 		return this;
 	}
 
-	public Config withXLabel(String xLabel) {
-		this.xLabel = xLabel;
-		return this;
-	}
-
-	public Config withYLabel(String yLabel) {
-		this.yLabel = yLabel;
+	public Config withLabel(Dimension dim, String label) {
+		this.labels.put(dim, label);
 		return this;
 	}
 	
-	public Config withXScale(float start, float end) {
-		this.xScale = "["+StringUtils.joinWith(":", Float.toString(start),Float.toString(end))+"]";
+	public Config withXLabel(String xLabel) {
+		return withLabel(Dimension.X, xLabel);
+	}
+
+	public Config withYLabel(String yLabel) {
+		return withLabel(Dimension.Y, yLabel);
+	}
+	
+	public Config withXScale(double start, double end) {
+		this.xScale = Tuple.create(start, end);
 		return this;
 	}
 
-	public Config withYScale(float start, float end) {
-		this.yScale = "["+StringUtils.joinWith(":", Float.toString(start),Float.toString(end))+"]";
+	public Config withYScale(double start, double end) {
+		this.yScale = Tuple.create(start, end);
 		return this;
 	}
 	
@@ -121,5 +151,9 @@ public class Config {
 	
 	public void render() throws IOException, TemplateException {
 		chart.render();
+	}
+
+	public String getLabel(Dimension dimension) {
+		return labels.getOrDefault(dimension, dimension.toString());
 	}
 }

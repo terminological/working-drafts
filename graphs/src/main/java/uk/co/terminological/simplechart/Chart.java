@@ -1,15 +1,18 @@
 package uk.co.terminological.simplechart;
 
+import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,8 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import uk.co.terminological.datatypes.Triple;
-import uk.co.terminological.datatypes.Tuple;
 
 //TODO: integrate with https://github.com/jtablesaw/tablesaw
 public class Chart {
@@ -65,21 +66,34 @@ public class Chart {
 	
 	public Config config() {return config;}
 	
-	public void render() throws IOException, TemplateException {
+	public void render() {
 		Writer writer;
 		try {
 			writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
-			writer.process();
+			Path out = writer.process();
+			
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+				Path h = this.getFile("html").toPath();
+				if (!h.equals(out)) {
+					BufferedWriter w = Files.newBufferedWriter(h);
+					w.write("<html><head></head><body><img src='"+h.getParent().relativize(out).toString()+"'></body></html>");
+					w.close();
+				}
+			    Desktop.getDesktop().browse(h.toUri());
+			}
+			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
+				| NoSuchMethodException | SecurityException |IOException | TemplateException e) {
 			throw new RuntimeException(e);
-		}
+		} 
+		
+		
 		
 	}
 	
 	public enum Dimension {
 		X,Y,Z,COLOUR,SIZE,LABEL,Y_LOW,Y_HIGH,Y_FIT,
-		ID,STRENGTH,TEXT
+		ID,STRENGTH,TEXT,DX,DY,DZ
 	}
 	
 	public File getWorkingDirectory() {

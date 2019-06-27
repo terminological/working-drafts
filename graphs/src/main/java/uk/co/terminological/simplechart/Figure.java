@@ -2,12 +2,9 @@ package uk.co.terminological.simplechart;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -24,22 +21,6 @@ import freemarker.template.TemplateExceptionHandler;
  *
  */
 public class Figure {
-
-	public static class Parameter {
-
-		public static List<Double> fromRange(double start, double end) {
-			return fromRange(start,end,1000);
-		}
-		
-		public static List<Double> fromRange(double start, double end, int samples) {
-			List<Double> out = new ArrayList<>();
-			double delta = (end-start)/samples;
-			for (double s = start; s <= end; s+=delta) {
-				out.add(s);
-			}
-			return out;
-		}
-	}
 
 	List<Chart> charts = new ArrayList<>();
 	File workingDirectory;
@@ -151,6 +132,10 @@ public class Figure {
 			this.charts.add(out);
 			return out;
 		}*/
+	}
+
+	public static Figure outputTo(Path path) {
+		return outputTo(path.toFile());
 	}
 
 }
