@@ -2,6 +2,8 @@ package uk.co.terminological.costbenefit;
 
 import org.apache.commons.math3.util.Precision;
 
+import uk.co.terminological.costbenefit.ClassifierModel.CostModel;
+
 public class ConfusionMatrix2D {
 
 	double tp;
@@ -10,12 +12,6 @@ public class ConfusionMatrix2D {
 	double fn;
 	
 	int total;
-	
-	double tpValue; 
-	double tnValue; 
-	double fpCost; 
-	double fnCost;
-	double prevalence;
 	
 	public ConfusionMatrix2D(int TP, int TN, int FP, int FN) {
 		total = TP+TN+FP+FN;
@@ -33,15 +29,6 @@ public class ConfusionMatrix2D {
 		fp = FPR;
 		tn = TNR;
 		fn = FNR;
-	}
-	
-	public ConfusionMatrix2D withCostModel(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {
-		this.tpValue = tpValue;
-		this.tnValue = tnValue;
-		this.fpCost = fpCost;
-		this.fnCost= fnCost;
-		this.prevalence= prevalence;
-		return this;
 	}
 	
 	public double sensitivity() {return truePositiveRate();}
@@ -71,18 +58,18 @@ public class ConfusionMatrix2D {
 	public double f1Score() {return fScore(1D);}
 	public double youdensJ() {return truePositiveRate()+trueNegativeRate()-1;}
 	
-	public double absoluteValue() {
-		return absoluteValue(tpValue, tnValue, fpCost, fnCost);
-	}
-	
-	public double relativeValue() {
-		return relativeValue(tpValue, tnValue, fpCost, fnCost, prevalence);
+	public double absoluteValue(CostModel model) {
+		return absoluteValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost());
 	}
 	
 	public double absoluteValue(double tpValue, double tnValue, double fpCost, double fnCost) {
 		if (tpValue < 0 || tnValue < 0) throw new ConstraintViolationException("Values of true positives and negatives must be larger than zero");
 		if (fpCost > 0 || fnCost > 0) throw new ConstraintViolationException("Costs of false positives and negatives must be smaller than zero");
 		return tpValue*tp+tnValue*tn+fpCost*fp+fnCost*fn;
+	}
+	
+	public double relativeValue(CostModel model, double prevalence) {
+		return relativeValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost(),prevalence);
 	}
 	
 	public double relativeValue(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {

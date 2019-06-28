@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.FluentMap;
+import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 
 public class Config {
@@ -16,8 +17,8 @@ public class Config {
 	Chart chart;
 	String title;
 	Map<Dimension,String> labels = FluentMap.with(Dimension.X, "x").and(Dimension.Y, "y");
-	String xScale;
-	String yScale;
+	Tuple<Double,Double> xScale;
+	Tuple<Double,Double> yScale;
 	OutputTarget target = OutputTarget.SCREEN;
 	List<String> customCommands = new ArrayList<>();
 
@@ -48,12 +49,34 @@ public class Config {
 		return labels.get(Dimension.valueOf(dimension));
 	}
 	
+	public String getXmin() {
+		if (yScale == null) return null;
+		return Double.toString(xScale.getFirst());
+	}
+	
+	public String getYmin() {
+		if (yScale == null) return null;
+		return Double.toString(yScale.getFirst());
+	}
+	
+	public String getXmax() {
+		if (xScale == null) return null;
+		return Double.toString(xScale.getSecond());
+	}
+	
+	public String getYmax() {
+		if (xScale == null) return null;
+		return Double.toString(xScale.getSecond());
+	}
+	
 	public String getXScale() {
-		return xScale;
+		if (xScale == null) return null;
+		return "["+StringUtils.joinWith(":", Double.toString(xScale.getFirst()),Double.toString(xScale.getSecond()))+"]";
 	}
 	
 	public String getYScale() {
-		return yScale;
+		if (yScale == null) return null;
+		return "["+StringUtils.joinWith(":", Double.toString(yScale.getFirst()),Double.toString(yScale.getSecond()))+"]";
 	}
 
 	public List<String> getCustomCommands() {
@@ -102,13 +125,13 @@ public class Config {
 		return withLabel(Dimension.Y, yLabel);
 	}
 	
-	public Config withXScale(float start, float end) {
-		this.xScale = "["+StringUtils.joinWith(":", Float.toString(start),Float.toString(end))+"]";
+	public Config withXScale(double start, double end) {
+		this.xScale = Tuple.create(start, end);
 		return this;
 	}
 
-	public Config withYScale(float start, float end) {
-		this.yScale = "["+StringUtils.joinWith(":", Float.toString(start),Float.toString(end))+"]";
+	public Config withYScale(double start, double end) {
+		this.yScale = Tuple.create(start, end);
 		return this;
 	}
 	

@@ -47,19 +47,53 @@ GO
 DROP TABLE IF EXISTS CuiOmopMap;
 GO
 
+CREATE TABLE CuiOmopMap (
+	[CUI] [char](8) NOT NULL,
+	[source_concept_id] [int] NULL,
+	[concept_id] [int] NULL
+) ON [PRIMARY]
+GO
 
-SELECT distinct u.CUI,u.CODE,c.concept_id
-INTO CuiOmopMap 
-FROM 
+INSERT INTO CuiOmopMap
+SELECT CUI, source_concept_id, concept_id FROM (
+	SELECT 
+		u.CUI,
+		c.source_concept_id,
+		c.concept_id,
+		ROW_NUMBER() OVER(PARTITION BY u.CUI,c.concept_id ORDER BY c.source_concept_id) as uniquifier,
+		ROW_NUMBER() OVER(PARTITION BY u.CUI ORDER BY c.concept_id DESC) as filter
+	FROM 
 		(
-			SELECT CUI,CODE FROM dbo.UmlsMRCONSO WHERE SAB='SNOMEDCT_US'
+			SELECT *, LEFT(SAB,1) as src
+			 FROM omopBuild.dbo.UmlsMRCONSO WHERE SAB in ('SNOMEDCT_US','RXNORM') --AND ISPREF='Y'
 		) u
 		INNER JOIN 
 		(
-			SELECT concept_id,concept_code FROM omop.dbo.concept WHERE vocabulary_id='SNOMED' AND standard_concept = 'S'
+			SELECT 
+				c1.concept_id as source_concept_id, 
+				c1.concept_code, c1.concept_name, 
+				COALESCE(c2.concept_id,0) as concept_id,
+				LEFT(c1.vocabulary_id,1) as src
+			FROM
+			[omop].[dbo].[concept] c1 LEFT OUTER JOIN
+			[omop].[dbo].[concept_relationship] cr ON c1.concept_id = cr.concept_id_1  AND cr.relationship_id='Maps to' LEFT OUTER JOIN
+			[omop].[dbo].[concept] c2 ON c2.concept_id = cr.concept_id_2
+			WHERE c1.vocabulary_id in ('SNOMED','RxNorm') AND c1.invalid_reason IS NULL
 		) c
-ON u.CODE = c.concept_code
-GO
+		ON u.CODE = c.concept_code and u.src = c.src
+) x WHERE
+uniquifier = 1 and not ( concept_id = 0 and filter > 1 )
+-- ORDER BY CUI ASC
 
-CREATE UNIQUE CLUSTERED INDEX X_CuiOmopMap_id ON CuiOmopMap (CUI,concept_id)
+CREATE UNIQUE INDEX X_CuiOmopMap_id ON CuiOmopMap (CUI,concept_id)
 CREATE INDEX X_CuiOmopMap_CUI ON CuiOmopMap (CUI)
+
+
+SELECT degree,count(*) as number FROM (
+	SELECT count(*) as degree, CUI FROM CuiOmopMap GROUP BY CUI
+) x GROUP BY degree
+
+
+-- SELECT DISTINCT SAB from dbo.UmlsMRCONSO
+
+SELECT TOP(100) * FROM CuiOmopMap c1 where CUI = 'C0004057'

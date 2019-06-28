@@ -2,9 +2,14 @@ package uk.co.terminological.costbenefit;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
+import org.apache.commons.math3.util.Precision;
+
+import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.SeriesBuilder;
+import uk.co.terminological.simplechart.SeriesBuilder.Range;
 
 public abstract class ClassifierModel<X> {
 
@@ -56,6 +61,24 @@ public abstract class ClassifierModel<X> {
 			bPos = KumaraswamyCDF.b(spreadPos, modePos);
 			aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
 			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
+		}
+		
+		public Tuple<Double,Double> bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
+			Double value = Double.MIN_VALUE;
+			Double bestCutoff = Double.NaN;
+			for (Double d=0D; d<1.0D;d += 0.001) {
+				ConfusionMatrix2D tmp = matrix(d);
+				if (feature.apply(tmp) > value) {
+					value = feature.apply(tmp);
+					bestCutoff = d;
+				}
+			}
+			return Tuple.create(bestCutoff,value);
+		}
+		
+		public boolean screeningBeneficial(CostModel model, Double prevalence) {
+			Double best = bestCutoff(mat -> mat.relativeValue(model, prevalence)).getFirst();
+			return !Precision.equals(best, 0.0D) && !Precision.equals(best, 1.0D);
 		}
 		
 		public ConfusionMatrix2D matrix(Double cutoff) {
@@ -284,7 +307,7 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		public ConfusionMatrix2D matrix() {
-			return model().matrix(cutOff).withCostModel(tpValue, tnValue, fpCost, fnCost, prevalence);
+			return model().matrix(cutOff);
 		}
 	}
 	
