@@ -1,7 +1,5 @@
 package uk.co.terminological.costbenefit;
 
-import uk.co.terminological.costbenefit.ClassifierModel.CostModel;
-
 public enum CostModelEnum implements CostModel {
 	EARLY_STAGE_CANCER(10.0,1.0,-0.1,-100.0),
 	//CANCER_IS_UNTREATABLE(2.0,10.0,-10.0,-0.5),

@@ -2,8 +2,6 @@ package uk.co.terminological.costbenefit;
 
 import org.apache.commons.math3.util.Precision;
 
-import uk.co.terminological.costbenefit.ClassifierModel.CostModel;
-
 public class ConfusionMatrix2D {
 
 	double tp;
