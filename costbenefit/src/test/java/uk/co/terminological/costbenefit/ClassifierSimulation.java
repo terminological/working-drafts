@@ -171,6 +171,37 @@ public class ClassifierSimulation {
 		});
 	}
 	
+	
+	@Test
+	public void plotRealValue() {
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			Stream.of(CostModelEnum.values()).forEach( cm-> {
+			//	CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
+			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
+			ParameterSpace space = new ParameterSpace(defaults);
+			space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
+			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
+			figures.withNewChart(c+" "+cm+" abs value", ChartType.XYZ_HEATMAP)
+					.config().withXScale(0F, 1F)
+					.withXLabel("cutoff")
+					.withYLabel("prevalence")
+					.withLabel(Z, "value")
+					.withYScale(0F, 1F)
+					.done()
+					.withSeries(space.stream()).withColourScheme(ColourScheme.Greens)
+					.bind(X, t -> t.cutOff)
+					//.bind(Y, t -> t.matrix().tp,"tp")
+					//.bind(Y, t -> t.matrix().tn,"tn")
+					//.bind(Y, t -> t.matrix().fp,"fp")
+					//.bind(Y, t -> t.matrix().fn,"fn")
+					.bind(Z, t -> t.matrix().absoluteValue(cm))
+					.bind(Y, t -> t.prevalence,"prevalence")
+					.done()
+					.render();
+				});
+		});
+	}
+	
 	/**
 	 * N.B. accuracy is independent of condition
 	 */
