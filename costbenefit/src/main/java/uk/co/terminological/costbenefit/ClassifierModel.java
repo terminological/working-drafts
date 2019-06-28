@@ -60,8 +60,8 @@ public abstract class ClassifierModel<X> {
 					modePos > modeNeg)) throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
 			aPos = KumaraswamyCDF.a(spreadPos, modePos);
 			bPos = KumaraswamyCDF.b(spreadPos, modePos);
-			aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
-			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
+			aNeg = KumaraswamyCDF.a(spreadNeg, 1-modeNeg);
+			bNeg = KumaraswamyCDF.b(spreadNeg, 1-modeNeg);
 		}
 		
 		public Tuple<Double,Double> bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
@@ -85,7 +85,7 @@ public abstract class ClassifierModel<X> {
 		public ConfusionMatrix2D matrix(Double cutoff) {
 			
 			Double cdfPos = KumaraswamyCDF.cdf(aPos,bPos).apply(cutoff);
-			Double cdfNeg = KumaraswamyCDF.cdf(aNeg,bNeg).apply(cutoff);
+			Double cdfNeg = 1-KumaraswamyCDF.cdf(aNeg,bNeg).apply(cutoff);
 			
 			Double eTp = prev*(1-cdfPos);
 			Double eTn = (1-prev)*cdfNeg;
@@ -106,7 +106,7 @@ public abstract class ClassifierModel<X> {
 		
 		public Double KLDivergence() {
 			Function<Double,Double> p = KumaraswamyCDF.pdf(aPos,bPos);
-			Function<Double,Double> q = KumaraswamyCDF.pdf(aNeg,bNeg);
+			Function<Double,Double> q = x -> 1-KumaraswamyCDF.pdf(aNeg,bNeg).apply(x);
 			Double dpq = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,p.apply(x)*Math.log(p.apply(x)/q.apply(x))))

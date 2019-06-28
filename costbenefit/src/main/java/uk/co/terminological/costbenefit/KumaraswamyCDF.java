@@ -28,6 +28,7 @@ import uk.co.terminological.simplechart.SeriesBuilder;
  */
 public class KumaraswamyCDF implements ParametricUnivariateFunction {
 
+	
 	public static Function<Double,Double> cdf(Double a, Double b) {
 		return x -> new KumaraswamyCDF().value(x,a,b);
 	}
