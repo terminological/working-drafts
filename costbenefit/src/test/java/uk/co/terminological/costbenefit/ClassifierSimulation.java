@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import freemarker.template.TemplateException;
+import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
 import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
@@ -56,70 +57,18 @@ public class ClassifierSimulation {
 		//Range bRange = Range.of(2D, 5D, 4);
 		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
-		Range xRange = Range.of(0D, 1D, 1000);
-		DecimalFormat df = new DecimalFormat("0.00"); 
-		
-		
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			Function<Double,Double> pos = KumaraswamyCDF.pdf(
-				KumaraswamyCDF.a(c.spreadIfPositive(),c.centralityIfPositive()),
-				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
-			Function<Double,Double> neg = KumaraswamyCDF.pdf(
-				KumaraswamyCDF.a(c.spreadIfNegative(),c.centralityIfNegative()),
-				KumaraswamyCDF.b(c.spreadIfNegative(),c.centralityIfNegative()));
-			figures.withNewChart(c+" pdf", ChartType.XY_MULTI_LINE)
-			.config().withXScale(0F, 1F)
-			.withXLabel("x")
-			.withYLabel("density")
-			.withYScale(0F, 10F)
-			.done()
-			.withSeries(SeriesBuilder.range(xRange)).withColourScheme(ColourScheme.Dark2)
-			.bind(X, t -> t)
-			.bind(Y, pos,"pos")
-			.bind(Y, neg,"neg")
-			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint @ 10% prev")
-			.done().render();
+			Kumaraswamy model = new Kumaraswamy(c,0.2);
+			model.plot(figures);
 		});
 		
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			Function<Double,Double> pos = KumaraswamyCDF.cdf(
-				KumaraswamyCDF.a(c.spreadIfPositive(),c.centralityIfPositive()),
-				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
-			Function<Double,Double> neg = KumaraswamyCDF.cdf(
-				KumaraswamyCDF.a(c.spreadIfNegative(),c.centralityIfNegative()),
-				KumaraswamyCDF.b(c.spreadIfNegative(),c.centralityIfNegative()));
-			figures.withNewChart(c+" cdf", ChartType.XY_MULTI_LINE)
-			.config().withXScale(0F, 1F)
-			.withXLabel("x")
-			.withYLabel("cumulative density")
-			.withYScale(0F, 1F)
-			.done()
-			.withSeries(SeriesBuilder.range(xRange)).withColourScheme(ColourScheme.Dark2)
-			.bind(X, t -> t)
-			.bind(Y, pos,"pos")
-			.bind(Y, neg,"neg")
-			.bind(Y, t -> 0.1*pos.apply(t)+0.9*neg.apply(t),"joint @ 10% prev")
-			.done().render();
-		});
+		
 	}
 	
 	@Test
-	public void plotRoc() {
+	public void plotPR() {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
-			ParameterSpace space = new ParameterSpace(defaults);
-			space.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
-			figures.withNewChart(c+" roc", ChartType.XY_MULTI_LINE)
-					.config().withXScale(0F, 1F)
-					.withXLabel("1-sens")
-					.withYLabel("spec")
-					.withYScale(0F, 1F)
-					.done()
-					.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
-					.bind(X, t -> 1-t.matrix().sensitivity())
-					.bind(Y, t -> t.matrix().specificity())
-					.done()
-					.render();
 			ParameterSpace space2 = new ParameterSpace(defaults);
 			space2.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
 			figures.withNewChart(c.name()+" pr", ChartType.XY_MULTI_LINE)
