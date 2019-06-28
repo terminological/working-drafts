@@ -69,7 +69,7 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 
 	
 	public static Double a(Double iqr, Double mode) {
-		return new BrentSolver().solve(50, aParameter(mode,iqr), 10);
+		return new BrentSolver().solve(50, aParameter(mode,iqr), 1,10000,10);
 	}
 	
 	public static Double b(Double spread, Double mode) {
