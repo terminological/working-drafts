@@ -18,7 +18,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import freemarker.template.TemplateException;
-import uk.co.terminological.costbenefit.ClassifierModel.ClassifierConfig;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSet;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSpace;
 import uk.co.terminological.simplechart.Chart.Dimension;
