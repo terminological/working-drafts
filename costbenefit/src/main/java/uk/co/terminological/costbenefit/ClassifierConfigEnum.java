@@ -1,9 +1,9 @@
 package uk.co.terminological.costbenefit;
 
 public enum ClassifierConfigEnum implements ClassifierConfig {
-	HIGH_INFORMATION(0.8,0.1,0.2,0.1),
+	HIGH_INFORMATION(0.8,0.2,0.2,0.2),
 	MID_INFORMATION(0.7,0.3,0.3,0.3),
-	LOW_INFORMATION(0.6,0.5,0.4,0.5),
+	LOW_INFORMATION(0.6,0.4,0.4,0.4),
 	;
 	
 	private ClassifierConfigEnum(Double centralityIfPositive, Double spreadIfPositive, Double centralityIfNegative,	Double spreadIfNegative) {
