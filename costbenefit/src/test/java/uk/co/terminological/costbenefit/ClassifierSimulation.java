@@ -19,7 +19,6 @@ import org.junit.Test;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.ClassifierModel.ClassifierConfig;
-import uk.co.terminological.costbenefit.ClassifierModel.ClassifierConfigEnum;
 import uk.co.terminological.costbenefit.ClassifierModel.CostModelEnum;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSet;
 import uk.co.terminological.costbenefit.ClassifierModel.ParameterSpace;
