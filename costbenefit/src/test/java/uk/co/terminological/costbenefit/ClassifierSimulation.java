@@ -43,7 +43,7 @@ public class ClassifierSimulation {
 	
 	@Before
 	public void setUp() throws Exception {
-		Path dir = Paths.get("/home/terminological/tmp/graph");
+		Path dir = Paths.get(System.getProperty("user.home"),"Dropbox/costOptimisation/simulation");
 		Files.createDirectories(dir);
 		figures = Figure.outputTo(dir);
 	}
