@@ -62,8 +62,8 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 	
 	public static UnivariateFunction aParameter(Double mode, Double iqr) {
 		return a -> 
-			Math.pow((1-Math.pow(0.75,(a*Math.pow(mode,a)/(Math.pow(mode,a)+a-1)))),1/a)-
 			Math.pow((1-Math.pow(0.25,(a*Math.pow(mode,a)/(Math.pow(mode,a)+a-1)))),1/a)-
+			Math.pow((1-Math.pow(0.75,(a*Math.pow(mode,a)/(Math.pow(mode,a)+a-1)))),1/a)-
 			iqr;
 	 }
 
