@@ -194,7 +194,7 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
-					.bind(Z, t -> t.matrix().absoluteValue(cm))
+					.bind(Z, t -> t.matrix().normalisedValue(cm))
 					.bind(Y, t -> t.prevalence,"prevalence")
 					.done()
 					.render();
