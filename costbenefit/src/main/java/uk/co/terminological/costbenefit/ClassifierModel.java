@@ -184,6 +184,23 @@ public abstract class ClassifierModel<X> {
 			return dpq+dqp;		
 		}
 		
+		
+		public Double LambdaDivergence(Double prev) {
+			Function<Double,Double> p = pdfGivenPositive;
+			Function<Double,Double> q = pdfGivenNegative;
+			Function<Double,Double> j = x -> prev*pdfGivenPositive.apply(x) + (1-prev)*pdfGivenNegative.apply(x);
+			Double dpq = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,
+								Precision.equals(p.apply(x),0D) ? 0 : p.apply(x)*Math.log(p.apply(x)/j.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			Double dqp = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,
+								Precision.equals(q.apply(x),0D) ? 0 : q.apply(x)*Math.log(q.apply(x)/j.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			return prev*dpq+(1-prev)*dqp;		
+		}
 	}
 	
 	public static class AlwaysNegative extends ClassifierModel<Void> {
