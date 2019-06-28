@@ -18,21 +18,15 @@ import uk.co.terminological.simplechart.SeriesBuilder.Range;
 
 public abstract class ClassifierModel<X> {
 
-	ClassifierModel(Double prevalence) {prev=prevalence;}
 	
-	public abstract ConfusionMatrix2D matrix(X param);
+	public abstract ConfusionMatrix2D matrix(Double prev, X param);
 	
-	Double prev = 0.2;
 	
 	
 	public static class AlwaysPositive extends ClassifierModel<Void> {
 
-		AlwaysPositive(Double prevalence) {
-			super(prevalence);
-		}
-
 		@Override
-		public ConfusionMatrix2D matrix(Void param) {
+		public ConfusionMatrix2D matrix(Double prev,Void param) {
 			
 			Double tp = prev;
 			Double tn = 0D;
@@ -59,13 +53,12 @@ public abstract class ClassifierModel<X> {
 		
 		String name;
 		
-		public Kumaraswamy(ClassifierConfig config, Double prevalence) {
-			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), prevalence, config.toString());
+		public Kumaraswamy(ClassifierConfig config) {
+			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), config.toString());
 		}
 		
-		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, Double prevalence, String name) {
+		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, String name) {
 			
-			super(prevalence);
 			if (!(modePos > 0 && modePos < 1 &&
 					modeNeg > 0 && modeNeg < 1 &&
 					spreadPos > 0 && 
@@ -126,19 +119,19 @@ public abstract class ClassifierModel<X> {
 			.withYScale(0F, 1F)
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
-			.bind(X, t -> 1-matrix(t).sensitivity())
-			.bind(Y, t -> matrix(t).specificity())
+			.bind(X, t -> 1-matrix(0.5,t).sensitivity())
+			.bind(Y, t -> matrix(0.5,t).specificity())
 			.done()
 			.render();
 	
 			
 		}
 		
-		public Tuple<Double,Double> bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
+		public Tuple<Double,Double> bestCutoff(Double prev,Function<ConfusionMatrix2D,Double> feature) {
 			Double value = Double.MIN_VALUE;
 			Double bestCutoff = Double.NaN;
 			for (Double d=0D; d<=1.0D;d += 0.001) {
-				ConfusionMatrix2D tmp = matrix(d);
+				ConfusionMatrix2D tmp = matrix(prev,d);
 				if (feature.apply(tmp) > value) {
 					value = feature.apply(tmp);
 					bestCutoff = d;
@@ -147,12 +140,12 @@ public abstract class ClassifierModel<X> {
 			return Tuple.create(bestCutoff,value);
 		}
 		
-		public boolean screeningBeneficial(CostModel model, Double prevalence) {
-			Double best = bestCutoff(mat -> mat.relativeValue(model, prevalence)).getFirst();
+		public boolean screeningBeneficial(CostModel model, Double prev) {
+			Double best = bestCutoff(prev, mat -> mat.relativeValue(model, prev)).getFirst();
 			return !Precision.equals(best, 0.0D) && !Precision.equals(best, 1.0D);
 		}
 		
-		public ConfusionMatrix2D matrix(Double cutoff) {
+		public ConfusionMatrix2D matrix(Double prev,Double cutoff) {
 			
 			Double cdfPos = cdfGivenPositive.apply(cutoff);
 			Double cdfNeg = cdfGivenNegative.apply(cutoff);
@@ -167,10 +160,10 @@ public abstract class ClassifierModel<X> {
 			return new ConfusionMatrix2D(eTp,eTn,eFp,eFn);
 		}
 		
-		public Double AUROC() {
+		public Double AUROC(Double prev) {
 			return 
 			SeriesBuilder.range(0.0, 1.0, 1000)
-				.map(c -> matrix(c))
+				.map(c -> matrix(prev,c))
 				.map(m -> Tuple.create(m.sensitivity(), m.specificity()))
 				.collect(TrapeziodIntegrator.integrator());
 		}
@@ -195,14 +188,8 @@ public abstract class ClassifierModel<X> {
 	
 	public static class AlwaysNegative extends ClassifierModel<Void> {
 
-		AlwaysNegative(Double prevalence) {
-			super(prevalence);
-		}
-		
-		
-		
 		@Override
-		public ConfusionMatrix2D matrix(Void param) {
+		public ConfusionMatrix2D matrix(Double prev,Void param) {
 			
 			Double tp = 0D;
 			Double tn = 1-prev;
