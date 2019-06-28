@@ -233,7 +233,7 @@ public abstract class ClassifierModel<X> {
 		//EARLY_STAGE_DEMENTIA(2.0,5.0,-2.0,-1.0),
 		//NON_ACCIDENTAL_INJURY(100.0,1.0,-20.0,-20.0),
 		//IMMINENT_END_OF_LIFE(2.0,0.0,-1.0,-0.1),
-		//ENDOSCOPY_UNINFORMATIVE(2.0,0.1,-1.0,-2.0)
+		ENDOSCOPY_UNINFORMATIVE(2.0,0.1,-1.0,-2.0)
 		;
 		
 		private CostModelEnum(Double tpValue, Double tnValue, Double fpCost, Double fnCost) {
