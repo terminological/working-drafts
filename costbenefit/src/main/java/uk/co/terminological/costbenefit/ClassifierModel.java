@@ -110,7 +110,7 @@ public abstract class ClassifierModel<X> {
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(Y, cdfGivenPositive,"pos cdf")
 			.bind(Y, cdfGivenNegative,"neg cdf")
-			.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
+			//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
 			.done().render();
 		
 			fig.withNewChart(name+" roc", ChartType.XY_MULTI_LINE)
