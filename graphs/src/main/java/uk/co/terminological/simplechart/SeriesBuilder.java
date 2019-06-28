@@ -107,7 +107,7 @@ public class SeriesBuilder<X> {
 		}
 		
 		public static Range of(Double from, Double to, Long values) {
-			return new Range(from,to,Math.floor(Math.abs(from-to)/values));
+			return new Range(from,to,Math.abs(to-from)/values);
 		}
 		
 		public static Range of(Double from, Double to, Integer values) {
