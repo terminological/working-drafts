@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.function.Function;
 
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.solvers.BrentSolver;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.NullArgumentException;
 
@@ -58,8 +60,16 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 		
 	}
 	
-	public static Double a(Double spread, Double mode) {
-		return (mode+spread)/(spread);
+	public static UnivariateFunction aParameter(Double mode, Double iqr) {
+		return a -> 
+			Math.pow((1-Math.pow(0.75,(a*Math.pow(mode,a)/(Math.pow(mode,a)+a+1)))),1/a)-
+			Math.pow((1-Math.pow(0.25,(a*Math.pow(mode,a)/(Math.pow(mode,a)+a+1)))),1/a)-
+			iqr;
+	 }
+
+	
+	public static Double a(Double iqr, Double mode) {
+		return new BrentSolver().solve(50, aParameter(mode,iqr), 10);
 	}
 	
 	public static Double b(Double spread, Double mode) {
