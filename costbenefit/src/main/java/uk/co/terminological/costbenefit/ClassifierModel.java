@@ -107,14 +107,15 @@ public abstract class ClassifierModel<X> {
 		public Double KLDivergence() {
 			Function<Double,Double> p = KumaraswamyCDF.pdf(aPos,bPos);
 			Function<Double,Double> q = KumaraswamyCDF.pdf(aNeg,bNeg);
-			Double dpq TrapeziodIntegrator.integrate(
-					SeriesBuilder.range(0.0, 1.0, 1000).map(x -> 
-				Tuple.create(x,
-				p.apply(x)*Math.log(p.apply(x)/q.apply(x))
-				.collect(Collectors.toList())
-					)));
-					
-			
+			Double dpq = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,p.apply(x)*Math.log(p.apply(x)/q.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			Double dqp = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,q.apply(x)*Math.log(q.apply(x)/p.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			return dpq+dqp;		
 		}
 		
 	}
