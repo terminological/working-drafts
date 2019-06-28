@@ -63,6 +63,7 @@ public class ClassifierSimulation {
 			System.out.println(model.name);
 			System.out.println("AUROC: "+model.AUROC());
 			System.out.println("Dkl: "+model.KLDivergence());
+			System.out.println("Dkl lambda @ 0.2: "+model.LambdaDivergence(0.2));
 		});
 		
 		
