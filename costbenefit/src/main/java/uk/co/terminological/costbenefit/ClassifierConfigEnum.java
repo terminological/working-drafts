@@ -21,7 +21,7 @@ public enum ClassifierConfigEnum implements ClassifierConfig {
 	@Override public Double centralityIfPositive() {return centralityIfPositive;}
 	@Override public Double spreadIfPositive() {return spreadIfPositive;}
 	@Override public Double centralityIfNegative() {return centralityIfNegative;}
-	@Override public Double spreadIfNegative() {return centralityIfNegative;}
+	@Override public Double spreadIfNegative() {return spreadIfNegative;}
 	
 	public String toString() { return this.name().toLowerCase().replace("_", " "); }
 	
