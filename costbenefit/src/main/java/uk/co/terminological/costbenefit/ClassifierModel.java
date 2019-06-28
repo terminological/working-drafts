@@ -160,10 +160,10 @@ public abstract class ClassifierModel<X> {
 			return new ConfusionMatrix2D(eTp,eTn,eFp,eFn);
 		}
 		
-		public Double AUROC(Double prev) {
+		public Double AUROC() {
 			return 
 			SeriesBuilder.range(0.0, 1.0, 1000)
-				.map(c -> matrix(prev,c))
+				.map(c -> matrix(0.5,c))
 				.map(m -> Tuple.create(m.sensitivity(), m.specificity()))
 				.collect(TrapeziodIntegrator.integrator());
 		}
