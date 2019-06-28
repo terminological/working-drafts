@@ -57,6 +57,17 @@ public abstract class ClassifierModel<X> {
 			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), config.toString());
 		}
 		
+		public Kumaraswamy(Double divergence, String name) {
+			this(
+					0.5-divergence/2,
+					0.5-divergence/2,
+					0.5+divergence/2,
+					0.5-divergence/2,
+					name
+			); 
+			
+		}
+		
 		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, String name) {
 			
 			if (!(modePos > 0 && modePos < 1 &&
