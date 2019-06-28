@@ -5,7 +5,7 @@ import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
 public class ParameterSet {
 	public ParameterSet(Double prevalence, Double centralityIfPositive, Double spreadIfPositive,
 			Double centralityIfNegative, Double spreadIfNegative, Double tpValue, Double tnValue, Double fpCost,
-			Double fnCost, Double cutOff) {
+			Double fnCost, Double cutOff, String name) {
 		this.prevalence = prevalence;
 		this.centralityIfPositive = centralityIfPositive;
 		this.spreadIfPositive = spreadIfPositive;
@@ -16,6 +16,7 @@ public class ParameterSet {
 		this.fpCost = fpCost;
 		this.fnCost = fnCost;
 		this.cutOff = cutOff;
+		this.name = name;
 	}
 	public ParameterSet() {}
 	public ParameterSet(Double prevalence, ClassifierConfig classifier, CostModel cost, Double cutOff) {
@@ -28,7 +29,8 @@ public class ParameterSet {
 				cost.tnValue(),
 				cost.fpCost(),
 				cost.fnCost(),
-				cutOff);
+				cutOff,
+				classifier.toString());
 	}
 
 	Double prevalence;
@@ -41,17 +43,18 @@ public class ParameterSet {
 	Double fpCost;
 	Double fnCost;
 	Double cutOff;
+	String name;
 	
 	public ParameterSet clone() {
 		return new ParameterSet(prevalence, centralityIfPositive, spreadIfPositive, centralityIfNegative, 
-				spreadIfNegative, tpValue, tnValue, fpCost, fnCost, cutOff);
+				spreadIfNegative, tpValue, tnValue, fpCost, fnCost, cutOff, name);
 	}
 	
 	public Kumaraswamy model() {
-		return new Kumaraswamy(centralityIfPositive, spreadIfPositive, centralityIfNegative, spreadIfNegative, prevalence);
+		return new Kumaraswamy(centralityIfPositive, spreadIfPositive, centralityIfNegative, spreadIfNegative, name);
 	}
 	
 	public ConfusionMatrix2D matrix() {
-		return model().matrix(cutOff);
+		return model().matrix(prevalence,cutOff);
 	}
 }
