@@ -34,9 +34,8 @@ public abstract class ClassifierModel<X> {
 			
 			return new ConfusionMatrix2D(tp,tn,fp,fn);
 		}
-
-		
 	}
+	
 	
 	
 	public static class Kumaraswamy extends ClassifierModel<Double> {
@@ -46,19 +45,36 @@ public abstract class ClassifierModel<X> {
 		Double aNeg;
 		Double bNeg;
 		
+		Function<Double,Double> pdfGivenPositive;
+		Function<Double,Double> pdfGivenNegative;
+		Function<Double,Double> cdfGivenPositive;
+		Function<Double,Double> cdfGivenNegative;
 		
+		public Kumaraswamy(ClassifierConfig config, Double prevalence) {
+			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), prevalence);
+		}
 		
 		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, Double prevalence) {
+			
 			super(prevalence);
 			if (!(modePos > 0 && modePos < 1 &&
 					modeNeg > 0 && modeNeg < 1 &&
 					spreadPos > 0 && 
 					spreadNeg > 0 && 
 					modePos > modeNeg)) throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
+			
+			
 			aPos = KumaraswamyCDF.a(spreadPos, modePos);
 			bPos = KumaraswamyCDF.b(spreadPos, modePos);
+			pdfGivenPositive = KumaraswamyCDF.pdf(aPos, bPos);
+			cdfGivenPositive = KumaraswamyCDF.cdf(aPos, bPos);
+			
 			aNeg = KumaraswamyCDF.a(spreadNeg, 1-modeNeg);
 			bNeg = KumaraswamyCDF.b(spreadNeg, 1-modeNeg);
+			pdfGivenNegative = x -> KumaraswamyCDF.pdf(aNeg, bNeg).apply(1-x);
+			cdfGivenNegative = x -> 1-KumaraswamyCDF.cdf(aNeg, bNeg).apply(1-x);
+			
+			
 		}
 		
 		public Tuple<Double,Double> bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
@@ -81,8 +97,8 @@ public abstract class ClassifierModel<X> {
 		
 		public ConfusionMatrix2D matrix(Double cutoff) {
 			
-			Double cdfPos = KumaraswamyCDF.cdf(aPos,bPos).apply(cutoff);
-			Double cdfNeg = 1-KumaraswamyCDF.cdf(aNeg,bNeg).apply(cutoff);
+			Double cdfPos = cdfGivenPositive.apply(cutoff);
+			Double cdfNeg = cdfGivenNegative.apply(cutoff);
 			
 			Double eTp = prev*(1-cdfPos);
 			Double eTn = (1-prev)*cdfNeg;
@@ -103,8 +119,8 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		public Double KLDivergence() {
-			Function<Double,Double> p = KumaraswamyCDF.pdf(aPos,bPos);
-			Function<Double,Double> q = x -> 1-KumaraswamyCDF.pdf(aNeg,bNeg).apply(x);
+			Function<Double,Double> p = pdfGivenPositive;
+			Function<Double,Double> q = pdfGivenNegative;
 			Double dpq = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,p.apply(x)*Math.log(p.apply(x)/q.apply(x))))
