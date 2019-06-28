@@ -69,9 +69,9 @@ public class ClassifierSimulation {
 			Function<Double,Double> pos = KumaraswamyCDF.pdf(
 				KumaraswamyCDF.a(c.spreadIfPositive(),c.centralityIfPositive()),
 				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
-			Function<Double,Double> neg = x -> 1-KumaraswamyCDF.pdf(
+			Function<Double,Double> neg = x -> KumaraswamyCDF.pdf(
 				KumaraswamyCDF.a(c.spreadIfNegative(),1-c.centralityIfNegative()),
-				KumaraswamyCDF.b(c.spreadIfNegative(),1-c.centralityIfNegative())).apply(x);
+				KumaraswamyCDF.b(c.spreadIfNegative(),1-c.centralityIfNegative())).apply(1-x);
 			figures.withNewChart(c+" pdf", ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
@@ -90,9 +90,9 @@ public class ClassifierSimulation {
 			Function<Double,Double> pos = KumaraswamyCDF.cdf(
 				KumaraswamyCDF.a(c.spreadIfPositive(),c.centralityIfPositive()),
 				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
-			Function<Double,Double> neg = x -> 1-KumaraswamyCDF.cdf(
+			Function<Double,Double> neg = x -> KumaraswamyCDF.cdf(
 				KumaraswamyCDF.a(c.spreadIfNegative(),1-c.centralityIfNegative()),
-				KumaraswamyCDF.b(c.spreadIfNegative(),1-c.centralityIfNegative())).apply(x);
+				KumaraswamyCDF.b(c.spreadIfNegative(),1-c.centralityIfNegative())).apply(1-x);
 			figures.withNewChart(c+" cdf", ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
