@@ -74,7 +74,7 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 	}*/
 	
 	public static Double a(Double iqr, Double mode) {
-		return (mode+iqr)/mode;
+		return (mode+iqr)/iqr;
 	}
 	
 	public static Double b(Double spread, Double mode) {
