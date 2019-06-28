@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import uk.co.terminological.costbenefit.ClassifierModel.ParameterSet;
-
 public class ParameterSpace {
 	public ParameterSpace(ParameterSet defaults) {
 		this.prevalence = Collections.singletonList(defaults.prevalence);
