@@ -108,6 +108,7 @@ public abstract class ClassifierModel<X> {
 			.withYScale(0F, 1F)
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+			.bind(X, t -> t)
 			.bind(Y, cdfGivenPositive,"pos cdf")
 			.bind(Y, cdfGivenNegative,"neg cdf")
 			//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
