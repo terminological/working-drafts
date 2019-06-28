@@ -98,7 +98,16 @@ public abstract class ClassifierModel<X> {
 			.bind(X, t -> t)
 			.bind(Y, pdfGivenPositive,"pos pdf")
 			.bind(Y, pdfGivenNegative,"neg pdf")
-			.bind(Y, t -> prev*pdfGivenPositive.apply(t)+prev*pdfGivenNegative.apply(t),"joint pdf")
+			.done().render();
+			//.bind(Y, t -> prev*pdfGivenPositive.apply(t)+prev*pdfGivenNegative.apply(t),"joint pdf")
+			
+			fig.withNewChart(name+" cdf", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("x")
+			.withYLabel("cumulative")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(Y, cdfGivenPositive,"pos cdf")
 			.bind(Y, cdfGivenNegative,"neg cdf")
 			.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
