@@ -58,7 +58,7 @@ public class ClassifierSimulation {
 		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			Kumaraswamy model = new Kumaraswamy(c,0.2);
+			Kumaraswamy model = new Kumaraswamy(c);
 			model.plot(figures);
 			System.out.println(model.name);
 			System.out.println("AUROC: "+model.AUROC());
