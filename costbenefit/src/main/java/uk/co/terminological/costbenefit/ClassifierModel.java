@@ -1,11 +1,18 @@
 package uk.co.terminological.costbenefit;
 
+import static uk.co.terminological.simplechart.Chart.Dimension.X;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y;
+
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Precision;
 
 import uk.co.terminological.datatypes.Tuple;
+import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.ColourScheme;
+import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.SeriesBuilder;
 import uk.co.terminological.simplechart.SeriesBuilder.Range;
 
@@ -50,11 +57,13 @@ public abstract class ClassifierModel<X> {
 		Function<Double,Double> cdfGivenPositive;
 		Function<Double,Double> cdfGivenNegative;
 		
+		String name;
+		
 		public Kumaraswamy(ClassifierConfig config, Double prevalence) {
-			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), prevalence);
+			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), prevalence, config.toString());
 		}
 		
-		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, Double prevalence) {
+		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, Double prevalence, String name) {
 			
 			super(prevalence);
 			if (!(modePos > 0 && modePos < 1 &&
@@ -74,6 +83,39 @@ public abstract class ClassifierModel<X> {
 			pdfGivenNegative = x -> KumaraswamyCDF.pdf(aNeg, bNeg).apply(1-x);
 			cdfGivenNegative = x -> 1-KumaraswamyCDF.cdf(aNeg, bNeg).apply(1-x);
 			
+			this.name = name;
+			
+		}
+		
+		public void plot(Figure fig) {
+			fig.withNewChart(name+" pdf", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("x")
+			.withYLabel("density")
+			.withYScale(0F, 10F)
+			.done()
+			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+			.bind(X, t -> t)
+			.bind(Y, pdfGivenPositive,"pos pdf")
+			.bind(Y, pdfGivenNegative,"neg pdf")
+			.bind(Y, t -> prev*pdfGivenPositive.apply(t)+prev*pdfGivenNegative.apply(t),"joint pdf")
+			.bind(Y, cdfGivenPositive,"pos cdf")
+			.bind(Y, cdfGivenNegative,"neg cdf")
+			.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
+			.done().render();
+		
+			fig.withNewChart(name+" roc", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("1-sens")
+			.withYLabel("spec")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+			.bind(X, t -> 1-matrix(t).sensitivity())
+			.bind(Y, t -> matrix(t).specificity())
+			.done()
+			.render();
+	
 			
 		}
 		
