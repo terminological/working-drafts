@@ -92,7 +92,7 @@ public class ClassifierSimulation {
 				KumaraswamyCDF.b(c.spreadIfPositive(),c.centralityIfPositive()));
 			Function<Double,Double> neg = x -> KumaraswamyCDF.cdf(
 				KumaraswamyCDF.a(c.spreadIfNegative(),1-c.centralityIfNegative()),
-				KumaraswamyCDF.b(c.spreadIfNegative(),1-c.centralityIfNegative())).apply(1-x);
+				KumaraswamyCDF.b(c.spreadIfNegative(),1-c.centralityIfNegative())).apply(x);
 			figures.withNewChart(c+" cdf", ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
