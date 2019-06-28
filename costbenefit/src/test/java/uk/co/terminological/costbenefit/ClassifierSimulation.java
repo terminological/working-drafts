@@ -317,7 +317,7 @@ public class ClassifierSimulation {
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.Set1)
 					.bind(X, t -> t.prevalence)
-					.bind(Y, t -> t.model().bestCutoff(m -> m.normalisedValue(cm)).getFirst(),"norm value")
+					.bind(Y, t -> t.model().bestCutoff(m -> m.normalisedValue(cm)).getSecond(),"norm value")
 					.bind(Y, t -> t.model().bestCutoff(m -> m.relativeValue(cm, t.prevalence)).getSecond(),"rel value")
 					.bind(Y, t -> t.model().bestCutoff(m -> m.accuracy()).getSecond(),"accuracy")
 					.bind(Y, t -> t.model().bestCutoff(m -> m.f1Score()).getSecond(),"f1 score")
