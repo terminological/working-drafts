@@ -3,6 +3,7 @@ package uk.co.terminological.costbenefit;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Precision;
@@ -66,7 +67,7 @@ public abstract class ClassifierModel<X> {
 		public Tuple<Double,Double> bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
 			Double value = Double.MIN_VALUE;
 			Double bestCutoff = Double.NaN;
-			for (Double d=0D; d<1.0D;d += 0.001) {
+			for (Double d=0D; d<=1.0D;d += 0.001) {
 				ConfusionMatrix2D tmp = matrix(d);
 				if (feature.apply(tmp) > value) {
 					value = feature.apply(tmp);
@@ -96,6 +97,25 @@ public abstract class ClassifierModel<X> {
 			return new ConfusionMatrix2D(eTp,eTn,eFp,eFn);
 		}
 		
+		public Double AUROC() {
+			return TrapeziodIntegrator.integrate(
+			SeriesBuilder.range(0.0, 1.0, 1000).map(c -> matrix(c)).map(m -> Tuple.create(m.sensitivity(), m.specificity()))
+				.collect(Collectors.toList())
+				);
+		}
+		
+		public Double KLDivergence() {
+			Function<Double,Double> p = KumaraswamyCDF.pdf(aPos,bPos);
+			Function<Double,Double> q = KumaraswamyCDF.pdf(aNeg,bNeg);
+			Double dpq TrapeziodIntegrator.integrate(
+					SeriesBuilder.range(0.0, 1.0, 1000).map(x -> 
+				Tuple.create(x,
+				p.apply(x)*Math.log(p.apply(x)/q.apply(x))
+				.collect(Collectors.toList())
+					)));
+					
+			
+		}
 		
 	}
 	
