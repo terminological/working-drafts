@@ -180,11 +180,13 @@ public abstract class ClassifierModel<X> {
 			Function<Double,Double> q = pdfGivenNegative;
 			Double dpq = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
-						.map(x -> Tuple.create(x,p.apply(x)*Math.log(p.apply(x)/q.apply(x))))
+						.map(x -> Tuple.create(x,
+								Precision.equals(p.apply(x),0D) ? 0 : p.apply(x)*Math.log(p.apply(x)/q.apply(x))))
 						.collect(TrapeziodIntegrator.integrator());
 			Double dqp = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
-						.map(x -> Tuple.create(x,q.apply(x)*Math.log(q.apply(x)/p.apply(x))))
+						.map(x -> Tuple.create(x,
+								Precision.equals(q.apply(x),0D) ? 0 : q.apply(x)*Math.log(q.apply(x)/p.apply(x))))
 						.collect(TrapeziodIntegrator.integrator());
 			return dpq+dqp;		
 		}
