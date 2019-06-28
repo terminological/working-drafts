@@ -47,7 +47,8 @@ public class ClassifierSimulation {
 	
 	@Before
 	public void setUp() throws Exception {
-		Path dir = Paths.get(System.getProperty("user.home"),"Dropbox/costOptimisation/simulation");
+		//Path dir = Paths.get(System.getProperty("user.home"),"Dropbox/costOptimisation/simulation");
+		Path dir = Paths.get(System.getProperty("user.home"),"tmp/graph");
 		Files.createDirectories(dir);
 		figures = Figure.outputTo(dir);
 	}
