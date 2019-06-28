@@ -68,6 +68,16 @@ public class ConfusionMatrix2D {
 		return tpValue*tp+tnValue*tn+fpCost*fp+fnCost*fn;
 	}
 	
+	public double normalisedValue(CostModel model) {
+		return normalisedValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost());
+	}
+	
+	public double normalisedValue(double tpValue, double tnValue, double fpCost, double fnCost) {
+		double maxValue = Math.max(tpValue,tnValue);
+		double minCost = Math.min(fnCost,fpCost);
+		return (absoluteValue(tpValue,tnValue,fpCost,fnCost)-minCost)/(maxValue-minCost);
+	}
+	
 	public double relativeValue(CostModel model, double prevalence) {
 		return relativeValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost(),prevalence);
 	}
@@ -75,7 +85,7 @@ public class ConfusionMatrix2D {
 	public double relativeValue(double tpValue, double tnValue, double fpCost, double fnCost, double prevalence) {
 		double maxValue = tpValue*prevalence + tnValue*(1-prevalence);
 		double minCost = fnCost*prevalence + fpCost*(1-prevalence);
-		return (absoluteValue(tpValue,tnValue,fpCost,fnCost)-minCost)/(maxValue-minCost);
+		return absoluteValue(tpValue,tnValue,fpCost,fnCost)/(maxValue-minCost);
 	}
 	
 	private double pmi(double pxy, double px, double py) {
