@@ -60,6 +60,9 @@ public class ClassifierSimulation {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Kumaraswamy model = new Kumaraswamy(c,0.2);
 			model.plot(figures);
+			System.out.println(model.name);
+			System.out.println("AUROC: "+model.AUROC());
+			System.out.println("Dkl: "+model.KLDivergence());
 		});
 		
 		
