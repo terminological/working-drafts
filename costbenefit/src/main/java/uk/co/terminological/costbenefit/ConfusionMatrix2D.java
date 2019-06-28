@@ -75,7 +75,7 @@ public class ConfusionMatrix2D {
 	public double normalisedValue(double tpValue, double tnValue, double fpCost, double fnCost) {
 		double maxValue = Math.max(tpValue,tnValue);
 		double minCost = Math.min(fnCost,fpCost);
-		return (absoluteValue(tpValue,tnValue,fpCost,fnCost)-minCost)/(maxValue-minCost);
+		return absoluteValue(tpValue,tnValue,fpCost,fnCost)/(maxValue-minCost);
 	}
 	
 	public double relativeValue(CostModel model, double prevalence) {
