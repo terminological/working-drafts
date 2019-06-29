@@ -57,12 +57,34 @@ public abstract class ClassifierModel<X> {
 			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), config.toString());
 		}
 		
+		/**
+		 * 
+		 * @param divergence between 0 and 1.
+		 * @param name
+		 */
 		public Kumaraswamy(Double divergence, String name) {
 			this(
 					0.5-divergence/2,
 					0.5-divergence/2,
 					0.5+divergence/2,
 					0.5-divergence/2,
+					name
+			); 
+			
+		}
+		
+		/**
+		 * 
+		 * @param divergence between 0 and 1.
+		 * @param skew between -1 and 1.
+		 * @param name
+		 */
+		public Kumaraswamy(Double divergence, Double skew, String name) {
+			this(
+					0.5+skew*0.5 - (1+skew)*divergence/2,
+					0.5+ divergence/2,
+					0.5+skew*0.5 + (1-skew)*divergence/2,
+					0.5+ divergence/2,
 					name
 			); 
 			
