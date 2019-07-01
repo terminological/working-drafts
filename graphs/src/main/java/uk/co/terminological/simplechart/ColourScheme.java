@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
 
+
+// https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html
+
 public class ColourScheme {
 
 	public static ColourScheme Spectral = new ColourScheme("Spectral", new Colour[][]{{rgb(252,141,89), rgb(255,255,191), rgb(153,213,148)},{rgb(215,25,28), rgb(253,174,97), rgb(171,221,164), rgb(43,131,186)},{rgb(215,25,28), rgb(253,174,97), rgb(255,255,191), rgb(171,221,164), rgb(43,131,186)},{rgb(213,62,79), rgb(252,141,89), rgb(254,224,139), rgb(230,245,152), rgb(153,213,148), rgb(50,136,189)},{rgb(213,62,79), rgb(252,141,89), rgb(254,224,139), rgb(255,255,191), rgb(230,245,152), rgb(153,213,148), rgb(50,136,189)},{rgb(213,62,79), rgb(244,109,67), rgb(253,174,97), rgb(254,224,139), rgb(230,245,152), rgb(171,221,164), rgb(102,194,165), rgb(50,136,189)},{rgb(213,62,79), rgb(244,109,67), rgb(253,174,97), rgb(254,224,139), rgb(255,255,191), rgb(230,245,152), rgb(171,221,164), rgb(102,194,165), rgb(50,136,189)},{rgb(158,1,66), rgb(213,62,79), rgb(244,109,67), rgb(253,174,97), rgb(254,224,139), rgb(230,245,152), rgb(171,221,164), rgb(102,194,165), rgb(50,136,189), rgb(94,79,162)},{rgb(158,1,66), rgb(213,62,79), rgb(244,109,67), rgb(253,174,97), rgb(254,224,139), rgb(255,255,191), rgb(230,245,152), rgb(171,221,164), rgb(102,194,165), rgb(50,136,189), rgb(94,79,162)}}, "div");
@@ -42,6 +45,7 @@ public class ColourScheme {
 	public static ColourScheme Blues = new ColourScheme("Blues", new Colour[][]{{rgb(222,235,247), rgb(158,202,225), rgb(49,130,189)},{rgb(239,243,255), rgb(189,215,231), rgb(107,174,214), rgb(33,113,181)},{rgb(239,243,255), rgb(189,215,231), rgb(107,174,214), rgb(49,130,189), rgb(8,81,156)},{rgb(239,243,255), rgb(198,219,239), rgb(158,202,225), rgb(107,174,214), rgb(49,130,189), rgb(8,81,156)},{rgb(239,243,255), rgb(198,219,239), rgb(158,202,225), rgb(107,174,214), rgb(66,146,198), rgb(33,113,181), rgb(8,69,148)},{rgb(247,251,255), rgb(222,235,247), rgb(198,219,239), rgb(158,202,225), rgb(107,174,214), rgb(66,146,198), rgb(33,113,181), rgb(8,69,148)},{rgb(247,251,255), rgb(222,235,247), rgb(198,219,239), rgb(158,202,225), rgb(107,174,214), rgb(66,146,198), rgb(33,113,181), rgb(8,81,156), rgb(8,48,107)}}, "seq");
 	public static ColourScheme PuBuGn = new ColourScheme("PuBuGn", new Colour[][]{{rgb(236,226,240), rgb(166,189,219), rgb(28,144,153)},{rgb(246,239,247), rgb(189,201,225), rgb(103,169,207), rgb(2,129,138)},{rgb(246,239,247), rgb(189,201,225), rgb(103,169,207), rgb(28,144,153), rgb(1,108,89)},{rgb(246,239,247), rgb(208,209,230), rgb(166,189,219), rgb(103,169,207), rgb(28,144,153), rgb(1,108,89)},{rgb(246,239,247), rgb(208,209,230), rgb(166,189,219), rgb(103,169,207), rgb(54,144,192), rgb(2,129,138), rgb(1,100,80)},{rgb(255,247,251), rgb(236,226,240), rgb(208,209,230), rgb(166,189,219), rgb(103,169,207), rgb(54,144,192), rgb(2,129,138), rgb(1,100,80)},{rgb(255,247,251), rgb(236,226,240), rgb(208,209,230), rgb(166,189,219), rgb(103,169,207), rgb(54,144,192), rgb(2,129,138), rgb(1,108,89), rgb(1,70,54)}}, "seq"); 
 
+	public static ColourScheme RedWhiteGreen = new ColourScheme("rwg", new Colour[][]{{rgb(255,0,0),rgb(255,255,255),rgb(0,255,0)}}, "div");
 	
 	private static List<ColourScheme> sequence = Arrays.asList(
 		Blues,Greens,Oranges,Reds,Purples,Greys	
@@ -185,6 +189,14 @@ public class ColourScheme {
 			palette.append(""+i+" \""+col+"\"");
 		};
 		return styles.toString()+"\n"+palette.toString()+")\n";
+	}
+	
+	public String getGGplotContinuous() {
+		List<Colour> cols = values(3);
+		return "scale_colour_gradient2(low = \""+cols.get(0).toHex()+
+				"\", mid = \""+cols.get(1).toHex()+
+				"\", high = \""+cols.get(2).toHex()+"\")";
+				  
 	}
 	
 	public String getName() {return name;}
