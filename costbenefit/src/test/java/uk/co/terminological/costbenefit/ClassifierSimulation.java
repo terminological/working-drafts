@@ -69,7 +69,7 @@ public class ClassifierSimulation {
 			System.out.println("Dkl lambda @ 0.2: "+model.LambdaDivergence(0.2));
 		});*/	
 		
-		new Kumaraswamy(0.1,0D,"spread div test").plot(figures);
+		new Kumaraswamy(0.5,0.2D,"spread div test").plot(figures);
 	}
 	
 	@Test
