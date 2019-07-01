@@ -78,13 +78,15 @@ public abstract class ClassifierModel<X> {
 			return (div, skew) -> {
 				Double midpoint = 0.5 + skew/2;
 				// tranforms y = ax+b  -- a=skew, b=0.5
-				//
-				0.5 + (left?-1:1)* div/2;
-			}
+				return midpoint + (left ? 0-midpoint : 1-midpoint) * div/2;
+			};
 		}
 		
 		static BiFunction<Double,Double,Double> spreadFromDivergenceSkew(boolean left) {
-			return (div, skew) -> 0.5+ skew*0.5 - (1+skew)*div/2;
+			return (div, skew) -> {
+				Double midpoint = 0.5 + skew/2;
+				return (left ? midpoint : 1-midpoint) * div;
+			};
 		}
 		
 		/**
