@@ -109,7 +109,7 @@ public class ClassifierSimulation {
 		.withSeries(data).withColourScheme(ColourScheme.Blues)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
-		.bind(Z, t -> t.getThird().AUROC())
+		.bind(Z, t -> t.getThird().KLDivergence())
 		.done()
 		.render();
 		
