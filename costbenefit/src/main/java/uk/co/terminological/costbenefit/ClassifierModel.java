@@ -112,7 +112,7 @@ public abstract class ClassifierModel<X> {
 					modeNeg > 0 && modeNeg < 1 &&
 					spreadPos > 0 && spreadPos < 0.5 &&
 					spreadNeg > 0 && spreadNeg < 0.5 &&  
-					modePos > modeNeg)) throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
+					modePos >= modeNeg)) throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
 			
 			
 			aPos = KumaraswamyCDF.a(spreadPos, modePos);
