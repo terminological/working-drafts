@@ -90,10 +90,10 @@ public class ClassifierSimulation {
 		);	
 		
 		figures.withNewChart("AUROC", ChartType.XYZ_HEATMAP)
-		.config().withXScale(0F, 1F)
+		.config().withXScale(0F, 0.8F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
-		.withYScale(-1F, 1F)
+		.withYScale(-0.5F, 0.5F)
 		.done()
 		.withSeries(data).withColourScheme(ColourScheme.Greens)
 		.bind(X, t -> t.getFirst())
@@ -117,10 +117,10 @@ public class ClassifierSimulation {
 				);	
 		
 		figures.withNewChart("KL Divergence", ChartType.XYZ_HEATMAP)
-		.config().withXScale(0F, 1F)
+		.config().withXScale(0F, 0.8F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
-		.withYScale(-1F, 1F)
+		.withYScale(-0.5F, 0.5F)
 		.done()
 		.withSeries(data).withColourScheme(ColourScheme.Blues)
 		.bind(X, t -> t.getFirst())
