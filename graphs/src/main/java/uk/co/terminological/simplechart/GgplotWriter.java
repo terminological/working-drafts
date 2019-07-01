@@ -80,6 +80,11 @@ public abstract class GgplotWriter extends Writer {
 	//TODO: localDate support?
 	private static String format(Object o) {
 		if (o == null) return "NA";
+		if (o instanceof Double) {
+			if (Double.isNaN((Double) o)) return "NaN";
+			if (o.equals(Double.NEGATIVE_INFINITY)) return "-Inf";
+			if (o.equals(Double.POSITIVE_INFINITY)) return "Inf";
+		}
 		if (o instanceof Number) return o.toString();
 		return "'"+o.toString().replace("'", "\\'")+"'";
 	}
