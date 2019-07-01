@@ -21,7 +21,7 @@ public class ConfusionMatrix2D {
 	
 	public ConfusionMatrix2D(double TPR, double TNR, double FPR, double FNR) {
 		total = 1;
-		if (!Precision.equals(TPR+TNR+FPR+FNR,1.0,3))  
+		if (!Double.isNaN(TPR+TNR+FPR+FNR) && !Precision.equals(TPR+TNR+FPR+FNR,1.0,3))  
 			throw new ConstraintViolationException("Sum of paramters must be 1");
 		tp = TPR;
 		fp = FPR;
