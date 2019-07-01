@@ -65,10 +65,10 @@ public abstract class ClassifierModel<X> {
 		 */
 		public Kumaraswamy(Double divergence, String name) {
 			this(
-					modeFromDivergenceSkew(true).apply(divergence, 0D),
-					spreadFromDivergenceSkew(true).apply(divergence, 0D),
 					modeFromDivergenceSkew(false).apply(divergence, 0D),
 					spreadFromDivergenceSkew(false).apply(divergence, 0D),
+					modeFromDivergenceSkew(true).apply(divergence, 0D),
+					spreadFromDivergenceSkew(true).apply(divergence, 0D),
 					name
 			); 
 			
@@ -97,10 +97,10 @@ public abstract class ClassifierModel<X> {
 		 */
 		public Kumaraswamy(Double divergence, Double skew, String name) {
 			this(
-					modeFromDivergenceSkew(true).apply(divergence, skew),
-					spreadFromDivergenceSkew(true).apply(divergence, skew),
 					modeFromDivergenceSkew(false).apply(divergence, skew),
 					spreadFromDivergenceSkew(false).apply(divergence, skew),
+					modeFromDivergenceSkew(true).apply(divergence, skew),
+					spreadFromDivergenceSkew(true).apply(divergence, skew),
 					name
 			); 
 			
