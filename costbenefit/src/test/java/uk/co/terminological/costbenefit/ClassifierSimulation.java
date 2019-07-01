@@ -105,7 +105,7 @@ public class ClassifierSimulation {
 		
 		data = SeriesBuilder.grid(
 				//Stream<List<Double>> data = SeriesBuilder.grid(
-					Range.of(0D, 0.8D, 0.005D),Range.of(-0.5D, 0.5D, 0.005D)
+					Range.of(0D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 				).map( c-> 
 					Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 					/*FluentList.create(c.getFirst(), c.getSecond(), 
