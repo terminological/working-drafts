@@ -102,6 +102,20 @@ public class ClassifierSimulation {
 		.done()
 		.render();
 		
+		
+		data = SeriesBuilder.grid(
+				//Stream<List<Double>> data = SeriesBuilder.grid(
+					Range.of(0D, 0.8D, 0.005D),Range.of(-0.5D, 0.5D, 0.005D)
+				).map( c-> 
+					Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+					/*FluentList.create(c.getFirst(), c.getSecond(), 
+							Kumaraswamy.modeFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
+							Kumaraswamy.spreadFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
+							Kumaraswamy.modeFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond()),
+							Kumaraswamy.spreadFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond())
+					)*/
+				);	
+		
 		figures.withNewChart("KL Divergence", ChartType.XYZ_HEATMAP)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
