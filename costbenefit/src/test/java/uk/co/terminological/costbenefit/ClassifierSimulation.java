@@ -102,7 +102,7 @@ public class ClassifierSimulation {
 		.done()
 		.render();
 		
-		figures.withNewChart("AUROC", ChartType.XYZ_HEATMAP)
+		figures.withNewChart("KL Divergence", ChartType.XYZ_HEATMAP)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
