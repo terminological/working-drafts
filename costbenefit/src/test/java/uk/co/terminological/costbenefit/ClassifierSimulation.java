@@ -108,7 +108,7 @@ public class ClassifierSimulation {
 		.withYLabel("skew")
 		.withYScale(-0.5F, 0.5F)
 		.done()
-		.withSeries(data).withColourScheme(ColourScheme.Accent)
+		.withSeries(data).withColourScheme(ColourScheme.Set3)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird().LambdaDivergence(0.01))
@@ -127,24 +127,13 @@ public class ClassifierSimulation {
 		.withYLabel("skew")
 		.withYScale(-0.5F, 0.5F)
 		.done()
-		.withSeries(data).withColourScheme(ColourScheme.Accent)
+		.withSeries(data).withColourScheme(ColourScheme.Set2)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird().KLDivergence())
 		.done()
 		.render();
-		/*figures.withNewChart("params", ChartType.XYZ_CONTOUR)
-		.config().withXScale(0F, 1F)
-		.withXLabel("divergence")
-		.withYLabel("skew")
-		.withYScale(-1F, 1F)
-		.done()
-		.withSeries(data).withColourScheme(ColourScheme.Dark2)
-		.bind(X, t -> t.get(0))
-		.bind(Y, t -> t.get(1))
-		.bind(Z, t -> t.get(5),"spread A")
-		.done()
-		.render();*/
+		
 	}
 	
 	@Test
