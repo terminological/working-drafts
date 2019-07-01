@@ -78,7 +78,7 @@ public class ClassifierSimulation {
 			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 		);	
 		
-		figures.withNewChart("AUROC", ChartType.XY_MULTI_LINE)
+		figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
