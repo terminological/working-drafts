@@ -79,10 +79,10 @@ public class ClassifierSimulation {
 		);	
 		
 		figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
-		.config().withXScale(-1F, 1F)
+		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
-		.withYScale(0F, 1F)
+		.withYScale(-1F, 1F)
 		.done()
 		.withSeries(data).withColourScheme(ColourScheme.Dark2)
 		.bind(X, t -> t.getFirst())
