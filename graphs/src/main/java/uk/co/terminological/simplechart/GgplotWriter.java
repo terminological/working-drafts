@@ -215,7 +215,7 @@ public abstract class GgplotWriter extends Writer {
 		public List<String> getPlots() {
 			return Arrays.asList(
 					"geom_tile(stat='identity', aes(x=X, y=Y, fill=Z))",
-					"stat_contour(aes(x=X, y=Y, z=Z))",
+					"stat_contour(aes(x=X, y=Y, z=Z), colour='black')",
 					//"scale_fill_distiller(name=\""+this.getChart().getConfig().getLabel(Dimension.Z)+"\",palette=schemeName)"
 					this.getChart().getSeries().get(0).getScheme().getGGplotFillContinuous(
 							this.getChart().getConfig().getLabel(Dimension.Z)
