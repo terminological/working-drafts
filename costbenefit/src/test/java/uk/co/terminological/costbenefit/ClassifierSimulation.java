@@ -77,16 +77,16 @@ public class ClassifierSimulation {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		
 		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
-				Range.of(0D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
+				Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
 		).map( c-> 
 			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 		);	
 		
 		figures.withNewChart("AUROC", ChartType.XYZ_HEATMAP)
-		.config().withXScale(0F, 0.8F)
+		.config().withXScale(0F, 0.4F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
-		.withYScale(-0.5F, 0.5F)
+		.withYScale(-0.25F, 0.25F)
 		.done()
 		.withSeries(data).withColourScheme(ColourScheme.Set1)
 		.bind(X, t -> t.getFirst())
@@ -97,16 +97,16 @@ public class ClassifierSimulation {
 		
 		
 		data = SeriesBuilder.grid(
-					Range.of(0D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
+					Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
 				).map( c-> 
 					Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 				);	
 		
 		figures.withNewChart("Lambda Divergence", ChartType.XYZ_HEATMAP)
-		.config().withXScale(0F, 0.8F)
+		.config().withXScale(0F, 0.4F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
-		.withYScale(-0.5F, 0.5F)
+		.withYScale(-0.25F, 0.25F)
 		.done()
 		.withSeries(data).withColourScheme(ColourScheme.Set3)
 		.bind(X, t -> t.getFirst())
@@ -116,16 +116,16 @@ public class ClassifierSimulation {
 		.render();
 		
 		data = SeriesBuilder.grid(
-				Range.of(0D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
+				Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
 			).map( c-> 
 				Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 			);	
 		
 		figures.withNewChart("KL Divergence", ChartType.XYZ_HEATMAP)
-		.config().withXScale(0F, 0.8F)
+		.config().withXScale(0F, 0.4F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
-		.withYScale(-0.5F, 0.5F)
+		.withYScale(-0.25F, 0.25F)
 		.done()
 		.withSeries(data).withColourScheme(ColourScheme.Set2)
 		.bind(X, t -> t.getFirst())
