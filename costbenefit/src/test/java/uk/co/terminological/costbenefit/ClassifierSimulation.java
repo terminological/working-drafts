@@ -116,7 +116,7 @@ public class ClassifierSimulation {
 					)*/
 				);	
 		
-		figures.withNewChart("KL Divergence", ChartType.XYZ_HEATMAP)
+		figures.withNewChart("Lambda Divergence", ChartType.XYZ_HEATMAP)
 		.config().withXScale(0F, 0.8F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
@@ -125,7 +125,7 @@ public class ClassifierSimulation {
 		.withSeries(data).withColourScheme(ColourScheme.Accent)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
-		.bind(Z, t -> t.getThird().KLDivergence())
+		.bind(Z, t -> t.getThird().LambdaDivergence(0.1))
 		.done()
 		.render();
 		
