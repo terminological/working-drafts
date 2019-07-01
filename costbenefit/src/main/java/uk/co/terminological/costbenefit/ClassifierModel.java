@@ -3,6 +3,7 @@ package uk.co.terminological.costbenefit;
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,13 +65,26 @@ public abstract class ClassifierModel<X> {
 		 */
 		public Kumaraswamy(Double divergence, String name) {
 			this(
-					0.5-divergence/2,
-					0.5-divergence/2,
-					0.5+divergence/2,
-					0.5-divergence/2,
+					modeFromDivergenceSkew(true).apply(divergence, 0D),
+					spreadFromDivergenceSkew(true).apply(divergence, 0D),
+					modeFromDivergenceSkew(false).apply(divergence, 0D),
+					spreadFromDivergenceSkew(false).apply(divergence, 0D),
 					name
 			); 
 			
+		}
+		
+		static BiFunction<Double,Double,Double> modeFromDivergenceSkew(boolean left) {
+			return (div, skew) -> {
+				Double midpoint = 0.5 + skew/2;
+				// tranforms y = ax+b  -- a=skew, b=0.5
+				//
+				0.5 + (left?-1:1)* div/2;
+			}
+		}
+		
+		static BiFunction<Double,Double,Double> spreadFromDivergenceSkew(boolean left) {
+			return (div, skew) -> 0.5+ skew*0.5 - (1+skew)*div/2;
 		}
 		
 		/**
@@ -81,10 +95,10 @@ public abstract class ClassifierModel<X> {
 		 */
 		public Kumaraswamy(Double divergence, Double skew, String name) {
 			this(
-					0.5+skew*0.5 - (1+skew)*divergence/2,
-					0.5+ divergence/2,
-					0.5+skew*0.5 + (1-skew)*divergence/2,
-					0.5+ divergence/2,
+					modeFromDivergenceSkew(true).apply(divergence, skew),
+					spreadFromDivergenceSkew(true).apply(divergence, skew),
+					modeFromDivergenceSkew(false).apply(divergence, skew),
+					spreadFromDivergenceSkew(false).apply(divergence, skew),
 					name
 			); 
 			
