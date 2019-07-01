@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
+import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
@@ -64,9 +65,31 @@ public class ClassifierSimulation {
 			System.out.println("AUROC: "+model.AUROC());
 			System.out.println("Dkl: "+model.KLDivergence());
 			System.out.println("Dkl lambda @ 0.2: "+model.LambdaDivergence(0.2));
-		});
+		});	
+	}
+	
+	@Test
+	public void plotKumaraswarmyFeatures() {
+		//Range spreadRange = Range.of(0.1D,1D, 6);
 		
+		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
+			Range.of(0D, 1D, 0.01D),Range.of(0D, 1D, 0.01D)
+		).map( c-> 
+			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+		);	
 		
+		figures.withNewChart("AUROC", ChartType.XY_MULTI_LINE)
+		.config().withXScale(0F, 1F)
+		.withXLabel("divergence")
+		.withYLabel("skew")
+		.withYScale(0F, 1F)
+		.done()
+		.withSeries(data).withColourScheme(ColourScheme.Dark2)
+		.bind(X, t -> t.getFirst())
+		.bind(Y, t -> t.getSecond())
+		.bind(Z, t -> t.getThird().AUROC())
+		.done()
+		.render();
 	}
 	
 	@Test
