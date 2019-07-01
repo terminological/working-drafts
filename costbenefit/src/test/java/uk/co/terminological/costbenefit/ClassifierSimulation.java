@@ -74,20 +74,20 @@ public class ClassifierSimulation {
 	public void plotKumaraswarmyFeatures() {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		
-		//Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
-		Stream<List<Double>> data = SeriesBuilder.grid(
-			Range.of(0.05D, 0.95D, 0.02D),Range.of(-0.95D, 0.95D, 0.02D)
+		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
+		//Stream<List<Double>> data = SeriesBuilder.grid(
+			Range.of(0.05D, 0.95D, 0.01D),Range.of(-0.95D, 0.95D, 0.01D)
 		).map( c-> 
-			//Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
-			FluentList.create(c.getFirst(), c.getSecond(), 
+			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+			/*FluentList.create(c.getFirst(), c.getSecond(), 
 					Kumaraswamy.modeFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
 					Kumaraswamy.spreadFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
 					Kumaraswamy.modeFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond()),
 					Kumaraswamy.spreadFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond())
-			)
+			)*/
 		);	
 		
-		/*figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
+		figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
@@ -96,11 +96,11 @@ public class ClassifierSimulation {
 		.withSeries(data).withColourScheme(ColourScheme.Dark2)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
-		.bind(Z, t -> t.getThird().KLDivergence())
+		.bind(Z, t -> t.getThird().AUROC())
 		.done()
-		.render();*/
+		.render();
 		
-		figures.withNewChart("params", ChartType.XYZ_CONTOUR)
+		/*figures.withNewChart("params", ChartType.XYZ_CONTOUR)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
@@ -111,7 +111,7 @@ public class ClassifierSimulation {
 		.bind(Y, t -> t.get(1))
 		.bind(Z, t -> t.get(5),"spread A")
 		.done()
-		.render();
+		.render();*/
 	}
 	
 	@Test
