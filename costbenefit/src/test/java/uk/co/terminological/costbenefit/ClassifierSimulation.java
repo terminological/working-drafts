@@ -60,14 +60,16 @@ public class ClassifierSimulation {
 		//Range bRange = Range.of(2D, 5D, 4);
 		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+		/*Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Kumaraswamy model = new Kumaraswamy(c);
 			model.plot(figures);
 			System.out.println(model.name);
 			System.out.println("AUROC: "+model.AUROC());
 			System.out.println("Dkl: "+model.KLDivergence());
 			System.out.println("Dkl lambda @ 0.2: "+model.LambdaDivergence(0.2));
-		});	
+		});*/	
+		
+		new Kumaraswamy(0.1,0.1,"spread div test").plot(figures);
 	}
 	
 	@Test
