@@ -19,7 +19,6 @@ public interface CostModel {
 		}
 		return Optional.empty();
 		//TODO: this just looks for the answer in the middle of a balanced classifier.
-		// Need to explore the space somehow.
-		// Possibly start in the 
+		// Need to explore the space somehow. skew and divergence as 2D space with best value as 3D
 	}
 }
