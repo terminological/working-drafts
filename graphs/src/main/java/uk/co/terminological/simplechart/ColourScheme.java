@@ -191,16 +191,18 @@ public class ColourScheme {
 		return styles.toString()+"\n"+palette.toString()+")\n";
 	}
 	
-	public String getGGplotColourContinuous() {
+	public String getGGplotColourContinuous(String string) {
 		List<Colour> cols = values(3);
-		return "scale_colour_gradient2(low = \""+cols.get(0).toHex()+
+		return "scale_colour_gradient2(scale_name = \""+string+
+				"\", low = \""+cols.get(0).toHex()+
 				"\", mid = \""+cols.get(1).toHex()+
 				"\", high = \""+cols.get(2).toHex()+"\")";
 	}
 	
-	public String getGGplotFillContinuous() {
+	public String getGGplotFillContinuous(String string) {
 		List<Colour> cols = values(3);
-		return "scale_fill_gradient2(low = \""+cols.get(0).toHex()+
+		return "scale_fill_gradient2(scale_name = \""+string+
+				"\", low = \""+cols.get(0).toHex()+
 				"\", mid = \""+cols.get(1).toHex()+
 				"\", high = \""+cols.get(2).toHex()+"\")";
 	}
