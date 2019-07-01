@@ -76,7 +76,7 @@ public class ClassifierSimulation {
 		
 		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
 		//Stream<List<Double>> data = SeriesBuilder.grid(
-			Range.of(0.01D, 0.99D, 0.01D),Range.of(-0.99D, 0.99D, 0.01D)
+			Range.of(0.01D, 0.99D, 0.005D),Range.of(-0.99D, 0.99D, 0.005D)
 		).map( c-> 
 			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 			/*FluentList.create(c.getFirst(), c.getSecond(), 
