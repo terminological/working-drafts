@@ -87,7 +87,7 @@ public class ClassifierSimulation {
 			)*/
 		);	
 		
-		figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
+		figures.withNewChart("AUROC", ChartType.XYZ_HEATMAP)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
