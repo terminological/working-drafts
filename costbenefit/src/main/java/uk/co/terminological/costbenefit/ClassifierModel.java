@@ -110,8 +110,8 @@ public abstract class ClassifierModel<X> {
 			
 			if (!(modePos > 0 && modePos < 1 &&
 					modeNeg > 0 && modeNeg < 1 &&
-					spreadPos > 0 && 
-					spreadNeg > 0 && 
+					spreadPos > 0 && spreadPos < 0.5 &&
+					spreadNeg > 0 && spreadNeg < 0.5 &&  
 					modePos > modeNeg)) throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
 			
 			
