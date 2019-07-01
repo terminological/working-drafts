@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,6 +20,7 @@ import org.junit.Test;
 
 import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
+import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
@@ -72,13 +74,20 @@ public class ClassifierSimulation {
 	public void plotKumaraswarmyFeatures() {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		
-		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
+		//Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
+		Stream<List<Double>> data = SeriesBuilder.grid(
 			Range.of(0.05D, 0.95D, 0.02D),Range.of(-0.95D, 0.95D, 0.02D)
 		).map( c-> 
-			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+			//Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+			FluentList.create(c.getFirst(), c.getSecond(), 
+					Kumaraswamy.modeFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
+					Kumaraswamy.spreadFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
+					Kumaraswamy.modeFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond()),
+					Kumaraswamy.spreadFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond())
+			)
 		);	
 		
-		figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
+		/*figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
@@ -88,6 +97,19 @@ public class ClassifierSimulation {
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
 		.bind(Z, t -> t.getThird().KLDivergence())
+		.done()
+		.render();*/
+		
+		figures.withNewChart("params", ChartType.XYZ_CONTOUR)
+		.config().withXScale(0F, 1F)
+		.withXLabel("divergence")
+		.withYLabel("skew")
+		.withYScale(-1F, 1F)
+		.done()
+		.withSeries(data).withColourScheme(ColourScheme.Dark2)
+		.bind(X, t -> t.get(0))
+		.bind(Y, t -> t.get(1))
+		.bind(Z, t -> t.get(2),"mode A")
 		.done()
 		.render();
 	}
