@@ -109,7 +109,7 @@ public class ClassifierSimulation {
 		.withSeries(data).withColourScheme(ColourScheme.Dark2)
 		.bind(X, t -> t.get(0))
 		.bind(Y, t -> t.get(1))
-		.bind(Z, t -> t.get(3),"spread A")
+		.bind(Z, t -> t.get(4),"spread A")
 		.done()
 		.render();
 	}
