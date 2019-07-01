@@ -73,13 +73,13 @@ public class ClassifierSimulation {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		
 		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
-			Range.of(0D, 1D, 0.01D),Range.of(0D, 1D, 0.01D)
+			Range.of(0D, 1D, 0.01D),Range.of(-1D, 1D, 0.01D)
 		).map( c-> 
 			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 		);	
 		
 		figures.withNewChart("AUROC", ChartType.XYZ_CONTOUR)
-		.config().withXScale(0F, 1F)
+		.config().withXScale(-1F, 1F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
 		.withYScale(0F, 1F)
