@@ -193,7 +193,7 @@ public class ColourScheme {
 	
 	public String getGGplotColourContinuous(String string) {
 		List<Colour> cols = values(3);
-		return "scale_colour_gradient2(scale_name = \""+string+
+		return "scale_colour_gradient2(name = \""+string+
 				"\", low = \""+cols.get(0).toHex()+
 				"\", mid = \""+cols.get(1).toHex()+
 				"\", high = \""+cols.get(2).toHex()+"\")";
@@ -201,7 +201,7 @@ public class ColourScheme {
 	
 	public String getGGplotFillContinuous(String string) {
 		List<Colour> cols = values(3);
-		return "scale_fill_gradient2(scale_name = \""+string+
+		return "scale_fill_gradient2(name = \""+string+
 				"\", low = \""+cols.get(0).toHex()+
 				"\", mid = \""+cols.get(1).toHex()+
 				"\", high = \""+cols.get(2).toHex()+"\")";
