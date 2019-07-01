@@ -9,6 +9,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import org.apache.commons.math3.util.Precision;
+
 import uk.co.terminological.datatypes.FluentSet;
 import uk.co.terminological.datatypes.Tuple;
 
@@ -25,6 +27,7 @@ public class TrapeziodIntegrator {
 	}
 
 	private static Double trapeziod(Double x1, Double x2, Double y1, Double y2) {
+		if (Precision.equals(x2-x1,0D)) return 0D;
 		return (y1+y2)/2*(x2-x1);
 	}
 	
