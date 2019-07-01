@@ -203,7 +203,7 @@ public class ClassifierSimulation {
 					.withLabel(Z, "value")
 					.withYScale(0F, 1F)
 					.done()
-					.withSeries(space.stream()).withColourScheme(ColourScheme.Greens)
+					.withSeries(space.stream()).withColourScheme(ColourScheme.RedWhiteGreen)
 					.bind(X, t -> t.cutOff)
 					//.bind(Y, t -> t.matrix().tp,"tp")
 					//.bind(Y, t -> t.matrix().tn,"tn")
