@@ -77,16 +77,9 @@ public class ClassifierSimulation {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		
 		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
-		//Stream<List<Double>> data = SeriesBuilder.grid(
 				Range.of(0D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 		).map( c-> 
 			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
-			/*FluentList.create(c.getFirst(), c.getSecond(), 
-					Kumaraswamy.modeFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
-					Kumaraswamy.spreadFromDivergenceSkew(false).apply(c.getFirst(), c.getSecond()),
-					Kumaraswamy.modeFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond()),
-					Kumaraswamy.spreadFromDivergenceSkew(true).apply(c.getFirst(), c.getSecond())
-			)*/
 		);	
 		
 		figures.withNewChart("AUROC", ChartType.XYZ_HEATMAP)
@@ -118,10 +111,28 @@ public class ClassifierSimulation {
 		.withSeries(data).withColourScheme(ColourScheme.Accent)
 		.bind(X, t -> t.getFirst())
 		.bind(Y, t -> t.getSecond())
-		.bind(Z, t -> t.getThird().LambdaDivergence(0.1))
+		.bind(Z, t -> t.getThird().LambdaDivergence(0.01))
 		.done()
 		.render();
 		
+		data = SeriesBuilder.grid(
+				Range.of(0D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
+			).map( c-> 
+				Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+			);	
+		
+		figures.withNewChart("KL Divergence", ChartType.XYZ_HEATMAP)
+		.config().withXScale(0F, 0.8F)
+		.withXLabel("divergence")
+		.withYLabel("skew")
+		.withYScale(-0.5F, 0.5F)
+		.done()
+		.withSeries(data).withColourScheme(ColourScheme.Accent)
+		.bind(X, t -> t.getFirst())
+		.bind(Y, t -> t.getSecond())
+		.bind(Z, t -> t.getThird().KLDivergence())
+		.done()
+		.render();
 		/*figures.withNewChart("params", ChartType.XYZ_CONTOUR)
 		.config().withXScale(0F, 1F)
 		.withXLabel("divergence")
