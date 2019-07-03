@@ -59,13 +59,16 @@ public class JcasOmopMapper {
 	}
 	
 	public JcasOmopMapper(Database db, String version) {
+		
 		conceptMapper = new OneToManyMap<>();
+		if (db != null) {
 		try {
 			db.read().streamCuiOmopMap().forEach(
 				com -> conceptMapper.putItem(com.getCui(),com)
 			);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
+		}
 		}
 		this.version = version;
 	}

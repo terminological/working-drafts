@@ -67,8 +67,6 @@ public class NlpPipelineTest {
 		log.info("Ctakes resources at: "+p.ctakesHome());
 
 		this.p = p; 
-		db = new Database(p);
-		mapper = new JcasOmopMapper(db,p.nlpSystem());
 		ctakes = new NlpPipeline(p,false);
 	}
 
@@ -105,6 +103,10 @@ public class NlpPipelineTest {
 	
 	//@Test
 	public void testRealNote() throws SQLException {
+		
+		db = new Database(p);
+		mapper = new JcasOmopMapper(db,p.nlpSystem());
+		
 		db.query().fromInput(p.nlpSystem()).forEachRemaining(
 			in -> {
 				
