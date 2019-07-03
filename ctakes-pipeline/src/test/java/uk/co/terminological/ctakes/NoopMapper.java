@@ -10,7 +10,7 @@ import uk.co.terminological.omop.Database;
 
 public class NoopMapper extends JcasOmopMapper {
 
-	public NoopMapper(Database db, String version) {
+	public NoopMapper() {
 		super(null, null);
 	}
 	

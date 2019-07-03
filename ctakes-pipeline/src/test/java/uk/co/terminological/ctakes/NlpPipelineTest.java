@@ -68,6 +68,7 @@ public class NlpPipelineTest {
 
 		this.p = p; 
 		ctakes = new NlpPipeline(p,false);
+		mapper = new NoopMapper();
 	}
 
 	@After
