@@ -33,6 +33,7 @@ public class NlpPipelineTest {
 	
 	static Logger log = LoggerFactory.getLogger(NlpPipelineTest.class);
 	static Path testFilePath;
+	static String testSentence = "Mr. Jones is an 81 year old gentlman who lives in Okehampton. He visited me today complaining of chest pain. He has a history of hypertension and diabetes.";
 	
 	NlpPipeline ctakes;
 	JcasOmopMapper mapper;
@@ -75,13 +76,12 @@ public class NlpPipelineTest {
 	public void testRunNote() throws IOException, UIMAException {
 		//fail("Not yet implemented");
 		long ts = System.currentTimeMillis();
-		String doc = new String(Files.readAllBytes(testFilePath));
 		log.info("starting parse at: "+ts);
 		Input test = Factory.Mutable.createInput()
 				.withEncodingConceptId(0)
 				.withLanguageConceptId(0)
 				.withNoteDate(Date.valueOf("2016-01-01"))
-				.withNoteText(doc)
+				.withNoteText(testSentence)
 				.withNoteTitle("A test note");
 		List<NoteNlp> ret = ctakes.runNote( test ,mapper);
 		
