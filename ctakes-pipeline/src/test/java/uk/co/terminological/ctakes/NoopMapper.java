@@ -22,7 +22,7 @@ public class NoopMapper extends JcasOmopMapper {
 
 				@Override
 				public String getCui() {
-					return ((UmlsConcept) u).getCui());
+					return ((UmlsConcept) u).getCui();
 				}
 
 				@Override
