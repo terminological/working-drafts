@@ -16,6 +16,10 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UIMAException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +46,7 @@ public class NlpPipelineTest {
 	
 	static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	//@BeforeClass
+	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {
 		// BasicConfigurator.configure();
 		// log.info("setup before class");
@@ -52,7 +56,7 @@ public class NlpPipelineTest {
 		}
 	}
 	
-	//@Before
+	@Before
 	public void setUp() throws Exception {
 		// log.info("setup");
 		CtakesProperties p = new CtakesProperties(
@@ -68,11 +72,11 @@ public class NlpPipelineTest {
 		ctakes = new NlpPipeline(p,false);
 	}
 
-	//@After
+	@After
 	public void tearDown() throws Exception {
 	}
 
-	//@Test
+	@Test
 	public void testRunNote() throws IOException, UIMAException {
 		//fail("Not yet implemented");
 		long ts = System.currentTimeMillis();
