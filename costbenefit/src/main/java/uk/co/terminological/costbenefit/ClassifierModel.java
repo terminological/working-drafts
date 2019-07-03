@@ -106,6 +106,17 @@ public abstract class ClassifierModel<X> {
 			
 		}
 		
+		public Kumaraswamy(Double divergence, Double skew) {
+			this(
+					modeFromDivergenceSkew(false).apply(divergence, skew),
+					spreadFromDivergenceSkew(false).apply(divergence, skew),
+					modeFromDivergenceSkew(true).apply(divergence, skew),
+					spreadFromDivergenceSkew(true).apply(divergence, skew),
+					""
+			); 
+			
+		}
+		
 		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, String name) {
 			
 			if (!(modePos > 0 && modePos < 1 &&

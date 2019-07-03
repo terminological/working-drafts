@@ -25,6 +25,7 @@ import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
+import uk.co.terminological.simplechart.Coordinate;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.Interpolation;
 import uk.co.terminological.simplechart.Interpolator;
@@ -153,6 +154,32 @@ public class ClassifierSimulation {
 				.bind(Y, t -> t.matrix().recall())
 				.done()
 				.render();
+		});
+	}
+	
+	@Test
+	public void plotClassifierValue() {
+		Stream.of(CostModelEnum.values()).forEach( cm-> {
+			
+			
+			
+			Stream<Coordinate> data = SeriesBuilder.grid(
+					Range.of(0D, 0.4D, 0.01D),
+					Range.of(-0.25D, 0.25D, 0.01D));
+					
+			figures.withNewChart("Lambda Divergence", ChartType.XYZ_HEATMAP)
+			.config().withXScale(0F, 0.4F)
+			.withXLabel("divergence")
+			.withYLabel("skew")
+			.withYScale(-0.25F, 0.25F)
+			.done()
+			.withSeries(data).withColourScheme(ColourScheme.Set3)
+			.bind(X, t -> t.getFirst())
+			.bind(Y, t -> t.getSecond())
+			.bind(Z, t -> new Kumaraswamy(t.getFirst(),t.getSecond()))
+			.done()
+			.render();
+			
 		});
 	}
 	
