@@ -168,7 +168,7 @@ public class ClassifierSimulation {
 					Range.of(0D, 0.4D, 0.005D),
 					Range.of(-0.25D, 0.25D, 0.005D));
 					
-			figures.withNewChart(cm+"value at prev 0.01", ChartType.XYZ_HEATMAP)
+			figures.withNewChart(cm+" max value at prev 0.1", ChartType.XYZ_HEATMAP)
 			.config().withXScale(0F, 0.4F)
 			.withXLabel("divergence")
 			.withYLabel("skew")
