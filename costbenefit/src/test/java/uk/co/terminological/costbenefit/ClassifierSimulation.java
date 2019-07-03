@@ -179,7 +179,7 @@ public class ClassifierSimulation {
 			.bind(Y, t -> t.getSecond())
 			.bind(Z, t -> new Kumaraswamy(t.getFirst(),t.getSecond()).bestCutoff(prev, 
 					matrix -> matrix.absoluteValue(cm)
-					))
+					).getValue())
 			.done()
 			.render();
 			
