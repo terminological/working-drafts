@@ -165,8 +165,8 @@ public class ClassifierSimulation {
 			
 			
 			Stream<Coordinate> data = SeriesBuilder.grid(
-					Range.of(0D, 0.4D, 0.01D),
-					Range.of(-0.25D, 0.25D, 0.01D));
+					Range.of(0D, 0.4D, 0.005D),
+					Range.of(-0.25D, 0.25D, 0.005D));
 					
 			figures.withNewChart(cm+"value at prev 0.01", ChartType.XYZ_HEATMAP)
 			.config().withXScale(0F, 0.4F)
@@ -178,7 +178,7 @@ public class ClassifierSimulation {
 			.bind(X, t -> t.getFirst())
 			.bind(Y, t -> t.getSecond())
 			.bind(Z, t -> new Kumaraswamy(t.getFirst(),t.getSecond()).bestCutoff(prev, 
-					matrix -> matrix.absoluteValue(cm)
+					matrix -> matrix.normalisedValue(cm)
 					).getValue())
 			.done()
 			.render();
