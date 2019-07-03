@@ -159,14 +159,14 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotClassifierValue() {
-		Double prev = 0.01D;
+		Double prev = 0.1D;
 		Stream.of(CostModelEnum.values()).forEach( cm-> {
 			
 			
 			
 			Stream<Coordinate> data = SeriesBuilder.grid(
-					Range.of(0D, 0.4D, 0.001D),
-					Range.of(-0.25D, 0.25D, 0.001D));
+					Range.of(0D, 0.4D, 0.01D),
+					Range.of(-0.25D, 0.25D, 0.01D));
 					
 			figures.withNewChart(cm+"value at prev 0.01", ChartType.XYZ_HEATMAP)
 			.config().withXScale(0F, 0.4F)
