@@ -165,8 +165,8 @@ public class ClassifierSimulation {
 			
 			
 			Stream<Coordinate> data = SeriesBuilder.grid(
-					Range.of(0D, 0.4D, 0.01D),
-					Range.of(-0.25D, 0.25D, 0.01D));
+					Range.of(0D, 0.4D, 0.001D),
+					Range.of(-0.25D, 0.25D, 0.001D));
 					
 			figures.withNewChart(cm+"value at prev 0.01", ChartType.XYZ_HEATMAP)
 			.config().withXScale(0F, 0.4F)
