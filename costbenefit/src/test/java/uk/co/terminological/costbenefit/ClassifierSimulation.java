@@ -159,7 +159,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotClassifierValue() {
-		Double prev = 0.1D;
+		Double prev = 0.2D;
 		Stream.of(CostModelEnum.values()).forEach( cm-> {
 			
 			
