@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -161,5 +162,20 @@ public class Config {
 	public Config withScale(Dimension z, double f, double g) {
 		scales.put(z, Tuple.create(f, g));
 		return this;
+	}
+	
+	public List<String> getGGplotLimits() {
+		return scales.entrySet().stream().map(kv -> { 
+			return kv.getKey().name().toLowerCase()+"=c("+
+					kv.getValue().getFirst()+","+
+					kv.getValue().getSecond()+")";
+		}).collect(Collectors.toList());
+	}
+	
+	public List<String> getGGplotLabels() {
+		return labels.entrySet().stream().map(kv -> { 
+			return kv.getKey().name().toLowerCase()+"="+
+					"\""+kv.getValue()+"\"";
+		}).collect(Collectors.toList());
 	}
 }
