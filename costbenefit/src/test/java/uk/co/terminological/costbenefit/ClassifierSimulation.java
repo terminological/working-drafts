@@ -173,7 +173,7 @@ public class ClassifierSimulation {
 			.withXLabel("divergence")
 			.withYLabel("skew")
 			.withYScale(-0.25F, 0.25F)
-			.withScale(Z,-1D, 1D)
+			.withScale(FILL,-1D, 1D)
 			.done()
 			.withSeries(data).withColourScheme(ColourScheme.Set3)
 			.bind(X, t -> t.getFirst())
