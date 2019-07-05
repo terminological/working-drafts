@@ -17,8 +17,7 @@ public class Config {
 	Chart chart;
 	String title;
 	Map<Dimension,String> labels = FluentMap.with(Dimension.X, "x").and(Dimension.Y, "y");
-	Tuple<Double,Double> xScale;
-	Tuple<Double,Double> yScale;
+	Map<Dimension,Tuple<Double,Double>> scales = FluentMap.create();
 	OutputTarget target = OutputTarget.SCREEN;
 	List<String> customCommands = new ArrayList<>();
 
@@ -48,35 +47,37 @@ public class Config {
 	public String getLabel(String dimension) {
 		return labels.get(Dimension.valueOf(dimension));
 	}
-	
-	public String getXmin() {
-		if (yScale == null) return null;
-		return Double.toString(xScale.getFirst());
+
+	public String getMin(String dimension) {
+		return getScaleValue(Dimension.valueOf(dimension),true);
 	}
 	
-	public String getYmin() {
-		if (yScale == null) return null;
-		return Double.toString(yScale.getFirst());
+	public String getMax(String dimension) {
+		return getScaleValue(Dimension.valueOf(dimension),false);
 	}
 	
-	public String getXmax() {
-		if (xScale == null) return null;
-		return Double.toString(xScale.getSecond());
+	private String getScaleValue(Dimension dimension, boolean min) {
+		if (!scales.containsKey(Dimension.X)) return null;
+		if (min) {
+			return Double.toString(scales.get(Dimension.X).getFirst());
+		} else {
+			return Double.toString(scales.get(Dimension.X).getSecond());
+		}
 	}
 	
-	public String getYmax() {
-		if (xScale == null) return null;
-		return Double.toString(xScale.getSecond());
-	}
+	public String getXmin() {return getScaleValue(Dimension.X,true);}
+	public String getYmin() {return getScaleValue(Dimension.X,true);}
+	public String getXmax() {return getScaleValue(Dimension.X,false);}
+	public String getYmax() {return getScaleValue(Dimension.X,false);}
 	
 	public String getXScale() {
-		if (xScale == null) return null;
-		return "["+StringUtils.joinWith(":", Double.toString(xScale.getFirst()),Double.toString(xScale.getSecond()))+"]";
+		if (!scales.containsKey(Dimension.X)) return null;
+		return "["+getXmin()+":"+getXmax()+"]";
 	}
 	
 	public String getYScale() {
-		if (yScale == null) return null;
-		return "["+StringUtils.joinWith(":", Double.toString(yScale.getFirst()),Double.toString(yScale.getSecond()))+"]";
+		if (!scales.containsKey(Dimension.Y)) return null;
+		return "["+getYmin()+":"+getYmax()+"]";
 	}
 
 	public List<String> getCustomCommands() {
@@ -126,12 +127,12 @@ public class Config {
 	}
 	
 	public Config withXScale(double start, double end) {
-		this.xScale = Tuple.create(start, end);
+		this.scales.put(Dimension.X,Tuple.create(start, end));
 		return this;
 	}
 
 	public Config withYScale(double start, double end) {
-		this.yScale = Tuple.create(start, end);
+		this.scales.put(Dimension.Y,Tuple.create(start, end));
 		return this;
 	}
 	
@@ -155,5 +156,10 @@ public class Config {
 
 	public String getLabel(Dimension dimension) {
 		return labels.getOrDefault(dimension, dimension.toString());
+	}
+
+	public Config withScale(Dimension z, double f, double g) {
+		scales.put(z, Tuple.create(f, g));
+		return this;
 	}
 }
