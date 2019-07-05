@@ -177,9 +177,9 @@ public class ClassifierSimulation {
 			.withSeries(data).withColourScheme(ColourScheme.Set3)
 			.bind(X, t -> t.getFirst())
 			.bind(Y, t -> t.getSecond())
-			.bind(Z, t -> new Kumaraswamy(t.getFirst(),t.getSecond()).bestCutoff(prev, 
-					matrix -> matrix.relativeValue(cm,prev)
-					).getValue())
+			.bind(Z, t -> new Kumaraswamy(t.getFirst(),t.getSecond()).screeningBeneficial(cm, prev) ? 1:-1) //.bestCutoff(prev, 
+					//matrix -> matrix.relativeValue(cm,prev)
+					//).getValue())
 			.done()
 			.render();
 			
