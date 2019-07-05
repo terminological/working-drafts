@@ -11,8 +11,7 @@ plot <- ggplot(df)+
 <#list plots as plot>
 ${plot}+
 </#list>
-<#if config.getXmin()??>xlim(${config.getXmin()},${config.getXmax()})+</#if>
-<#if config.getYmin()??>ylim(${config.getYmin()},${config.getYmax()})+</#if>
-labs(title="${config.getTitle()}", x="${config.getXLabel()}", y="${config.getYLabel()}");
+lims(<#list config.getGGplotScales() as scale>${scale}<#sep>, </#sep></#list>)+
+labs(title="${config.getTitle()}"<#list config.getGGplotLabels() as label>, ${label}</#list>);
 
 save_plot("${output}", plot);
