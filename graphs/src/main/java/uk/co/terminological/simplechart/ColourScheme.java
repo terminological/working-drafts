@@ -100,6 +100,25 @@ public class ColourScheme {
 			b = (int) ((1-fraction)*b+fraction*255);
 			return this;
 		}
+		public void contrast(float minusOneToOne) {
+			
+			double f = (259*(255*minusOneToOne+255))/(255*(259-255*minusOneToOne));
+			
+			r = trunc((int) f*(r-128)+128);
+			g = trunc((int) f*(g-128)+128);
+			b = trunc((int) f*(b-128)+128);
+			
+			r = r<0 ? 0 : r;
+			g = g<0 ? 0 : g;
+			b = b<0 ? 0 : b;
+			
+		}
+	}
+	
+	private static int trunc(int rbg) {
+		if (rbg<0) return 0;
+		if (rbg>255) return 255;
+		return rbg;
 	}
 	
 	private static Colour rgb(int r, int g, int b) {
@@ -119,6 +138,10 @@ public class ColourScheme {
 	
 	public ColourScheme(String name, Colour[][] values, String usage) {
 		this(name,  rgba(0,0,0,0), values, usage);
+	}
+	
+	public ColourScheme(ColourScheme copy) {
+		this(copy.name,  copy.background, copy.values, copy.usage);
 	}
 	
 	public ColourScheme(String name, Colour background, Colour[][] values, String usage) {
@@ -143,22 +166,34 @@ public class ColourScheme {
 		return background;
 	}
 	
-	public ColourScheme darker(float ratio) {
-		for (int i = 0; i<values.length; i++) {
-			for (int j = 0; j<values[i].length; j++) {
-				values[i][j].darken(ratio);
+	public ColourScheme contrast(float minusOneToOne) {
+		ColourScheme out = new ColourScheme(this);
+		for (int i = 0; i<out.values.length; i++) {
+			for (int j = 0; j<out.values[i].length; j++) {
+				out.values[i][j].contrast(minusOneToOne);
 			}
 		}
-		return this;
+		return out;
+	}
+		
+	public ColourScheme darker(float ratio) {
+		ColourScheme out = new ColourScheme(this);
+		for (int i = 0; i<out.values.length; i++) {
+			for (int j = 0; j<out.values[i].length; j++) {
+				out.values[i][j].darken(ratio);
+			}
+		}
+		return out;
 	}
 	
 	public ColourScheme lighter(float ratio) {
-		for (int i = 0; i<values.length; i++) {
-			for (int j = 0; j<values[i].length; j++) {
-				values[i][j].lighten(ratio);
+		ColourScheme out = new ColourScheme(this);
+		for (int i = 0; i<out.values.length; i++) {
+			for (int j = 0; j<out.values[i].length; j++) {
+				out.values[i][j].lighten(ratio);
 			}
 		}
-		return this;
+		return out;
 	}
 	
 	public Colour continuous(double zeroToOne) {
@@ -199,12 +234,14 @@ public class ColourScheme {
 				"\", high = \""+cols.get(2).toHex()+"\")";
 	}
 	
-	public String getGGplotFillContinuous(String string) {
+	public String getGGplotFillContinuous(String string, String string2, String string3) {
 		List<Colour> cols = values(3);
 		return "scale_fill_gradient2(name = \""+string+
 				"\", low = \""+cols.get(0).toHex()+
 				"\", mid = \""+cols.get(1).toHex()+
-				"\", high = \""+cols.get(2).toHex()+"\")";
+				"\", high = \""+cols.get(2).toHex()+"\""+
+				(string2 != null ? ", limits=c("+string2+","+string3+")": "")
+				+" )";
 	}
 	
 	public String getName() {return name;}

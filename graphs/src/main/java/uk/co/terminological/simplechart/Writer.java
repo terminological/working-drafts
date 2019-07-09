@@ -47,4 +47,6 @@ public abstract class Writer {
 
 	protected abstract String extractData();
 
+	protected abstract String processForMultiplot(boolean includePlotTitles) throws IOException, TemplateException;
+	
 }

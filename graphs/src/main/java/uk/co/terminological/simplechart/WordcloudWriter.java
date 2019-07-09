@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.kennycason.kumo.CollisionMode;
 import com.kennycason.kumo.WordCloud;
 import com.kennycason.kumo.WordFrequency;
@@ -56,6 +58,11 @@ public class WordcloudWriter extends Writer {
 		return f.toPath();
 	}
 
+	@Override
+	protected String processForMultiplot(boolean includePlotTitles) throws IOException, TemplateException {
+		throw new NotImplementedException();
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected String extractData() {
