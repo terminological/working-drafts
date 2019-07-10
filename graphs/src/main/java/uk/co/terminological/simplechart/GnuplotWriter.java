@@ -13,6 +13,8 @@ import java.text.DecimalFormat;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 
@@ -81,6 +83,11 @@ public class GnuplotWriter extends Writer {
 		return getChart().getFile("png").toPath();
 		
 		
+	}
+	
+	@Override
+	protected String processForMultiplot(boolean includePlotTitles) throws IOException, TemplateException {
+		throw new NotImplementedException();
 	}
 	
 	private static String toGnuPlotString(Object o) {

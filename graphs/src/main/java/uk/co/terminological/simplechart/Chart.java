@@ -86,13 +86,23 @@ public class Chart {
 				| NoSuchMethodException | SecurityException |IOException | TemplateException e) {
 			throw new RuntimeException(e);
 		} 
-		
-		
-		
+	}
+	
+	protected String renderForMultiplot(boolean includePlotTitles) {
+		Writer writer;
+		try {
+			writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
+			String out = writer.processForMultiplot(includePlotTitles);
+			return out;
+			
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException |IOException | TemplateException e) {
+			throw new RuntimeException(e);
+		} 
 	}
 	
 	public enum Dimension {
-		X,Y,Z,COLOUR,SIZE,LABEL,Y_LOW,Y_HIGH,Y_FIT,
+		X,Y,Z,COLOUR,SIZE,LABEL,Y_LOW,Y_HIGH,Y_FIT,FILL,
 		ID,STRENGTH,TEXT,DX,DY,DZ
 	}
 	

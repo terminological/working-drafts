@@ -16,6 +16,10 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.uima.UIMAException;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +37,7 @@ public class NlpPipelineTest {
 	
 	static Logger log = LoggerFactory.getLogger(NlpPipelineTest.class);
 	static Path testFilePath;
+	static String testSentence = "Mr. Jones is an 81 year old gentlman who lives in Okehampton. He visited me today complaining of chest pain. He has a history of hypertension and diabetes.";
 	
 	NlpPipeline ctakes;
 	JcasOmopMapper mapper;
@@ -41,7 +46,7 @@ public class NlpPipelineTest {
 	
 	static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-	//@BeforeClass
+	@BeforeClass
 	public static void setupBeforeClass() throws URISyntaxException {
 		// BasicConfigurator.configure();
 		// log.info("setup before class");
@@ -51,7 +56,7 @@ public class NlpPipelineTest {
 		}
 	}
 	
-	//@Before
+	@Before
 	public void setUp() throws Exception {
 		// log.info("setup");
 		CtakesProperties p = new CtakesProperties(
@@ -62,26 +67,24 @@ public class NlpPipelineTest {
 		log.info("Ctakes resources at: "+p.ctakesHome());
 
 		this.p = p; 
-		db = new Database(p);
-		mapper = new JcasOmopMapper(db,p.nlpSystem());
 		ctakes = new NlpPipeline(p,false);
+		mapper = new NoopMapper();
 	}
 
-	//@After
+	@After
 	public void tearDown() throws Exception {
 	}
 
-	//@Test
+	@Test
 	public void testRunNote() throws IOException, UIMAException {
 		//fail("Not yet implemented");
 		long ts = System.currentTimeMillis();
-		String doc = new String(Files.readAllBytes(testFilePath));
 		log.info("starting parse at: "+ts);
 		Input test = Factory.Mutable.createInput()
 				.withEncodingConceptId(0)
 				.withLanguageConceptId(0)
 				.withNoteDate(Date.valueOf("2016-01-01"))
-				.withNoteText(doc)
+				.withNoteText(testSentence)
 				.withNoteTitle("A test note");
 		List<NoteNlp> ret = ctakes.runNote( test ,mapper);
 		
@@ -101,6 +104,10 @@ public class NlpPipelineTest {
 	
 	//@Test
 	public void testRealNote() throws SQLException {
+		
+		db = new Database(p);
+		mapper = new JcasOmopMapper(db,p.nlpSystem());
+		
 		db.query().fromInput(p.nlpSystem()).forEachRemaining(
 			in -> {
 				

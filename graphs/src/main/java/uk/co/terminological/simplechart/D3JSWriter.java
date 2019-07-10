@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.simplechart.Chart.Dimension;
@@ -30,6 +32,11 @@ public abstract class D3JSWriter extends Writer {
 		return f.toPath();
 		//TODO: Kick of a headless chrome instance and simulate click on download SVG item
 		// or just get user to open file in chrome
+	}
+	
+	@Override
+	protected String processForMultiplot(boolean includePlotTitles) throws IOException, TemplateException {
+		throw new NotImplementedException();
 	}
 
 	/**

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.function.Function;
 
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.solvers.BrentSolver;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.NullArgumentException;
 
@@ -26,6 +28,7 @@ import uk.co.terminological.simplechart.SeriesBuilder;
  */
 public class KumaraswamyCDF implements ParametricUnivariateFunction {
 
+	
 	public static Function<Double,Double> cdf(Double a, Double b) {
 		return x -> new KumaraswamyCDF().value(x,a,b);
 	}
@@ -58,9 +61,25 @@ public class KumaraswamyCDF implements ParametricUnivariateFunction {
 		
 	}
 	
-	public static Double a(Double spread, Double mode) {
-		return (mode+spread)/(spread);
+	public static UnivariateFunction aParameter(Double mode, Double iqr) {
+		return a -> 
+			Math.pow((1-Math.pow(0.25,(a*Math.pow(mode,a)/(Math.pow(mode,a)+a-1)))),1/a)-
+			Math.pow((1-Math.pow(0.75,(a*Math.pow(mode,a)/(Math.pow(mode,a)+a-1)))),1/a)-
+			iqr;
+	 }
+
+	
+	public static Double a(Double iqr, Double mode) {
+		try {
+			return new BrentSolver().solve(500, aParameter(mode,iqr), 1,10000,10);
+		} catch (Exception e) {
+			return Double.NaN;
+		}
 	}
+	
+	/*public static Double a(Double iqr, Double mode) {
+		return (mode+iqr)/iqr;
+	}*/
 	
 	public static Double b(Double spread, Double mode) {
 		Double a = a(spread,mode);

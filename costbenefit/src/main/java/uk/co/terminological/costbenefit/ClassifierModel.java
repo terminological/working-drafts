@@ -1,33 +1,33 @@
 package uk.co.terminological.costbenefit;
 
-import java.util.Collections;
-import java.util.List;
+import static uk.co.terminological.simplechart.Chart.Dimension.X;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y;
+
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.math3.util.Precision;
 
 import uk.co.terminological.datatypes.Tuple;
+import uk.co.terminological.simplechart.ChartType;
+import uk.co.terminological.simplechart.ColourScheme;
+import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.SeriesBuilder;
 import uk.co.terminological.simplechart.SeriesBuilder.Range;
 
 public abstract class ClassifierModel<X> {
 
-	ClassifierModel(Double prevalence) {prev=prevalence;}
 	
-	public abstract ConfusionMatrix2D matrix(X param);
+	public abstract ConfusionMatrix2D matrix(Double prev, X param);
 	
-	Double prev = 0.2;
 	
 	
 	public static class AlwaysPositive extends ClassifierModel<Void> {
 
-		AlwaysPositive(Double prevalence) {
-			super(prevalence);
-		}
-
 		@Override
-		public ConfusionMatrix2D matrix(Void param) {
+		public ConfusionMatrix2D matrix(Double prev,Void param) {
 			
 			Double tp = prev;
 			Double tn = 0D;
@@ -36,9 +36,8 @@ public abstract class ClassifierModel<X> {
 			
 			return new ConfusionMatrix2D(tp,tn,fp,fn);
 		}
-
-		
 	}
+	
 	
 	
 	public static class Kumaraswamy extends ClassifierModel<Double> {
@@ -48,26 +47,152 @@ public abstract class ClassifierModel<X> {
 		Double aNeg;
 		Double bNeg;
 		
+		Function<Double,Double> pdfGivenPositive;
+		Function<Double,Double> pdfGivenNegative;
+		Function<Double,Double> cdfGivenPositive;
+		Function<Double,Double> cdfGivenNegative;
 		
+		String name;
 		
-		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, Double prevalence) {
-			super(prevalence);
-			if (!(modePos > 0 && modePos < 1 &&
-					modeNeg > 0 && modeNeg < 1 &&
-					spreadPos > 0 && 
-					spreadNeg > 0 && 
-					modePos > modeNeg)) throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
-			aPos = KumaraswamyCDF.a(spreadPos, modePos);
-			bPos = KumaraswamyCDF.b(spreadPos, modePos);
-			aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
-			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
+		public Kumaraswamy(ClassifierConfig config) {
+			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), config.toString());
 		}
 		
-		public Tuple<Double,Double> bestCutoff(Function<ConfusionMatrix2D,Double> feature) {
+		/**
+		 * 
+		 * @param divergence between 0 and 1.
+		 * @param name
+		 */
+		public Kumaraswamy(Double divergence, String name) {
+			this(
+					modeFromDivergenceSkew(false).apply(divergence, 0D),
+					spreadFromDivergenceSkew(false).apply(divergence, 0D),
+					modeFromDivergenceSkew(true).apply(divergence, 0D),
+					spreadFromDivergenceSkew(true).apply(divergence, 0D),
+					name
+			); 
+			
+		}
+		
+		static BiFunction<Double,Double,Double> modeFromDivergenceSkew(boolean left) {
+			return (div, skew) -> {
+				Double midpoint = 0.5 + skew/2;
+				// tranforms y = ax+b  -- a=skew, b=0.5
+				return midpoint + (left ? 0-midpoint : 1-midpoint) * div/2;
+			};
+		}
+		
+		static BiFunction<Double,Double,Double> spreadFromDivergenceSkew(boolean left) {
+			return (div, skew) -> {
+				Double midpoint = 0.5 + skew/2;
+				return (left ? midpoint : 1-midpoint) * (1-div)/2;
+			};
+		}
+		
+		/**
+		 * 
+		 * @param divergence between 0 and 1.
+		 * @param skew between -1 and 1.
+		 * @param name
+		 */
+		public Kumaraswamy(Double divergence, Double skew, String name) {
+			this(
+					modeFromDivergenceSkew(false).apply(divergence, skew),
+					spreadFromDivergenceSkew(false).apply(divergence, skew),
+					modeFromDivergenceSkew(true).apply(divergence, skew),
+					spreadFromDivergenceSkew(true).apply(divergence, skew),
+					name
+			); 
+			
+		}
+		
+		public Kumaraswamy(Double divergence, Double skew) {
+			this(
+					modeFromDivergenceSkew(false).apply(divergence, skew),
+					spreadFromDivergenceSkew(false).apply(divergence, skew),
+					modeFromDivergenceSkew(true).apply(divergence, skew),
+					spreadFromDivergenceSkew(true).apply(divergence, skew),
+					""
+			); 
+			
+		}
+		
+		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, String name) {
+			
+			if (!(modePos > 0 && modePos < 1 &&
+					modeNeg > 0 && modeNeg < 1 &&
+					spreadPos > 0 && spreadPos < 0.5 &&
+					spreadNeg > 0 && spreadNeg < 0.5 &&  
+					modePos >= modeNeg)) 
+				throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
+			
+			
+			aPos = KumaraswamyCDF.a(spreadPos, modePos);
+			bPos = KumaraswamyCDF.b(spreadPos, modePos);
+			pdfGivenPositive = KumaraswamyCDF.pdf(aPos, bPos);
+			cdfGivenPositive = KumaraswamyCDF.cdf(aPos, bPos);
+			
+			aNeg = KumaraswamyCDF.a(spreadNeg, 1-modeNeg);
+			bNeg = KumaraswamyCDF.b(spreadNeg, 1-modeNeg);
+			pdfGivenNegative = x -> KumaraswamyCDF.pdf(aNeg, bNeg).apply(1-x);
+			cdfGivenNegative = x -> 1-KumaraswamyCDF.cdf(aNeg, bNeg).apply(1-x);
+			
+			/*aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
+			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
+			pdfGivenNegative = KumaraswamyCDF.pdf(aNeg, bNeg);
+			cdfGivenNegative = KumaraswamyCDF.cdf(aNeg, bNeg);*/
+			
+			this.name = name;
+			
+		}
+		
+		public void plot(Figure fig) {
+			fig.withNewChart(name+" pdf", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("x")
+			.withYLabel("density")
+			.withYScale(0F, 10F)
+			.done()
+			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+			.bind(X, t -> t)
+			.bind(Y, pdfGivenPositive,"pos pdf")
+			.bind(Y, pdfGivenNegative,"neg pdf")
+			.done().render();
+			//.bind(Y, t -> prev*pdfGivenPositive.apply(t)+prev*pdfGivenNegative.apply(t),"joint pdf")
+			
+			fig.withNewChart(name+" cdf", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("x")
+			.withYLabel("cumulative")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+			.bind(X, t -> t)
+			.bind(Y, cdfGivenPositive,"pos cdf")
+			.bind(Y, cdfGivenNegative,"neg cdf")
+			//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
+			.done().render();
+		
+			fig.withNewChart(name+" roc", ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("1-sens")
+			.withYLabel("spec")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+			.bind(X, t -> 1-matrix(0.5,t).sensitivity())
+			.bind(Y, t -> matrix(0.5,t).specificity())
+			.done()
+			.render();
+	
+			
+		}
+		
+		public Tuple<Double,Double> bestCutoff(Double prev,Function<ConfusionMatrix2D,Double> feature) {
 			Double value = Double.MIN_VALUE;
 			Double bestCutoff = Double.NaN;
-			for (Double d=0D; d<1.0D;d += 0.001) {
-				ConfusionMatrix2D tmp = matrix(d);
+			for (Double d=0D; d<=1.0D;d += 0.001) {
+				ConfusionMatrix2D tmp = matrix(prev,d);
 				if (feature.apply(tmp) > value) {
 					value = feature.apply(tmp);
 					bestCutoff = d;
@@ -76,15 +201,16 @@ public abstract class ClassifierModel<X> {
 			return Tuple.create(bestCutoff,value);
 		}
 		
-		public boolean screeningBeneficial(CostModel model, Double prevalence) {
-			Double best = bestCutoff(mat -> mat.relativeValue(model, prevalence)).getFirst();
-			return !Precision.equals(best, 0.0D) && !Precision.equals(best, 1.0D);
+		public double screeningBeneficial(CostModel model, Double prev) {
+			Tuple<Double,Double> tmp = bestCutoff(prev, mat -> mat.normalisedValue(model));
+			if (Precision.equals(tmp.getFirst(), 0.0D) || Precision.equals(tmp.getFirst(), 1.0D)) return Double.NaN;
+			return tmp.getValue();
 		}
 		
-		public ConfusionMatrix2D matrix(Double cutoff) {
+		public ConfusionMatrix2D matrix(Double prev,Double cutoff) {
 			
-			Double cdfPos = KumaraswamyCDF.cdf(aPos,bPos).apply(cutoff);
-			Double cdfNeg = KumaraswamyCDF.cdf(aNeg,bNeg).apply(cutoff);
+			Double cdfPos = cdfGivenPositive.apply(cutoff);
+			Double cdfNeg = cdfGivenNegative.apply(cutoff);
 			
 			Double eTp = prev*(1-cdfPos);
 			Double eTn = (1-prev)*cdfNeg;
@@ -96,19 +222,53 @@ public abstract class ClassifierModel<X> {
 			return new ConfusionMatrix2D(eTp,eTn,eFp,eFn);
 		}
 		
+		public Double AUROC() {
+			return 
+			SeriesBuilder.range(0.0, 1.0, 1000)
+				.map(c -> matrix(0.5,c))
+				.map(m -> Tuple.create(m.sensitivity(), m.specificity()))
+				.collect(TrapeziodIntegrator.integrator());
+		}
 		
+		public Double KLDivergence() {
+			Function<Double,Double> p = pdfGivenPositive;
+			Function<Double,Double> q = pdfGivenNegative;
+			Double dpq = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,
+								Precision.equals(p.apply(x),0D) ? 0 : p.apply(x)*Math.log(p.apply(x)/q.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			Double dqp = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,
+								Precision.equals(q.apply(x),0D) ? 0 : q.apply(x)*Math.log(q.apply(x)/p.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			return dpq+dqp;		
+		}
+		
+		
+		public Double LambdaDivergence(Double prev) {
+			Function<Double,Double> p = pdfGivenPositive;
+			Function<Double,Double> q = pdfGivenNegative;
+			Function<Double,Double> j = x -> prev*pdfGivenPositive.apply(x) + (1-prev)*pdfGivenNegative.apply(x);
+			Double dpq = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,
+								Precision.equals(p.apply(x),0D) ? 0 : p.apply(x)*Math.log(p.apply(x)/j.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			Double dqp = 
+					SeriesBuilder.range(0.0, 1.0, 1000)
+						.map(x -> Tuple.create(x,
+								Precision.equals(q.apply(x),0D) ? 0 : q.apply(x)*Math.log(q.apply(x)/j.apply(x))))
+						.collect(TrapeziodIntegrator.integrator());
+			return prev*dpq+(1-prev)*dqp;		
+		}
 	}
 	
 	public static class AlwaysNegative extends ClassifierModel<Void> {
 
-		AlwaysNegative(Double prevalence) {
-			super(prevalence);
-		}
-		
-		
-		
 		@Override
-		public ConfusionMatrix2D matrix(Void param) {
+		public ConfusionMatrix2D matrix(Double prev,Void param) {
 			
 			Double tp = 0D;
 			Double tn = 1-prev;
@@ -116,198 +276,6 @@ public abstract class ClassifierModel<X> {
 			Double fn = prev;
 			
 			return new ConfusionMatrix2D(tp,tn,fp,fn);
-		}
-	}
-	
-	public static class ParameterSpace {
-		public ParameterSpace(ParameterSet defaults) {
-			this.prevalence = Collections.singletonList(defaults.prevalence);
-			this.centralityIfPositive = Collections.singletonList(defaults.centralityIfPositive);
-			this.spreadIfPositive = Collections.singletonList(defaults.spreadIfPositive);
-			this.centralityIfNegative = Collections.singletonList(defaults.centralityIfNegative);
-			this.spreadIfNegative = Collections.singletonList(defaults.spreadIfNegative);
-			this.tpValue = Collections.singletonList(defaults.tpValue);
-			this.tnValue = Collections.singletonList(defaults.tnValue);
-			this.fpCost = Collections.singletonList(defaults.fpCost);
-			this.fnCost = Collections.singletonList(defaults.fnCost);
-			this.cutOff = Collections.singletonList(defaults.cutOff);
-		}
-
-
-
-		List<Double> prevalence;
-		List<Double> centralityIfPositive;
-		List<Double> spreadIfPositive;
-		List<Double> centralityIfNegative;
-		List<Double> spreadIfNegative;
-		List<Double> tpValue;
-		List<Double> tnValue;
-		List<Double> fpCost;
-		List<Double> fnCost;
-		List<Double> cutOff;
-		
-		
-		
-		public Stream<ParameterSet> stream() {
-			ParameterSet tmp = new ParameterSet();
-			return prevalence.stream().flatMap(p -> {
-				tmp.prevalence = p;
-				return centralityIfPositive.stream(); //TODO: gets consumed.
-			}).flatMap(cPos -> {
-				tmp.centralityIfPositive = cPos;
-				return spreadIfPositive.stream();
-			}).flatMap(sPos -> {
-				tmp.spreadIfPositive = sPos;
-				return centralityIfNegative.stream();
-			}).flatMap(cNeg -> {
-				tmp.centralityIfNegative = cNeg;
-				return spreadIfNegative.stream();
-			}).flatMap(sNeg -> {
-				tmp.spreadIfNegative = sNeg;
-				return tpValue.stream();
-			}).flatMap(tpVal -> {
-				tmp.tpValue = tpVal;
-				return tnValue.stream();
-			}).flatMap(tnVal -> {
-				tmp.tnValue = tnVal;
-				return fpCost.stream();
-			}).flatMap(fpC -> {
-				tmp.fpCost = fpC;
-				return fnCost.stream();
-			}).flatMap(fnC -> {
-				tmp.fnCost = fnC;
-				return cutOff.stream();
-			}).map(co -> {
-				tmp.cutOff = co;
-				return tmp.clone();
-			});
-		}
-	}
-	
-	public static interface ClassifierConfig {
-		Double centralityIfPositive(); 
-		Double spreadIfPositive();
-		Double centralityIfNegative(); 
-		Double spreadIfNegative();
-	}
-	
-	public static enum ClassifierConfigEnum implements ClassifierConfig {
-		HIGH_INFORMATION(0.8,0.1,0.2,0.1),
-		MID_INFORMATION(0.7,0.3,0.3,0.3),
-		LOW_INFORMATION(0.6,0.5,0.4,0.5),
-		;
-		
-		private ClassifierConfigEnum(Double centralityIfPositive, Double spreadIfPositive, Double centralityIfNegative,	Double spreadIfNegative) {
-			this.centralityIfPositive = centralityIfPositive;
-			this.spreadIfPositive = spreadIfPositive;
-			this.centralityIfNegative = centralityIfNegative;
-			this.spreadIfNegative = spreadIfNegative;
-		}
-		
-		Double centralityIfPositive;
-		Double spreadIfPositive;
-		Double centralityIfNegative;
-		Double spreadIfNegative;
-		
-		@Override public Double centralityIfPositive() {return centralityIfPositive;}
-		@Override public Double spreadIfPositive() {return spreadIfPositive;}
-		@Override public Double centralityIfNegative() {return centralityIfNegative;}
-		@Override public Double spreadIfNegative() {return centralityIfNegative;}
-		
-		public String toString() { return this.name().toLowerCase().replace("_", " "); }
-		
-	}
-	
-	public static interface CostModel {
-		Double tpValue(); 
-		Double tnValue();
-		Double fpCost();
-		Double fnCost();
-	}
-	
-	public static enum CostModelEnum implements CostModel {
-		EARLY_STAGE_CANCER(10.0,1.0,-0.1,-100.0),
-		CANCER_IS_UNTREATABLE(2.0,10.0,-10.0,-0.5),
-		DIABETES(4.0,0.1,-1.0,-0.1),
-		SEPSIS(10.0,0.0,0.0,-5.0),
-		EARLY_STAGE_DEMENTIA(2.0,5.0,-2.0,-1.0),
-		NON_ACCIDENTAL_INJURY(100.0,1.0,-20.0,-20.0),
-		IMMINENT_END_OF_LIFE(2.0,0.0,-1.0,-0.1),
-		ENDOSCOPY_UNINFORMATIVE(2.0,0.1,-1.0,-2.0)
-		;
-		
-		private CostModelEnum(Double tpValue, Double tnValue, Double fpCost, Double fnCost) {
-			this.tpValue = tpValue;
-			this.tnValue = tnValue;
-			this.fpCost = fpCost;
-			this.fnCost = fnCost;
-		}
-		
-		Double tpValue;
-		Double tnValue;
-		Double fpCost;
-		Double fnCost;
-		
-		@Override public Double tpValue() {return tpValue;}
-		@Override public Double tnValue() {return tnValue;}
-		@Override public Double fpCost() {return fpCost;}
-		@Override public Double fnCost() {return fpCost;}
-		
-		public String toString() { return this.name().toLowerCase().replace("_", " "); }
-		
-	}
-	
-	public static class ParameterSet {
-		public ParameterSet(Double prevalence, Double centralityIfPositive, Double spreadIfPositive,
-				Double centralityIfNegative, Double spreadIfNegative, Double tpValue, Double tnValue, Double fpCost,
-				Double fnCost, Double cutOff) {
-			this.prevalence = prevalence;
-			this.centralityIfPositive = centralityIfPositive;
-			this.spreadIfPositive = spreadIfPositive;
-			this.centralityIfNegative = centralityIfNegative;
-			this.spreadIfNegative = spreadIfNegative;
-			this.tpValue = tpValue;
-			this.tnValue = tnValue;
-			this.fpCost = fpCost;
-			this.fnCost = fnCost;
-			this.cutOff = cutOff;
-		}
-		public ParameterSet() {}
-		public ParameterSet(Double prevalence, ClassifierConfig classifier, CostModel cost, Double cutOff) {
-			this(prevalence,
-					classifier.centralityIfPositive(),
-					classifier.spreadIfPositive(),
-					classifier.centralityIfNegative(),
-					classifier.spreadIfNegative(),
-					cost.tpValue(),
-					cost.tnValue(),
-					cost.fpCost(),
-					cost.fnCost(),
-					cutOff);
-		}
-
-		Double prevalence;
-		Double centralityIfPositive;
-		Double spreadIfPositive;
-		Double centralityIfNegative;
-		Double spreadIfNegative;
-		Double tpValue;
-		Double tnValue;
-		Double fpCost;
-		Double fnCost;
-		Double cutOff;
-		
-		public ParameterSet clone() {
-			return new ParameterSet(prevalence, centralityIfPositive, spreadIfPositive, centralityIfNegative, 
-					spreadIfNegative, tpValue, tnValue, fpCost, fnCost, cutOff);
-		}
-		
-		public Kumaraswamy model() {
-			return new Kumaraswamy(centralityIfPositive, spreadIfPositive, centralityIfNegative, spreadIfNegative, prevalence);
-		}
-		
-		public ConfusionMatrix2D matrix() {
-			return model().matrix(cutOff);
 		}
 	}
 	

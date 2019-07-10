@@ -109,6 +109,16 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.8.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.25</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -172,7 +182,7 @@
 
 									<javaFromQueries>
 										<javaFromQuery>
-											<sql>SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where
+											<sql>SELECT * from omopBuild.dbo.NlpWorklist where
 												nlp_system=? ORDER BY nlp_priority, nlp_event_time</sql>
 											<targetFQN>uk.co.terminological.omop.Input</targetFQN>
 										</javaFromQuery>
