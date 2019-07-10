@@ -30,10 +30,10 @@ GO
 
 INSERT INTO #tmpDrugMap
 SELECT 
-	vmpId,
+	v.vmpId,
 	coalesce(min(concept_id_2),concept_id,0) as drug_concept_id, --Occasionally more than one mapping hence need for group by statement
 	coalesce(concept_id,0) as drug_source_concept_id,
-	domain_id
+	c.domain_id
 	-- SELECT *
 FROM [EproLive-Copy].[dbo].[t_vmps] v
 	LEFT OUTER JOIN omop.dbo.concept c ON (CONVERT(VARCHAR,v.vmpId) = c.concept_code AND c.concept_class_id = 'VMP')
@@ -90,7 +90,7 @@ SELECT DISTINCT
 FROM
 	omopBuild.dbo.StudyPopulation sp 
 		INNER JOIN omopBuild.dbo.EproLookup el on sp.groupId = el.groupId
-		INNER JOIN [dbo].t_drugs_tto C ON C.pGuid = el.pGuid
+		INNER JOIN [EproLive-Copy].[dbo].t_drugs_tto C ON C.pGuid = el.pGuid
 		LEFT OUTER JOIN  omopBuild.dbo.EproGuidMap m ON C.id = m.guid
 WHERE
 	m.guid IS NULL
@@ -110,6 +110,8 @@ BEGIN TRANSACTION T1
 	FROM omopBuild.dbo.EproGuidMap m
 	WHERE m.omopId IS NULL
 COMMIT TRANSACTION T1
+
+
 
 DROP TABLE IF EXISTS  omop.dbo.drug_exposure
 
@@ -143,11 +145,33 @@ CREATE TABLE omop.[dbo].[drug_exposure](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
+-- -------------------------
+-- rebuild
+DELETE from omop.dbo.drug_exposure
+DELETE from omop.dbo.device_exposure
 
+INSERT INTO #tmpUnmatchedIds
+SELECT DISTINCT
+	C.id as guid,
+	sp.groupId,
+	sp.dateOffset
+FROM
+	omopBuild.dbo.StudyPopulation sp 
+		INNER JOIN omopBuild.dbo.EproLookup el on sp.groupId = el.groupId
+		INNER JOIN [EproLive-Copy].[dbo].t_drugs_tto C ON C.pGuid = el.pGuid
+-- --------------------------------
+SELECT COUNT(*) FROM #tmpUnmatchedIds
+SELECT COUNT(*) FROM #tmpRouteMap
+SELECT COUNT(*) FROM #tmpDrugMap
+
+-- TODO: duplicates here that need resolving
+-- 
 
 
 INSERT INTO omop.dbo.drug_exposure
-SELECT --TOP(100)
+SELECT
+DISTINCT
+ --TOP(100)
 	e.omopId as drug_exposure_id,
 	u.groupId as person_id,
 	dm.drug_concept_id as drug_concept_id,
@@ -196,23 +220,28 @@ SELECT --TOP(100)
 	--vmp.definedDailyDoseUnits
 	-- -----------------
 	-- dischargeSummaryId, -- TODO: Can we make use of this?
+--SELECT TOP(100) * 
+-- SELECT activeStatus, COUNT(*) 
 FROM #tmpUnmatchedIds u 
 	INNER JOIN omopBuild.dbo.EproGuidMap e on u.guid = e.guid
-	INNER JOIN [dbo].t_drugs_tto C ON C.id = u.guid
-	INNER JOIN [dbo].[t_order_sentences] D ON D.orderSentenceId = C.orderSentenceId
+	INNER JOIN [EproLive-Copy].[dbo].t_drugs_tto C ON C.id = u.guid
+	INNER JOIN [EproLive-Copy].[dbo].[t_order_sentences] D ON D.orderSentenceId = C.orderSentenceId
 	INNER JOIN #tmpRouteMap rm ON rm.routeId = D.route
 	INNER JOIN #tmpDrugMap dm ON dm.vmpId = D.vmpId
 	-- INNER JOIN [dbo].[t_vmps] vmp ON dm.vmpId = vmp.vmpId
 	-- INNER JOIN [dbo].[tlu_drug_frequencies] df ON D.frequency = df.id
 WHERE
 	deleted = 0
+	AND C.versionId = C.childId -- TODO: This is an attempt to rectify duplicates. It turns out that the drugs_tto table is versioned so any correction to the discharge summary creates a new entry
+	AND activeStatus = 1
 	AND dm.domain_id = 'Drug'
-
+-- GROUP BY activeStatus
 
 
 
 INSERT INTO omop.dbo.device_exposure
 SELECT --TOP(100)
+DISTINCT
 	e.omopId as device_exposure_id,
 	u.groupId as person_id,
 	dm.drug_concept_id as device_concept_id,
@@ -230,12 +259,14 @@ SELECT --TOP(100)
 	dm.drug_source_concept_id as device_source_concept_id
 FROM #tmpUnmatchedIds u 
 	INNER JOIN omopBuild.dbo.EproGuidMap e on u.guid = e.guid
-	INNER JOIN [dbo].t_drugs_tto C ON C.id = u.guid
-	INNER JOIN [dbo].[t_order_sentences] D ON D.orderSentenceId = C.orderSentenceId
+	INNER JOIN [EproLive-Copy].[dbo].t_drugs_tto C ON C.id = u.guid
+	INNER JOIN [EproLive-Copy].[dbo].[t_order_sentences] D ON D.orderSentenceId = C.orderSentenceId
 	INNER JOIN #tmpRouteMap rm ON rm.routeId = D.route
 	INNER JOIN #tmpDrugMap dm ON dm.vmpId = D.vmpId
 	-- INNER JOIN [dbo].[t_vmps] vmp ON dm.vmpId = vmp.vmpId
 	-- INNER JOIN [dbo].[tlu_drug_frequencies] df ON D.frequency = df.id
 WHERE
 	deleted = 0
+	AND activeStatus = 1
+	AND C.versionId = C.childId -- TODO: This is an attempt to rectify duplicates. It turns out that the drugs_tto table is versioned so any correction to the discharge summary creates a new entry
 	AND dm.domain_id = 'Device'

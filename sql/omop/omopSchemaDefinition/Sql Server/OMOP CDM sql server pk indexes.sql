@@ -49,7 +49,7 @@ Primary key constraints
 *************************
 ************************/
 
-
+USE omop;
 
 
 
@@ -76,7 +76,8 @@ ALTER TABLE observation_period ADD CONSTRAINT xpk_observation_period PRIMARY KEY
 
 ALTER TABLE specimen ADD CONSTRAINT xpk_specimen PRIMARY KEY NONCLUSTERED ( specimen_id ) ;
 
-ALTER TABLE death ADD CONSTRAINT xpk_death PRIMARY KEY NONCLUSTERED ( person_id ) ;
+-- ALTER TABLE death ADD CONSTRAINT xpk_death PRIMARY KEY NONCLUSTERED ( person_id ) ;
+-- RJC: not in v6
 
 ALTER TABLE visit_occurrence ADD CONSTRAINT xpk_visit_occurrence PRIMARY KEY NONCLUSTERED ( visit_occurrence_id ) ;
 
@@ -95,6 +96,8 @@ ALTER TABLE measurement ADD CONSTRAINT xpk_measurement PRIMARY KEY NONCLUSTERED 
 ALTER TABLE note ADD CONSTRAINT xpk_note PRIMARY KEY NONCLUSTERED ( note_id ) ;
 
 ALTER TABLE note_nlp ADD CONSTRAINT xpk_note_nlp PRIMARY KEY NONCLUSTERED ( note_nlp_id ) ;
+
+
 
 ALTER TABLE observation  ADD CONSTRAINT xpk_observation PRIMARY KEY NONCLUSTERED ( observation_id ) ;
 
@@ -217,7 +220,8 @@ CREATE CLUSTERED INDEX idx_observation_period_id ON observation_period (person_i
 CREATE CLUSTERED INDEX idx_specimen_person_id ON specimen (person_id ASC);
 CREATE INDEX idx_specimen_concept_id ON specimen (specimen_concept_id ASC);
 
-CREATE CLUSTERED INDEX idx_death_person_id ON death (person_id ASC);
+-- CREATE CLUSTERED INDEX idx_death_person_id ON death (person_id ASC); 
+-- RJC: this is a bug no death table in omop v6. Could create as a view for backward compat.
 
 CREATE CLUSTERED INDEX idx_visit_person_id ON visit_occurrence (person_id ASC);
 CREATE INDEX idx_visit_concept_id ON visit_occurrence (visit_concept_id ASC);
@@ -241,16 +245,33 @@ CREATE CLUSTERED INDEX idx_condition_person_id ON condition_occurrence (person_i
 CREATE INDEX idx_condition_concept_id ON condition_occurrence (condition_concept_id ASC);
 CREATE INDEX idx_condition_visit_id ON condition_occurrence (visit_occurrence_id ASC);
 
+
+
+
 CREATE CLUSTERED INDEX idx_measurement_person_id ON measurement (person_id ASC);
 CREATE INDEX idx_measurement_concept_id ON measurement (measurement_concept_id ASC);
 CREATE INDEX idx_measurement_visit_id ON measurement (visit_occurrence_id ASC);
+
+
+
 
 CREATE CLUSTERED INDEX idx_note_person_id ON note (person_id ASC);
 CREATE INDEX idx_note_concept_id ON note (note_type_concept_id ASC);
 CREATE INDEX idx_note_visit_id ON note (visit_occurrence_id ASC);
 
-CREATE CLUSTERED INDEX idx_note_nlp_note_id ON note_nlp (note_id ASC);
+-- CREATE CLUSTERED INDEX idx_note_nlp_note_id ON note_nlp (note_id ASC); 
+-- RJC: clustered index on note_nlp_id already during build process - could drop and recluster
+-- -----------------------------------
+-- -----------------------------------
+-- -----------------------------------
+
+CREATE INDEX idx_note_nlp_note_id ON note_nlp (note_id ASC);
+
 CREATE INDEX idx_note_nlp_concept_id ON note_nlp (note_nlp_concept_id ASC);
+
+-- -----------------------------------
+-- -----------------------------------
+-- -----------------------------------
 
 CREATE CLUSTERED INDEX idx_observation_person_id ON observation (person_id ASC);
 CREATE INDEX idx_observation_concept_id ON observation (observation_concept_id ASC);

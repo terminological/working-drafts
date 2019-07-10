@@ -64,7 +64,7 @@ SELECT
 FROM 
 	[omop].[dbo].[concept] c
 	LEFT JOIN [omop].[dbo].[concept_relationship] r 
-	ON c.concept_id = r.concept_id_1 AND r.relationship_id = 'Maps to'
+	ON c.concept_id = r.concept_id_1 AND r.relationship_id = 'Maps to' --TODO: this can generate duplicates.
 WHERE 
 	vocabulary_id LIKE 'OPCS4' AND
 	c.domain_id <> 'Procedure' AND
@@ -131,7 +131,7 @@ SELECT
 	adj_proc_date
 FROM 
 	( SELECT
-		omopBuild.dbo.getId(p.original_row,'tPRO') AS procedure_occurrence_id
+		omopBuild.dbo.getId(p.original_row,'tPRO') AS procedure_occurrence_id --TODO: this does not fix duplicates
 		,s.groupId as person_id
 		,omopBuild.dbo.getId(CONVERT(INT,[Encounter id]),'tENC') as visit_occurrence_id
 		,[Procedure Code] as procedure_source_value
@@ -144,19 +144,19 @@ FROM
 			p.[Procedure Date] ORDER BY original_row) as provider
 	FROM 
 		(SELECT *,
-		ROW_NUMBER() OVER(ORDER BY (SELECT NULL)) as original_row
+		ROW_NUMBER() OVER(ORDER BY (SELECT NULL)) as original_row --not unique once duplicates created by mapping omop concept to omop standard concept.
 		FROM [TriNetX].[dbo].[tblTriNetXProcedure]) p
 		INNER JOIN omopBuild.dbo.TrinetxLookup l on l.[Patient id]=p.[Patient id] COLLATE Latin1_General_CI_AS
 		INNER JOIN omopBuild.dbo.StudyPopulation s on s.groupId = l.groupId
 	) t
-	WHERE t.provider = 1
+	WHERE t.provider = 1 -- Deduplicate multiple providers
 	ORDER BY procedure_occurrence_id
 GO
 
 -- ----------------------------------------------------
 -- IMplementation note: you have to find out what is the actual procedure and 
--- what is a qualifier. We can incorporate one qualifier as a procedure "modifier"
--- laterality is seen as a procedure .
+-- what is a qualifier. We can incorporate only one qualifier as a procedure "modifier"
+-- laterality is seen as a procedure (lef sided operation).
 
 DROP TABLE IF EXISTS  #tmpProcedure2;
 
