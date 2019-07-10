@@ -1065,7 +1065,7 @@ public class Database {
 		 
 	
 		Query(Connection conn) throws SQLException {
-			pstInput = conn.prepareStatement("SELECT TOP(1) * from omopBuild.dbo.NlpWorklist where 												nlp_system=? ORDER BY nlp_priority, nlp_event_time");
+			pstInput = conn.prepareStatement("SELECT * from omopBuild.dbo.NlpWorklist where 												nlp_system=? ORDER BY nlp_priority, nlp_event_time");
 		}
 	
 	

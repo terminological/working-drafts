@@ -52,12 +52,12 @@ public class PipelineExecutor {
 					input = db.query().fromInput(p.nlpSystem());
 					if (!input.hasNext()) {
 						Thread.sleep(1000);
-						log.debug(p.nlpSystemVersion()+" idle.");
+						checkpoint("no input, idling.",log);
 					} else {
 
 						input.forEachRemaining(
 								in -> {
-									log.debug(p.nlpSystemVersion()+" processing note "+in.getNoteId());
+									checkpoint("queueing note: "+in.getNoteId(),log);
 									//System.out.println(in.getNoteText());
 									try {
 
@@ -71,11 +71,11 @@ public class PipelineExecutor {
 											db.write().writeNlpAudit(start);
 										} catch (SQLException e) {
 											//log - failed to grab the note - likely due to a clash for another system processing it.
-											log.debug(p.nlpSystem()+" ("+p.nlpSystemVersion()+") failed to lock note: "+in.getNoteId());
+											checkpoint("note is locked: "+in.getNoteId(),log);
 											return;
 										}
 
-										log.info("processing note: "+in.getNoteId());
+										checkpoint("processing note: "+in.getNoteId(),log);
 										List<NlpAudit> outcomes = new ArrayList<>();
 										try {
 											List<NoteNlp> ret = ctakes.runNote(in, mapper);
@@ -91,7 +91,7 @@ public class PipelineExecutor {
 
 										} catch (Exception e) {
 
-											log.warn(p.nlpSystem()+" ("+p.nlpSystemVersion()+") failed, note: "+in.getNoteId()+", exception: "+e.getLocalizedMessage());
+											checkpoint(p.nlpSystem()+" ("+p.nlpSystemVersion()+") failed, note: "+in.getNoteId()+", exception: "+e.getLocalizedMessage(),log);
 
 											ByteArrayOutputStream baos = new ByteArrayOutputStream();
 											PrintStream ps = new PrintStream(baos);
@@ -125,18 +125,18 @@ public class PipelineExecutor {
 										db.write().writeBatchNlpAudit(outcomes);
 									} catch (SQLException e) {
 										//Problem writing audit log
-										log.error(p.nlpSystem()+" ("+p.nlpSystemVersion()+") failed to write log for note: "+in.getNoteId()+", exception: "+e.getLocalizedMessage());
+										checkpoint(p.nlpSystem()+" ("+p.nlpSystemVersion()+") failed to write log for note: "+in.getNoteId()+", exception: "+e.getLocalizedMessage(),log);
 										throw new RuntimeException(e);
 									}
 								}
 								);
 					}
 				} catch (SQLException e1) {
-					log.error("Sql error getting new note - sleeping");
+					checkpoint("sql error getting new note - sleeping",log);
 					Thread.sleep(1000);
 				}
 			} catch (InterruptedException e1) {
-				log.warn("Main thread interrupted - shutting down");
+				checkpoint("main thread interrupted - shutting down",log);
 				System.exit(0);
 			}
 		}
@@ -146,7 +146,7 @@ public class PipelineExecutor {
 
 	private static void checkpoint(String string,Logger log) {
 		long timeTake = System.currentTimeMillis()-timestamp;
-		log.info("CHECKPOINT: "+timeTake+" ms: "+string);
+		log.warn("CHECKPOINT: "+timeTake+" ms: "+string);
 		timestamp = System.currentTimeMillis();
 	}
 
