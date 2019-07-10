@@ -7,8 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +23,7 @@ import org.junit.Test;
 import freemarker.template.TemplateException;
 import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
 import uk.co.terminological.datatypes.FluentList;
+import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
@@ -37,8 +40,10 @@ import uk.co.terminological.simplechart.aesthetics.XYZwithDiff;
 
 public class ClassifierSimulation {
 
+	NumberFormat twoDp = new DecimalFormat("#.##");
+	NumberFormat oneDp = new DecimalFormat("#.#");
 	
-	Figure figures;
+	Path path;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() {
@@ -50,13 +55,14 @@ public class ClassifierSimulation {
 		//Path dir = Paths.get(System.getProperty("user.home"),"Dropbox/costOptimisation/simulation");
 		Path dir = Paths.get(System.getProperty("user.home"),"tmp/graph");
 		Files.createDirectories(dir);
-		figures = Figure.outputTo(dir);
+		path = dir;
 	}
 
 	
 	
 	@Test
 	public void plotKumaraswarmy() {
+		Figure figures = Figure.outputTo(path);
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		//Range bRange = Range.of(2D, 5D, 4);
 		//Range modeRange = Range.of(0.1, 0.9, 3);
@@ -74,9 +80,9 @@ public class ClassifierSimulation {
 	}
 	
 	@Test
-	public void plotKumaraswarmyFeatures() {
+	public void plotKumaraswarmyFeatures() throws IOException, TemplateException {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
-		
+		Figure figures = Figure.outputTo(path);
 		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
 				Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
 		).map( c-> 
@@ -97,24 +103,7 @@ public class ClassifierSimulation {
 		.render();
 		
 		
-		data = SeriesBuilder.grid(
-					Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
-				).map( c-> 
-					Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
-				);	
 		
-		figures.withNewChart("Lambda Divergence", ChartType.XYZ_HEATMAP)
-		.config().withXScale(0F, 0.4F)
-		.withXLabel("divergence")
-		.withYLabel("skew")
-		.withYScale(-0.25F, 0.25F)
-		.done()
-		.withSeries(data).withColourScheme(ColourScheme.Set3)
-		.bind(X, t -> t.getFirst())
-		.bind(Y, t -> t.getSecond())
-		.bind(Z, t -> t.getThird().LambdaDivergence(0.01))
-		.done()
-		.render();
 		
 		data = SeriesBuilder.grid(
 				Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
@@ -135,10 +124,34 @@ public class ClassifierSimulation {
 		.done()
 		.render();
 		
+		Figure figures2 = Figure.outputTo(path).withTitle("Lambda divergence");
+		
+		Stream.of(0.01,0.05,0.1,0.25,0.5,0.75,0.9,0.95,0.99).forEach(prev -> {
+			Stream<Triple<Double,Double,Kumaraswamy>> data2 = SeriesBuilder.grid(
+					Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
+				).map( c-> 
+					Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+				);	
+		
+			figures2.withNewChart("p="+twoDp.format(prev), ChartType.XYZ_HEATMAP)
+			.config().withXScale(0F, 0.4F)
+			.withXLabel("divergence")
+			.withYLabel("skew")
+			.withYScale(-0.25F, 0.25F)
+			.done()
+			.withSeries(data2).withColourScheme(ColourScheme.Set3)
+			.bind(X, t -> t.getFirst())
+			.bind(Y, t -> t.getSecond())
+			.bind(Z, t -> t.getThird().LambdaDivergence(prev))
+			.done();
+		});
+		figures2.render(3,true);
+		
 	}
 	
 	@Test
 	public void plotPR() {
+		Figure figures = Figure.outputTo(path);
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
 			ParameterSpace space2 = new ParameterSpace(defaults);
@@ -159,36 +172,74 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotClassifierValue() {
-		Double prev = 0.2D;
+		Figure figures = Figure.outputTo(path).withTitle("Max value");
+		
 		Stream.of(CostModelEnum.values()).forEach( cm-> {
-			
-			
-			
-			Stream<Coordinate> data = SeriesBuilder.grid(
-					Range.of(0D, 0.4D, 0.005D),
-					Range.of(-0.25D, 0.25D, 0.005D));
-					
-			figures.withNewChart(cm+" max value at prev 0.1", ChartType.XYZ_HEATMAP)
-			.config().withXScale(0F, 0.4F)
-			.withXLabel("divergence")
-			.withYLabel("skew")
-			.withYScale(-0.25F, 0.25F)
-			.withScale(FILL,-1D, 1D)
-			.done()
-			.withSeries(data).withColourScheme(ColourScheme.Set3)
-			.bind(X, t -> t.getFirst())
-			.bind(Y, t -> t.getSecond())
-			.bind(Z, t -> new Kumaraswamy(t.getFirst(),t.getSecond()).screeningBeneficial(cm, prev) ? 1:-1) //.bestCutoff(prev, 
-					//matrix -> matrix.relativeValue(cm,prev)
-					//).getValue())
-			.done()
-			.render();
-			
+			Stream.of(0.01,0.1D,0.2,0.5).forEach(prev -> {		
+				Stream<Coordinate> data = SeriesBuilder.grid(
+						Range.of(0D, 0.4D, 0.005D),
+						Range.of(-0.25D, 0.25D, 0.005D));
+						
+				figures.withNewChart(cm.nickname()+" p="+prev, ChartType.XYZ_HEATMAP)
+				.config().withXScale(0F, 0.4F)
+				.withXLabel("divergence")
+				.withYLabel("skew")
+				.withYScale(-0.25F, 0.25F)
+				.withScale(Z,-1D, 1D)
+				.done()
+				.withSeries(data).withColourScheme(ColourScheme.RedWhiteGreen)
+				.bind(X, t -> t.getFirst())
+				.bind(Y, t -> t.getSecond())
+				.bind(Z, t -> new Kumaraswamy(t.getFirst(),t.getSecond()).screeningBeneficial(cm, prev))
+						//.bestCutoff(prev, m -> m.normalisedValue(cm)).getSecond()) //.bestCutoff(prev, 
+						//matrix -> matrix.relativeValue(cm,prev)
+						//).getValue())
+				.done();
+				
+				
+			});
 		});
+		figures.render(4,true);
+	}
+	
+	@Test
+	public void plotFBeta() {
+		Figure figures = Figure.outputTo(path).withTitle("F Beta scores");
+		
+		Stream.of(CostModelEnum.values()).forEach( cm-> {
+					
+				
+				ClassifierConfig c = ClassifierConfigEnum.MID_INFORMATION;
+			
+				Stream<Double> data = SeriesBuilder.range(
+						Range.of(0.01, 0.99, 0.01)); //prev
+						
+				
+				Kumaraswamy model = new Kumaraswamy(c);
+				
+				Series<Double> series = figures.withNewChart(cm.nickname(), ChartType.XY_MULTI_LINE)
+				.config()//.withXScale(0F, 1F)
+				.withXLabel("max value")
+				.withYLabel("f score")
+				//.withYScale(-5F, 5F)
+				.done()
+				.withSeries(data)//.withColourScheme(ColourScheme.RedWhiteGreen)
+				.bind(X, t -> model.screeningBeneficial(cm, t));
+				
+				for (Double beta: Range.of(-5D, 5D, 11)) {
+					series.bind(Y, t -> model.matrix(t, 0.5).fScore(Math.pow(2, beta)), ""+beta);
+				}
+				
+				series.done().render();
+				
+			// });
+		});
+		//figures.render(3,true);
 	}
 	
 	@Test
 	public void plotValue() {
+		Figure figures = Figure.outputTo(path);
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
 			//	CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
@@ -202,6 +253,7 @@ public class ClassifierSimulation {
 					.withYLabel("prevalence")
 					.withLabel(Z, "value")
 					.withYScale(0F, 1F)
+					.withScale(Z,-1F, 1F)
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.RedWhiteGreen)
 					.bind(X, t -> t.cutOff)
@@ -219,20 +271,26 @@ public class ClassifierSimulation {
 	
 	
 	@Test
-	public void plotRealValue() {
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			Stream.of(CostModelEnum.values()).forEach( cm-> {
-			//	CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
+	public void plotRealValue() throws IOException, TemplateException {
+		Figure figures = Figure.outputTo(path).withTitle("Real value");
+		/*Stream.of(CostModelEnum.EARLY_STAGE_CANCER, 
+				CostModelEnum.DIABETES,
+				CostModelEnum.ENDOSCOPY_UNINFORMATIVE
+				).forEach( cm-> {*/
+		Stream.of(CostModelEnum.values()).forEach( cm-> {
+			Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
 			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 			ParameterSpace space = new ParameterSpace(defaults);
 			space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-			figures.withNewChart(c+" "+cm+" abs value", ChartType.XYZ_HEATMAP)
+			figures.withNewChart(c.nickname()+":"+cm.nickname(), ChartType.XYZ_HEATMAP)
 					.config().withXScale(0F, 1F)
 					.withXLabel("cutoff")
 					.withYLabel("prevalence")
 					.withLabel(Z, "value")
 					.withYScale(0F, 1F)
+					.withScale(Z,-1F, 1F)
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.RedWhiteGreen)
 					.bind(X, t -> t.cutOff)
@@ -242,48 +300,68 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().fn,"fn")
 					.bind(Z, t -> t.matrix().normalisedValue(cm))
 					.bind(Y, t -> t.prevalence,"prevalence")
-					.done()
-					.render();
+					.done();
 				});
 		});
+		figures.render(3,true);
 	}
 	
 	/**
 	 * N.B. accuracy is independent of condition
+	 * @throws TemplateException 
+	 * @throws IOException 
 	 */
 	@Test
-	public void plotAccuracy() {
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			//ClassifierConfigEnum c = ClassifierConfigEnum.MID_INFORMATION;
-			//Stream.of(CostModelEnum.values()).forEach( cm-> {
-			CostModelEnum cm = CostModelEnum.DIABETES;
-				ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
-				ParameterSpace space = new ParameterSpace(defaults);
-				space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
-				space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-				figures.withNewChart(c+" accuracy", ChartType.XYZ_HEATMAP)
-						.config().withXScale(0F, 1F)
-						.withXLabel("cutoff")
-						.withYLabel("prevalence")
-						.withLabel(Z, "accuracy")
-						.withYScale(0F, 1F)
-						.done()
-						.withSeries(space.stream()).withColourScheme(ColourScheme.Blues)
-						.bind(X, t -> t.cutOff)
-						//.bind(Y, t -> t.matrix().tp,"tp")
-						//.bind(Y, t -> t.matrix().tn,"tn")
-						//.bind(Y, t -> t.matrix().fp,"fp")
-						//.bind(Y, t -> t.matrix().fn,"fn")
-						.bind(Z, t -> t.matrix().accuracy())
-						.bind(Y, t -> t.prevalence,"prevalence")
-						.done()
-						.render();
-			//});
+	public void plotAccuracy() throws IOException, TemplateException {
+		
+		FluentMap<String,Function<ConfusionMatrix2D,Double>> tmp = new FluentMap<>();
+		tmp
+			.and("accuracy", conf -> conf.accuracy())
+			.and("f1 score", conf -> conf.f1Score())
+			.and("mcc",m -> m.matthewsCorrelationCoefficient());
+		
+		AtomicInteger i = new AtomicInteger(1);
+		tmp.forEach((k,fn) -> {		
+				
+			Figure figures = Figure.outputTo(path).withTitle(k);
+			ColourScheme cs = ColourScheme.sequential3(i.get()).contrast(0.5F);
+			SeriesBuilder.range(0D, 0.4D, 3).forEach( divergence -> {
+				SeriesBuilder.range(-0.2D, 0.2D, 3).forEach( skew -> {
+					// ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
+					// ParameterSpace space = new ParameterSpace(defaults);
+					Kumaraswamy model = new Kumaraswamy(divergence, skew);
+					
+					Stream<Coordinate> cutOffVPrevalence = SeriesBuilder.grid(
+							Range.of(0.0, 1.0, 100),
+							Range.of(0.0, 1.0, 100));
+					figures.withNewChart("d="+oneDp.format(divergence)+" s="+oneDp.format(skew)+" AUC:"+twoDp.format(model.AUROC()), ChartType.XYZ_HEATMAP)
+							.config().withXScale(0F, 1F)
+							.withXLabel("cutoff")
+							.withYLabel("prevalence")
+							.withLabel(Z, k)
+							.withYScale(0F, 1F)
+							.withScale(Z, 0, 1)
+							.done()
+							.withSeries(cutOffVPrevalence).withColourScheme(cs)
+							.bind(X, t -> t.getFirst())
+							//.bind(Y, t -> t.matrix().tp,"tp")
+							//.bind(Y, t -> t.matrix().tn,"tn")
+							//.bind(Y, t -> t.matrix().fp,"fp")
+							//.bind(Y, t -> t.matrix().fn,"fn")
+							
+							.bind(Y, t -> t.getSecond(),"prevalence")
+							.bind(Z, t -> fn.apply(model.matrix(t.getSecond(),t.getFirst())))
+							.done();
+				});
+			});
+			figures.render(3,true);
+			i.incrementAndGet();
 		});
 	}
 	
 	@Test
 	public void plotValueVersusAccuracy() {
+		Figure figures = Figure.outputTo(path);
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
 			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
@@ -297,8 +375,9 @@ public class ClassifierSimulation {
 					.withYLabel("prevalence")
 					.withLabel(Z, "value-\\naccuracy")
 					.withYScale(0F, 1F)
+					.withScale(Z,-1F, 1F)
 					.done()
-					.withSeries(space.stream()).withColourScheme(ColourScheme.BuGn)
+					.withSeries(space.stream()).withColourScheme(ColourScheme.RedWhiteGreen)
 					.bind(X, t -> t.cutOff)
 					//.bind(Y, t -> t.matrix().tp,"tp")
 					//.bind(Y, t -> t.matrix().tn,"tn")
@@ -314,6 +393,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotBestCutoff() {
+		Figure figures = Figure.outputTo(path);
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
 			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
@@ -348,6 +428,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotValueAtBestCutoff() {
+		Figure figures = Figure.outputTo(path);
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
 			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
@@ -383,6 +464,7 @@ public class ClassifierSimulation {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void plotDebug2() {
+		Figure figures = Figure.outputTo(path);
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
 				ParameterSet defaults = new ParameterSet(0.1,c,cm,null);

@@ -58,18 +58,18 @@ public class Config {
 	}
 	
 	private String getScaleValue(Dimension dimension, boolean min) {
-		if (!scales.containsKey(Dimension.X)) return null;
+		if (!scales.containsKey(dimension)) return null;
 		if (min) {
-			return Double.toString(scales.get(Dimension.X).getFirst());
+			return Double.toString(scales.get(dimension).getFirst());
 		} else {
-			return Double.toString(scales.get(Dimension.X).getSecond());
+			return Double.toString(scales.get(dimension).getSecond());
 		}
 	}
 	
 	public String getXmin() {return getScaleValue(Dimension.X,true);}
-	public String getYmin() {return getScaleValue(Dimension.X,true);}
+	public String getYmin() {return getScaleValue(Dimension.Y,true);}
 	public String getXmax() {return getScaleValue(Dimension.X,false);}
-	public String getYmax() {return getScaleValue(Dimension.X,false);}
+	public String getYmax() {return getScaleValue(Dimension.Y,false);}
 	
 	public String getXScale() {
 		if (!scales.containsKey(Dimension.X)) return null;
@@ -177,5 +177,13 @@ public class Config {
 			return kv.getKey().name().toLowerCase()+"="+
 					"\""+kv.getValue()+"\"";
 		}).collect(Collectors.toList());
+	}
+
+	public String getMin(Dimension z) {
+		return this.getScaleValue(z, true);
+	}
+	
+	public String getMax(Dimension z) {
+		return this.getScaleValue(z, false);
 	}
 }

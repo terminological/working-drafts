@@ -7,12 +7,17 @@ import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.apache.commons.lang.NotImplementedException;
 
+import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import uk.co.terminological.datatypes.Triple;
 import uk.co.terminological.simplechart.Chart.Dimension;
@@ -96,14 +101,26 @@ public abstract class GgplotWriter extends Writer {
 		//TODO: how to control this?
 		//TODO: colour schemes?
 		getRoot().put("schemeName", getChart().getSeries().stream().map(s -> s.getScheme().getName()).findFirst().orElse("Set1"));
+		getRoot().put("includePlotTitles", true);
 		
 		File outFile = getChart().getFile("png");
-		getRoot().put("output", outFile.getAbsolutePath());
+		//getRoot()
+		Map<String,Object> wrapperRoot = new HashMap<>();
+		wrapperRoot.put("output", outFile.getAbsolutePath());
+		
+		Template wrapper = this.getChart().getFigure().getTemplate("ggplotSingleplot.ftl");
 		
 		File f = getChart().getFile("R");
-		PrintWriter out = new PrintWriter(new FileWriter(f));
+		PrintWriter fileOut = new PrintWriter(new FileWriter(f));
+		
+		StringBuilderWriter out = new StringBuilderWriter();
 		getTemplate().get().process(getRoot(), out);
 		out.close();
+		wrapperRoot.put("plot", out.toString());
+		wrapperRoot.put("title", getChart().getConfig().getTitle());
+		wrapper.process(wrapperRoot, fileOut);
+		fileOut.close();
+		
 		Chart.log.info("Starting R...");
 		
 		Process process2 = new ProcessBuilder("/usr/bin/R","-f",f.getAbsolutePath())
@@ -122,6 +139,19 @@ public abstract class GgplotWriter extends Writer {
 		return outFile.toPath();
 	}
 	
+	@Override
+	protected String processForMultiplot(boolean includePlotTitles) throws IOException, TemplateException {
+		
+		getRoot().put("plots", getPlots());
+		getRoot().put("includePlotTitles", includePlotTitles);
+		getRoot().put("schemeName", getChart().getSeries().stream().map(s -> s.getScheme().getName()).findFirst().orElse("Set1"));
+		
+		StringBuilderWriter out = new StringBuilderWriter();
+		getTemplate().get().process(getRoot(), out);
+		out.close();
+		return out.toString();
+	}
+	
 	public static class BarChart extends GgplotWriter {
 
 		public BarChart(Chart chart) {
@@ -134,6 +164,8 @@ public abstract class GgplotWriter extends Writer {
 					"geom_bar(stat='identity', aes(x=X, y=Y))"					
 					);
 		}
+
+		
 		
 	}
 	
@@ -148,7 +180,7 @@ public abstract class GgplotWriter extends Writer {
 		public List<String> getPlots() {
 			return Arrays.asList(
 					"geom_point(stat='identity', aes(x=X, y=Y))",
-					"geom_smooth(aes(x=X, y=Y))"
+					"geom_smooth(aes(x=X, y=Y), method = 'glm'"
 					);
 		}
 	}
@@ -213,12 +245,20 @@ public abstract class GgplotWriter extends Writer {
 
 		@Override
 		public List<String> getPlots() {
+			if (this.getChart().getConfig().scales.containsKey(Dimension.Z)) {
+				this.getChart().getConfig().scales.put(Dimension.FILL, 
+					this.getChart().getConfig().scales.get(Dimension.Z)
+					);
+			}
+			this.getChart().getConfig().scales.remove(Dimension.Z);
 			return Arrays.asList(
 					"geom_tile(stat='identity', aes(x=X, y=Y, fill=Z))",
 					"stat_contour(aes(x=X, y=Y, z=Z), colour='black')",
 					//"scale_fill_distiller(name=\""+this.getChart().getConfig().getLabel(Dimension.Z)+"\",palette=schemeName)"
 					this.getChart().getSeries().get(0).getScheme().getGGplotFillContinuous(
-							this.getChart().getConfig().getLabel(Dimension.Z)
+							this.getChart().getConfig().getLabel(Dimension.Z),
+							this.getChart().getConfig().getMin(Dimension.FILL),
+							this.getChart().getConfig().getMax(Dimension.FILL)
 						)
 					);
 		}

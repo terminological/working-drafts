@@ -1,17 +1,27 @@
 package uk.co.terminological.simplechart;
 
+import java.awt.Desktop;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.NotImplementedException;
 
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapperBuilder;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 /**
@@ -27,6 +37,7 @@ public class Figure {
 	String title;
 	String filename;
 	Configuration cfg;
+	
 
 	public String getTitle() {return title;}
 	public int getCharts() {return charts.size();}
@@ -49,8 +60,8 @@ public class Figure {
 		cfg.setDefaultEncoding("UTF-8");
 		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.DEBUG_HANDLER);
 		cfg.setClassForTemplateLoading(Figure.class, "/gnuplot");
-		this.title = title;
-		filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
+		this.withTitle(title);
+		
 	}
 
 	public Figure withTemplateClass(Class<?> base) {
@@ -105,9 +116,51 @@ public class Figure {
 		return out;
 	}*/
 
-	public void render() {
-		throw new NotImplementedException("Will render the mulitplot");
+	public void render(Integer cols, boolean includePlotTitles) {
+		try {
+		Template wrapper = this.getTemplate("ggplotMultiplot.ftl");
+		List<String> tmp = new ArrayList<>();
+		
+		this.charts.forEach(c -> tmp.add(c.renderForMultiplot(includePlotTitles)));
+		
+		File outFile = getFile("png");
+		PrintWriter pw = new PrintWriter(new FileWriter(getFile("R")));
+		//getRoot()
+		Map<String,Object> wrapperRoot = new HashMap<>();
+		wrapperRoot.put("output", outFile.getAbsolutePath());
+		wrapperRoot.put("plots", tmp);
+		wrapperRoot.put("title", this.getTitle());
+		wrapperRoot.put("cols", cols);
+		wrapperRoot.put("includePlotTitles", includePlotTitles);
+		wrapper.process(wrapperRoot, pw);
+		pw.close();
+		
+		Chart.log.info("Starting R...");
+		
+		Process process2 = new ProcessBuilder("/usr/bin/R","-f",getFile("R").getAbsolutePath())
+		.redirectOutput(Redirect.INHERIT)
+		.start();
+		
+		IOUtils.copy(process2.getErrorStream(),System.out);
+		
+		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+			Path h = this.getFile("html").toPath();
+			if (!h.equals(outFile.toPath())) {
+				BufferedWriter w = Files.newBufferedWriter(h);
+				w.write("<html><head></head><body><img src='"+h.getParent().relativize(outFile.toPath()).toString()+"'></body></html>");
+				w.close();
+			}
+		    Desktop.getDesktop().browse(h.toUri());
+		}
+		
+		} catch (Exception e) { 
+			throw new RuntimeException(e);
+		}
+
 	}
+	
+	
+	public File getFile(String extension) {return new File(workingDirectory,filename+"."+extension);}
 	
 	public static class Data extends Figure {
 
@@ -136,6 +189,11 @@ public class Figure {
 
 	public static Figure outputTo(Path path) {
 		return outputTo(path.toFile());
+	}
+	public Figure withTitle(String string) {
+		this.title = string;
+		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
+		return this;
 	}
 
 }

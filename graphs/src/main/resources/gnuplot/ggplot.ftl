@@ -1,17 +1,10 @@
-#!/usr/bin/R
-
-# library(tidyverse);
-library(cowplot);
 
 ${data}
 
-schemeName <- "${schemeName}";
-
 plot <- ggplot(df)+
+lims(<#list config.getGGplotLimits() as scale>${scale}<#sep>, </#sep></#list>)+
 <#list plots as plot>
 ${plot}+
 </#list>
-lims(<#list config.getGGplotLimits() as scale>${scale}<#sep>, </#sep></#list>)+
-labs(title="${config.getTitle()}"<#list config.getGGplotLabels() as label>, ${label}</#list>);
-
-save_plot("${output}", plot);
+labs(<#list config.getGGplotLabels() as label>${label}<#sep>, </#sep></#list>)<#if includePlotTitles>+
+ggtitle("${config.getTitle()}")</#if>;

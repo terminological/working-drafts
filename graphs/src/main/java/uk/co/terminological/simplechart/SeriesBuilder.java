@@ -36,6 +36,33 @@ public class SeriesBuilder<X> {
 		return this;
 	}
 	
+	public static Iterable<Double> iterable(Range range) {
+				
+		return new Iterable<Double>() {
+			
+			@Override
+			public Iterator<Double> iterator() {
+				return new Iterator<Double>() {
+
+					Double value = range.getFirst();
+					@Override
+					public boolean hasNext() {
+						return value<range.getSecond();
+					}
+
+					@Override
+					public Double next() {
+						Double out = value;
+						value = value + range.getThird();
+						return out;
+					}
+					
+				};
+			}
+			
+		};
+	}
+	
 	public Stream<X> build() {
 		return Stream.iterate(start, whileTrue, next);
 	}
@@ -96,7 +123,7 @@ public class SeriesBuilder<X> {
 		return out;
 	}
 	
-	public static class Range extends Triple<Double,Double,Double> {
+	public static class Range extends Triple<Double,Double,Double> implements Iterable<Double> {
 
 		private Range(Double item1, Double item2, Double item3) {
 			super(item1, item2, item3);
@@ -113,7 +140,20 @@ public class SeriesBuilder<X> {
 		public static Range of(Double from, Double to, Integer values) {
 			return of(from,to,values.longValue());
 		}
+		
+		public Stream<Double> stream() {
+			return SeriesBuilder.range(this);
+		}
+
+		@Override
+		public Iterator<Double> iterator() {
+			return SeriesBuilder.iterable(this).iterator();
+		}
+		
+		
 	}
+
+	
 	
 	
 }

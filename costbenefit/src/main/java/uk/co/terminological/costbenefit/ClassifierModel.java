@@ -201,9 +201,10 @@ public abstract class ClassifierModel<X> {
 			return Tuple.create(bestCutoff,value);
 		}
 		
-		public boolean screeningBeneficial(CostModel model, Double prev) {
-			Double best = bestCutoff(prev, mat -> mat.relativeValue(model, prev)).getFirst();
-			return !Precision.equals(best, 0.0D) && !Precision.equals(best, 1.0D);
+		public double screeningBeneficial(CostModel model, Double prev) {
+			Tuple<Double,Double> tmp = bestCutoff(prev, mat -> mat.normalisedValue(model));
+			if (Precision.equals(tmp.getFirst(), 0.0D) || Precision.equals(tmp.getFirst(), 1.0D)) return Double.NaN;
+			return tmp.getValue();
 		}
 		
 		public ConfusionMatrix2D matrix(Double prev,Double cutoff) {
