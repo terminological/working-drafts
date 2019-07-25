@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -46,37 +47,54 @@ public abstract class GgplotWriter2 extends Writer {
 		
 		StringBuilder dfConstruct = new StringBuilder();
 		StringBuilder vector = new StringBuilder();
+		StringBuilder nameVec = new StringBuilder("name <- c(");
 		
-		int size = series.getData().size();
+		Set<String> names = series.getBindings().stream().map(t -> t.value()).collect(Collectors.toSet());
+		Set<Dimension> dimensions = series.getBindings().stream().map(t -> t.entity()).collect(Collectors.toSet());
+		
+		int size = series.getData().size() * (names.size()==0?1:names.size());
+		
 		dfConstruct.append("order <- seq(0,"+(size-1)+");\n");
 		dfConstruct.append("df <- data.frame(order");
-		
-		
-		for (Triple<Chart.Dimension,Function<X,? extends Object>,String> binding: series.getBindings()) {
-			String varName = binding.getFirst().name(); //+
-					//(binding.getThird() == "" ? "" : "_"+binding.getThird());
 			
-			//Object seriesType = series.getData().stream().map(binding.getSecond()).findFirst().get();
-			
+		dimensions.stream().forEach(dim -> {
+			String varName = dim.name();
 			vector.append("tmp_"+varName+" <- c(");
+			names.stream().sorted().forEach(name -> {
 			
-			vector.append(
-					series.getData().stream().map(binding.getSecond())
-						.map(GgplotWriter2::format)
-						.collect(Collectors.joining(", "))
-						);
-			
-			
+				series.getBindings().stream().filter(t -> t.entity().equals(dim))
+					.filter(t -> t.value() == getChart().config.getLabel(dim) || t.value().equals(name))
+					.forEach(binding -> {
+					
+						vector.append(
+								series.getData().stream().map(binding.getSecond())
+									.map(GgplotWriter2::format)
+									.collect(Collectors.joining(", "))
+									);
+					
+						
+					
+					
+					
+				});
+			});
 			vector.append(");\n");
-			
 			dfConstruct.append(",");
 			dfConstruct.append(varName+"=tmp_"+varName);
-			
-		}
+
+		});
+
+		names.stream().sorted().forEach(name -> {
+			series.getData().stream().forEach(d -> {
+				nameVec.append(nameVec.length() == 0 ? "":","+format(name));
+			});
+		});
+		nameVec.insert(0, "name <- c(");
+		nameVec.append(");");
 		
-		dfConstruct.append(",stringsAsFactors = FALSE);\n");
+		dfConstruct.append(",name,stringsAsFactors = FALSE);\n");
 		
-		return vector.toString()+"\n"+dfConstruct.toString();
+		return vector.toString()+"\n"+nameVec.toString()+"\n"+dfConstruct.toString();
 	}
 
 	//TODO: localDate support?
@@ -158,7 +176,8 @@ public abstract class GgplotWriter2 extends Writer {
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_bar(stat='identity', aes(x=X, y=Y, colour=COLOUR))"					
+					"geom_bar(stat='identity', aes(x=X, y=Y, colour=factor(NAME)))",
+					"scale_colour_brewer(palette=schemeName)"
 					);
 		}
 
@@ -179,44 +198,13 @@ public abstract class GgplotWriter2 extends Writer {
 					.anyMatch(s -> s.getBindings().stream()
 							.anyMatch(t -> t.getFirst().equals(Dimension.Y_LINE)));
 			return Arrays.asList(
-					"geom_point(stat='identity', aes(x=X, y=Y, colour=COLOUR))",
-					"geom_line(stat='identity', aes(x=X, y=Y_LINE, colour=factor(COLOUR)))",
-					"geom_smooth(aes(x=X, y=Y, colour=COLOUR), method = 'glm'"
-					);
-		}
-	}
-	
-	public static class MultiScatter extends GgplotWriter2 {
-
-		public MultiScatter(Chart chart) {
-			super(chart);
-			
-		}
-
-		@Override
-		public List<String> getPlots() {
-			return Arrays.asList(
-					"geom_point(stat='identity', aes(x=X, y=Y, colour=COLOUR))",
-					"geom_smooth(aes(x=X, y=Y, colour=COLOUR), method = 'glm'"
-					);
-		}
-	}
-	
-	public static class MultiLineChart extends GgplotWriter2 {
-
-		public MultiLineChart(Chart chart) {
-			super(chart);
-		}
-		
-		public List<String> getPlots() {
-			return Arrays.asList(
-					"geom_line(stat='identity', aes(x=X, y=Y, colour=factor(COLOUR)))",
+					"geom_point(stat='identity', aes(x=X, y=Y, colour=factor(NAME)))",
+					hasLines ? "geom_line(stat='identity', aes(x=X, y=Y_LINE, colour=factor(NAME)))" :
+					"geom_smooth(aes(x=X, y=Y, colour=factor(NAME)), method = 'glm'",
 					"scale_colour_brewer(palette=schemeName)"
-				);
+					);
 		}
 	}
-
-	
 	
 
 	
