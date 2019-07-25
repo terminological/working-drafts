@@ -92,7 +92,7 @@ public abstract class GgplotWriter2 extends Writer {
 		nameVec.insert(0, "name <- c(");
 		nameVec.append(");");
 		
-		dfConstruct.append(",name,stringsAsFactors = FALSE);\n");
+		dfConstruct.append(",NAME=name,stringsAsFactors = FALSE);\n");
 		
 		return vector.toString()+"\n"+nameVec.toString()+"\n"+dfConstruct.toString();
 	}
