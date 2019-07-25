@@ -187,6 +187,7 @@ public abstract class ClassifierModel<X> {
 					.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 					.bind(X, t -> 1-matrix(0.5,t).sensitivity())
 					.bind(Y_LINE, t -> matrix(0.5,t).specificity(),"spec")
+					.bind(Y_LINE, t -> 1-matrix(0.5,t).sensitivity(),"identity")
 					.done();
 		}
 		
