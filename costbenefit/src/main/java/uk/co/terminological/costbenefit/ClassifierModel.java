@@ -76,6 +76,7 @@ public abstract class ClassifierModel<X> {
 			
 		}
 		
+		//TODO: rethink these and check ROC curves
 		static BiFunction<Double,Double,Double> modeFromDivergenceSkew(boolean left) {
 			return (div, skew) -> {
 				Double midpoint = 0.5 + skew/2;
@@ -84,6 +85,7 @@ public abstract class ClassifierModel<X> {
 			};
 		}
 		
+		//TODO: rethink these and check ROC curves
 		static BiFunction<Double,Double,Double> spreadFromDivergenceSkew(boolean left) {
 			return (div, skew) -> {
 				Double midpoint = 0.5 + skew/2;

@@ -73,6 +73,9 @@ public class ClassifierSimulation {
 				model.plotRoc(rocs);
 			});
 		});
+		//TODO: rethink skew and divergence and check ROC curves sensible
+		//TODO: adlter classifier config enum to use spread and divergence
+		//TODO: adlter classifier config enum to use spread and divergence
 		pdfs.render(5, true);
 		cdfs.render(5, true);
 		rocs.render(5, true);
