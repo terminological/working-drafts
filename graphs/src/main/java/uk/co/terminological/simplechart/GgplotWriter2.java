@@ -59,13 +59,13 @@ public abstract class GgplotWriter2 extends Writer {
 			
 		dimensions.stream().forEach(dim -> {
 			String varName = dim.name();
-			vector.append("tmp_"+varName+" <- c(");
+			
 			names.stream().sorted().forEach(name -> {
 			
 				series.getBindings().stream().filter(t -> t.entity().equals(dim))
 					.filter(t -> t.value() == getChart().config.getLabel(dim) || t.value().equals(name))
 					.forEach(binding -> {
-					
+						if (vector.length() > 0) vector.append(", ");
 						vector.append(
 								series.getData().stream().map(binding.getSecond())
 									.map(GgplotWriter2::format)
@@ -78,6 +78,7 @@ public abstract class GgplotWriter2 extends Writer {
 					
 				});
 			});
+			vector.insert(0,"tmp_"+varName+" <- c(");
 			vector.append(");\n");
 			dfConstruct.append(",");
 			dfConstruct.append(varName+"=tmp_"+varName);
