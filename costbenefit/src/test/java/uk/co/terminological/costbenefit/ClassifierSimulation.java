@@ -394,10 +394,10 @@ public class ClassifierSimulation {
 	@Test
 	public void plotBestCutoff() {
 		Figure figures = Figure.outputTo(path).withTitle("best cutoff");
-		
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+		Stream.of(CostModelEnum.values()).forEach( cm-> {
+			Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			//ClassifierConfigEnum c = ClassifierConfigEnum.HIGH_INFORMATION;
-			Stream.of(CostModelEnum.values()).forEach( cm-> {
+			
 			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
 			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 			ParameterSpace space = new ParameterSpace(defaults);
