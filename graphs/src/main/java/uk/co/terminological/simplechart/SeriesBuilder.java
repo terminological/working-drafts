@@ -49,7 +49,7 @@ public class SeriesBuilder<X> {
 					Double value = range.getFirst();
 					@Override
 					public boolean hasNext() {
-						return value<range.getSecond();
+						return value<range.getSecond() || Precision.equals(value,range.getSecond());
 					}
 
 					@Override
