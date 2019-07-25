@@ -134,7 +134,7 @@ public class SeriesBuilder<X> {
 		}
 		
 		public static Range of(Double from, Double to, Long values) {
-			return new Range(from,to,(to-from)/values);
+			return new Range(from,to,(to-from)/(values-1));
 		}
 		
 		public static Range of(Double from, Double to, Integer values) {
