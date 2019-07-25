@@ -86,7 +86,7 @@ public abstract class GgplotWriter2 extends Writer {
 
 		names.stream().sorted().forEach(name -> {
 			series.getData().stream().forEach(d -> {
-				nameVec.append(nameVec.length() == 0 ? "":","+format(name));
+				nameVec.append((nameVec.length() == 0 ? "":",")+format(name));
 			});
 		});
 		nameVec.insert(0, "name <- c(");
