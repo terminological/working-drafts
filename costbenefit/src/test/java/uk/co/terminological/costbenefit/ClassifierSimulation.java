@@ -393,17 +393,17 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotBestCutoff() {
-		Figure figures = Figure.outputTo(path);
+		Figure figures = Figure.outputTo(path).withTitle("best cutoff");
 		
-		//Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			ClassifierConfigEnum c = ClassifierConfigEnum.HIGH_INFORMATION;
-			// Stream.of(CostModelEnum.values()).forEach( cm-> {
-			CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			//ClassifierConfigEnum c = ClassifierConfigEnum.HIGH_INFORMATION;
+			Stream.of(CostModelEnum.values()).forEach( cm-> {
+			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
 			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 			ParameterSpace space = new ParameterSpace(defaults);
 			//space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-			figures.withNewChart(c+" "+cm+" best cutoff", ChartType.XY_MULTI_LINE)
+			figures.withNewChart(c.nickname()+":"+cm.nickname(), ChartType.XY_MULTI_LINE)
 					.config().withXScale(0F, 1F)
 					.withXLabel("prevalence")
 					.withYLabel("best cutoff")
@@ -422,10 +422,11 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
-					.done()
-					.render();
-			//});
-		//});
+					.done();
+					
+			});
+		});
+		figures.render(3,true);
 	}
 	
 	@Test
