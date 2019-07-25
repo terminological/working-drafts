@@ -179,7 +179,7 @@ public abstract class GgplotWriter2 extends Writer {
 		public List<String> getPlots() {
 			return Arrays.asList(
 					"geom_bar(stat='identity', aes(x=X, y=Y, colour=factor(NAME)))",
-					"scale_colour_brewer(palette=schemeName)"
+					"scale_colour_brewer(palette=schemeName, name=NULL)"
 					);
 		}
 
@@ -203,7 +203,7 @@ public abstract class GgplotWriter2 extends Writer {
 					"geom_point(stat='identity', aes(x=X, y=Y, colour=factor(NAME)))",
 					hasLines ? "geom_line(stat='identity', aes(x=X, y=Y_LINE, colour=factor(NAME)))" :
 					"geom_smooth(aes(x=X, y=Y, colour=factor(NAME)), method = 'glm')",
-					"scale_colour_brewer(palette=schemeName)"
+					"scale_colour_brewer(palette=schemeName, name=NULL)"
 					);
 		}
 	}
