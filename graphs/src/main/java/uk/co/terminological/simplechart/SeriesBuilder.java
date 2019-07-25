@@ -10,6 +10,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.math3.util.Precision;
+
 import uk.co.terminological.datatypes.Triple;
 
 public class SeriesBuilder<X> {
@@ -80,8 +82,8 @@ public class SeriesBuilder<X> {
 	
 	public static Stream<Double> range(Double from, Double to, Double increment) {
 		return start(from).repeat(d -> d+increment).untilFalse(d -> {
-			if (increment>0) return d <= to;
-			else if (increment<0) return d >= to;
+			if (increment>0) return d < to || Precision.equals(d, to);
+			else if (increment<0) return d > to || Precision.equals(d, to);
 			else return false;
 		}).build();
 	}
