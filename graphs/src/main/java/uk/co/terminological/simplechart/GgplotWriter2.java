@@ -47,7 +47,7 @@ public abstract class GgplotWriter2 extends Writer {
 		
 		StringBuilder dfConstruct = new StringBuilder();
 		StringBuilder vectors = new StringBuilder();
-		StringBuilder nameVec = new StringBuilder("name <- c(");
+		StringBuilder nameVec = new StringBuilder();
 		
 		Set<String> names = series.getBindings().stream().map(t -> t.value()).collect(Collectors.toSet());
 		Set<Dimension> dimensions = series.getBindings().stream().map(t -> t.entity()).collect(Collectors.toSet());
