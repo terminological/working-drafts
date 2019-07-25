@@ -65,16 +65,14 @@ public abstract class GgplotWriter2 extends Writer {
 				series.getBindings().stream().filter(t -> t.entity().equals(dim))
 					.filter(t -> t.value() == getChart().config.getLabel(dim) || t.value().equals(name))
 					.forEach(binding -> {
-						if (vector.length() > 0) vector.append(", ");
+						if (vector.length() > 0) {
+							vector.append(", ");
+						}
 						vector.append(
 								series.getData().stream().map(binding.getSecond())
 									.map(GgplotWriter2::format)
 									.collect(Collectors.joining(", "))
 									);
-					
-						
-					
-					
 					
 				});
 			});
