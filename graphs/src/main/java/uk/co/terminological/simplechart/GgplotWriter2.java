@@ -200,7 +200,7 @@ public abstract class GgplotWriter2 extends Writer {
 			return Arrays.asList(
 					"geom_point(stat='identity', aes(x=X, y=Y, colour=factor(NAME)))",
 					hasLines ? "geom_line(stat='identity', aes(x=X, y=Y_LINE, colour=factor(NAME)))" :
-					"geom_smooth(aes(x=X, y=Y, colour=factor(NAME)), method = 'glm'",
+					"geom_smooth(aes(x=X, y=Y, colour=factor(NAME)), method = 'glm')",
 					"scale_colour_brewer(palette=schemeName)"
 					);
 		}
