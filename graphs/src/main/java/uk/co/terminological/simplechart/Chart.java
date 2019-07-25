@@ -103,7 +103,7 @@ public class Chart {
 	
 	public enum Dimension {
 		X,Y,Z,COLOUR,SIZE,LABEL,Y_LOW,Y_HIGH,Y_FIT,FILL,
-		ID,STRENGTH,TEXT,DX,DY,DZ
+		ID,STRENGTH,TEXT,DX,DY,DZ, Y_LINE
 	}
 	
 	public File getWorkingDirectory() {

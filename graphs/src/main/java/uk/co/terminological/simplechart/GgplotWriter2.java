@@ -24,9 +24,6 @@ import uk.co.terminological.simplechart.Chart.Dimension;
 
 public abstract class GgplotWriter2 extends Writer {
 
-	
-
-	
 	public abstract List<String> getPlots();
 	
 	public GgplotWriter2(Chart chart) {
@@ -152,16 +149,16 @@ public abstract class GgplotWriter2 extends Writer {
 		return out.toString();
 	}
 	
-	public static class BarChart extends GgplotWriter2 {
+	public static class MultiBarChart extends GgplotWriter2 {
 
-		public BarChart(Chart chart) {
+		public MultiBarChart(Chart chart) {
 			super(chart);
 		}
 
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_bar(stat='identity', aes(x=X, y=Y))"					
+					"geom_bar(stat='identity', aes(x=X, y=Y, colour=COLOUR))"					
 					);
 		}
 
@@ -169,9 +166,29 @@ public abstract class GgplotWriter2 extends Writer {
 		
 	}
 	
-	public static class Scatter extends GgplotWriter2 {
+	public static class MultiScatterLine extends GgplotWriter2 {
 
-		public Scatter(Chart chart) {
+		public MultiScatterLine(Chart chart) {
+			super(chart);
+			
+		}
+
+		@Override
+		public List<String> getPlots() {
+			boolean hasLines = this.getChart().getSeries().stream()
+					.anyMatch(s -> s.getBindings().stream()
+							.anyMatch(t -> t.getFirst().equals(Dimension.Y_LINE)));
+			return Arrays.asList(
+					"geom_point(stat='identity', aes(x=X, y=Y, colour=COLOUR))",
+					"geom_line(stat='identity', aes(x=X, y=Y_LINE, colour=factor(COLOUR)))",
+					"geom_smooth(aes(x=X, y=Y, colour=COLOUR), method = 'glm'"
+					);
+		}
+	}
+	
+	public static class MultiScatter extends GgplotWriter2 {
+
+		public MultiScatter(Chart chart) {
 			super(chart);
 			
 		}
@@ -179,34 +196,15 @@ public abstract class GgplotWriter2 extends Writer {
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
-					"geom_point(stat='identity', aes(x=X, y=Y))",
-					"geom_smooth(aes(x=X, y=Y), method = 'glm'"
+					"geom_point(stat='identity', aes(x=X, y=Y, colour=COLOUR))",
+					"geom_smooth(aes(x=X, y=Y, colour=COLOUR), method = 'glm'"
 					);
 		}
 	}
 	
-	public static class MultiPieChart extends GgplotWriter2 {
+	public static class MultiLineChart extends GgplotWriter2 {
 
-		public MultiPieChart(Chart chart) {
-			super(chart);
-		}
-
-		@Override
-		public List<String> getPlots() {
-			return Arrays.asList(
-					"geom_bar(stat='identity', aes(x=factor(X, levels=rev(X)), y=Y, fill=factor(LABEL, levels=rev(LABEL))))",
-					"theme(axis.title.y=element_blank(),legend.title=element_blank())",
-					"scale_fill_brewer(palette=schemeName, breaks=df$LABEL)",
-					"coord_flip()"
-					);
-		}
-		
-	}
-	
-
-	public static class GroupedLineChart extends GgplotWriter2 {
-
-		public GroupedLineChart(Chart chart) {
+		public MultiLineChart(Chart chart) {
 			super(chart);
 		}
 		
@@ -219,68 +217,7 @@ public abstract class GgplotWriter2 extends Writer {
 	}
 
 	
-	public static class PieChart extends GgplotWriter2 {
-
-		public PieChart(Chart chart) {
-			super(chart);
-		}
-
-		@Override
-		public List<String> getPlots() {
-			return Arrays.asList(
-					"geom_bar(stat='identity', aes(x=1, y=Y, fill=factor(LABEL, levels=LABEL)))",
-					"theme(axis.line.y=element_blank(),axis.text.x = element_blank(),axis.ticks=element_blank(),axis.title=element_blank(),legend.position='none',axis.line=element_blank())",
-					"scale_fill_brewer(palette=schemeName, breaks=df$LABEL)",
-					"scale_y_continuous(labels=rev(df$LABEL),breaks=head(((c(0,cumsum(rev(df$Y)))+c(cumsum(rev(df$Y)),0))/2),-1))"
-					);
-		}
-		
-	}
 	
-	public static class HeatMap extends GgplotWriter2 {
-
-		public HeatMap(Chart chart) {
-			super(chart);
-		}
-
-		@Override
-		public List<String> getPlots() {
-			if (this.getChart().getConfig().scales.containsKey(Dimension.Z)) {
-				this.getChart().getConfig().scales.put(Dimension.FILL, 
-					this.getChart().getConfig().scales.get(Dimension.Z)
-					);
-			}
-			this.getChart().getConfig().scales.remove(Dimension.Z);
-			return Arrays.asList(
-					"geom_tile(stat='identity', aes(x=X, y=Y, fill=Z))",
-					"stat_contour(aes(x=X, y=Y, z=Z), colour='black')",
-					//"scale_fill_distiller(name=\""+this.getChart().getConfig().getLabel(Dimension.Z)+"\",palette=schemeName)"
-					this.getChart().getSeries().get(0).getScheme().getGGplotFillContinuous(
-							this.getChart().getConfig().getLabel(Dimension.Z),
-							this.getChart().getConfig().getMin(Dimension.FILL),
-							this.getChart().getConfig().getMax(Dimension.FILL)
-						)
-					);
-		}
-		
-	}
-	
-	public static class VectorFieldChart extends GgplotWriter2 {
-
-		public VectorFieldChart(Chart chart) {
-			super(chart);
-		}
-
-		@Override
-		public List<String> getPlots() {
-			return Arrays.asList(
-					"geom_segment(aes(x=X, xend=X+DX, y=Y, yend=Y+DY),arrow = arrow(length = unit(0.1,\"cm\")))"//,
-					//"stat_contour(aes(x=X, y=Y, z=Z))",
-					//"scale_fill_distiller(palette=schemeName)"
-					);
-		}
-		
-	}
 
 	
 }
