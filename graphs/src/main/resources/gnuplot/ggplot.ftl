@@ -1,6 +1,8 @@
 
 ${data}
 
+schemeName = ${schemeName};
+
 plot <- ggplot(df)+
 lims(<#list config.getGGplotLimits() as scale>${scale}<#sep>, </#sep></#list>)+
 <#list plots as plot>
