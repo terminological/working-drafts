@@ -63,8 +63,12 @@ public class ClassifierSimulation {
 	@Test
 	public void plotKumaraswarmy() {
 		Figure figures = Figure.outputTo(path);
-		//Range spreadRange = Range.of(0.1D,1D, 6);
-		//Range bRange = Range.of(2D, 5D, 4);
+		Range.of(0.1D,0.5D, 5).forEach(divergence -> {
+			Range.of(-0.3, 0.3, 5).forEach(skew -> {
+				Kumaraswamy model = new Kumaraswamy(divergence,skew);
+				
+			});
+		});
 		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
 		/*Stream.of(ClassifierConfigEnum.values()).forEach( c-> {

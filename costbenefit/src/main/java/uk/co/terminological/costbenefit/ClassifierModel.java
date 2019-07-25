@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import org.apache.commons.math3.util.Precision;
 
 import uk.co.terminological.datatypes.Tuple;
+import uk.co.terminological.simplechart.Chart;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
@@ -147,8 +148,8 @@ public abstract class ClassifierModel<X> {
 			
 		}
 		
-		public void plot(Figure fig) {
-			fig.withNewChart(name+" pdf", ChartType.XY_MULTI_LINE)
+		public Chart plotPdf(Figure fig) {
+			return fig.withNewChart(name+" pdf", ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
 			.withXLabel("x")
 			.withYLabel("density")
@@ -158,35 +159,41 @@ public abstract class ClassifierModel<X> {
 			.bind(X, t -> t)
 			.bind(Y_LINE, pdfGivenPositive,"pos pdf")
 			.bind(Y_LINE, pdfGivenNegative,"neg pdf")
-			.done().render();
-			//.bind(Y, t -> prev*pdfGivenPositive.apply(t)+prev*pdfGivenNegative.apply(t),"joint pdf")
-			
-			fig.withNewChart(name+" cdf", ChartType.XY_MULTI_LINE)
-			.config().withXScale(0F, 1F)
-			.withXLabel("x")
-			.withYLabel("cumulative")
-			.withYScale(0F, 1F)
-			.done()
-			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
-			.bind(X, t -> t)
-			.bind(Y_LINE, cdfGivenPositive,"pos cdf")
-			.bind(Y_LINE, cdfGivenNegative,"neg cdf")
-			//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
-			.done().render();
+			.done();
+		}
 		
-			fig.withNewChart(name+" roc", ChartType.XY_MULTI_LINE)
-			.config().withXScale(0F, 1F)
-			.withXLabel("1-sens")
-			.withYLabel("spec")
-			.withYScale(0F, 1F)
-			.done()
-			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
-			.bind(X, t -> 1-matrix(0.5,t).sensitivity())
-			.bind(Y_LINE, t -> matrix(0.5,t).specificity(),"spec")
-			.done()
-			.render();
-	
-			
+		public Chart plotCdf(Figure fig) {
+			return fig.withNewChart(name+" cdf", ChartType.XY_MULTI_LINE)
+					.config().withXScale(0F, 1F)
+					.withXLabel("x")
+					.withYLabel("cumulative")
+					.withYScale(0F, 1F)
+					.done()
+					.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+					.bind(X, t -> t)
+					.bind(Y_LINE, cdfGivenPositive,"pos cdf")
+					.bind(Y_LINE, cdfGivenNegative,"neg cdf")
+					//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
+					.done();
+		}
+		
+		public Chart plotRoc(Figure fig) {
+			return fig.withNewChart(name+" roc", ChartType.XY_MULTI_LINE)
+					.config().withXScale(0F, 1F)
+					.withXLabel("1-sens")
+					.withYLabel("spec")
+					.withYScale(0F, 1F)
+					.done()
+					.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+					.bind(X, t -> 1-matrix(0.5,t).sensitivity())
+					.bind(Y_LINE, t -> matrix(0.5,t).specificity(),"spec")
+					.done();
+		}
+		
+		public void plot(Figure fig) {
+			plotPdf(fig).render();
+			plotCdf(fig).render();
+			plotRoc(fig).render();
 		}
 		
 		public Tuple<Double,Double> bestCutoff(Double prev,Function<ConfusionMatrix2D,Double> feature) {
