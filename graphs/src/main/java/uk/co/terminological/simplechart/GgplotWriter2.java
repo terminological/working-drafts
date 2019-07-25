@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -199,12 +200,15 @@ public abstract class GgplotWriter2 extends Writer {
 			boolean hasLines = this.getChart().getSeries().stream()
 					.anyMatch(s -> s.getBindings().stream()
 							.anyMatch(t -> t.getFirst().equals(Dimension.Y_LINE)));
-			return Arrays.asList(
-					"geom_point(stat='identity', aes(x=X, y=Y, colour=factor(NAME)))",
-					hasLines ? "geom_line(stat='identity', aes(x=X, y=Y_LINE, colour=factor(NAME)))" :
-					"geom_smooth(aes(x=X, y=Y, colour=factor(NAME)), method = 'glm')",
-					"scale_colour_brewer(palette=schemeName, name=NULL)"
-					);
+			boolean hasPoints = this.getChart().getSeries().stream()
+					.anyMatch(s -> s.getBindings().stream()
+							.anyMatch(t -> t.getFirst().equals(Dimension.Y)));
+			List<String> out = new ArrayList<>();
+			if (hasPoints) out.add("geom_point(stat='identity', aes(x=X, y=Y, colour=factor(NAME)))");
+			if (hasLines) out.add("geom_line(stat='identity', aes(x=X, y=Y_LINE, colour=factor(NAME)))");
+			if (hasPoints && !hasLines) out.add("geom_smooth(aes(x=X, y=Y, colour=factor(NAME)), method = 'glm')");
+			out.add("scale_colour_brewer(palette=schemeName, name=NULL)");
+			return out;
 		}
 	}
 	
