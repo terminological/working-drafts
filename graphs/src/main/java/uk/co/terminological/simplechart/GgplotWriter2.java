@@ -46,7 +46,7 @@ public abstract class GgplotWriter2 extends Writer {
 	private <X> String extractData(Series<X> series) {
 		
 		StringBuilder dfConstruct = new StringBuilder();
-		StringBuilder vector = new StringBuilder();
+		StringBuilder vectors = new StringBuilder();
 		StringBuilder nameVec = new StringBuilder("name <- c(");
 		
 		Set<String> names = series.getBindings().stream().map(t -> t.value()).collect(Collectors.toSet());
@@ -59,7 +59,7 @@ public abstract class GgplotWriter2 extends Writer {
 			
 		dimensions.stream().forEach(dim -> {
 			String varName = dim.name();
-			
+			StringBuilder vector = new StringBuilder();
 			names.stream().sorted().forEach(name -> {
 			
 				series.getBindings().stream().filter(t -> t.entity().equals(dim))
@@ -77,7 +77,8 @@ public abstract class GgplotWriter2 extends Writer {
 				});
 			});
 			vector.insert(0,"tmp_"+varName+" <- c(");
-			vector.append(");\n");
+			vector.append(");");
+			vectors.append(vector+"\n");
 			dfConstruct.append(",");
 			dfConstruct.append(varName+"=tmp_"+varName);
 
@@ -93,7 +94,7 @@ public abstract class GgplotWriter2 extends Writer {
 		
 		dfConstruct.append(",NAME=name,stringsAsFactors = FALSE);\n");
 		
-		return vector.toString()+"\n"+nameVec.toString()+"\n"+dfConstruct.toString();
+		return vectors.toString()+"\n"+nameVec.toString()+"\n"+dfConstruct.toString();
 	}
 
 	//TODO: localDate support?
