@@ -2,6 +2,7 @@ package uk.co.terminological.costbenefit;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y;
+import static uk.co.terminological.simplechart.Chart.Dimension.Y_LINE;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -155,8 +156,8 @@ public abstract class ClassifierModel<X> {
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(X, t -> t)
-			.bind(Y, pdfGivenPositive,"pos pdf")
-			.bind(Y, pdfGivenNegative,"neg pdf")
+			.bind(Y_LINE, pdfGivenPositive,"pos pdf")
+			.bind(Y_LINE, pdfGivenNegative,"neg pdf")
 			.done().render();
 			//.bind(Y, t -> prev*pdfGivenPositive.apply(t)+prev*pdfGivenNegative.apply(t),"joint pdf")
 			
@@ -168,8 +169,8 @@ public abstract class ClassifierModel<X> {
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(X, t -> t)
-			.bind(Y, cdfGivenPositive,"pos cdf")
-			.bind(Y, cdfGivenNegative,"neg cdf")
+			.bind(Y_LINE, cdfGivenPositive,"pos cdf")
+			.bind(Y_LINE, cdfGivenNegative,"neg cdf")
 			//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
 			.done().render();
 		
@@ -181,7 +182,7 @@ public abstract class ClassifierModel<X> {
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(X, t -> 1-matrix(0.5,t).sensitivity())
-			.bind(Y, t -> matrix(0.5,t).specificity())
+			.bind(Y_LINE, t -> matrix(0.5,t).specificity())
 			.done()
 			.render();
 	
