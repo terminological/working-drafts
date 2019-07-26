@@ -88,8 +88,9 @@ public abstract class ClassifierModel<X> {
 		//TODO: rethink these and check ROC curves
 		static BiFunction<Double,Double,Double> spreadFromDivergenceSkew(boolean left) {
 			return (div, skew) -> {
-				Double midpoint = 0.5 + skew/2;
-				return (left ? midpoint : 1-midpoint) * (1-div)/2;
+				// Double midpoint = 0.5 + skew/2;
+				// return (left ? midpoint : 1-midpoint) * (1-div)/2;
+				return (0.5 * (1-div)/2);
 			};
 		}
 		

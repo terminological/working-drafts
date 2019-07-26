@@ -64,7 +64,7 @@ public class ClassifierSimulation {
 	public void plotKumaraswarmy() {
 		Figure pdfs = Figure.outputTo(path).withTitle("probability density");
 		Figure cdfs = Figure.outputTo(path).withTitle("cumulative probability density");
-		Figure rocs = Figure.outputTo(path).withTitle("reciever operator curves");
+		Figure rocs = Figure.outputTo(path).withTitle("receiver operator curves");
 		Range.of(0.1D,0.5D, 5).forEach(divergence -> {
 			Range.of(-0.3, 0.3, 5).forEach(skew -> {
 				Kumaraswamy model = new Kumaraswamy(divergence,skew, "d:"+oneDp.format(divergence)+" s:"+twoDp.format(skew));
