@@ -57,7 +57,7 @@ public abstract class ClassifierModel<X> {
 		String name;
 		
 		public Kumaraswamy(ClassifierConfig config) {
-			this(config.centralityIfPositive(), config.spreadIfPositive(), config.centralityIfNegative(), config.spreadIfNegative(), config.toString());
+			this(config.divergence(), config.skew(), config.toString());
 		}
 		
 		/**
