@@ -239,9 +239,9 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotValue() {
-		Figure figures = Figure.outputTo(path);
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			Stream.of(CostModelEnum.values()).forEach( cm-> {
+		Figure figures = Figure.outputTo(path).withTitle("Relatuve value");
+		Stream.of(CostModelEnum.values()).forEach( cm-> {
+			Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			//	CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
 			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 			ParameterSpace space = new ParameterSpace(defaults);
@@ -263,10 +263,10 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().fn,"fn")
 					.bind(Z, t -> t.matrix().relativeValue(cm,t.prevalence))
 					.bind(Y, t -> t.prevalence,"prevalence")
-					.done()
-					.render();
+					.done();
 				});
 		});
+		figures.render(3,true);
 	}
 	
 	
