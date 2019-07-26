@@ -217,9 +217,9 @@ public class ClassifierSimulation {
 				Kumaraswamy model = new Kumaraswamy(c);
 				
 				Series<Double> series = figures.withNewChart(cm.nickname(), ChartType.XY_MULTI_LINE)
-				.config()//.withXScale(0F, 1F)
-				.withXLabel("max value")
-				.withYLabel("f score")
+				.config().withYScale(-1F, 1F)
+				.withYLabel("max value")
+				.withXLabel("f score")
 				//.withYScale(-5F, 5F)
 				.done()
 				.withSeries(data);//.withColourScheme(ColourScheme.RedWhiteGreen)
@@ -227,7 +227,7 @@ public class ClassifierSimulation {
 				for (Double beta: Range.of(-5D, 5D, 11)) {
 					double f = Math.pow(2, beta);
 					series.bind(Y_LINE, t -> model.screeningBeneficial(cm, t));
-					series.bind(X, t -> model.matrix(t, 0.5).fScore(f), ""+f);
+					series.bind(X, t -> model.matrix(t, 0.5).fScore(f), "beta: "+f);
 				}
 				
 				series.done();//.render();
