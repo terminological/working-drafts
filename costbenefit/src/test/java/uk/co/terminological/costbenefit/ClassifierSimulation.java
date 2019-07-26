@@ -222,11 +222,12 @@ public class ClassifierSimulation {
 				.withYLabel("f score")
 				//.withYScale(-5F, 5F)
 				.done()
-				.withSeries(data)//.withColourScheme(ColourScheme.RedWhiteGreen)
-				.bind(X, t -> model.screeningBeneficial(cm, t));
+				.withSeries(data);//.withColourScheme(ColourScheme.RedWhiteGreen)
 				
 				for (Double beta: Range.of(-5D, 5D, 11)) {
-					series.bind(Y_LINE, t -> model.matrix(t, 0.5).fScore(Math.pow(2, beta)), ""+beta);
+					double f = Math.pow(2, beta);
+					series.bind(Y_LINE, t -> model.screeningBeneficial(cm, t));
+					series.bind(X, t -> model.matrix(t, 0.5).fScore(f), ""+f);
 				}
 				
 				series.done();//.render();
