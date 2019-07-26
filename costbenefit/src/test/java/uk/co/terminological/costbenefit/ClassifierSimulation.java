@@ -226,14 +226,14 @@ public class ClassifierSimulation {
 				.bind(X, t -> model.screeningBeneficial(cm, t));
 				
 				for (Double beta: Range.of(-5D, 5D, 11)) {
-					series.bind(Y, t -> model.matrix(t, 0.5).fScore(Math.pow(2, beta)), ""+beta);
+					series.bind(Y_LINE, t -> model.matrix(t, 0.5).fScore(Math.pow(2, beta)), ""+beta);
 				}
 				
-				series.done().render();
+				series.done();//.render();
 				
 			// });
 		});
-		//figures.render(3,true);
+		figures.render(3,true);
 	}
 	
 	@Test
