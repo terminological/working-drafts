@@ -197,8 +197,8 @@ public abstract class ClassifierModel<X> {
 		public Chart plotPR(Figure fig) {
 			return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
 			.config().withXScale(0F, 1F)
-			.withXLabel("precision")
-			.withYLabel("recall")
+			.withYLabel("precision")
+			.withXLabel("recall")
 			.withYScale(0F, 1F)
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
