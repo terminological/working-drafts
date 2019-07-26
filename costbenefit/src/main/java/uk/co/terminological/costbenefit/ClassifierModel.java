@@ -203,7 +203,11 @@ public abstract class ClassifierModel<X> {
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(X, t -> matrix(0.5,t).recall())
-			.bind(Y_LINE, t -> matrix(0.5,t).precision(), "pr")
+			.bind(Y_LINE, t -> matrix(0.1,t).precision(), "pr: 0.1")
+			.bind(Y_LINE, t -> matrix(0.3,t).precision(), "pr: 0.3")
+			.bind(Y_LINE, t -> matrix(0.5,t).precision(), "pr: 0.5")
+			.bind(Y_LINE, t -> matrix(0.7,t).precision(), "pr: 0.7")
+			.bind(Y_LINE, t -> matrix(0.9,t).precision(), "pr: 0.9")
 			.done();
 		}
 		
