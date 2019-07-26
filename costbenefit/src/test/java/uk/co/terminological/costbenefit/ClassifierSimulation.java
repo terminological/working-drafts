@@ -239,7 +239,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotValue() {
-		Figure figures = Figure.outputTo(path).withTitle("Relatuve value");
+		Figure figures = Figure.outputTo(path).withTitle("Relative value");
 		Stream.of(CostModelEnum.values()).forEach( cm-> {
 			Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			//	CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
