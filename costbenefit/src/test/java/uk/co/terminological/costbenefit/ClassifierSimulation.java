@@ -98,9 +98,9 @@ public class ClassifierSimulation {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		Figure figures = Figure.outputTo(path);
 		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
-				Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
+				Range.of(0.2D, 0.7D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 		).map( c-> 
-			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
+			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond()))
 		);	
 		
 		figures.withNewChart("AUROC", ChartType.XYZ_HEATMAP)
@@ -120,7 +120,7 @@ public class ClassifierSimulation {
 		
 		
 		data = SeriesBuilder.grid(
-				Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
+				Range.of(0.2D, 0.7D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 			).map( c-> 
 				Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 			);	
@@ -142,7 +142,7 @@ public class ClassifierSimulation {
 		
 		Stream.of(0.01,0.05,0.1,0.25,0.5,0.75,0.9,0.95,0.99).forEach(prev -> {
 			Stream<Triple<Double,Double,Kumaraswamy>> data2 = SeriesBuilder.grid(
-					Range.of(0D, 0.4D, 0.01D),Range.of(-0.25D, 0.25D, 0.01D)
+					Range.of(0.2D, 0.7D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 				).map( c-> 
 					Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 				);	
