@@ -3,14 +3,12 @@ package uk.co.terminological.costbenefit;
 import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
 
 public class ParameterSet {
-	public ParameterSet(Double prevalence, Double centralityIfPositive, Double spreadIfPositive,
-			Double centralityIfNegative, Double spreadIfNegative, Double tpValue, Double tnValue, Double fpCost,
+	public ParameterSet(Double prevalence, Double divergence, Double skew, 
+			Double tpValue, Double tnValue, Double fpCost,
 			Double fnCost, Double cutOff, String name) {
 		this.prevalence = prevalence;
-		this.centralityIfPositive = centralityIfPositive;
-		this.spreadIfPositive = spreadIfPositive;
-		this.centralityIfNegative = centralityIfNegative;
-		this.spreadIfNegative = spreadIfNegative;
+		this.divergence = divergence;
+		this.skew = skew;
 		this.tpValue = tpValue;
 		this.tnValue = tnValue;
 		this.fpCost = fpCost;
@@ -21,10 +19,8 @@ public class ParameterSet {
 	public ParameterSet() {}
 	public ParameterSet(Double prevalence, ClassifierConfig classifier, CostModel cost, Double cutOff) {
 		this(prevalence,
-				classifier.centralityIfPositive(),
-				classifier.spreadIfPositive(),
-				classifier.centralityIfNegative(),
-				classifier.spreadIfNegative(),
+				classifier.divergence(),
+				classifier.skew(),
 				cost.tpValue(),
 				cost.tnValue(),
 				cost.fpCost(),
@@ -34,10 +30,8 @@ public class ParameterSet {
 	}
 
 	Double prevalence;
-	Double centralityIfPositive;
-	Double spreadIfPositive;
-	Double centralityIfNegative;
-	Double spreadIfNegative;
+	Double divergence;
+	Double skew;
 	Double tpValue;
 	Double tnValue;
 	Double fpCost;
@@ -46,12 +40,12 @@ public class ParameterSet {
 	String name;
 	
 	public ParameterSet clone() {
-		return new ParameterSet(prevalence, centralityIfPositive, spreadIfPositive, centralityIfNegative, 
-				spreadIfNegative, tpValue, tnValue, fpCost, fnCost, cutOff, name);
+		return new ParameterSet(prevalence, divergence, skew,  
+				tpValue, tnValue, fpCost, fnCost, cutOff, name);
 	}
 	
 	public Kumaraswamy model() {
-		return new Kumaraswamy(centralityIfPositive, spreadIfPositive, centralityIfNegative, spreadIfNegative, name);
+		return new Kumaraswamy(divergence, skew, name);
 	}
 	
 	public ConfusionMatrix2D matrix() {
