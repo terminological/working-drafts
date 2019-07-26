@@ -65,6 +65,7 @@ public class ClassifierSimulation {
 		Figure pdfs = Figure.outputTo(path).withTitle("probability density");
 		Figure cdfs = Figure.outputTo(path).withTitle("cumulative probability density");
 		Figure rocs = Figure.outputTo(path).withTitle("receiver operator curves");
+		Figure prs = Figure.outputTo(path).withTitle("precision recall curves");
 		Range.of(0.2D,0.7D, 6).forEach(divergence -> {
 			Range.of(-0.5, 0.5, 5).forEach(skew -> {
 				Kumaraswamy model = new Kumaraswamy(divergence,skew);
@@ -72,6 +73,7 @@ public class ClassifierSimulation {
 				model.plotPdf(pdfs);
 				model.plotCdf(cdfs);
 				model.plotRoc(rocs);
+				model.plotPR(prs);
 			});
 		});
 		//TODO: adlter classifier config enum to use spread and divergence
@@ -93,6 +95,7 @@ public class ClassifierSimulation {
 		//new Kumaraswamy(0.65,0.5D,"spread div test").plot(figures);
 	}
 	
+	//TODO: noise in thes plots ? precision / KL divergence measure maybe not working
 	@Test
 	public void plotKumaraswarmyFeatures() throws IOException, TemplateException {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
@@ -116,9 +119,6 @@ public class ClassifierSimulation {
 		.bind(Z, t -> t.getThird().AUROC())
 		.done()
 		.render();
-		
-		
-		
 		
 		data = SeriesBuilder.grid(
 				Range.of(0.2D, 0.7D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
@@ -185,6 +185,7 @@ public class ClassifierSimulation {
 				.done()
 				.render();
 		});
+		
 	}
 	
 	@Test

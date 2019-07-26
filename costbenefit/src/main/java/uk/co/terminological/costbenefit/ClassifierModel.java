@@ -194,6 +194,19 @@ public abstract class ClassifierModel<X> {
 					.done();
 		}
 		
+		public Chart plotPR(Figure fig) {
+			return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
+			.config().withXScale(0F, 1F)
+			.withXLabel("precision")
+			.withYLabel("recall")
+			.withYScale(0F, 1F)
+			.done()
+			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+			.bind(X, t -> matrix(0.5,t).precision())
+			.bind(Y_LINE, t -> matrix(0.5,t).recall())
+			.done();
+		}
+		
 		public void plot(Figure fig) {
 			plotPdf(fig).render();
 			plotCdf(fig).render();
@@ -279,6 +292,8 @@ public abstract class ClassifierModel<X> {
 						.collect(TrapeziodIntegrator.integrator());
 			return prev*dpq+(1-prev)*dqp;		
 		}
+
+		
 	}
 	
 	public static class AlwaysNegative extends ClassifierModel<Void> {
