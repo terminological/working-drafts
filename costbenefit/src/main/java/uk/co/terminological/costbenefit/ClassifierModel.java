@@ -248,12 +248,14 @@ public abstract class ClassifierModel<X> {
 			Double dpq = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,
-								Precision.equals(p.apply(x),0D) ? 0 : p.apply(x)*Math.log(p.apply(x)/q.apply(x))))
+								Precision.equals(p.apply(x),0D) || Precision.equals(q.apply(x),0D) 
+									? 0 : p.apply(x)*Math.log(p.apply(x)/q.apply(x))))
 						.collect(TrapeziodIntegrator.integrator());
 			Double dqp = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,
-								Precision.equals(q.apply(x),0D) ? 0 : q.apply(x)*Math.log(q.apply(x)/p.apply(x))))
+								Precision.equals(p.apply(x),0D) || Precision.equals(q.apply(x),0D) 
+									? 0 : q.apply(x)*Math.log(q.apply(x)/p.apply(x))))
 						.collect(TrapeziodIntegrator.integrator());
 			return dpq+dqp;		
 		}
@@ -266,12 +268,14 @@ public abstract class ClassifierModel<X> {
 			Double dpq = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,
-								Precision.equals(p.apply(x),0D) ? 0 : p.apply(x)*Math.log(p.apply(x)/j.apply(x))))
+								Precision.equals(p.apply(x),0D) || Precision.equals(q.apply(x),0D) 
+									? 0 : p.apply(x)*Math.log(p.apply(x)/j.apply(x))))
 						.collect(TrapeziodIntegrator.integrator());
 			Double dqp = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,
-								Precision.equals(q.apply(x),0D) ? 0 : q.apply(x)*Math.log(q.apply(x)/j.apply(x))))
+								Precision.equals(p.apply(x),0D) || Precision.equals(q.apply(x),0D) 
+									? 0 : q.apply(x)*Math.log(q.apply(x)/j.apply(x))))
 						.collect(TrapeziodIntegrator.integrator());
 			return prev*dpq+(1-prev)*dqp;		
 		}
