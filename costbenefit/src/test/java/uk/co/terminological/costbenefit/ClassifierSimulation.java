@@ -167,27 +167,7 @@ public class ClassifierSimulation {
 		
 	}
 	
-	@Test
-	public void plotPR() {
-		Figure figures = Figure.outputTo(path);
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			ParameterSet defaults = new ParameterSet(0.1,c,CostModelEnum.EARLY_STAGE_CANCER,null);
-			ParameterSpace space2 = new ParameterSpace(defaults);
-			space2.cutOff = SeriesBuilder.range(0.0, 1.0, 1000).collect(Collectors.toList());
-			figures.withNewChart(c.name()+" pr", ChartType.XY_MULTI_LINE)
-				.config().withXScale(0F, 1F)
-				.withXLabel("precision")
-				.withYLabel("recall")
-				.withYScale(0F, 1F)
-				.done()
-				.withSeries(space2.stream()).withColourScheme(ColourScheme.Dark2)
-				.bind(X, t -> t.matrix().precision())
-				.bind(Y, t -> t.matrix().recall())
-				.done()
-				.render();
-		});
-		
-	}
+	
 	
 	@Test
 	public void plotClassifierValue() {
