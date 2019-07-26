@@ -203,6 +203,8 @@ public abstract class ClassifierModel<X> {
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(X, t -> matrix(0.5,t).recall())
+			.bind(Y_LINE, t -> matrix(0.01,t).precision(), "pr: 0.01")
+			.bind(Y_LINE, t -> matrix(0.05,t).precision(), "pr: 0.05")
 			.bind(Y_LINE, t -> matrix(0.1,t).precision(), "pr: 0.1")
 			.bind(Y_LINE, t -> matrix(0.3,t).precision(), "pr: 0.3")
 			.bind(Y_LINE, t -> matrix(0.5,t).precision(), "pr: 0.5")
