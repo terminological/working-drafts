@@ -67,8 +67,8 @@ public class ClassifierSimulation {
 		Figure rocs = Figure.outputTo(path).withTitle("receiver operator curves");
 		Range.of(0.2D,0.7D, 6).forEach(divergence -> {
 			Range.of(-0.5, 0.5, 5).forEach(skew -> {
-				Kumaraswamy model = new Kumaraswamy(divergence,skew, 
-						"d:"+twoDp.format(divergence)+" s:"+twoDp.format(skew)+" auc:"+twoDp.format(model.AUROC()));
+				Kumaraswamy model = new Kumaraswamy(divergence,skew);
+				model.name = "d:"+twoDp.format(divergence)+" s:"+twoDp.format(skew)+" auc:"+twoDp.format(model.AUROC());
 				model.plotPdf(pdfs);
 				model.plotCdf(cdfs);
 				model.plotRoc(rocs);
