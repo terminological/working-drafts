@@ -217,7 +217,7 @@ public class ClassifierSimulation {
 				Kumaraswamy model = new Kumaraswamy(c);
 				
 				Series<Double> series = figures.withNewChart(cm.nickname(), ChartType.XY_MULTI_LINE)
-				.config().withYScale(-1F, 1F)
+				.config().withYScale(0F, 0.5F)
 				.withYLabel("max value")
 				.withXLabel("f score")
 				//.withYScale(-5F, 5F)
