@@ -48,8 +48,8 @@ public abstract class GgplotWriter extends Writer {
 	}
 	
 	private <X> String extractData(Series<X> series) {
-		
-		Path tsv =  this.getChart().getFile("tsv").toPath();
+		int index = this.getChart().getSeries().indexOf(series);
+		Path tsv =  this.getChart().getFile(""+index+".tsv").toPath();
 		try {
 			BufferedWriter w = Files.newBufferedWriter(tsv);
 			// write headers
