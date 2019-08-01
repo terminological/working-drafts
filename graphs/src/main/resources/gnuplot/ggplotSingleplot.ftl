@@ -3,6 +3,7 @@
 
 library(tikzDevice);
 library(cowplot);
+library(tidyverse);
 theme_set(theme_bw())
 
 ${plot}
