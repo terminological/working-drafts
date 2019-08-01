@@ -113,7 +113,7 @@ public abstract class GgplotWriter extends Writer {
 		
 		return vector.toString()+"\n"+dfConstruct.toString();*/
 		
-		return "df <- read_csv("+tsv.getFileName()+")";
+		return "df <- read_csv(\""+tsv.getFileName()+"\")";
 	}
 
 	//TODO: localDate support?
