@@ -218,6 +218,20 @@ public abstract class GgplotWriter extends Writer {
 		}
 	}
 
+	public static class FacetedGroupedLineChart extends GgplotWriter {
+
+		public FacetedGroupedLineChart(Chart chart) {
+			super(chart);
+		}
+		
+		public List<String> getPlots() {
+			return Arrays.asList(
+					"geom_line(stat='identity', aes(x=X, y=Y, colour=factor(COLOUR)))",
+					"scale_colour_brewer(palette=schemeName)",
+					"facet_grid(factor(X_OUTER) ~ factor(Y_OUTER))"
+				);
+		}
+	}
 	
 	public static class PieChart extends GgplotWriter {
 
@@ -263,6 +277,19 @@ public abstract class GgplotWriter extends Writer {
 					);
 		}
 		
+	}
+	
+	public static class FacetedHeatMap extends HeatMap {
+
+		public FacetedHeatMap(Chart chart) {
+			super(chart);
+		}
+		
+		public List<String> getPlots() {
+			List<String> tmp = super.getPlots();
+			tmp.add("facet_grid(factor(X_OUTER) ~ factor(Y_OUTER))");
+			return tmp;
+		}
 	}
 	
 	public static class VectorFieldChart extends GgplotWriter {
