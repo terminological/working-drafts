@@ -73,13 +73,7 @@ public class Chart {
 			Path out = writer.process();
 			
 			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-				Path h = this.getFile("html").toPath();
-				if (!h.equals(out)) {
-					BufferedWriter w = Files.newBufferedWriter(h);
-					w.write("<html><head></head><body><img src='"+h.getParent().relativize(out).toString()+"'></body></html>");
-					w.close();
-				}
-			    Desktop.getDesktop().browse(h.toUri());
+				Desktop.getDesktop().browse(out.toUri());
 			}
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
