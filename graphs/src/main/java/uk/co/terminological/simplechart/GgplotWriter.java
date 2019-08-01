@@ -1,10 +1,12 @@
 package uk.co.terminological.simplechart;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +48,36 @@ public abstract class GgplotWriter extends Writer {
 	}
 	
 	private <X> String extractData(Series<X> series) {
+		
+		Path tsv =  this.getChart().getFile("tsv").toPath();
+		try {
+			BufferedWriter w = Files.newBufferedWriter(tsv);
+			// write headers
+			w.append(series.getBindings().stream().map(t -> t.entity().name()).collect(Collectors.joining("\t"))+"\n");
+			series.getData().forEach(x -> {
+				String line = series.getBindings().stream()
+					.map(t -> t.attribute().apply(x))
+					.map(GgplotWriter::format)
+					.collect(Collectors.joining("\t"));
+				try {
+					w.append(line+"\n");
+				} catch (IOException e) {
+					new RuntimeException(e);
+				}
+			});
+			w.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		/*
+		 * 
+		 * Path h = this.getFile("html").toPath();
+		if (!h.equals(outFile.toPath())) {
+			BufferedWriter w = Files.newBufferedWriter(h);
+			w.write("<html><head></head><body><img src='"+h.getParent().relativize(outFile.toPath()).toString()+"'></body></html>");
+			w.close();
+		}*/
 		
 		StringBuilder dfConstruct = new StringBuilder();
 		StringBuilder vector = new StringBuilder();

@@ -144,13 +144,13 @@ public class Figure {
 		IOUtils.copy(process2.getErrorStream(),System.out);
 		
 		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-			Path h = this.getFile("html").toPath();
+			/*Path h = this.getFile("html").toPath();
 			if (!h.equals(outFile.toPath())) {
 				BufferedWriter w = Files.newBufferedWriter(h);
 				w.write("<html><head></head><body><img src='"+h.getParent().relativize(outFile.toPath()).toString()+"'></body></html>");
 				w.close();
-			}
-		    Desktop.getDesktop().browse(h.toUri());
+			}*/
+		    Desktop.getDesktop().browse(outFile.toPath().toUri());
 		}
 		
 		} catch (Exception e) { 
