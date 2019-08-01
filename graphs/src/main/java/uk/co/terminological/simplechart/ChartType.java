@@ -6,7 +6,8 @@ public enum ChartType {
 	XY_MULTI_LINE("ggplot.ftl",GgplotWriter2.MultiScatterLine.class),
 	XY_SCATTER("xyscatter.ftl",GnuplotWriter.class),
 	XYZ_CONTOUR("xyzcontour.ftl",GnuplotWriter.class),
-	XYZ_HEATMAP("ggplot.ftl",GgplotWriter.HeatMap.class), 
+	XYZ_HEATMAP("ggplot.ftl",GgplotWriter.HeatMap.class),
+	FACETED_XYZ_HEATMAP("ggplot.ftl",GgplotWriter.FacetedHeatMap.class), 
 	NETWORK("d3Network.ftl",D3JSWriter.Nodes.class), 
 	CHORD("d3Chord.ftl",D3JSWriter.Matrix.class),
 	WORDCLOUD(null,WordcloudWriter.class), 
@@ -14,7 +15,8 @@ public enum ChartType {
 	XYSCATTER("ggplot.ftl",GgplotWriter.Scatter.class),
 	STACKEDYBAR("ggplot.ftl",GgplotWriter.PieChart.class),
 	MULTISTACKEDYBAR("ggplot.ftl",GgplotWriter.MultiPieChart.class), 
-	XY_GROUPED_LINE("ggplot.ftl",GgplotWriter.GroupedLineChart.class), 
+	XY_GROUPED_LINE("ggplot.ftl",GgplotWriter.GroupedLineChart.class),
+	FACETED_XY_GROUPED_LINE("ggplot.ftl",GgplotWriter.FacetedGroupedLineChart.class), 
 	XY_DXDY_VECTOR("ggplot.ftl",GgplotWriter.VectorFieldChart.class),
 	;
 
