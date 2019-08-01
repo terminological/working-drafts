@@ -79,7 +79,7 @@ public abstract class GgplotWriter extends Writer {
 			w.close();
 		}*/
 		
-		StringBuilder dfConstruct = new StringBuilder();
+		/*StringBuilder dfConstruct = new StringBuilder();
 		StringBuilder vector = new StringBuilder();
 		
 		int size = series.getData().size();
@@ -111,7 +111,9 @@ public abstract class GgplotWriter extends Writer {
 		
 		dfConstruct.append(",stringsAsFactors = FALSE);\n");
 		
-		return vector.toString()+"\n"+dfConstruct.toString();
+		return vector.toString()+"\n"+dfConstruct.toString();*/
+		
+		return "df <- read_csv("+tsv.getFileName()+")";
 	}
 
 	//TODO: localDate support?
