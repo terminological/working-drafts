@@ -42,7 +42,7 @@ p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))
 
 grid <- wrap_plots(<#list plots as plot>plot${plot?counter}<#sep>, </#sep></#list>,ncol=${cols});
 
-p <- wrap_plots(grid,wrap_element(legend),nrow=1,widths = c(1, .2));
+p <- wrap_plots(grid,wrap_elements(legend),nrow=1,widths = c(1, .2));
 
 # save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
 ggsave("${output}.png", p, width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}));
