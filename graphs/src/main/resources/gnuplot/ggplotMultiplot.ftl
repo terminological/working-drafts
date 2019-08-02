@@ -1,11 +1,11 @@
 #!/usr/bin/R
 
 library(ggpubr);
-library(tikzDevice);
+# library(tikzDevice);
 library(cowplot);
 library(tidyverse);
 
-theme_set(theme_bw(base_size=8))
+theme_set(theme_bw(base_size=10))
 
 <#list plots as plot>
 
@@ -32,10 +32,11 @@ grid <- plot_grid(
 
 p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))
 
-save_plot("${output}", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
-tikz(file = "${output}.tex", width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}))
-print(p)
-dev.off()
+save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
+ggsave("${output}.pdf", p, width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}));
+# tikz(file = "${output}.tex", width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}))
+# print(p)
+# dev.off()
 
 <#-- https://stackoverflow.com/questions/45473843/put-row-and-column-titles-using-grid-arrange-in-r/45474093#45474093 
 rremove
