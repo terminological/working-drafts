@@ -269,6 +269,19 @@ public class ClassifierSimulation {
 		figures.render(3,true);
 	}
 	
+	@Test void classifierConfigValues() {
+		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			Kumaraswamy k = new Kumaraswamy(c);
+			System.out.println(
+					k.name+" & "+
+							c.divergence()+" & "+
+							c.skew+" & "+
+							k.AUROC()+" & "+
+							k.KLDivergence()+
+					
+			"\n");
+		});
+	}
 	
 	@Test
 	public void plotRealValue() throws IOException, TemplateException {
