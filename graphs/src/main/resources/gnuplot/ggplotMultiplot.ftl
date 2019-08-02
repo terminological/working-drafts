@@ -20,17 +20,16 @@ theme_set(
 
 ${plot}
 
-plot${plot?counter} <- plot<#-- +
-# theme(legend.position="none")--><#if (plot?index) % cols != 0>+
+plot${plot?counter} <- plot+
+theme(legend.position="none")<#if (plot?index) % cols != 0>+
 theme(axis.title.y=element_blank(),axis.text.y=element_blank())</#if><#if (plot?index) < plots?size-cols>+
 theme(axis.title.x=element_blank(),axis.text.x=element_blank())</#if>;
 
 </#list>
 
-<#-- 
 grobs <- ggplotGrob(plot)$grobs
 legend <- grobs[[which(sapply(grobs, function(x) x$name) == "guide-box")]]
- -->
+
 <#-- 
 grid <- plot_grid(  
 <#list plots as plot>
@@ -41,10 +40,9 @@ grid <- plot_grid(
 p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))
 -->
 
-p <- <#list plots as plot>plot${plot?counter}<#sep> + </#sep></#list> +
-    plot_layout(ncol=${cols},guides='collect');
+grid <- wrap_plots(<#list plots as plot>plot${plot?counter}<#sep>, </#sep></#list>,ncol=${cols});
 
-# p <- grid+legend+plot_layout(nrow=1,widths = c(1, .1));
+p <- wrap_plots(grid,wrap_element(legend),nrow=1,widths = c(1, .2));
 
 # save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
 ggsave("${output}.png", p, width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}));
