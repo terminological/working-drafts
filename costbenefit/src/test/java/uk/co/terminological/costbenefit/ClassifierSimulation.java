@@ -271,17 +271,23 @@ public class ClassifierSimulation {
 	
 	@Test 
 	public void classifierConfigValues() {
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
-			Kumaraswamy k = new Kumaraswamy(c);
-			System.out.println(
-					k.name+" & "+
-							c.divergence()+" & "+
-							c.skew+" & "+
-							k.AUROC()+" & "+
-							k.KLDivergence()+
-					
-			"\n");
-		});
+		String out = "\\begin{table}[]\n" + 
+				"\\begin{tabular}{@{}lrrll@{}}\n" + 
+				"\\toprule\n" + 
+				"Information gain & Divergence & Skew & AUROC & KL Divergence \\\\ \\midrule";
+		out = out+ 
+			Stream.of(ClassifierConfigEnum.values()).map( c-> {
+				Kumaraswamy k = new Kumaraswamy(c);
+				return k.name+" & "+
+						c.divergence()+" & "+
+						c.skew+" & "+
+						k.AUROC()+" & "+
+						k.KLDivergence();
+			}).collect(Collectors.joining("\\\\\n"));
+		out = out+"\\\\ \\bottomrule \n"+
+				"\\end{tabular}\n" + 
+				"\\end{table}";
+		System.out.println(out);
 	}
 	
 	@Test
