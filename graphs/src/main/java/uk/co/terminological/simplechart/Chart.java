@@ -106,6 +106,9 @@ public class Chart {
 	
 	public File getFile(String extension) {return new File(getWorkingDirectory(),filename+"."+extension);}
 
+	public String getFileBase() {
+		return new File(getWorkingDirectory(),filename).getAbsolutePath();
+	}
 
 	public <X> Series<X> withSeries(Stream<X> nodes) {
 		return withSeries(nodes.collect(Collectors.toList()));
@@ -164,4 +167,8 @@ public class Chart {
 	protected static Logger getLog() {
 		return log;
 	}
+
+
+
+	
 }
