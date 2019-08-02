@@ -272,7 +272,7 @@ public class ClassifierSimulation {
 	@Test 
 	public void classifierConfigValues() {
 		String out = "\\begin{table}[]\n" + 
-				"\\begin{tabular}{@{}lrrll@{}}\n" + 
+				"\\begin{tabular}{@{}lrrrr@{}}\n" + 
 				"\\toprule\n" + 
 				"Information gain & Divergence & Skew & AUROC & KL Divergence \\\\ \\midrule\n";
 		out = out+ 
