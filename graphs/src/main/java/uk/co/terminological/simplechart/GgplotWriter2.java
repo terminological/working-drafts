@@ -64,7 +64,7 @@ public abstract class GgplotWriter2 extends Writer {
 		try {
 			BufferedWriter w = Files.newBufferedWriter(tsv);
 			// write headers
-			w.append(series.getBindings().stream().map(t -> t.entity().name()).collect(Collectors.joining("\t"))+"\tNAME\n");
+			w.append(dims.stream().map(t -> t.name()).collect(Collectors.joining("\t"))+"\tNAME\n");
 			series.getData().forEach(x -> {
 				
 				names.stream().sorted().forEach(name -> {
