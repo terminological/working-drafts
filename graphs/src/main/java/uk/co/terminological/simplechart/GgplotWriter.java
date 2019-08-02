@@ -137,9 +137,9 @@ public abstract class GgplotWriter extends Writer {
 		getRoot().put("schemeName", getChart().getSeries().stream().map(s -> s.getScheme().getName()).findFirst().orElse("Set1"));
 		getRoot().put("includePlotTitles", true);
 		
-		String outFile = getChart().getFileBase();
 		//getRoot()
 		Map<String,Object> wrapperRoot = new HashMap<>();
+		String outFile = getChart().getFileBase();
 		wrapperRoot.put("output", outFile);
 		
 		Template wrapper = this.getChart().getFigure().getTemplate("ggplotSingleplot.ftl");
