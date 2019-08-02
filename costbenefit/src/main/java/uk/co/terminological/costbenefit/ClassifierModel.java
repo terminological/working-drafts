@@ -54,8 +54,8 @@ public abstract class ClassifierModel<X> {
 		Function<Double,Double> cdfGivenPositive;
 		Function<Double,Double> cdfGivenNegative;
 		
-		static Double modeP(Double div, Double skew) {return skew/2-div/2+1/2;}
-		static Double modeQ(Double div, Double skew) {return skew/2+div/2+1/2;}
+		static Double modeP(Double div, Double skew) {return skew/4-div/4+1/2;}
+		static Double modeQ(Double div, Double skew) {return skew/4+div/4+1/2;}
 		static Double iqrP(Double div, Double skew) {return 1/2-div/4;}
 		static Double iqrQ(Double div, Double skew) {return 1/2-div/4;}
 		
@@ -89,6 +89,9 @@ public abstract class ClassifierModel<X> {
 		 * @param name
 		 */
 		public Kumaraswamy(Double divergence, Double skew, String name) {
+			/*if (!(divergence > 0 && divergence < 1 &&
+					skew > -1 && skew < 1))
+				throw new ConstraintViolationException("Divergence must be between 0 and 1, skew must be between -1 and 1");*/
 			this(
 				modeP(divergence, skew),
 				iqrP(divergence, skew),
