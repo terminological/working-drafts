@@ -14,8 +14,7 @@ theme_set(theme_bw(base_size=8,base_family="sans"))
 ${plot}
 
 plot${plot?counter} <- plot+
-theme(legend.position="none")+
-theme(plot.margin = unit(c(0, 0, 0, 0), "cm"))<#if (plot?index) % cols != 0>+
+theme(legend.position="none")<#if (plot?index) % cols != 0>+
 theme(axis.title.y=element_blank(),axis.text.y=element_blank())</#if><#if (plot?index) < plots?size-cols>+
 theme(axis.title.x=element_blank(),axis.text.x=element_blank())</#if>;
 
