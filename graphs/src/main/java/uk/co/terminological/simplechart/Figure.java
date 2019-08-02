@@ -123,11 +123,11 @@ public class Figure {
 		
 		this.charts.forEach(c -> tmp.add(c.renderForMultiplot(includePlotTitles)));
 		
-		File outFile = getFile("png");
+		String outFile = getFileBase();
 		PrintWriter pw = new PrintWriter(new FileWriter(getFile("R")));
 		//getRoot()
 		Map<String,Object> wrapperRoot = new HashMap<>();
-		wrapperRoot.put("output", outFile.getAbsolutePath());
+		wrapperRoot.put("output", outFile);
 		wrapperRoot.put("plots", tmp);
 		wrapperRoot.put("title", this.getTitle());
 		wrapperRoot.put("cols", cols);
@@ -155,7 +155,8 @@ public class Figure {
 	
 	
 	public File getFile(String extension) {return new File(workingDirectory,filename+"."+extension);}
-	
+	public String getFileBase() {return new File(workingDirectory,filename).getAbsolutePath();}
+			
 	public static class Data extends Figure {
 
 		private Data(String title, File directory) {
