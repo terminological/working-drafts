@@ -77,11 +77,10 @@ public abstract class GgplotWriter2 extends Writer {
 						).findFirst().map(t -> t.attribute().apply(x))
 						.orElse(null);
 						
-						line.append(line.length() == 0 ? "" :"\t");
-						line.append(format(o));
+						line.append(format(o)+"\t");
 						
 					});
-					
+					line.append(name); 
 				try {
 					w.append(line+"\n");
 				} catch (IOException e) {
