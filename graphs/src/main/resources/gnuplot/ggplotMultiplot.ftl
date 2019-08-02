@@ -33,9 +33,9 @@ grid <- plot_grid(
 p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))
 
 save_plot("${output}", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
-# tikz(file = "${output}.tex", width = pageWidth, height = pageWidth*323/716)
-# print(plot)
-# dev.off()
+tikz(file = "${output}.tex", width = 6, height = 6*${(plots?size/cols)?int}/${cols})
+print(plot)
+dev.off()
 
 <#-- https://stackoverflow.com/questions/45473843/put-row-and-column-titles-using-grid-arrange-in-r/45474093#45474093 
 rremove
