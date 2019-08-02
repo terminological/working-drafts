@@ -55,6 +55,9 @@ public abstract class GgplotWriter2 extends Writer {
 				.map(t -> t.value())
 				.collect(Collectors.toSet());
 		
+		List<Dimension> dims = new ArrayList<>(series.getBindings().stream().map(t -> t.entity()).collect(Collectors.toSet()));
+		Collections.sort(dims, (d1,d2) -> d1.name().compareTo(d2.name()));
+		
 		int index = this.getChart().getSeries().indexOf(series);
 		Path tsv =  this.getChart().getFile(""+index+".tsv").toPath();
 		
@@ -65,15 +68,20 @@ public abstract class GgplotWriter2 extends Writer {
 			series.getData().forEach(x -> {
 				
 				names.stream().sorted().forEach(name -> {
+					StringBuilder line = new StringBuilder();
+					dims.forEach(dim -> {
+						
+						Object o = series.getBindings().stream().filter(t -> 
+							t.entity().equals(dim) &&
+							(t.value() == getChart().config.getLabel(t.entity()) || t.value().equals(name))
+						).findFirst().map(t -> t.attribute().apply(x))
+						.orElse(null);
+						
+						line.append(line.length() == 0 ? "" :"\t");
+						line.append(format(o));
+						
+					});
 					
-					String line = series.getBindings().stream()
-						.filter(t -> t.value() == getChart().config.getLabel(t.entity()) || t.value().equals(name))
-						.map(t -> t.attribute().apply(x))
-						.map(GgplotWriter2::format)
-						.collect(Collectors.joining("\t"));
-					
-					line = line+"\t"+name;
-				
 				try {
 					w.append(line+"\n");
 				} catch (IOException e) {
