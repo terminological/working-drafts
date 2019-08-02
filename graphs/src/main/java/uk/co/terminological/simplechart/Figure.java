@@ -144,7 +144,7 @@ public class Figure {
 		IOUtils.copy(process2.getErrorStream(),System.out);
 		
 		if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
-			Desktop.getDesktop().open(out.toFile());
+			Desktop.getDesktop().open(outFile);
 		}
 		
 		} catch (Exception e) { 
