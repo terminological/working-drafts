@@ -5,7 +5,7 @@ library(ggpubr);
 library(cowplot);
 library(tidyverse);
 
-theme_set(theme_bw(base_size=10))
+theme_set(theme_bw(base_size=10,base_family="sans"))
 
 <#list plots as plot>
 
