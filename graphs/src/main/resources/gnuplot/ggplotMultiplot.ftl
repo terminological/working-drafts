@@ -33,7 +33,7 @@ grid <- plot_grid(
 p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))
 
 save_plot("${output}", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
-tikz(file = "${output}.tex", width = min(6,10*${cols}/${(plots?size/cols)?int}, height = min(10,6*${(plots?size/cols)?int}/${cols}))
+tikz(file = "${output}.tex", width = min(6,10*${cols}/${(plots?size/cols)?int}), height = min(10,6*${(plots?size/cols)?int}/${cols}))
 print(plot)
 dev.off()
 
