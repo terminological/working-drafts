@@ -54,6 +54,13 @@ public abstract class ClassifierModel<X> {
 		Function<Double,Double> cdfGivenPositive;
 		Function<Double,Double> cdfGivenNegative;
 		
+		static Double modeP(Double div, Double skew) {return skew/2-(div*(1/2+skew/2))/2;}
+		static Double modeQ(Double div, Double skew) {return skew/2+(div*(1/2-skew/2))/2;}
+		static Double iqrP(Double div, Double skew) {return (1-div)/4;}
+		static Double iqrQ(Double div, Double skew) {return (1-div)/4;}
+		
+		
+		
 		String name;
 		
 		public Kumaraswamy(ClassifierConfig config) {
@@ -66,33 +73,14 @@ public abstract class ClassifierModel<X> {
 		 * @param name
 		 */
 		public Kumaraswamy(Double divergence, String name) {
-			this(
-					modeFromDivergenceSkew(false).apply(divergence, 0D),
-					spreadFromDivergenceSkew(false).apply(divergence, 0D),
-					modeFromDivergenceSkew(true).apply(divergence, 0D),
-					spreadFromDivergenceSkew(true).apply(divergence, 0D),
-					name
-			); 
+			this(divergence,0D,name); 
 			
 		}
 		
-		//TODO: rethink these and check ROC curves
-		static BiFunction<Double,Double,Double> modeFromDivergenceSkew(boolean left) {
-			return (div, skew) -> {
-				Double midpoint = 0.5 + skew/2;
-				// tranforms y = ax+b  -- a=skew, b=0.5
-				return midpoint + (left ? 0-midpoint : 1-midpoint) * div/2;
-			};
+		public Kumaraswamy(Double divergence, Double skew) {
+			this(divergence,skew,"");
 		}
 		
-		//TODO: rethink these and check ROC curves
-		static BiFunction<Double,Double,Double> spreadFromDivergenceSkew(boolean left) {
-			return (div, skew) -> {
-				// Double midpoint = 0.5 + skew/2;
-				// return (left ? midpoint : 1-midpoint) * (1-div)/2;
-				return (0.5 * (1-div)/2);
-			};
-		}
 		
 		/**
 		 * 
@@ -102,25 +90,16 @@ public abstract class ClassifierModel<X> {
 		 */
 		public Kumaraswamy(Double divergence, Double skew, String name) {
 			this(
-					modeFromDivergenceSkew(false).apply(divergence, skew),
-					spreadFromDivergenceSkew(false).apply(divergence, skew),
-					modeFromDivergenceSkew(true).apply(divergence, skew),
-					spreadFromDivergenceSkew(true).apply(divergence, skew),
-					name
+				modeP(divergence, skew),
+				iqrP(divergence, skew),
+				modeQ(divergence, skew),
+				iqrQ(divergence, skew),
+				name
 			); 
 			
 		}
 		
-		public Kumaraswamy(Double divergence, Double skew) {
-			this(
-					modeFromDivergenceSkew(false).apply(divergence, skew),
-					spreadFromDivergenceSkew(false).apply(divergence, skew),
-					modeFromDivergenceSkew(true).apply(divergence, skew),
-					spreadFromDivergenceSkew(true).apply(divergence, skew),
-					""
-			); 
-			
-		}
+		
 		
 		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, String name) {
 			
