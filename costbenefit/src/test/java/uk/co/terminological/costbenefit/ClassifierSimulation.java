@@ -281,8 +281,8 @@ public class ClassifierSimulation {
 				return k.name+" & "+
 						c.divergence()+" & "+
 						c.skew+" & "+
-						k.AUROC()+" & "+
-						k.KLDivergence();
+						twoDp.format(k.AUROC())+" & "+
+						twoDp.format(k.KLDivergence());
 			}).collect(Collectors.joining("\\\\\n"));
 		out = out+"\\\\ \\bottomrule \n"+
 				"\\end{tabular}\n" + 
