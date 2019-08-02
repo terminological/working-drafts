@@ -9,7 +9,11 @@ library(tidyverse);
 
 theme_set(
 	theme_bw(base_size=8,base_family="sans")+
-	theme(plot.title=element_text(size=8,hjust=0.5),axis.title = element_text(size=8))
+	theme(
+		plot.title=element_text(size=8,hjust=0.5),
+		axis.title = element_text(size=8),
+		axis.text.x = element_text(angle = 45, hjust = 1)
+	)
 )
 
 <#list plots as plot>
