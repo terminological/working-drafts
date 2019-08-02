@@ -2,7 +2,9 @@
 
 library(ggpubr);
 # library(tikzDevice);
-library(cowplot);
+# library(cowplot);
+library(ggplot2);
+library(patchwork);
 library(tidyverse);
 
 theme_set(theme_bw(base_size=10,base_family="sans"))
@@ -22,15 +24,16 @@ theme(axis.title.x=element_blank(),axis.text.x=element_blank())</#if>;
 grobs <- ggplotGrob(plot)$grobs
 legend <- grobs[[which(sapply(grobs, function(x) x$name) == "guide-box")]]
 
-
-grid <- plot_grid(  
+<#-- grid <- plot_grid(  
 <#list plots as plot>
 	plot${plot?counter},
 </#list>
     ncol=${cols},
     align='hv')
 
-p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))
+p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))-->
+p <- <#list plots as plot>plot${plot?counter}<#sep> + </#sep></#list> +
+    plot_layout(ncol=${cols})
 
 save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
 ggsave("${output}.pdf", p, width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}));
