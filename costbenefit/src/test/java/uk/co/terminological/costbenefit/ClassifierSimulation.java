@@ -274,7 +274,7 @@ public class ClassifierSimulation {
 		String out = "\\begin{table}[]\n" + 
 				"\\begin{tabular}{@{}lrrll@{}}\n" + 
 				"\\toprule\n" + 
-				"Information gain & Divergence & Skew & AUROC & KL Divergence \\\\ \\midrule";
+				"Information gain & Divergence & Skew & AUROC & KL Divergence \\\\ \\midrule\n";
 		out = out+ 
 			Stream.of(ClassifierConfigEnum.values()).map( c-> {
 				Kumaraswamy k = new Kumaraswamy(c);
