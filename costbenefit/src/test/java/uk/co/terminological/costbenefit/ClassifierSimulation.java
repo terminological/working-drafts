@@ -298,7 +298,7 @@ public class ClassifierSimulation {
 				"Condition & $\\mu_{tp}$ & $\\\\mu_{fn}$ & $\\\\mu_{fp}$ & $\\\\mu_{tn}$ \\\\ \\midrule\n";
 		out = out+ 
 			Stream.of(CostModelEnum.values()).map( c-> 
-				c.name+" & "+
+				c.nickname()+" & "+
 						oneDp.format(c.tpValue)+" & "+
 						oneDp.format(c.fnCost)+" & "+
 						oneDp.format(c.fpCost)+" & "+
