@@ -67,7 +67,7 @@ public abstract class GgplotWriter2 extends Writer {
 				names.stream().sorted().forEach(name -> {
 					
 					String line = series.getBindings().stream()
-						.filter(t -> t.value() == getChart().config.getLabel(dim) || t.value().equals(name))
+						.filter(t -> t.value() == getChart().config.getLabel(t.entity()) || t.value().equals(name))
 						.map(t -> t.attribute().apply(x))
 						.map(GgplotWriter2::format)
 						.collect(Collectors.joining("\t"));
