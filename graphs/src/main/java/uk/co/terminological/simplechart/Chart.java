@@ -72,8 +72,8 @@ public class Chart {
 			writer = writerCls.getDeclaredConstructor(Chart.class).newInstance(this);
 			Path out = writer.process();
 			
-			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-				Desktop.getDesktop().browse(out.toUri());
+			if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.OPEN)) {
+				Desktop.getDesktop().open(out.toFile());
 			}
 			
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
