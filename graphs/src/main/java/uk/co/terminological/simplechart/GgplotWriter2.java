@@ -190,7 +190,7 @@ public abstract class GgplotWriter2 extends Writer {
 		}
 		
 		Chart.log.info("Ending R...");
-		return outFile.toPath();
+		return getChart().getFile("png").toPath();
 	}
 	
 	@Override
