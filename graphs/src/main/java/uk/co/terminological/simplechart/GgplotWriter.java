@@ -229,6 +229,7 @@ public abstract class GgplotWriter extends Writer {
 		public List<String> getPlots() {
 			return Arrays.asList(
 					"geom_bar(stat='identity', aes(x=factor(X, levels=rev(X)), y=Y, fill=factor(LABEL, levels=rev(LABEL))))",
+					"theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank())",
 					"theme(axis.title.y=element_blank(),legend.title=element_blank())",
 					"scale_fill_brewer(palette=schemeName, breaks=df$LABEL)",
 					"coord_flip()"
@@ -300,6 +301,7 @@ public abstract class GgplotWriter extends Writer {
 			}
 			this.getChart().getConfig().scales.remove(Dimension.Z);
 			return Arrays.asList(
+					"theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank())",
 					"geom_tile(stat='identity', aes(x=X, y=Y, fill=Z))",
 					"stat_contour(aes(x=X, y=Y, z=Z), colour='black')",
 					//"scale_fill_distiller(name=\""+this.getChart().getConfig().getLabel(Dimension.Z)+"\",palette=schemeName)"
@@ -335,6 +337,7 @@ public abstract class GgplotWriter extends Writer {
 		@Override
 		public List<String> getPlots() {
 			return Arrays.asList(
+					"theme(panel.grid.major = element_blank(),panel.grid.minor = element_blank())",
 					"geom_segment(aes(x=X, xend=X+DX, y=Y, yend=Y+DY),arrow = arrow(length = unit(0.1,\"cm\")))"//,
 					//"stat_contour(aes(x=X, y=Y, z=Z))",
 					//"scale_fill_distiller(palette=schemeName)"
