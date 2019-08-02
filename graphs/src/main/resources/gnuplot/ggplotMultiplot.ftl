@@ -7,7 +7,10 @@ library(ggplot2);
 library(patchwork);
 library(tidyverse);
 
-theme_set(theme_bw(base_size=8,base_family="sans"))
+theme_set(
+	theme_bw(base_size=8,base_family="sans")+
+	theme(text=element_text(size=8))
+)
 
 <#list plots as plot>
 
