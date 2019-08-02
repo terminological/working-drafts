@@ -54,8 +54,8 @@ public abstract class ClassifierModel<X> {
 		Function<Double,Double> cdfGivenPositive;
 		Function<Double,Double> cdfGivenNegative;
 		
-		static Double modeP(Double div, Double skew) {return skew/4D-div/4D+1D/2D;}
-		static Double modeQ(Double div, Double skew) {return skew/4D+div/4D+1D/2D;}
+		static Double modeP(Double div, Double skew) {return skew/4D+div/4D+1D/2D;}
+		static Double modeQ(Double div, Double skew) {return skew/4D-div/4D+1D/2D;}
 		static Double iqrP(Double div, Double skew) {return 1D/2D-div/4D;}
 		static Double iqrQ(Double div, Double skew) {return 1D/2D-div/4D;}
 		
