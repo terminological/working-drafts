@@ -380,7 +380,7 @@ public class ClassifierSimulation {
 							.withYLabel("prevalence")
 							.withLabel(Z, k)
 							.withYScale(0F, 1F)
-							.withScale(Z, 0, 1)
+							.withScale(Z, (k.equals("mcc") ? -1:0), 1)
 							.done()
 							.withSeries(cutOffVPrevalence).withColourScheme(cs)
 							.bind(X, t -> t.getFirst())
