@@ -116,8 +116,8 @@ public abstract class ClassifierModel<X> {
 			pdfGivenPositive = KumaraswamyCDF.pdf(aPos, bPos);
 			cdfGivenPositive = KumaraswamyCDF.cdf(aPos, bPos);
 			
-			aNeg = KumaraswamyCDF.a(spreadNeg, 1-modeNeg);
-			bNeg = KumaraswamyCDF.b(spreadNeg, 1-modeNeg);
+			aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
+			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
 			pdfGivenNegative = x -> KumaraswamyCDF.pdf(aNeg, bNeg).apply(1-x);
 			cdfGivenNegative = x -> 1-KumaraswamyCDF.cdf(aNeg, bNeg).apply(1-x);
 			
