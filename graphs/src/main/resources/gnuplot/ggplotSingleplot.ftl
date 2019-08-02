@@ -9,6 +9,6 @@ theme_set(theme_bw())
 ${plot}
 
 save_plot("${output}", plot);
-# tikz(file = "${output}.tex", width = pageWidth, height = pageWidth*323/716)
-# print(plot)
-# dev.off()
+tikz(file = "${output}.tex", width = 3*1.618, height = 3)
+print(plot)
+dev.off()
