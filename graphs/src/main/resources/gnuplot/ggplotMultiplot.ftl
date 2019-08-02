@@ -42,7 +42,7 @@ p <- plot_grid(grid, legend, ncol = 2, rel_widths = c(1, .2))
 -->
 
 p <- <#list plots as plot>plot${plot?counter}<#sep> + </#sep></#list> +
-    plot_layout(ncol=${cols});
+    plot_layout(ncol=${cols},guides='collect');
 
 # p <- grid+legend+plot_layout(nrow=1,widths = c(1, .1));
 
