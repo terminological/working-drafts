@@ -290,6 +290,26 @@ public class ClassifierSimulation {
 		System.out.println(out);
 	}
 	
+	@Test 
+	public void costModelValues() {
+		String out = "\\begin{table}[]\n" + 
+				"\\begin{tabular}{@{}lrrrr@{}}\n" + 
+				"\\toprule\n" + 
+				"Condition & $\\mu_{tp}$ & $\\\\mu_{fn}$ & $\\\\mu_{fp}$ & $\\\\mu_{tn}$ \\\\ \\midrule\n";
+		out = out+ 
+			Stream.of(CostModelEnum.values()).map( c-> 
+				c.name+" & "+
+						oneDp.format(c.tpValue)+" & "+
+						oneDp.format(c.fnCost)+" & "+
+						oneDp.format(c.fpCost)+" & "+
+						oneDp.format(c.tnValue)
+			).collect(Collectors.joining("\\\\\n"));
+		out = out+"\\\\ \\bottomrule \n"+
+				"\\end{tabular}\n" + 
+				"\\end{table}";
+		System.out.println(out);
+	}
+	
 	@Test
 	public void plotRealValue() throws IOException, TemplateException {
 		Figure figures = Figure.outputTo(path).withTitle("Real value");
