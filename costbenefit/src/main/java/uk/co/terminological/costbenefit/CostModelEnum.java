@@ -4,10 +4,10 @@ public enum CostModelEnum implements CostModel {
 	EARLY_STAGE_CANCER(10.0,1.0,-0.1,-100.0,"early ca"),
 	CANCER_IS_UNTREATABLE(2.0,10.0,-10.0,-0.5,"late ca"),
 	DIABETES(4.0,0.1,-1.0,-0.1,"diabetes"),
-	SEPSIS(10.0,0.0,0.0,-5.0,"sepsis"),
+	// SEPSIS(10.0,0.0,0.0,-5.0,"sepsis"),
 	EARLY_STAGE_DEMENTIA(2.0,5.0,-2.0,-1.0,"dementia"),
-	NON_ACCIDENTAL_INJURY(100.0,1.0,-20.0,-20.0,"nai"),
-	IMMINENT_END_OF_LIFE(2.0,0.0,-1.0,-0.1,"eol"),
+	// NON_ACCIDENTAL_INJURY(100.0,1.0,-20.0,-20.0,"nai"),
+	// IMMINENT_END_OF_LIFE(2.0,0.0,-1.0,-0.1,"eol"),
 	ENDOSCOPY_UNINFORMATIVE(2.0,0.1,-1.0,-2.0,"no scope")
 	;
 	
