@@ -269,7 +269,8 @@ public class ClassifierSimulation {
 		figures.render(3,true);
 	}
 	
-	@Test void classifierConfigValues() {
+	@Test 
+	public void classifierConfigValues() {
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Kumaraswamy k = new Kumaraswamy(c);
 			System.out.println(
