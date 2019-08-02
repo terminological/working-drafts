@@ -5,7 +5,7 @@ library(tikzDevice);
 library(cowplot);
 library(tidyverse);
 
-theme_set(theme_bw))
+theme_set(theme_bw(base_size=8))
 
 <#list plots as plot>
 
