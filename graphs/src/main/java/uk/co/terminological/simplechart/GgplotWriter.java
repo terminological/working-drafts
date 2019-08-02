@@ -137,10 +137,10 @@ public abstract class GgplotWriter extends Writer {
 		getRoot().put("schemeName", getChart().getSeries().stream().map(s -> s.getScheme().getName()).findFirst().orElse("Set1"));
 		getRoot().put("includePlotTitles", true);
 		
-		File outFile = getChart().getFile("png");
+		String outFile = getChart().getFileBase();
 		//getRoot()
 		Map<String,Object> wrapperRoot = new HashMap<>();
-		wrapperRoot.put("output", outFile.getAbsolutePath());
+		wrapperRoot.put("output", outFile);
 		
 		Template wrapper = this.getChart().getFigure().getTemplate("ggplotSingleplot.ftl");
 		
@@ -170,7 +170,7 @@ public abstract class GgplotWriter extends Writer {
 		}
 		
 		Chart.log.info("Ending R...");
-		return outFile.toPath();
+		return getChart().getFile("png").toPath();
 	}
 	
 	@Override
