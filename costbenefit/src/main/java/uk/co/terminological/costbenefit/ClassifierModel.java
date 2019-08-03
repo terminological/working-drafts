@@ -1,17 +1,11 @@
 package uk.co.terminological.costbenefit;
 
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
-import static uk.co.terminological.simplechart.Chart.Dimension.Y;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y_LINE;
 
-import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.math3.analysis.solvers.BrentSolver;
-import org.apache.commons.math3.exception.DimensionMismatchException;
-import org.apache.commons.math3.exception.NullArgumentException;
 import org.apache.commons.math3.util.Precision;
 
 import uk.co.terminological.datatypes.Tuple;
@@ -20,7 +14,6 @@ import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.SeriesBuilder;
-import uk.co.terminological.simplechart.SeriesBuilder.Range;
 
 public abstract class ClassifierModel<X> {
 
