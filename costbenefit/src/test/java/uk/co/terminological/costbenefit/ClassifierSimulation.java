@@ -65,7 +65,7 @@ public class ClassifierSimulation {
 		Figure cdfs = Figure.outputTo(path).withTitle("cumulative probability density");
 		Figure rocs = Figure.outputTo(path).withTitle("receiver operator curves");
 		Figure prs = Figure.outputTo(path).withTitle("precision recall curves");
-		Range.of(0.25D,1.0D, 4).forEach(divergence -> {
+		Range.of(0D,1.0D, 4).forEach(divergence -> {
 			Range.of(-0.5, 0.5, 3).forEach(skew -> {
 				Kumaraswamy model = new Kumaraswamy(divergence,skew);
 				model.name = "d:"+twoDp.format(divergence)+" s:"+twoDp.format(skew); //+" auroc:"+twoDp.format(model.AUROC());
