@@ -9,6 +9,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.math3.analysis.solvers.BrentSolver;
+import org.apache.commons.math3.exception.DimensionMismatchException;
+import org.apache.commons.math3.exception.NullArgumentException;
 import org.apache.commons.math3.util.Precision;
 
 import uk.co.terminological.datatypes.Tuple;
@@ -44,7 +47,7 @@ public abstract class ClassifierModel<X> {
 	
 	public static class Kumaraswamy extends ClassifierModel<Double> {
 		
-		Double aPos;
+		/*Double aPos;
 		Double bPos;
 		Double aNeg;
 		Double bNeg;
@@ -52,16 +55,71 @@ public abstract class ClassifierModel<X> {
 		Function<Double,Double> pdfGivenPositive;
 		Function<Double,Double> pdfGivenNegative;
 		Function<Double,Double> cdfGivenPositive;
-		Function<Double,Double> cdfGivenNegative;
-		
-		static Double modeP(Double div, Double skew) {return skew/4D+div/4D+1D/2D;}
-		static Double modeQ(Double div, Double skew) {return skew/4D-div/4D+1D/2D;}
-		static Double iqrP(Double div, Double skew) {return 1D/2D-div/4D;}
-		static Double iqrQ(Double div, Double skew) {return 1D/2D-div/4D;}
-		
-		
+		Function<Double,Double> cdfGivenNegative;*/
 		
 		String name;
+		
+		static Double modePFromDiv(Double div, Double skew) {return skew/4D+div/4D+1D/2D;}
+		static Double modeQFromDiv(Double div, Double skew) {return skew/4D-div/4D+1D/2D;}
+		static Double iqrPFromDiv(Double div, Double skew) {return 1D/2D-div/2D;}
+		static Double iqrQFromDiv(Double div, Double skew) {return 1D/2D-div/2D;}
+		
+		static Double bP(Double aP,Double modeP) {return (1+Math.pow((-Math.pow((aP-1),(1/aP))/(modeP-1)),aP))/aP;}
+		static Double bQ(Double aQ,Double modeQ) {return (1+Math.pow((-Math.pow((aQ-1),(1/aQ))/(modeQ)),aQ))/aQ;}
+		
+		private static Double iqr(Double a,Double b) {return
+			-(
+				Math.pow(
+					(Math.pow(2,(2/b))-Math.pow(3,(1/b))),(1/a)
+				)-Math.pow(
+					(Math.pow(2,(1/b))-1),(1/a)
+				)*Math.pow(
+						(1+Math.pow(2,(1/b))),(1/a)
+					)
+			)/Math.pow(2,(2/(a*b)));
+		}
+		
+		public static Double aP(Double iqrP, Double modeP) {
+			try {
+				return new BrentSolver().solve(500, 
+						aP -> iqrP(aP,modeP)-iqrP, 1,10000,10);
+			} catch (Exception e) {
+				return Double.NaN;
+			}
+		}
+		
+		public static Double aQ(Double iqrQ, Double modeQ) {
+			try {
+				return new BrentSolver().solve(500, 
+						aQ -> iqrQ(aQ,modeQ)-iqrQ, 1,10000,10);
+			} catch (Exception e) {
+				return Double.NaN;
+			}
+		}
+		
+		static Double iqrP(Double aP, Double modeP) {return iqr(aP,bP(aP,modeP));}
+		static Double iqrQ(Double aQ, Double modeQ) {return iqr(aQ,bQ(aQ,modeQ));}
+		
+		static Double P(Double x, Double aP, Double bP) {return Math.pow(1-(1-Math.pow(x, aP)),bP);	}
+		
+		static Double p(Double x, Double aP, Double bP) {
+			return Math.pow(
+					(1-Math.pow((1-x),aP)),(bP-1))
+					*Math.pow((1-x),(aP-1))*aP*bP;
+		}
+		
+		
+		static Double Q(Double x, Double a, Double b) {return 1-Math.pow((1-Math.pow(x, a)),b);	}
+		
+		static Double q(Double x, Double aQ, Double bQ) {
+			return Math.pow(
+					Math.pow((1-x),aQ),(bQ-1))
+					*Math.pow(x,(aQ-1))*aQ*bQ;
+		}
+		
+		//static Double modeQ2(Double aP,Double bP) {return Math.pow((aP-1),(1/aP))/Math.pow((aP*bP-1),(1/aP));}
+		
+		
 		
 		public Kumaraswamy(ClassifierConfig config) {
 			this(config.divergence(), config.skew(), config.toString());
@@ -93,10 +151,10 @@ public abstract class ClassifierModel<X> {
 					skew > -1 && skew < 1))
 				throw new ConstraintViolationException("Divergence must be between 0 and 1, skew must be between -1 and 1");*/
 			this(
-				modeP(divergence, skew),
-				iqrP(divergence, skew),
-				modeQ(divergence, skew),
-				iqrQ(divergence, skew),
+				modePFromDiv(divergence, skew),
+				iqrPFromDiv(divergence, skew),
+				modeQFromDiv(divergence, skew),
+				iqrQFromDiv(divergence, skew),
 				name
 			); 
 			
@@ -104,18 +162,18 @@ public abstract class ClassifierModel<X> {
 		
 		
 		
-		public Kumaraswamy(Double modePos, Double spreadPos, Double modeNeg, Double spreadNeg, String name) {
+		public Kumaraswamy(Double modeP, Double iqrP, Double modeNeg, Double spreadNeg, String name) {
 			
-			if (!(modePos > 0 && modePos < 1 &&
+			if (!(modeP > 0 && modeP < 1 &&
 					modeNeg > 0 && modeNeg < 1 &&
-					spreadPos > 0 && spreadPos < 0.5 &&
+					iqrP > 0 && iqrP < 0.5 &&
 					spreadNeg > 0 && spreadNeg < 0.5 &&  
-					modePos >= modeNeg)) 
+					modeP >= modeNeg)) 
 				throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
 			
 			
-			aPos = KumaraswamyCDF.a(spreadPos, modePos);
-			bPos = KumaraswamyCDF.b(spreadPos, modePos);
+			aPos = KumaraswamyCDF.a(iqrP, modeP);
+			bPos = KumaraswamyCDF.b(iqrP, modeP);
 			pdfGivenPositive = KumaraswamyCDF.pdf(aPos, bPos);
 			cdfGivenPositive = KumaraswamyCDF.cdf(aPos, bPos);
 			
