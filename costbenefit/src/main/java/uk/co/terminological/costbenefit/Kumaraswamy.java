@@ -31,8 +31,8 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	
 	static Double modePFromDiv(Double div, Double skew) {return skew/4D+div/4D+1D/2D;}
 	static Double modeQFromDiv(Double div, Double skew) {return skew/4D-div/4D+1D/2D;}
-	static Double iqrPFromDiv(Double div, Double skew) {return 1D/2D-div/2D;}
-	static Double iqrQFromDiv(Double div, Double skew) {return 1D/2D-div/2D;}
+	static Double iqrPFromDiv(Double div, Double skew) {return 0.45-div*0.4;}
+	static Double iqrQFromDiv(Double div, Double skew) {return 0.45-div*0.4;}
 	
 	static Double bP(Double aP,Double modeP) {return (1+Math.pow((-Math.pow((aP-1),(1/aP))/(modeP-1)),aP))/aP;}
 	static Double bQ(Double aQ,Double modeQ) {return (1+Math.pow((Math.pow((aQ-1),(1/aQ))/(modeQ)),aQ))/aQ;}
