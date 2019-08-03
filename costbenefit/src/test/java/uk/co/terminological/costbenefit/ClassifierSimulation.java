@@ -489,14 +489,14 @@ public class ClassifierSimulation {
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.Set1)
 					.bind(X, t -> t.prevalence)
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.normalisedValue(cm)).getSecond(),"norm value")
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.relativeValue(cm, t.prevalence)).getSecond(),"rel value")
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.accuracy()).getSecond(),"accuracy")
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.f1Score()).getSecond(),"f1 score")
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(4)).getSecond(),"f4 score")
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(0.25)).getSecond(),"f0.25 score")
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.matthewsCorrelationCoefficient()).getSecond(),"mcc")
-					.bind(Y, t -> t.model().bestCutoff(t.prevalence,m -> m.youdensJ()).getSecond(),"youdens")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.normalisedValue(cm)).getSecond(),"norm value")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.relativeValue(cm, t.prevalence)).getSecond(),"rel value")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.accuracy()).getSecond(),"accuracy")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.f1Score()).getSecond(),"f1 score")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(4)).getSecond(),"f4 score")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(0.25)).getSecond(),"f0.25 score")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.matthewsCorrelationCoefficient()).getSecond(),"mcc")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.youdensJ()).getSecond(),"youdens")
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
@@ -504,7 +504,7 @@ public class ClassifierSimulation {
 					
 			});
 		});
-		figures.render(2,true,true);
+		figures.render(3,true,true);
 	}
 	
 	@SuppressWarnings("unchecked")
