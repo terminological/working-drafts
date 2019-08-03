@@ -44,7 +44,8 @@ public class DistributionTest {
 
 	@Test
 	public void plotKumuraswamy() {
-		Kumaraswamy k = new Kumaraswamy(2.329462888137902,5.253279125193206,2.329462888137902,5.253279125193206,"test");
+		Kumaraswamy k = new Kumaraswamy(0.6,0.25,0.4,0.25,"test");
+				//2.329462888137902,5.253279125193206,2.329462888137902,5.253279125193206,"test");
 		k.plot(figures);
 	}
 	
