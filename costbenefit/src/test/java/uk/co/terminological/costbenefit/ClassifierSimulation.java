@@ -473,8 +473,9 @@ public class ClassifierSimulation {
 	@Test
 	public void plotValueAtBestCutoff() {
 		Figure figures = Figure.outputTo(path).withTitle("maximum statistic at best cutoff");
-		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+		
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
+				Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
 			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 			ParameterSpace space = new ParameterSpace(defaults);
@@ -499,10 +500,11 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
-					.done()
-					.render();
+					.done();
+					
 			});
 		});
+		figures.render(2,true,true);
 	}
 	
 	@SuppressWarnings("unchecked")
