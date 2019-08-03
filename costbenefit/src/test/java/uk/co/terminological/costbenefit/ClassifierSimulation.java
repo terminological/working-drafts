@@ -108,7 +108,7 @@ public class ClassifierSimulation {
 		
 		figures.withNewChart("AUROC", ChartType.XYZ_HEATMAP)
 		.config()
-		.withXScale(0F, 0.7F)
+		.withXScale(0.2F, 0.8F)
 		.withYScale(-0.5F, 0.5F)
 		.withXLabel("divergence")
 		.withYLabel("skew")
@@ -121,7 +121,7 @@ public class ClassifierSimulation {
 		.render();
 		
 		data = SeriesBuilder.grid(
-				Range.of(0.2D, 0.7D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
+				Range.of(0.2D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 			).map( c-> 
 				Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 			);	
@@ -130,7 +130,7 @@ public class ClassifierSimulation {
 		.config()
 		.withXLabel("divergence")
 		.withYLabel("skew")
-		.withXScale(0F, 0.7F)
+		.withXScale(0.2F, 0.8F)
 		.withYScale(-0.5F, 0.5F)
 		.done()
 		.withSeries(data).withColourScheme(ColourScheme.Set2)
@@ -144,7 +144,7 @@ public class ClassifierSimulation {
 		
 		Stream.of(0.01,0.05,0.1,0.25,0.5,0.75,0.9,0.95,0.99).forEach(prev -> {
 			Stream<Triple<Double,Double,Kumaraswamy>> data2 = SeriesBuilder.grid(
-					Range.of(0.2D, 0.7D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
+					Range.of(0.2D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 				).map( c-> 
 					Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond(), ""))
 				);	
@@ -153,7 +153,7 @@ public class ClassifierSimulation {
 			.config()
 			.withXLabel("divergence")
 			.withYLabel("skew")
-			.withXScale(0F, 0.7F)
+			.withXScale(0.2F, 0.8F)
 			.withYScale(-0.5F, 0.5F)
 			.done()
 			.withSeries(data2).withColourScheme(ColourScheme.Set3)
