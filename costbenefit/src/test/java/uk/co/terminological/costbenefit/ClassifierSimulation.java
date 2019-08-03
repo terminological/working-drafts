@@ -223,7 +223,7 @@ public class ClassifierSimulation {
 				.done()
 				.withSeries(data);//.withColourScheme(ColourScheme.RedWhiteGreen)
 				
-				for (Double beta: Range.of(-5D, 5D, 11)) {
+				for (Double beta: Range.of(-3D, 3D, 7)) {
 					double f = Math.pow(2, beta);
 					series.bind(Y_LINE, t -> model.screeningBeneficial(cm, t), "beta: "+f);
 					series.bind(X, t -> model.matrix(t, 0.5).fScore(f), "beta: "+f);
@@ -233,7 +233,7 @@ public class ClassifierSimulation {
 				
 			// });
 		});
-		figures.render(3,true,true);
+		figures.render(1,true,true);
 	}
 	
 	@Test
