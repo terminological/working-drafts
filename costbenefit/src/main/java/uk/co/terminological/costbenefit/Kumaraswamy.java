@@ -230,9 +230,11 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public void plot(Figure fig) {
-		plotPdf(fig).render();
-		plotCdf(fig).render();
-		plotRoc(fig).render();
+		fig.withTitle(name);
+		plotPdf(fig);
+		plotCdf(fig);
+		plotRoc(fig);
+		fig.render(3, true);
 	}
 	
 	public Tuple<Double,Double> bestCutoff(Double prev,Function<ConfusionMatrix2D,Double> feature) {
