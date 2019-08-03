@@ -364,8 +364,8 @@ public class ClassifierSimulation {
 				
 			Figure figures = Figure.outputTo(path).withTitle(k);
 			ColourScheme cs = ColourScheme.sequential3(i.get()).contrast(0.5F);
-			SeriesBuilder.range(0D, 0.4D, 3).forEach( divergence -> {
-				SeriesBuilder.range(-0.2D, 0.2D, 3).forEach( skew -> {
+			Range.of(0.2D,0.8D, 4).forEach( divergence -> {
+				SeriesBuilder.range(-0.5D, 0.5D, 3).forEach( skew -> {
 					// ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
 					// ParameterSpace space = new ParameterSpace(defaults);
 					Kumaraswamy model = new Kumaraswamy(divergence, skew);
