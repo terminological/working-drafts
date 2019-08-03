@@ -47,15 +47,15 @@ public abstract class ClassifierModel<X> {
 	
 	public static class Kumaraswamy extends ClassifierModel<Double> {
 		
-		/*Double aPos;
-		Double bPos;
-		Double aNeg;
-		Double bNeg;
+		Double aP;
+		Double bP;
+		Double aQ;
+		Double bQ;
 		
-		Function<Double,Double> pdfGivenPositive;
-		Function<Double,Double> pdfGivenNegative;
-		Function<Double,Double> cdfGivenPositive;
-		Function<Double,Double> cdfGivenNegative;*/
+		Function<Double,Double> pFunc;
+		Function<Double,Double> qFunc;
+		Function<Double,Double> PFunc;
+		Function<Double,Double> QFunc;
 		
 		String name;
 		
@@ -169,18 +169,18 @@ public abstract class ClassifierModel<X> {
 					iqrP > 0 && iqrP < 0.5 &&
 					iqrQ > 0 && iqrQ < 0.5 &&  
 					modeP >= modeQ)) 
-				throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
+				throw new ConstraintViolationException("Modes must be between 0 and 1, IQR must be greater than zero, modePos must be larger than modeNeg");
 			
 			
-			aPos = KumaraswamyCDF.a(iqrP, modeP);
-			bPos = KumaraswamyCDF.b(iqrP, modeP);
-			pdfGivenPositive = KumaraswamyCDF.pdf(aPos, bPos);
-			cdfGivenPositive = KumaraswamyCDF.cdf(aPos, bPos);
+			aP = aP(iqrP, modeP);
+			bP = bP(aP, modeP);
+			pFunc = x -> p(x,aP,bP);
+			PFunc = x -> P(x,aP,bP);
 			
-			aNeg = KumaraswamyCDF.a(iqrQ, modeQ);
-			bNeg = KumaraswamyCDF.b(iqrQ, modeQ);
-			pdfGivenNegative = x -> KumaraswamyCDF.pdf(aNeg, bNeg).apply(1-x);
-			cdfGivenNegative = x -> 1-KumaraswamyCDF.cdf(aNeg, bNeg).apply(1-x);
+			aQ = aQ(iqrQ, modeQ);
+			bQ = bQ(aQ, modeQ);
+			qFunc = x -> q(x,aQ,bQ);
+			QFunc = x -> Q(x,aQ,bQ);
 			
 			/*aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
 			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
@@ -200,8 +200,8 @@ public abstract class ClassifierModel<X> {
 			.done()
 			.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 			.bind(X, t -> t)
-			.bind(Y_LINE, pdfGivenPositive,"pos pdf")
-			.bind(Y_LINE, pdfGivenNegative,"neg pdf")
+			.bind(Y_LINE, pFunc,"pos pdf")
+			.bind(Y_LINE, qFunc,"neg pdf")
 			.done();
 		}
 		
@@ -214,8 +214,8 @@ public abstract class ClassifierModel<X> {
 					.done()
 					.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 					.bind(X, t -> t)
-					.bind(Y_LINE, cdfGivenPositive,"pos cdf")
-					.bind(Y_LINE, cdfGivenNegative,"neg cdf")
+					.bind(Y_LINE, PFunc,"pos cdf")
+					.bind(Y_LINE, QFunc,"neg cdf")
 					//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
 					.done();
 		}
@@ -286,8 +286,8 @@ public abstract class ClassifierModel<X> {
 		
 		public ConfusionMatrix2D matrix(Double prev,Double cutoff) {
 			
-			Double cdfPos = cdfGivenPositive.apply(cutoff);
-			Double cdfNeg = cdfGivenNegative.apply(cutoff);
+			Double cdfPos = PFunc.apply(cutoff);
+			Double cdfNeg = QFunc.apply(cutoff);
 			
 			Double eTp = prev*(1-cdfPos);
 			Double eTn = (1-prev)*cdfNeg;
@@ -308,8 +308,8 @@ public abstract class ClassifierModel<X> {
 		}
 		
 		public Double KLDivergence() {
-			Function<Double,Double> p = pdfGivenPositive;
-			Function<Double,Double> q = pdfGivenNegative;
+			Function<Double,Double> p = pFunc;
+			Function<Double,Double> q = qFunc;
 			Double dpq = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,
@@ -327,9 +327,9 @@ public abstract class ClassifierModel<X> {
 		
 		
 		public Double LambdaDivergence(Double prev) {
-			Function<Double,Double> p = pdfGivenPositive;
-			Function<Double,Double> q = pdfGivenNegative;
-			Function<Double,Double> j = x -> prev*pdfGivenPositive.apply(x) + (1-prev)*pdfGivenNegative.apply(x);
+			Function<Double,Double> p = pFunc;
+			Function<Double,Double> q = qFunc;
+			Function<Double,Double> j = x -> prev*pFunc.apply(x) + (1-prev)*qFunc.apply(x);
 			Double dpq = 
 					SeriesBuilder.range(0.0, 1.0, 1000)
 						.map(x -> Tuple.create(x,
