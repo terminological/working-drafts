@@ -139,7 +139,10 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 				iqrP > 0 && iqrP < 0.5 &&
 				iqrQ > 0 && iqrQ < 0.5 &&  
 				modeP >= modeQ)) 
-			throw new ConstraintViolationException("Modes must be between 0 and 1, IQR must be greater than zero, modePos must be larger than modeNeg");
+			throw new ConstraintViolationException(
+					"Modes must be between 0 and 1, IQR must be greater than zero, modePos must be larger than modeNeg :"+
+							"modes: ["+modeP+","+modeQ+"], iqrs: ["+iqrP+","+iqrQ+"]" 
+					);
 		
 		
 		aP = aP(iqrP, modeP);
