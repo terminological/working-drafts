@@ -323,7 +323,7 @@ public class ClassifierSimulation {
 			ParameterSpace space = new ParameterSpace(defaults);
 			space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-			figures.withNewChart(c.nickname()+":"+cm.nickname(), ChartType.XYZ_HEATMAP)
+			figures.withNewChart(c.nickname()+":"+cm.nickname()+" rv", ChartType.XYZ_HEATMAP)
 					.config().withXScale(0F, 1F)
 					.withXLabel("cutoff")
 					.withYLabel("prevalence")
@@ -472,7 +472,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotValueAtBestCutoff() {
-		Figure figures = Figure.outputTo(path);
+		Figure figures = Figure.outputTo(path).withTitle("maximum statistic at best cutoff");
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
 			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
@@ -480,7 +480,7 @@ public class ClassifierSimulation {
 			ParameterSpace space = new ParameterSpace(defaults);
 			//space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
 			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
-			figures.withNewChart(c+" "+cm+" statistic at best cutoff", ChartType.XY_MULTI_LINE)
+			figures.withNewChart(c.nickname()+":"+cm.nickname()+" best", ChartType.XY_MULTI_LINE)
 					.config().withXScale(0F, 1F)
 					.withXLabel("prevalence")
 					.withYLabel("statistic value")
