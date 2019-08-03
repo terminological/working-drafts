@@ -42,6 +42,12 @@ public class DistributionTest {
 		fail("Not yet implemented");
 	}
 
+	@Test
+	public void plotKumuraswamy() {
+		Kumaraswamy k = new Kumaraswamy(2.329462888137902,5.253279125193206,2.329462888137902,5.253279125193206,"test");
+		k.plot(figures);
+	}
+	
 	
 	@Test
 	public void test123() throws IOException, TemplateException {
