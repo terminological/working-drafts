@@ -162,7 +162,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotPdf(Figure fig) {
-		return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" pdf", ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("x")
 		.withYLabel("density")
@@ -176,7 +176,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotCdf(Figure fig) {
-		return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" cdf", ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("x")
 		.withYLabel("cumulative")
@@ -191,7 +191,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotRoc(Figure fig) {
-		return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" roc", ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("1-sens")
 		.withYLabel("spec")
@@ -205,7 +205,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotPR(Figure fig) {
-		return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" pr", ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withYLabel("precision")
 		.withXLabel("recall")
