@@ -1,7 +1,5 @@
 package uk.co.terminological.costbenefit;
 
-import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
-
 public class ParameterSet {
 	public ParameterSet(Double prevalence, Double divergence, Double skew, 
 			Double tpValue, Double tnValue, Double fpCost,

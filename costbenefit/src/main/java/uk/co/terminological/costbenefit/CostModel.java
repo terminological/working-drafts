@@ -2,7 +2,6 @@ package uk.co.terminological.costbenefit;
 
 import java.util.Optional;
 
-import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
 import uk.co.terminological.simplechart.SeriesBuilder;
 
 public interface CostModel {

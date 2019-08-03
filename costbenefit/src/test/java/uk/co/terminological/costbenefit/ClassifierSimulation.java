@@ -21,7 +21,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import freemarker.template.TemplateException;
-import uk.co.terminological.costbenefit.ClassifierModel.Kumaraswamy;
 import uk.co.terminological.datatypes.FluentList;
 import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.datatypes.Triple;
