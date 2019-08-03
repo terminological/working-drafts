@@ -77,8 +77,8 @@ public class ClassifierSimulation {
 		});
 		//TODO: adlter classifier config enum to use spread and divergence
 		//TODO: adlter classifier config enum to use spread and divergence
-		pdfs.render(3, true);
-		cdfs.render(3, true);
+		pdfs.render(3, true, true);
+		cdfs.render(3, true, true);
 		//rocs.render(3, true);
 		//prs.render(3, true);
 		//Range modeRange = Range.of(0.1, 0.9, 3);
@@ -162,7 +162,7 @@ public class ClassifierSimulation {
 			.bind(Z, t -> t.getThird().LambdaDivergence(prev))
 			.done();
 		});
-		figures2.render(3,true);
+		figures2.render(3,true,true);
 		
 	}
 	
@@ -197,7 +197,7 @@ public class ClassifierSimulation {
 				
 			});
 		});
-		figures.render(4,true);
+		figures.render(4,true,true);
 	}
 	
 	@Test
@@ -233,7 +233,7 @@ public class ClassifierSimulation {
 				
 			// });
 		});
-		figures.render(3,true);
+		figures.render(3,true,true);
 	}
 	
 	@Test
@@ -265,7 +265,7 @@ public class ClassifierSimulation {
 					.done();
 				});
 		});
-		figures.render(3,true);
+		figures.render(3,true,true);
 	}
 	
 	@Test 
@@ -342,7 +342,7 @@ public class ClassifierSimulation {
 					.done();
 				});
 		});
-		figures.render(3,true);
+		figures.render(3,true,true);
 	}
 	
 	/**
@@ -393,7 +393,7 @@ public class ClassifierSimulation {
 							.done();
 				});
 			});
-			figures.render(3,true);
+			figures.render(3,true,true);
 			i.incrementAndGet();
 		});
 	}
@@ -465,7 +465,7 @@ public class ClassifierSimulation {
 					
 			});
 		});
-		figures.render(3,true);
+		figures.render(3,true,true);
 	}
 	
 	@Test
