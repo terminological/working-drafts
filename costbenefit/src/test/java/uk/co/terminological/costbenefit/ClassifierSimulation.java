@@ -68,7 +68,7 @@ public class ClassifierSimulation {
 		Range.of(0.2D,0.6D, 5).forEach(divergence -> {
 			Range.of(-0.4, 0.4, 3).forEach(skew -> {
 				Kumaraswamy model = new Kumaraswamy(divergence,skew);
-				model.name = "d:"+twoDp.format(divergence)+" s:"+twoDp.format(skew)+" auroc:"+twoDp.format(model.AUROC());
+				model.name = "d:"+twoDp.format(divergence)+" s:"+twoDp.format(skew); //+" auroc:"+twoDp.format(model.AUROC());
 				model.plotPdf(pdfs);
 				model.plotCdf(cdfs);
 				model.plotRoc(rocs);
