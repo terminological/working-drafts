@@ -70,21 +70,21 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	static Double iqrP(Double aP, Double modeP) {return iqr(aP,bP(aP,modeP));}
 	static Double iqrQ(Double aQ, Double modeQ) {return iqr(aQ,bQ(aQ,modeQ));}
 	
-	static Double P(Double x, Double aP, Double bP) {return Math.pow(1-(1-Math.pow(x, aP)),bP);	}
+	static Double P(Double x, Double aP, Double bP) {
+		return Math.pow(1-(Math.pow((1-x), aP)),bP);	}
 	
 	static Double p(Double x, Double aP, Double bP) {
-		return Math.pow(
-				(1-Math.pow((1-x),aP)),(bP-1))
-				*Math.pow((1-x),(aP-1))*aP*bP;
+		return bP*P(x,aP,bP-1)*
+				aP*Math.pow((1-x),(aP-1));
 	}
 	
 	
-	static Double Q(Double x, Double a, Double b) {return 1-Math.pow((1-Math.pow(x, a)),b);	}
+	static Double Q(Double x, Double aQ, Double bQ) {
+		return 1-Math.pow((1-Math.pow(x, aQ)),bQ);	}
 	
 	static Double q(Double x, Double aQ, Double bQ) {
-		return Math.pow(
-				Math.pow((1-x),aQ),(bQ-1))
-				*Math.pow(x,(aQ-1))*aQ*bQ;
+		return bQ*Q(x,aQ,bQ-1)*
+				aQ*Math.pow(x,(aQ-1));
 	}
 	
 	//static Double modeQ2(Double aP,Double bP) {return Math.pow((aP-1),(1/aP))/Math.pow((aP*bP-1),(1/aP));}
