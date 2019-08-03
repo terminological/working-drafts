@@ -177,31 +177,31 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	
 	public Chart plotCdf(Figure fig) {
 		return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
-				.config().withXScale(0F, 1F)
-				.withXLabel("x")
-				.withYLabel("cumulative")
-				.withYScale(0F, 1F)
-				.done()
-				.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
-				.bind(X, t -> t)
-				.bind(Y_LINE, PFunc,"pos cdf")
-				.bind(Y_LINE, QFunc,"neg cdf")
-				//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
-				.done();
+		.config().withXScale(0F, 1F)
+		.withXLabel("x")
+		.withYLabel("cumulative")
+		.withYScale(0F, 1F)
+		.done()
+		.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+		.bind(X, t -> t)
+		.bind(Y_LINE, PFunc,"pos cdf")
+		.bind(Y_LINE, QFunc,"neg cdf")
+		//.bind(Y, t -> prev*cdfGivenPositive.apply(t)+prev*cdfGivenNegative.apply(t),"joint cdf")
+		.done();
 	}
 	
 	public Chart plotRoc(Figure fig) {
 		return fig.withNewChart(name, ChartType.XY_MULTI_LINE)
-				.config().withXScale(0F, 1F)
-				.withXLabel("1-sens")
-				.withYLabel("spec")
-				.withYScale(0F, 1F)
-				.done()
-				.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
-				.bind(X, t -> 1-matrix(0.5,t).sensitivity())
-				.bind(Y_LINE, t -> matrix(0.5,t).specificity(),"roc")
-				.bind(Y_LINE, t -> 1-matrix(0.5,t).sensitivity(),"identity")
-				.done();
+		.config().withXScale(0F, 1F)
+		.withXLabel("1-sens")
+		.withYLabel("spec")
+		.withYScale(0F, 1F)
+		.done()
+		.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
+		.bind(X, t -> 1-matrix(0.5,t).sensitivity())
+		.bind(Y_LINE, t -> matrix(0.5,t).specificity(),"roc")
+		.bind(Y_LINE, t -> 1-matrix(0.5,t).sensitivity(),"identity")
+		.done();
 	}
 	
 	public Chart plotPR(Figure fig) {
