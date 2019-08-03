@@ -38,7 +38,7 @@ public class Chart {
 	protected Chart(String title, Optional<Template> template, Class<? extends Writer> class1, File workingDirectory, Figure figure) {
 		this.template = template;
 		this.figure = figure;
-		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
+		this.filename = title.replaceAll("[^a-zA-Z0-9\\-]", "_");
 		this.writerCls = class1;
 		this.config = Config.create(this, title);
 		log.info("Chart at: directory="+workingDirectory+"; file="+filename);
