@@ -80,7 +80,7 @@ public class ClassifierSimulation {
 		pdfs.render(3, true, true);
 		cdfs.render(3, true, true);
 		rocs.render(3, true, true);
-		//prs.render(3, true);
+		prs.render(3, true,true);
 		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
 		/*Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
