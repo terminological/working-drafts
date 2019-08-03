@@ -79,8 +79,8 @@ public class ClassifierSimulation {
 		//TODO: adlter classifier config enum to use spread and divergence
 		pdfs.render(3, true);
 		cdfs.render(3, true);
-		rocs.render(3, true);
-		prs.render(3, true);
+		//rocs.render(3, true);
+		//prs.render(3, true);
 		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
 		/*Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
