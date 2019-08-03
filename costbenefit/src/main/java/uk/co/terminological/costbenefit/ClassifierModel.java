@@ -162,13 +162,13 @@ public abstract class ClassifierModel<X> {
 		
 		
 		
-		public Kumaraswamy(Double modeP, Double iqrP, Double modeNeg, Double spreadNeg, String name) {
+		public Kumaraswamy(Double modeP, Double iqrP, Double modeQ, Double spreadNeg, String name) {
 			
 			if (!(modeP > 0 && modeP < 1 &&
-					modeNeg > 0 && modeNeg < 1 &&
+					modeQ > 0 && modeQ < 1 &&
 					iqrP > 0 && iqrP < 0.5 &&
 					spreadNeg > 0 && spreadNeg < 0.5 &&  
-					modeP >= modeNeg)) 
+					modeP >= modeQ)) 
 				throw new ConstraintViolationException("Modes must be between 0 and 1, spread must be greater than zero, modePos must be larger than modeNeg");
 			
 			
@@ -177,8 +177,8 @@ public abstract class ClassifierModel<X> {
 			pdfGivenPositive = KumaraswamyCDF.pdf(aPos, bPos);
 			cdfGivenPositive = KumaraswamyCDF.cdf(aPos, bPos);
 			
-			aNeg = KumaraswamyCDF.a(spreadNeg, modeNeg);
-			bNeg = KumaraswamyCDF.b(spreadNeg, modeNeg);
+			aNeg = KumaraswamyCDF.a(spreadNeg, modeQ);
+			bNeg = KumaraswamyCDF.b(spreadNeg, modeQ);
 			pdfGivenNegative = x -> KumaraswamyCDF.pdf(aNeg, bNeg).apply(1-x);
 			cdfGivenNegative = x -> 1-KumaraswamyCDF.cdf(aNeg, bNeg).apply(1-x);
 			
