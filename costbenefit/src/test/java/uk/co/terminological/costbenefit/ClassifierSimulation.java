@@ -65,8 +65,8 @@ public class ClassifierSimulation {
 		Figure cdfs = Figure.outputTo(path).withTitle("cumulative probability density");
 		Figure rocs = Figure.outputTo(path).withTitle("receiver operator curves");
 		Figure prs = Figure.outputTo(path).withTitle("precision recall curves");
-		Range.of(0.2D,0.6D, 5).forEach(divergence -> {
-			Range.of(-0.4, 0.4, 3).forEach(skew -> {
+		Range.of(0.25D,1.0D, 4).forEach(divergence -> {
+			Range.of(-0.5, 0.5, 3).forEach(skew -> {
 				Kumaraswamy model = new Kumaraswamy(divergence,skew);
 				model.name = "d:"+twoDp.format(divergence)+" s:"+twoDp.format(skew); //+" auroc:"+twoDp.format(model.AUROC());
 				model.plotPdf(pdfs);
@@ -79,7 +79,7 @@ public class ClassifierSimulation {
 		//TODO: adlter classifier config enum to use spread and divergence
 		pdfs.render(3, true, true);
 		cdfs.render(3, true, true);
-		//rocs.render(3, true);
+		rocs.render(3, true, true);
 		//prs.render(3, true);
 		//Range modeRange = Range.of(0.1, 0.9, 3);
 		//Double mode = 0.75D;
