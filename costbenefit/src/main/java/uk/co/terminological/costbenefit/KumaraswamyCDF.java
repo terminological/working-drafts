@@ -26,6 +26,7 @@ import uk.co.terminological.simplechart.SeriesBuilder;
  * @author rc538
  *
  */
+@Deprecated
 public class KumaraswamyCDF implements ParametricUnivariateFunction {
 
 	
