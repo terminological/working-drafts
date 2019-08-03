@@ -400,7 +400,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotValueVersusAccuracy() {
-		Figure figures = Figure.outputTo(path);
+		Figure figures = Figure.outputTo(path).withTitle("Value versus accuracy");
 		Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			Stream.of(CostModelEnum.values()).forEach( cm-> {
 			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
@@ -424,10 +424,11 @@ public class ClassifierSimulation {
 					//.bind(Y, t -> t.matrix().fn,"fn")
 					.bind(Z, t -> t.matrix().relativeValue(cm,t.prevalence)-t.matrix().accuracy())
 					.bind(Y, t -> t.prevalence,"prevalence")
-					.done()
-					.render();
+					.done();
 			});
+			
 		});
+		figures.render(3,true,true);
 	}
 	
 	@Test
