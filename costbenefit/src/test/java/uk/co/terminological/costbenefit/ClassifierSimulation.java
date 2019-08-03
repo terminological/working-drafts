@@ -101,7 +101,7 @@ public class ClassifierSimulation {
 		//Range spreadRange = Range.of(0.1D,1D, 6);
 		Figure figures = Figure.outputTo(path);
 		Stream<Triple<Double,Double,Kumaraswamy>> data = SeriesBuilder.grid(
-				Range.of(0.2D, 0.7D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
+				Range.of(0.2D, 0.8D, 0.01D),Range.of(-0.5D, 0.5D, 0.01D)
 		).map( c-> 
 			Triple.create(c.getFirst(), c.getSecond(), new Kumaraswamy(c.getFirst(), c.getSecond()))
 		);	
