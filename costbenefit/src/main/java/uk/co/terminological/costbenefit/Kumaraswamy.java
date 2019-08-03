@@ -234,7 +234,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		plotPdf(fig);
 		plotCdf(fig);
 		plotRoc(fig);
-		fig.render(3, true);
+		fig.render(3, true, false);
 	}
 	
 	public Tuple<Double,Double> bestCutoff(Double prev,Function<ConfusionMatrix2D,Double> feature) {

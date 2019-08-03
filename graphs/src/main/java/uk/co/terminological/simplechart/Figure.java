@@ -116,7 +116,7 @@ public class Figure {
 		return out;
 	}*/
 
-	public void render(Integer cols, boolean includePlotTitles) {
+	public void render(Integer cols, boolean includePlotTitles, boolean mergeAxes) {
 		try {
 		Template wrapper = this.getTemplate("ggplotMultiplot.ftl");
 		List<String> tmp = new ArrayList<>();
@@ -132,6 +132,7 @@ public class Figure {
 		wrapperRoot.put("title", this.getTitle());
 		wrapperRoot.put("cols", cols);
 		wrapperRoot.put("includePlotTitles", includePlotTitles);
+		wrapperRoot.put("mergeAxes", mergeAxes);
 		wrapper.process(wrapperRoot, pw);
 		pw.close();
 		
