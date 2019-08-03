@@ -507,7 +507,7 @@ public class ClassifierSimulation {
 		figures.render(3,true,true);
 	}
 	
-	@SuppressWarnings("unchecked")
+	/*@SuppressWarnings("unchecked")
 	@Test
 	public void plotDebug2() {
 		Figure figures = Figure.outputTo(path);
@@ -557,5 +557,5 @@ public class ClassifierSimulation {
 						.render();
 					});
 				});
-	}
+	}*/
 }
