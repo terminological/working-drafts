@@ -83,7 +83,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		return 1-Math.pow((1-Math.pow(x, aQ)),bQ);	}
 	
 	static Double q(Double x, Double aQ, Double bQ) {
-		return bQ*Q(x,aQ,bQ-1)*
+		return bQ*Math.pow(1-Math.pow(x,aQ), bQ-1)*
 				aQ*Math.pow(x,(aQ-1));
 	}
 	
