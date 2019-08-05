@@ -511,6 +511,54 @@ public class ClassifierSimulation {
 		figures.render(3,true,true);
 	}
 	
+	@Test
+	public void plotBestValueVsCutoff() {
+		Figure figures = Figure.outputTo(path).withTitle("best cutoff");
+		Stream.of(CostModelEnum.values()).forEach( cm-> {
+			Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
+			//ClassifierConfigEnum c = ClassifierConfigEnum.HIGH_INFORMATION;
+			
+			//CostModelEnum cm = CostModelEnum.CANCER_IS_UNTREATABLE;
+			ParameterSet defaults = new ParameterSet(0.1,c,cm,null);
+			ParameterSpace space = new ParameterSpace(defaults);
+			//space.cutOff = SeriesBuilder.range(0.0, 1.0, 100).collect(Collectors.toList());
+			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
+			figures.withNewChart(c.nickname()+":"+cm.nickname(), ChartType.XY_MULTI_LINE)
+					.config().withXScale(0F, 1F)
+					.withXLabel("prevalence")
+					.withYLabel("best cutoff")
+					.withYScale(0F, 1F)
+					.done()
+					.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
+					.bind(X, t -> t.model().bestCutoff(t.prevalence,m -> m.normalisedValue(cm)).getFirst(),"norm value")
+					.bind(X, t -> t.model().bestCutoff(t.prevalence,m -> m.relativeValue(cm, t.prevalence)).getFirst(),"rel value")
+					.bind(X, t -> t.model().bestCutoff(t.prevalence,m -> m.accuracy()).getFirst(),"accuracy")
+					.bind(X, t -> t.model().bestCutoff(t.prevalence,m -> m.f1Score()).getFirst(),"f1 score")
+					//.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(4)).getFirst(),"f4 score")
+					//.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(0.25)).getFirst(),"f0.25 score")
+					.bind(X, t -> t.model().bestCutoff(t.prevalence,m -> m.matthewsCorrelationCoefficient()).getFirst(),"mcc")
+					.bind(X, t -> t.model().bestCutoff(t.prevalence,m -> m.youdensJ()).getFirst(),"youdens")
+					.bind(X, t -> t.model().bestCutoff(t.prevalence,m -> m.mi()).getFirst(),"mi")
+					
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.normalisedValue(cm)).getSecond(),"norm value")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.relativeValue(cm, t.prevalence)).getSecond(),"rel value")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.accuracy()).getSecond(),"accuracy")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.f1Score()).getSecond(),"f1 score")
+					//.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(4)).getSecond(),"f4 score")
+					//.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(0.25)).getSecond(),"f0.25 score")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.matthewsCorrelationCoefficient()).getSecond(),"mcc")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.youdensJ()).getSecond(),"youdens")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.mi()).getSecond(),"mi")
+					//.bind(Y, t -> t.matrix().tn,"tn")
+					//.bind(Y, t -> t.matrix().fp,"fp")
+					//.bind(Y, t -> t.matrix().fn,"fn")
+					.done();
+					
+			});
+		});
+		figures.render(3,true,true);
+	}
+	
 	/*@SuppressWarnings("unchecked")
 	@Test
 	public void plotDebug2() {
