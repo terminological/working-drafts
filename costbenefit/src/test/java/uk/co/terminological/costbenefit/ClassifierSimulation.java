@@ -355,9 +355,9 @@ public class ClassifierSimulation {
 		
 		FluentMap<String,Function<ConfusionMatrix2D,Double>> tmp = new FluentMap<>();
 		tmp
-			//.and("accuracy", conf -> conf.accuracy())
-			//.and("f1 score", conf -> conf.f1Score())
-			//.and("mcc",m -> m.matthewsCorrelationCoefficient())
+			.and("accuracy", conf -> conf.accuracy())
+			.and("f1 score", conf -> conf.f1Score())
+			.and("mcc",m -> m.matthewsCorrelationCoefficient())
 			.and("mi", conf -> conf.mi());
 		
 		
