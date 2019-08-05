@@ -110,9 +110,9 @@ public class ConfusionMatrix2D {
 		double px0 = px0y0+px0y1;
 		double py1 = px0y1+px1y1;
 		double py0 = px0y0+px1y0;
-		return px1y1*pmi(px1y1,px1,py1)
-				+px0y1*pmi(px0y1,px0,py1)
-				+px1y0*pmi(px1y0,px1,py0)
-				+px0y0*pmi(px0y0,px0,py0);
+		return (px1y1==0 ? 0 : px1y1*pmi(px1y1,px1,py1))
+				+(px0y1==0 ? 0 : px0y1*pmi(px0y1,px0,py1))
+				+(px1y0==0 ? 0 : px1y0*pmi(px1y0,px1,py0))
+				+(px0y0==0 ? 0 : px0y0*pmi(px0y0,px0,py0));
 	}
 }
