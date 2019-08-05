@@ -194,7 +194,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotRoc(Figure fig) {
-		return fig.withNewChart(name+" roc", ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" auc="+this.AUROC(), ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("1-sens")
 		.withYLabel("spec")
@@ -279,6 +279,14 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		SeriesBuilder.range(0.0, 1.0, 1000)
 			.map(c -> matrix(0.5,c))
 			.map(m -> Tuple.create(m.sensitivity(), m.specificity()))
+			.collect(TrapeziodIntegrator.integrator());
+	}
+	
+	public Double AUPR(Double prev) {
+		return 
+		SeriesBuilder.range(0.0, 1.0, 1000)
+			.map(c -> matrix(prev,c))
+			.map(m -> Tuple.create(m.recall(),m.precision()))
 			.collect(TrapeziodIntegrator.integrator());
 	}
 	
