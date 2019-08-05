@@ -93,7 +93,8 @@ public class ConfusionMatrix2D {
 			throw new RuntimeException("Parameters invalid");
 		}
 		if (px==0 || py==0) return 0D; //pxy must also be zero at this point. could return NaN...
-		if (pxy == 0) return Double.NEGATIVE_INFINITY;
+		if (pxy == 0) 
+			return Double.NEGATIVE_INFINITY;
 		return Math.log(pxy/(px*py));
 	}
 	
