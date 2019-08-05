@@ -106,9 +106,9 @@ public class ConfusionMatrix2D {
 		if (px1y1 < 0D || px1y1 > 1D || px0y1 < 0D || px0y1 > 1D || px1y0 < 0D || px1y0 > 1D ) throw new RuntimeException("Parameters invalid");
 		
 		double px1 = px1y0+px1y1;
-		double px0 = 1.0-px1;
-		double py1 = px1y1+px0y1;
-		double py0 = 1.0-py1;
+		double px0 = px0y0+px0y1;
+		double py1 = px0y1+px1y1;
+		double py0 = px0y0+px1y0;
 		return px1y1*pmi(px1y1,px1,py1)
 				+px0y1*pmi(px0y1,px0,py1)
 				+px1y0*pmi(px1y0,px1,py0)
