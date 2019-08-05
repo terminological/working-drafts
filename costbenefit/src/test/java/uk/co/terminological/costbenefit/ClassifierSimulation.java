@@ -513,7 +513,7 @@ public class ClassifierSimulation {
 	
 	@Test
 	public void plotBestValueVsCutoff() {
-		Figure figures = Figure.outputTo(path).withTitle("best cutoff");
+		Figure figures = Figure.outputTo(path).withTitle("best value versus cutoff");
 		Stream.of(CostModelEnum.values()).forEach( cm-> {
 			Stream.of(ClassifierConfigEnum.values()).forEach( c-> {
 			//ClassifierConfigEnum c = ClassifierConfigEnum.HIGH_INFORMATION;
@@ -525,8 +525,8 @@ public class ClassifierSimulation {
 			space.prevalence = SeriesBuilder.range(0.005,0.995,0.01).collect(Collectors.toList());
 			figures.withNewChart(c.nickname()+":"+cm.nickname(), ChartType.XY_MULTI_LINE)
 					.config().withXScale(0F, 1F)
-					.withXLabel("prevalence")
-					.withYLabel("best cutoff")
+					.withXLabel("best cutoff")
+					.withYLabel("best value")
 					.withYScale(0F, 1F)
 					.done()
 					.withSeries(space.stream()).withColourScheme(ColourScheme.Dark2)
