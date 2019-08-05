@@ -462,6 +462,7 @@ public class ClassifierSimulation {
 					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.fScore(0.25)).getFirst(),"f0.25 score")
 					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.matthewsCorrelationCoefficient()).getFirst(),"mcc")
 					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.youdensJ()).getFirst(),"youdens")
+					.bind(Y_LINE, t -> t.model().bestCutoff(t.prevalence,m -> m.mi()).getFirst(),"mi")
 					//.bind(Y, t -> t.matrix().tn,"tn")
 					//.bind(Y, t -> t.matrix().fp,"fp")
 					//.bind(Y, t -> t.matrix().fn,"fn")
