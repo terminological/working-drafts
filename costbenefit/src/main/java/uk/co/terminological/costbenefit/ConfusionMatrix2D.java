@@ -86,6 +86,8 @@ public class ConfusionMatrix2D {
 		return absoluteValue(tpValue,tnValue,fpCost,fnCost)/(maxValue-minCost);
 	}
 	
+	
+	
 	private double pmi(double pxy, double px, double py) {
 		if (pxy < 0D || pxy > 1D || px < 0D || px > 1D || py < 0D || py > 1D || pxy > px || pxy > py ) throw new RuntimeException("Parameters invalid");
 		if (px==0 || py==0) return 0D; //pxy must also be zero at this point. could return NaN...

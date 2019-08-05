@@ -357,7 +357,9 @@ public class ClassifierSimulation {
 		tmp
 			.and("accuracy", conf -> conf.accuracy())
 			.and("f1 score", conf -> conf.f1Score())
-			.and("mcc",m -> m.matthewsCorrelationCoefficient());
+			.and("mcc",m -> m.matthewsCorrelationCoefficient())
+			.and("mi", conf -> conf.mi());
+		
 		
 		AtomicInteger i = new AtomicInteger(1);
 		tmp.forEach((k,fn) -> {		
