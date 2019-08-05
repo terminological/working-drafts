@@ -308,7 +308,6 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		return dpq+dqp;		
 	}
 	
-	
 	public Double LambdaDivergence(Double prev) {
 		Function<Double,Double> p = pFunc;
 		Function<Double,Double> q = qFunc;
