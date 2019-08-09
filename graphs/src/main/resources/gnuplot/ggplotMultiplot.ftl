@@ -6,6 +6,7 @@ library(ggpubr);
 library(ggplot2);
 library(patchwork);
 library(tidyverse);
+library(latex2exp);
 
 theme_set(
 	theme_bw(base_size=8,base_family="sans")+
@@ -52,9 +53,9 @@ p <- grid;
 </#if>
 
 # save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
-ggsave("${output}.png", p, width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}));
-ggsave("${output}.pdf", p, width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}));
-# tikz(file = "${output}.tex", width = min(6,8*${cols}/${(plots?size/cols)?int}), height = min(8,6*${(plots?size/cols)?int}/${cols}))
+ggsave("${output}.png", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
+ggsave("${output}.pdf", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
+# tikz(file = "${output}.tex", width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}))
 # print(p)
 # dev.off()
 

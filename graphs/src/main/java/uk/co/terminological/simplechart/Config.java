@@ -174,8 +174,8 @@ public class Config {
 	
 	public List<String> getGGplotLabels() {
 		return labels.entrySet().stream().map(kv -> { 
-			return kv.getKey().name().toLowerCase()+"="+
-					"\""+kv.getValue()+"\"";
+			return kv.getKey().name().toLowerCase()+"=TeX("+
+					"\""+kv.getValue()+"\")";
 		}).collect(Collectors.toList());
 	}
 

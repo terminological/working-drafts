@@ -3,6 +3,8 @@ package uk.co.terminological.costbenefit;
 import static uk.co.terminological.simplechart.Chart.Dimension.X;
 import static uk.co.terminological.simplechart.Chart.Dimension.Y_LINE;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.function.Function;
 
 import org.apache.commons.math3.analysis.solvers.BrentSolver;
@@ -10,12 +12,15 @@ import org.apache.commons.math3.util.Precision;
 
 import uk.co.terminological.datatypes.Tuple;
 import uk.co.terminological.simplechart.Chart;
+import uk.co.terminological.simplechart.Chart.Dimension;
 import uk.co.terminological.simplechart.ChartType;
 import uk.co.terminological.simplechart.ColourScheme;
 import uk.co.terminological.simplechart.Figure;
 import uk.co.terminological.simplechart.SeriesBuilder;
 
 public class Kumaraswamy extends ClassifierModel<Double> {
+	
+	private String twoDp(double d) {return new DecimalFormat("#.##").format(d);};
 	
 	Double aP;
 	Double bP;
@@ -194,10 +199,10 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotRoc(Figure fig) {
-		return fig.withNewChart(name+" auc="+this.AUROC(), ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" auc="+twoDp(this.AUROC()), ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
-		.withXLabel("1-sens")
-		.withYLabel("spec")
+		.withXLabel("$1-sens$")
+		.withYLabel("$spec$")
 		.withYScale(0F, 1F)
 		.done()
 		.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
@@ -213,22 +218,23 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		.withYLabel("precision")
 		.withXLabel("recall")
 		.withYScale(0F, 1F)
+		.withLabel(Dimension.COLOUR, "$\\\\lambda$") //"λ")
 		.done()
 		.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
-		.bind(X, t -> matrix(0.01,t).recall(), "pr: 0.01")
-		.bind(X, t -> matrix(0.05,t).recall(), "pr: 0.05")
-		.bind(X, t -> matrix(0.1,t).recall(), "pr: 0.1")
-		.bind(X, t -> matrix(0.3,t).recall(), "pr: 0.3")
-		.bind(X, t -> matrix(0.5,t).recall(), "pr: 0.5")
-		.bind(X, t -> matrix(0.7,t).recall(), "pr: 0.7")
-		.bind(X, t -> matrix(0.9,t).recall(), "pr: 0.9")
-		.bind(Y_LINE, t -> matrix(0.01,t).precision(), "pr: 0.01")
-		.bind(Y_LINE, t -> matrix(0.05,t).precision(), "pr: 0.05")
-		.bind(Y_LINE, t -> matrix(0.1,t).precision(), "pr: 0.1")
-		.bind(Y_LINE, t -> matrix(0.3,t).precision(), "pr: 0.3")
-		.bind(Y_LINE, t -> matrix(0.5,t).precision(), "pr: 0.5")
-		.bind(Y_LINE, t -> matrix(0.7,t).precision(), "pr: 0.7")
-		.bind(Y_LINE, t -> matrix(0.9,t).precision(), "pr: 0.9")
+		.bind(X, t -> matrix(0.01,t).recall(), "λ=0.01")
+		.bind(X, t -> matrix(0.1,t).recall(), "λ=0.1")
+		.bind(X, t -> matrix(0.3,t).recall(), "λ=0.3")
+		.bind(X, t -> matrix(0.5,t).recall(), "λ=0.5")
+		.bind(X, t -> matrix(0.7,t).recall(), "λ=0.7")
+		.bind(X, t -> matrix(0.9,t).recall(), "λ=0.9")
+		.bind(X, t -> matrix(0.99,t).recall(), "λ=0.99")
+		.bind(Y_LINE, t -> matrix(0.01,t).precision(), "λ=0.01")
+		.bind(Y_LINE, t -> matrix(0.1,t).precision(), "λ=0.1")
+		.bind(Y_LINE, t -> matrix(0.3,t).precision(), "λ=0.3")
+		.bind(Y_LINE, t -> matrix(0.5,t).precision(), "λ=0.5")
+		.bind(Y_LINE, t -> matrix(0.7,t).precision(), "λ=0.7")
+		.bind(Y_LINE, t -> matrix(0.9,t).precision(), "λ=0.9")
+		.bind(Y_LINE, t -> matrix(0.99,t).precision(), "λ=0.99")
 		.done();
 	}
 	
@@ -253,10 +259,16 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		return Tuple.create(bestCutoff,value);
 	}
 	
+	public Tuple<Double,Double> usefulCutoff(Double prev,Function<ConfusionMatrix2D,Double> feature) {
+		Tuple<Double,Double> tmp = bestCutoff(prev,feature);
+		if (Precision.equals(tmp.getFirst(), 0.0D) || Precision.equals(tmp.getFirst(), 1.0D))
+			return Tuple.create(tmp.getFirst(), Double.NaN);
+		else 
+			return tmp;
+	}
+	
 	public double screeningBeneficial(CostModel model, Double prev) {
-		Tuple<Double,Double> tmp = bestCutoff(prev, mat -> mat.normalisedValue(model));
-		if (Precision.equals(tmp.getFirst(), 0.0D) || Precision.equals(tmp.getFirst(), 1.0D)) return Double.NaN;
-		return tmp.getValue();
+		return usefulCutoff(prev, mat -> mat.normalisedValue(model)).getSecond();
 	}
 	
 	public ConfusionMatrix2D matrix(Double prev,Double cutoff) {
@@ -321,7 +333,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		Double dqp = 
 				SeriesBuilder.range(0.0, 1.0, 1000)
 					.map(x -> Tuple.create(x,
-							Precision.equals(p.apply(x),0D) || Precision.equals(j.apply(x),0D) 
+							Precision.equals(q.apply(x),0D) || Precision.equals(j.apply(x),0D) 
 								? 0 : q.apply(x)*Math.log(q.apply(x)/j.apply(x))))
 					.collect(TrapeziodIntegrator.integrator());
 		return prev*dpq+(1-prev)*dqp;		

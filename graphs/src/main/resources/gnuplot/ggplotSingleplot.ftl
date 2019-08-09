@@ -4,6 +4,8 @@
 # library(tikzDevice);
 library(cowplot);
 library(tidyverse);
+library(latex2exp);
+
 theme_set(theme_bw(base_size=12,base_family="sans"))
 
 ${plot}

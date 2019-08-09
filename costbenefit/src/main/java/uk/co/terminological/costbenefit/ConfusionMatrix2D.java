@@ -56,6 +56,8 @@ public class ConfusionMatrix2D {
 	public double f1Score() {return fScore(1D);}
 	public double youdensJ() {return truePositiveRate()+trueNegativeRate()-1;}
 	
+	public double diagnosticOdds() {return tn*tp/(fp*fn);}
+	
 	public double absoluteValue(CostModel model) {
 		return absoluteValue(model.tpValue(),model.tnValue(),model.fpCost(),model.fnCost());
 	}
@@ -85,8 +87,6 @@ public class ConfusionMatrix2D {
 		double minCost = fnCost*prevalence + fpCost*(1-prevalence);
 		return absoluteValue(tpValue,tnValue,fpCost,fnCost)/(maxValue-minCost);
 	}
-	
-	
 	
 	private double pmi(double pxy, double px, double py) {
 		if (pxy < 0D || pxy > 1D || px < 0D || px > 1D || py < 0D || py > 1D || pxy > px || pxy > py ) {

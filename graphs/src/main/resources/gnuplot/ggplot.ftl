@@ -9,4 +9,4 @@ lims(<#list config.getGGplotLimits() as scale>${scale}<#sep>, </#sep></#list>)+
 ${plot}+
 </#list>
 labs(<#list config.getGGplotLabels() as label>${label}<#sep>, </#sep></#list>)<#if includePlotTitles>+
-ggtitle("${config.getTitle()}")</#if>;
+ggtitle(TeX("${config.getTitle()}"))</#if>;
