@@ -115,7 +115,8 @@ top5ByTopic %>% mergeCells() %>%
   set_align(1, 3, 'right') %>%
   set_align(everywhere, 1, 'left') %>%
   set_col_width(c(.1, .7, .2)) %>%
-  saveTable("~/Dropbox/litReview/output/top5RefsByTopic",defaultFontSize=8)
+  set_font_size(everywhere,everywhere,8) %>%
+  saveTable("~/Dropbox/litReview/output/top5RefsByTopic")
 
 ##################################################
 
@@ -132,15 +133,7 @@ top5ByAuthorCommunity <- getAuthorCommunityArticles %>%
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(community,reference,pagerank) 
 
-htTop5ByAuthorCommunity <- defaultLayout(as_huxtable(top5ByAuthorCommunity, add_colnames = TRUE)) %>% 
-  set_align(1, 3, 'right') %>%
-  set_align(everywhere, 1, 'left') %>%
-  set_width("400pt") %>%
-  set_col_width(c(.1, .7, .2)) %>%
-  set_caption('Top 5 articles by author community')
-htTop5ByAuthorCommunity <- mergeCells(htTop5ByAuthorCommunity)
-
-quick_html(htTop5ByAuthorCommunity, file="~/Dropbox/litReview/output/top5RefsByAuthorCommunity.html")
+top5ByAuthorCommunity %>% saveTable("~/Dropbox/litReview/output/top5RefsByAuthorCommunity",colWidths=c(.1, .7, .2),defaultFontSize=8)
 
 ##################################################
 
