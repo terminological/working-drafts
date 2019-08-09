@@ -149,15 +149,7 @@ top5ByArticleGroup <- getArticlesByPagerank %>%
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(articleGroup,reference,pagerank) 
 
-htTop5ByArticleGroup <- defaultLayout(as_huxtable(top5ByArticleGroup, add_colnames = TRUE)) %>% 
-  set_align(1, 3, 'right') %>%
-  set_align(everywhere, 1, 'left') %>%
-  set_width("400pt") %>%
-  set_col_width(c(.1, .7, .2)) %>%
-  set_caption('Top 5 articles by article group')
-htTop5ByArticleGroup <- mergeCells(htTop5ByArticleGroup)
-
-quick_html(htTop5ByArticleGroup, file="~/Dropbox/litReview/output/top5RefsByArticleGroup.html")
+top5ByArticleGroup %>% saveTable("~/Dropbox/litReview/output/top5RefsByArticleGroup",colWidths=c(.1, .7, .2),defaultFontSize=8)
 
 ##############################################
 
