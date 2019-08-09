@@ -174,7 +174,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 		.config().withXScale(0F, 1F)
 		.withXLabel("x")
 		.withYLabel("density")
-		.withYScale(0F, 4F)
+		.withYScale(0F, 5F)
 		.done()
 		.withSeries(SeriesBuilder.range(0D, 1D, 1000)).withColourScheme(ColourScheme.Dark2)
 		.bind(X, t -> t)
