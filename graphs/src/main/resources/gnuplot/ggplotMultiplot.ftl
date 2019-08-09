@@ -48,7 +48,7 @@ p <- grid;
 # save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
 # ggsave("${output}.png", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
 # ggsave("${output}.pdf", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
-saveThesisFullPage("${output}",aspectRatio=${cols}<#if mergeAxes>*1.2</#if>/${(plots?size/cols)?int})
+saveThesisFullPage("${output}",plot=p,aspectRatio=${cols}<#if mergeAxes>*1.2</#if>/${(plots?size/cols)?int})
 <#-- https://stackoverflow.com/questions/45473843/put-row-and-column-titles-using-grid-arrange-in-r/45474093#45474093 
 rremove
 
