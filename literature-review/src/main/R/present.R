@@ -89,7 +89,7 @@ top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
   select(reference = node,pagerank) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
 
-top10articles %>% saveTable("~/Dropbox/litReview/output/top10Refs")
+top10articles %>% saveTable("~/Dropbox/litReview/output/top10Refs",colWidths=c(0.8,0.2))
 
 htTop10Articles <- defaultLayout(as_huxtable(top10articles, add_colnames = TRUE)) %>%
   set_align(1, 2, 'right') %>%
