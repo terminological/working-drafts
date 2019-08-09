@@ -12,6 +12,7 @@ library(phdUtils)
 # install.packages("huxtable")
 # install.packages("flextable")
 
+theme_set(themePhd())
 
 files <- list.files(path = "~/Dropbox/litReview/output/", pattern = "*.tsv", all.files = TRUE)
 files <- colsplit(files,"\\.",names=c("base","etn"))
@@ -25,11 +26,11 @@ for (file in files$base) {
 }
 
 plotArticlesByJournal_Count <- ggplot(getArticlesByJournal %>% top_n(10,totalPagerank)
-                %>% mutate(journal = ifelse(journal == "Journal of the American Medical Informatics Association","JAMIA", 
-                           journal)))+
+                %>% mutate(journal = str_trunc(journal,35)
+                             ))+
   geom_bar(aes(x=reorder(journal,-totalPagerank),y=articles, fill=journal), colour="black", stat="identity")+
   xlab("journal")+ylab("articles")+scale_fill_brewer(palette = "Set3")+
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  theme(axis.text.x = element_text(angle = 70, hjust = 1,size=8))+
   guides(fill=FALSE)
 plotArticlesByJournal_Count
 
@@ -51,7 +52,7 @@ plotArticlesByPagerank_DateCitedBy <- ggplot(getArticlesByPagerank %>%
     aes(x=as.Date(date),y=as.numeric(citedByCount)))+
   geom_point(size=1)+
   geom_smooth(method='lm',formula=y~x)+
-  xlab("date")+ylab("count of citing articles")+scale_y_log10()+
+  xlab("date")+ylab("citation count")+scale_y_log10()+
   coord_cartesian(xlim = as.Date(c('2005-01-01', '2019-01-01')))
 plotArticlesByPagerank_DateCitedBy
 
@@ -87,6 +88,8 @@ saveThesisHalfPage("~/Dropbox/litReview/output/figure1", figure1pg)
 top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
   select(reference = node,pagerank) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
+
+top10articles %>% saveTable("~/Dropbox/litReview/output/top10Refs")
 
 htTop10Articles <- defaultLayout(as_huxtable(top10articles, add_colnames = TRUE)) %>%
   set_align(1, 2, 'right') %>%
