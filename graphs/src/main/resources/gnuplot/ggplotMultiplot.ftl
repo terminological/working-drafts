@@ -1,21 +1,13 @@
 #!/usr/bin/R
 
 library(ggpubr);
-# library(tikzDevice);
-# library(cowplot);
 library(ggplot2);
 library(patchwork);
 library(tidyverse);
 library(latex2exp);
+library(phdUtils);
 
-theme_set(
-	theme_bw(base_size=8,base_family="sans")+
-	theme(
-		plot.title=element_text(size=8,hjust=0.5),
-		axis.title = element_text(size=8),
-		axis.text.x = element_text(angle = 45, hjust = 1)
-	)
-)
+theme_set(themePhd())
 
 <#list plots as plot>
 
@@ -52,13 +44,11 @@ p <- wrap_plots(grid,wrap_elements(legend),nrow=1,widths = c(1, .2));
 p <- grid;
 </#if>
 
-# save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
-ggsave("${output}.png", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
-ggsave("${output}.pdf", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
-# tikz(file = "${output}.tex", width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}))
-# print(p)
-# dev.off()
 
+# save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
+# ggsave("${output}.png", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
+# ggsave("${output}.pdf", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
+saveThesisFullPage("${output}",aspectRatio=${cols}<#if mergeAxes>*1.2</#if>/${(plots?size/cols)?int})
 <#-- https://stackoverflow.com/questions/45473843/put-row-and-column-titles-using-grid-arrange-in-r/45474093#45474093 
 rremove
 
