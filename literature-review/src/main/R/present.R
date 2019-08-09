@@ -89,14 +89,7 @@ top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
   select(reference = node,pagerank) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
 
-top10articles %>% saveTable("~/Dropbox/litReview/output/top10Refs",colWidths=c(0.8,0.2))
-
-htTop10Articles <- defaultLayout(as_huxtable(top10articles, add_colnames = TRUE)) %>%
-  set_align(1, 2, 'right') %>%
-  set_col_width(c(.8, .2)) %>%
-  set_caption('Top 10 articles by page rank')
-quick_html(htTop10Articles, file="~/Dropbox/litReview/output/top10Refs.html")
-# quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
+top10articles %>% saveTable("~/Dropbox/litReview/output/top10Refs")
 
 ###############################################
 
@@ -105,12 +98,10 @@ top10CitedArticles<-getArticlesByPagerank %>%
   arrange(desc(citedByCount)) %>%
   select(reference = node,citedByCount) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
-htTop10CitedArticles <- defaultLayout(as_huxtable(top10CitedArticles, add_colnames = TRUE)) %>%
-  set_align(1, 2, 'right') %>%
-  set_col_width(c(.8, .2)) %>%
+
+top10CitedArticles %>% mergeCells() %>% 
   set_number_format(everywhere,2,0) %>%
-  set_caption('Top 10 articles by citation count')
-quick_html(htTop10CitedArticles, file="~/Dropbox/litReview/output/top10CitedRefs.html")
+  saveTable("~/Dropbox/litReview/output/top10CitedRefs")
 # quick_docx(ht, file="~/Dropbox/litReview/output/top10Refs.docx")
 
 ###############################################
@@ -120,14 +111,11 @@ top5ByTopic <- getTopicDocuments %>% left_join(getArticlesByPagerank, by="nodeId
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(topic,reference,weight) 
 
-htTop5ByTopic <- defaultLayout(as_huxtable(top5ByTopic, add_colnames = TRUE)) %>% 
+top5ByTopic %>% mergeCells() %>% 
   set_align(1, 3, 'right') %>%
   set_align(everywhere, 1, 'left') %>%
-  set_width("400pt") %>%
   set_col_width(c(.1, .7, .2)) %>%
-  set_caption('Top 5 articles by topic')
-htTop5ByTopic = mergeCells(htTop5ByTopic)
-quick_html(htTop5ByTopic, file="~/Dropbox/litReview/output/top5RefsByTopic.html")
+  saveTable("~/Dropbox/litReview/output/top5RefsByTopic.html")
 
 ##################################################
 
