@@ -186,6 +186,7 @@ public class Figure {
 	public static Figure outputTo(Path path) {
 		return outputTo(path.toFile());
 	}
+	
 	public Figure withTitle(String string) {
 		this.title = string;
 		this.filename = title.replaceAll("[^a-zA-Z0-9]+", "_");
