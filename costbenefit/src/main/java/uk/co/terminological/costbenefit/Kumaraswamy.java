@@ -199,7 +199,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotRoc(Figure fig) {
-		return fig.withNewChart(name+" auc="+twoDp(this.AUROC()), ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" $auc="+twoDp(this.AUROC())+"$", ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("$1-sens$")
 		.withYLabel("$spec$")
