@@ -115,7 +115,7 @@ top5ByTopic %>% mergeCells() %>%
   set_align(1, 3, 'right') %>%
   set_align(everywhere, 1, 'left') %>%
   set_col_width(c(.1, .7, .2)) %>%
-  saveTable("~/Dropbox/litReview/output/top5RefsByTopic")
+  saveTable("~/Dropbox/litReview/output/top5RefsByTopic",defaultFontSize=8)
 
 ##################################################
 
