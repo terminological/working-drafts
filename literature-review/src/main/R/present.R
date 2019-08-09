@@ -3,6 +3,7 @@ library(reshape2)
 library(cowplot)
 library(lubridate)
 library(huxtable)
+library(phdUtils)
 
 # sudo apt-get install libcairo2-dev libmagick++-dev
 # install.packages("tidyverse")
@@ -57,8 +58,8 @@ plotArticlesByPagerank_DateCitedBy
 figure1pg = plot_grid(plotArticlesByJournal_Count, 
           plot_grid(plotArticlesByPagerank_Date, plotArticlesByPagerank_DateCitedBy, labels=c("B","C"), ncol=1),
           labels=c("A",NA), ncol=2)
-save_plot("~/Dropbox/litReview/output/figure1.png", figure1pg, base_width = 7)
-save_plot("~/Dropbox/litReview/output/figure1.svg", figure1pg, base_width = 7)
+saveThesisHalfPage("~/Dropbox/litReview/output/figure1", figure1pg)
+
 
 # plotArticlesByPagerank_DateDomainCitedBy <- ggplot(getArticlesByPagerank,
 #   aes(x=as.Date(date),y=domainCitedByCount))+
@@ -81,39 +82,12 @@ save_plot("~/Dropbox/litReview/output/figure1.svg", figure1pg, base_width = 7)
 #     )
 # plotArticlesByPagerank_DatePagerank
 
-###########################################
-
-defaultLayout = function(hux) {
-  return( hux %>% 
-    set_bold(1, everywhere, TRUE) %>% 
-    set_top_border(1, everywhere, 1) %>%
-    set_bottom_border(1, everywhere, 2) %>%
-    set_bottom_border(nrow(hux), everywhere, 1) %>%
-    set_width("400pt") %>%
-    set_wrap(TRUE) %>%
-    set_all_padding(everywhere,everywhere,2) %>%
-    set_valign(everywhere,everywhere,"top") )
-}
-
-
-
-mergeCells = function(hux) {
-  tmpHux = hux
-  for (tt in unique(hux[[1]][-1])) {
-    tmp = seq(1,length(hux[[1]][-1])+1)
-    l = min(tmp[hux[[1]] == tt])
-    r = max(tmp[hux[[1]] == tt])
-    tmpHux <- merge_cells(tmpHux, l:r, 1)
-    tmpHux <- tmpHux %>% set_top_border(l, everywhere, 1)
-  }
-  return(tmpHux)
-}
-
 ##############################################
 
 top10articles<-getArticlesByPagerank %>% top_n(10, pagerank) %>%
   select(reference = node,pagerank) %>%
   mutate(reference = sub("\\[[0-9]+\\]","",reference))
+
 htTop10Articles <- defaultLayout(as_huxtable(top10articles, add_colnames = TRUE)) %>%
   set_align(1, 2, 'right') %>%
   set_col_width(c(.8, .2)) %>%
