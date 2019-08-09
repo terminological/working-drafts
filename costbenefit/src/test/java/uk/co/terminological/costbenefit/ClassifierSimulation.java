@@ -493,7 +493,7 @@ public class ClassifierSimulation {
 					Stream<Coordinate> cutOffVPrevalence = SeriesBuilder.grid(
 							Range.of(0.0, 1.0, 100),
 							Range.of(0.0, 1.0, 100));
-					figures.withNewChart("$div="+oneDp.format(divergence)+"$ $skew="+oneDp.format(skew)+"$ $AUC="+twoDp.format(model.AUROC())+"$", ChartType.XYZ_HEATMAP)
+					figures.withNewChart("$d="+oneDp.format(divergence)+"$ $s="+oneDp.format(skew)+"$ $auc="+twoDp.format(model.AUROC())+"$", ChartType.XYZ_HEATMAP)
 							.config().withXScale(0F, 1F)
 							.withXLabel("cutoff")
 							.withYLabel("$\\\\lambda$")
