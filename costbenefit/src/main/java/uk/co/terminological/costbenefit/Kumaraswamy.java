@@ -170,7 +170,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotPdf(Figure fig) {
-		return fig.withNewChart(name+" pdf", ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" $f(x)$", ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("x")
 		.withYLabel("density")
@@ -184,7 +184,7 @@ public class Kumaraswamy extends ClassifierModel<Double> {
 	}
 	
 	public Chart plotCdf(Figure fig) {
-		return fig.withNewChart(name+" cdf", ChartType.XY_MULTI_LINE)
+		return fig.withNewChart(name+" $F(x)$", ChartType.XY_MULTI_LINE)
 		.config().withXScale(0F, 1F)
 		.withXLabel("x")
 		.withYLabel("cumulative")
