@@ -31,16 +31,16 @@ import pl.edu.icm.cermine.ContentExtractor;
 import pl.edu.icm.cermine.bibref.model.BibEntry;
 import pl.edu.icm.cermine.bibref.model.BibEntryType;
 
-public class PdfFetcher extends CachingApiClient {
+public class GoogleScholarClient extends CachingApiClient {
 
-	static Logger logger = LoggerFactory.getLogger(PdfFetcher.class);
+	static Logger logger = LoggerFactory.getLogger(GoogleScholarClient.class);
 	
-	static PdfFetcher instance = null;
+	static GoogleScholarClient instance = null;
 	
 	int maxRedirects = 10;
 	Path cache = null;
 	
-	private PdfFetcher(Optional<Path> cachePath) {
+	private GoogleScholarClient(Optional<Path> cachePath) {
 		super(cachePath, TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build());
 		ClientConfig config = new DefaultClientConfig();
 	    config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
@@ -81,16 +81,16 @@ public class PdfFetcher extends CachingApiClient {
 	    });
 	}
 	
-	public static PdfFetcher create() {
-		return new PdfFetcher(Optional.empty());
+	public static GoogleScholarClient create() {
+		return new GoogleScholarClient(Optional.empty());
 	}
 	
-	public static PdfFetcher create(Path cachePath) {
-		if (instance == null) instance = new PdfFetcher(Optional.ofNullable(cachePath));
+	public static GoogleScholarClient create(Path cachePath) {
+		if (instance == null) instance = new GoogleScholarClient(Optional.ofNullable(cachePath));
 		return instance;
 	}
 	
-	public PdfFetcher maxRedirects(int redirects) {
+	public GoogleScholarClient maxRedirects(int redirects) {
 		this.maxRedirects = redirects;
 		return this;
 	}
