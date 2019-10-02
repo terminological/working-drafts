@@ -25,7 +25,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.CachingApiClient;
 
-public class CrossRefClient extends CachingApiClient {
+public class GoogleScholarClient extends CachingApiClient {
 	// https://www.crossref.org/schemas/
 	// https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
 	// https://github.com/CrossRef/rest-api-doc
@@ -48,11 +48,11 @@ public class CrossRefClient extends CachingApiClient {
 	// http://support.crossref.org/hc/en-us/articles/213420726
 	// TODO: get pdf using content negotiation and a PdfFetcher...
 	
-	private static final Logger logger = LoggerFactory.getLogger(CrossRefClient.class);
+	private static final Logger logger = LoggerFactory.getLogger(GoogleScholarClient.class);
 
-	private static Map<String,CrossRefClient> singleton = new HashMap<>();
+	private static Map<String,GoogleScholarClient> singleton = new HashMap<>();
 
-	private CrossRefClient(String developerEmail, Optional<Path> optional) {
+	private GoogleScholarClient(String developerEmail, Optional<Path> optional) {
 		super(optional, 
 				TokenBuckets.builder()
 				.withCapacity(50)
@@ -64,13 +64,13 @@ public class CrossRefClient extends CachingApiClient {
 	private String developerEmail;
 	private ObjectMapper objectMapper = new ObjectMapper();
 
-	public static CrossRefClient create(String developerEmail) {
+	public static GoogleScholarClient create(String developerEmail) {
 		return create(developerEmail, null);
 	}
 
-	public static CrossRefClient create(String developerEmail, Path cacheDir) {
+	public static GoogleScholarClient create(String developerEmail, Path cacheDir) {
 		if (singleton.containsKey(developerEmail)) return singleton.get(developerEmail);
-		CrossRefClient tmp = new CrossRefClient(developerEmail, Optional.ofNullable(cacheDir));
+		GoogleScholarClient tmp = new GoogleScholarClient(developerEmail, Optional.ofNullable(cacheDir));
 		singleton.put(developerEmail, tmp);
 		return tmp;
 	}
@@ -181,7 +181,7 @@ public class CrossRefClient extends CachingApiClient {
 
 		MultivaluedMap<String, String> params;
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		CrossRefClient client;
+		GoogleScholarClient client;
 
 		/*ivate WebResource get(Client client) {
 			WebResource tdmCopy = client.resource(url);
@@ -189,7 +189,7 @@ public class CrossRefClient extends CachingApiClient {
 			return tdmCopy;
 		}*/
 
-		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams, CrossRefClient client ) {
+		private QueryBuilder(String url, MultivaluedMap<String, String> defaultParams, GoogleScholarClient client ) {
 			this.url=url;
 			this.params=defaultParams;
 			this.client = client;
