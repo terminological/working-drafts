@@ -31,6 +31,8 @@ import pl.edu.icm.cermine.ContentExtractor;
 import pl.edu.icm.cermine.bibref.model.BibEntry;
 import pl.edu.icm.cermine.bibref.model.BibEntryType;
 import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.entrez.Links;
+import uk.co.terminological.fluentxml.Xml;
 
 public class GoogleScholarClient extends CachingApiClient {
 
@@ -97,13 +99,14 @@ public class GoogleScholarClient extends CachingApiClient {
 		return this;
 	}
 	
-	public List<GoogleResult> findByString(String search) {
+	public GoogleResult findByString(String search) {
 		
-		return this.buildCall(SCHOLAR_URL, InputStream.class).withParams(defaultApiParams().)
-			
+		return this.buildCall(SCHOLAR_URL, InputStream.class).withParam("q",search)
 			.cacheForever()
-			.withOperation(is -> is)
-			.get();
+			.withOperation(is -> {
+				Xml resp = Xml.fromStream(is);
+				return new GoogleResult(resp.content());
+			}).get();
 	}
 
 	@Override
@@ -111,7 +114,7 @@ public class GoogleScholarClient extends CachingApiClient {
 		return new MultivaluedMapImpl();
 	}
 	
-	public List<String> extractArticleRefs(String doi, InputStream is) {
+	public List<GoogleResult> extractArticleRefs(String doi, InputStream is) {
 		String key = "cermine_refs_"+doi;
 		Optional<ArrayList<String>> references = this.cachedObject(key, false, k -> {
 			ContentExtractor extractor = new ContentExtractor();
