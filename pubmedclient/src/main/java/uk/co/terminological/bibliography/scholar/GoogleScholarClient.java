@@ -59,7 +59,7 @@ public class GoogleScholarClient extends CachingApiClient {
                                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.119 Safari/537.36");
                     request.getHeaders().add(
                     				HttpHeaders.ACCEPT,
-                    				"application/pdf");
+                    				"text/html");
                     return getNext().handle(request); 
             } 
 	    });
