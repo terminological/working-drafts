@@ -30,6 +30,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import pl.edu.icm.cermine.ContentExtractor;
 import pl.edu.icm.cermine.bibref.model.BibEntry;
 import pl.edu.icm.cermine.bibref.model.BibEntryType;
+import uk.co.terminological.bibliography.CachingApiClient;
 
 public class GoogleScholarClient extends CachingApiClient {
 
@@ -39,6 +40,7 @@ public class GoogleScholarClient extends CachingApiClient {
 	
 	int maxRedirects = 10;
 	Path cache = null;
+	static String SCHOLAR_URL = "https://scholar.google.com/scholar"; //?hl=en&as_sdt=0%2C5&q=UK+CHIC+cholesterol&oq=
 	
 	private GoogleScholarClient(Optional<Path> cachePath) {
 		super(cachePath, TokenBuckets.builder().withInitialTokens(10).withCapacity(10).withFixedIntervalRefillStrategy(10, 1, TimeUnit.SECONDS).build());
@@ -95,8 +97,10 @@ public class GoogleScholarClient extends CachingApiClient {
 		return this;
 	}
 	
-	public Optional<InputStream> getPdfFromUrl(String url) {
-		return this.buildCall(url, InputStream.class)
+	public List<GoogleResult> findByString(String search) {
+		
+		return this.buildCall(SCHOLAR_URL, InputStream.class).withParams(defaultApiParams().)
+			
 			.cacheForever()
 			.withOperation(is -> is)
 			.get();
