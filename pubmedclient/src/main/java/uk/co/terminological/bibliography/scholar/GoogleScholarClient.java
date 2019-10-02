@@ -105,7 +105,7 @@ public class GoogleScholarClient extends CachingApiClient {
 				.buildCall(SCHOLAR_URL, GoogleResult.class).withParam("q",search)
 				.cacheForever()
 				.withOperation(is -> {
-					Xml resp = Xml.fromStream(is);
+					Xml resp = Xml.fromHtmlStream(is);
 					return new GoogleResult(resp.content());
 				}).get();
 				
