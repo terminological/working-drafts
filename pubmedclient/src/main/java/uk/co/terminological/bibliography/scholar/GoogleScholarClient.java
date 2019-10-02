@@ -99,14 +99,16 @@ public class GoogleScholarClient extends CachingApiClient {
 		return this;
 	}
 	
-	public GoogleResult findByString(String search) {
+	public Optional<GoogleResult> findByString(String search) {
 		
-		return this.buildCall(SCHOLAR_URL, InputStream.class).withParam("q",search)
-			.cacheForever()
-			.withOperation(is -> {
-				Xml resp = Xml.fromStream(is);
-				return new GoogleResult(resp.content());
-			}).get();
+		return this
+				.buildCall(SCHOLAR_URL, GoogleResult.class).withParam("q",search)
+				.cacheForever()
+				.withOperation(is -> {
+					Xml resp = Xml.fromStream(is);
+					return new GoogleResult(resp.content());
+				}).get();
+				
 	}
 
 	@Override
@@ -114,7 +116,7 @@ public class GoogleScholarClient extends CachingApiClient {
 		return new MultivaluedMapImpl();
 	}
 	
-	public List<GoogleResult> extractArticleRefs(String doi, InputStream is) {
+	/*public List<GoogleResult> extractArticleRefs(String doi, InputStream is) {
 		String key = "cermine_refs_"+doi;
 		Optional<ArrayList<String>> references = this.cachedObject(key, false, k -> {
 			ContentExtractor extractor = new ContentExtractor();
@@ -133,5 +135,5 @@ public class GoogleScholarClient extends CachingApiClient {
 		});
 		return references.orElse(new ArrayList<>());
 		
-	}
+	}*/
 }
