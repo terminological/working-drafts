@@ -157,6 +157,10 @@ public abstract class CachingApiClient {
 			this.params = params;
 			this.client = client;
 		}
+		public CallBuilder<X,E> withParam(String key,String value) {
+			params.add(key, value); 
+			return this; 
+		}
 		public CallBuilder<X,E> withParams(MultivaluedMap<String,String> params) {
 			this.params = params; 
 			return this; 
