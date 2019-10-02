@@ -17,6 +17,8 @@ import uk.co.terminological.bibliography.crossref.CrossRefClient.QueryBuilder;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.Sort;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.SortOrder;
 import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.scholar.GoogleResult;
+import uk.co.terminological.bibliography.scholar.GoogleScholarClient;
 
 public class TestGoogleScholarClient {
 
@@ -42,31 +44,14 @@ public class TestGoogleScholarClient {
 		Logger.getRootLogger().setLevel(Level.ALL);
 		//Path tmp = Files.createTempDirectory("test");
 		
-		CrossRefClient xref = CrossRefClient.create(DEVELOPER);
+		GoogleScholarClient xref = GoogleScholarClient.create();
 		xref.debugMode();
 		
-		QueryBuilder qb = xref.buildQuery()
-				.withSearchTerm(Field.BIBLIOGRAPHIC, articles[0])
-				.sortedBy(Sort.SCORE, SortOrder.DESC)
-				.limit(1);
+		GoogleResult res = xref.findByString(articles[0]).orElseThrow(() -> new RuntimeException());
 				
-		for (int i=0; i<5; i++) {
-			qb.execute();
-		
-		for (String ref: articles) {
-			System.out.println(ref);
-			Optional<Work> work = xref.findWorkByCitationString(ref); 
-			work.ifPresent(
-					w -> {
-						System.out.println(w.getTitle());
-						w.getCitedByCount().ifPresent(System.out::println);
-						w.getIdentifier().ifPresent(System.out::println);
-						w.getJournal().ifPresent(System.out::println);
-					});
-			System.out.println();
-		}
+		System.out.println(res.raw());
 			
-		}
+		
 	}
 
 }
