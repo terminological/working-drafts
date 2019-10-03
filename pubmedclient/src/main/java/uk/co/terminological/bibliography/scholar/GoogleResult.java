@@ -13,6 +13,9 @@ public class GoogleResult {
 	
 	private void convert() {
 		// TODO Auto-generated method stub
+		// /html/body/div/div[11]/div[2]/div[2]/div[2]/div/div[2]
+		// document.querySelector("#gs_res_ccl_mid > div > div.gs_ri")
+		// #gs_res_ccl_mid > div > div.gs_ri
 		
 	}
 	
