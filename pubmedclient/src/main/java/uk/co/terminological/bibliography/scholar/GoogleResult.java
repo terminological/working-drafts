@@ -1,12 +1,13 @@
 package uk.co.terminological.bibliography.scholar;
 
+import uk.co.terminological.fluentxml.XmlDocElement;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
 public class GoogleResult {
 	
-	private XmlElement raw;
-	public GoogleResult(XmlElement raw) throws XmlException {
+	private XmlDocElement raw;
+	public GoogleResult(XmlDocElement raw) throws XmlException {
 		this.raw=raw; 
 		convert();
 	}
