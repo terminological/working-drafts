@@ -17,7 +17,13 @@ public class GoogleResult {
 		// /html/body/div/div[11]/div[2]/div[2]/div[2]/div/div[2]
 		// document.querySelector("#gs_res_ccl_mid > div > div.gs_ri")
 		// #gs_res_ccl_mid > div > div.gs_ri
-		
+		try {
+			raw.doCssSelection("#gs_res_ccl_mid > div > div.gs_ri").getManyAsStream(XmlElement.class);
+			
+		} catch (XmlException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public XmlElement raw() {return raw;}
