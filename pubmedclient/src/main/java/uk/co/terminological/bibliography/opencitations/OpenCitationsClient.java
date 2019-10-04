@@ -29,6 +29,8 @@ public class OpenCitationsClient extends CachingApiClient {
 	}
 
 	static String baseUrl = "https://w3id.org/oc/index/api/v1/";
+	static OpenCitationsClient singleton;
+	
 	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
@@ -37,6 +39,15 @@ public class OpenCitationsClient extends CachingApiClient {
 	}	
 	// https://opencitations.net/index/api/v1
 	
+	public static OpenCitationsClient create() {
+		if (singleton==null) singleton = new OpenCitationsClient(Optional.empty());
+		return singleton;
+	}
+	
+	public static OpenCitationsClient create(Path cacheDir) {
+		if (singleton==null) singleton = new OpenCitationsClient(Optional.ofNullable(cacheDir));
+		return singleton;
+	}
 	
 	public List<String> getReferencingDoisByDoi(String doi) {
 		//https://w3id.org/oc/index/api/v1/citations/10.1002/adfm.201505328
