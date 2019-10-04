@@ -45,13 +45,17 @@ public class OpenCitationsClient extends CachingApiClient {
 	
 	public List<String> getReferencingDoisByDoi(String doi) {
 		//https://w3id.org/oc/index/api/v1/citations/10.1002/adfm.201505328
-		this.buildQuery(Action.CITATIONS, doi);
+		return this.buildQuery(Action.CITATIONS, doi).execute().stream()
+				.flatMap(lr -> lr.getCitations()).flatMap(c -> c.getCitingDoi().stream())
+				.collect(Collectors.toList())
+		;
 	}
 	
 	public List<String> getReferencedDoisByDoi(String doi) {
 		//https://w3id.org/oc/index/api/v1/references/10.1186/1756-8722-6-59
-		this.buildQuery(Action.REFERENCES, doi).execute().stream()
-			.flatMap(lr -> lr.getCitations())
+		return this.buildQuery(Action.REFERENCES, doi).execute().stream()
+				.flatMap(lr -> lr.getCitations()).flatMap(c -> c.getCitedDoi().stream())
+				.collect(Collectors.toList())
 		;
 	}
 	
