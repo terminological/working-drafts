@@ -3,7 +3,6 @@ package uk.co.terminological.bibliography.opencitations;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.itextpdf.text.pdf.StringUtils;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
 
