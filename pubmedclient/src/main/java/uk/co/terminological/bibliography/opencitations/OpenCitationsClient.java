@@ -8,20 +8,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.apache.commons.fileupload.util.Streams;
-import org.eclipse.jetty.util.Fields;
 import org.isomorphism.util.TokenBuckets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.bibliography.CachingApiClient;
-import uk.co.terminological.bibliography.crossref.CrossRefClient;
-import uk.co.terminological.bibliography.crossref.CrossRefClient.QueryBuilder;
 
 public class OpenCitationsClient extends CachingApiClient {
 
