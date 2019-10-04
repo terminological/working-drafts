@@ -39,7 +39,7 @@ public class ExtensibleJson {
 		else return Stream.of(new ExtensibleJson(raw));
 	}
 	
-	public <X extends ExtensibleJson> Stream<ExtensibleJson> streamNode(Class<X> subtype) {
+	public <X extends ExtensibleJson> Stream<X> streamNode(Class<X> subtype) {
 		if (raw.isArray()) return StreamSupport.stream(
 				Spliterators.spliteratorUnknownSize(raw.elements(), Spliterator.ORDERED),false)
 				.map(s -> { 
