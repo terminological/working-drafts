@@ -50,7 +50,9 @@ public class OpenCitationsClient extends CachingApiClient {
 	
 	public List<String> getReferencedDoisByDoi(String doi) {
 		//https://w3id.org/oc/index/api/v1/references/10.1186/1756-8722-6-59
-		this.buildQuery(Action.REFERENCES, doi).execute();
+		this.buildQuery(Action.REFERENCES, doi).execute().stream()
+			.flatMap(lr -> lr.getCitations())
+		;
 	}
 	
 	public QueryBuilder buildQuery(Action action, String doi) {
