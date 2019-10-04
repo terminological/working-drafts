@@ -28,7 +28,7 @@ public class OpenCitationsClient extends CachingApiClient {
 		// There is no acceptable use policy specified but this seems reasonable.
 	}
 
-	static String baseUrl = "https://w3id.org/oc/index/api/v1/";
+	static String baseUrl = "https://opencitations.net/index/api/v1/";
 	static OpenCitationsClient singleton;
 	
 	private ObjectMapper objectMapper = new ObjectMapper();
