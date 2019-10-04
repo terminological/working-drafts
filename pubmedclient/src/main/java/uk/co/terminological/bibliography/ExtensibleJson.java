@@ -39,6 +39,22 @@ public class ExtensibleJson {
 		else return Stream.of(new ExtensibleJson(raw));
 	}
 	
+	public <X extends ExtensibleJson> Stream<ExtensibleJson> streamNode(Class<X> subtype) {
+		if (raw.isArray()) return StreamSupport.stream(
+				Spliterators.spliteratorUnknownSize(raw.elements(), Spliterator.ORDERED),false)
+				.map(s -> { 
+				try {
+					return subtype.getDeclaredConstructor(JsonNode.class).newInstance(s);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}});
+		else try {
+			return Stream.of(subtype.getDeclaredConstructor(JsonNode.class).newInstance(raw));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	public Stream<ExtensibleJson> streamNode(String key) {
 		JsonNode node = raw.get(key); 
 		if (node == null || node.isNull() || node.isMissingNode()) return Stream.empty();
@@ -56,6 +72,8 @@ public class ExtensibleJson {
 		}
 		return out;
 	}
+	
+	
 	
 	public <X extends ExtensibleJson> Stream<X> streamNode(Class<X> subtype, String key) {
 		JsonNode node = raw.get(key); 
