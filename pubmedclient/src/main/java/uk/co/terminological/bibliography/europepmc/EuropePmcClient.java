@@ -58,7 +58,7 @@ public class EuropePmcClient extends CachingApiClient {
 	// ####### API methods ####### //
 	
 	public CoreResult getById(String id, IdType type) {
-		ListResult tmp;
+		ListResult<CoreResult> tmp;
 		if( type.equals(IdType.DOI)) {
 			tmp = fullSearch("DOI:"+id);
 		} else if( type.equals(IdType.PMCID)) {

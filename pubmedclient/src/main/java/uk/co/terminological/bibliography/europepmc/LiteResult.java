@@ -1,5 +1,7 @@
 package uk.co.terminological.bibliography.europepmc;
 
-public class LiteResult {
+import uk.co.terminological.bibliography.ExtensibleJson;
+
+public class LiteResult extends ExtensibleJson {
 
 }

@@ -1,5 +1,7 @@
 package uk.co.terminological.bibliography.europepmc;
 
-public class Citation {
+import uk.co.terminological.bibliography.ExtensibleJson;
+
+public class Citation extends ExtensibleJson {
 
 }

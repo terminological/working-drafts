@@ -1,5 +1,7 @@
 package uk.co.terminological.bibliography.europepmc;
 
-public class Reference {
+import uk.co.terminological.bibliography.ExtensibleJson;
+
+public class Reference extends ExtensibleJson {
 
 }
