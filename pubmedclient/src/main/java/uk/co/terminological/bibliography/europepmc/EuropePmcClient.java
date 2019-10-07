@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.isomorphism.util.TokenBuckets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
@@ -17,6 +19,8 @@ public class EuropePmcClient extends CachingApiClient {
 	// https://europepmc.org/RestfulWebService
 	
 	// ####### Constructors / factories etc ####### //
+	
+	private static Logger log = LoggerFactory.getLogger(EuropePmcClient.class);
 	
 	private EuropePmcClient(Optional<Path> optional, String developerEmail) {
 		super(optional,
