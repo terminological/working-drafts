@@ -11,6 +11,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.undercouch.citeproc.CSL;
 import de.undercouch.citeproc.ItemDataProvider;
 import de.undercouch.citeproc.csl.CSLItemData;
@@ -26,6 +29,8 @@ import uk.co.terminological.datatypes.Tuple;
 
 public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemDataProvider  {
     
+	private static final Logger log = LoggerFactory.getLogger(CiteProcProvider.class);
+
 	private List<String> ids = new ArrayList<>();
 	private Bibliography bib = null;
 	private Format format = Format.text;
@@ -38,7 +43,10 @@ public class CiteProcProvider extends ArrayList<CSLItemData> implements ItemData
 	public static CiteProcProvider create(String style, Format output) {
 		CiteProcProvider out = new CiteProcProvider();
 		out.format = output;
-		out.style = style;
+		if (CSL.supportsStyle(style)) 
+			out.style = style;
+		else 
+			log.warn("Unsupported style "+style+" defaulting to ieee");
 		return out;
 	}
 	
