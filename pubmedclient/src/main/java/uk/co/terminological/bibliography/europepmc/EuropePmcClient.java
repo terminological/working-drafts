@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.record.IdType;
 
 public class EuropePmcClient extends CachingApiClient {
 
@@ -56,13 +57,65 @@ public class EuropePmcClient extends CachingApiClient {
 	
 	// ####### API methods ####### //
 	
-	public ListResult search(String text) {
+	public CoreResult getById(String id, IdType type) {
+		ListResult tmp;
+		if( type.equals(IdType.DOI)) {
+			tmp = fullSearch("DOI:"+id);
+		} else if( type.equals(IdType.PMCID)) {
+			tmp = fullSearch("PMCID:"+id);
+		} else if( type.equals(IdType.PMID)) {
+			tmp = fullSearch("ID:"+id);
+		} else {
+			tmp = fullSearch(id);
+		}
+			
+	}
+	
+	public ListResult<LiteResult> liteSearch(String text) {
+		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
+		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
+		// query=malaria%20sort_cited:y
+		// format=json
+		// sort=CITED desc (P_PDATE_D, AUTH_FIRST, CITED (see https://www.ebi.ac.uk/europepmc/webservices/rest/fields))
+		// pageSize=1000 (max)
+		// cursorMark=* (paging...)
+		// synonym=false/true
+		// resultType=idlist/lite/core
+		// POST
+	}
+	
+	public ListResult<CoreResult> fullSearch(String text) {
+		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
+		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
+		// query=malaria%20sort_cited:y
+		// format=json
+		// sort=CITED desc (P_PDATE_D, AUTH_FIRST, CITED (see https://www.ebi.ac.uk/europepmc/webservices/rest/fields))
+		// pageSize=1000 (max)
+		// cursorMark=* (paging...)
+		// synonym=false/true
+		// resultType=idlist/lite/core
+		// POST
+	}
+	
+	public ListResult<Citation> citations(String pubmedId) {
+		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/citations?format=json
+		//id=23245604
+		//source=MED
+		//page=0
+		//pageSize=1000 (max)
+		//format=json
 		
 	}
 	
-	public List<Citation> citations(String pubmedId) {
+	public ListResult<Reference> references(String pubmedId) {
+		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/references?format=json
+		//id=23245604
+		//source=MED
+		//page=0
+		//pageSize=1000 (max)
+		//format=json
 		
 	}
 	
-	public List<Citation>
+	
 }
