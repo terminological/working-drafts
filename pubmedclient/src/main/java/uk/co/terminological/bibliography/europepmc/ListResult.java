@@ -29,8 +29,15 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 		
 	}
 	
-	public Optional<String> nextCursorMark() {return this.asString("nextCursorMark");}
-	public Optional<Long> hitCount() {return this.asLong("hitCount");}
-	public Optional<Long> pageSize() {return this.streamPath("request","pageSize").findFirst().map(jn -> jn.asLong());}
-	public Optional<Long> pageNumber() {return this.streamPath("request","page").findFirst().map(jn -> jn.asLong());}
+	public Optional<String> nextCursorMark() {
+		return this.asString("nextCursorMark");}
+	
+	public Optional<Long> hitCount() {
+		return this.asLong("hitCount");}
+	
+	public Optional<Long> pageSize() {
+		return this.streamPath("request","pageSize").findFirst().map(jn -> jn.asLong());}
+	
+	public Optional<Long> pageNumber() {
+		return this.streamPath("request","page").findFirst().map(jn -> jn.asLong());}
 }
