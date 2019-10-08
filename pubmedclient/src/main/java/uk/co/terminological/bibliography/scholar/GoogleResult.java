@@ -4,6 +4,7 @@ import uk.co.terminological.fluentxml.XmlDocElement;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
+@Deprecated
 public class GoogleResult {
 	
 	private XmlDocElement raw;
@@ -19,7 +20,7 @@ public class GoogleResult {
 		// #gs_res_ccl_mid > div > div.gs_ri
 		try {
 			raw.doCssSelection("#gs_res_ccl_mid > div > div.gs_ri").getManyAsStream(XmlElement.class);
-			
+			//TODO: Create result reference.
 		} catch (XmlException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

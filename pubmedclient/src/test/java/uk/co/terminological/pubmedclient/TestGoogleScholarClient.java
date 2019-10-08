@@ -50,6 +50,7 @@ public class TestGoogleScholarClient {
 		GoogleResult res = xref.findByString(articles[0]).orElseThrow(() -> new RuntimeException());
 				
 		System.out.println(res.raw());
+		res.
 			
 		
 	}
