@@ -1,4 +1,4 @@
-package uk.co.terminological.bibliography.record;
+package uk.co.terminological.bibliography;
 
 /**
  * manages a cross map of ids fo different types
