@@ -34,6 +34,8 @@ import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.entrez.Links;
 import uk.co.terminological.fluentxml.Xml;
 
+//TODO: needs a bit of a rethink
+@Deprecated
 public class GoogleScholarClient extends CachingApiClient {
 
 	static Logger logger = LoggerFactory.getLogger(GoogleScholarClient.class);

@@ -20,6 +20,7 @@ import uk.co.terminological.bibliography.crossref.Work;
 import uk.co.terminological.bibliography.scholar.GoogleResult;
 import uk.co.terminological.bibliography.scholar.GoogleScholarClient;
 
+@Deprecated
 public class TestGoogleScholarClient {
 
 	static String[] articles =  {
@@ -50,7 +51,7 @@ public class TestGoogleScholarClient {
 		GoogleResult res = xref.findByString(articles[0]).orElseThrow(() -> new RuntimeException());
 				
 		System.out.println(res.raw());
-		res.
+		
 			
 		
 	}
