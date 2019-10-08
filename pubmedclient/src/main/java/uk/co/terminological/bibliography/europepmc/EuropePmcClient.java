@@ -57,7 +57,7 @@ public class EuropePmcClient extends CachingApiClient {
 	
 	// ####### API methods ####### //
 	
-	public CoreResult getById(String id, IdType type) {
+	public Optional<CoreResult> getById(String id, IdType type) {
 		ListResult<CoreResult> tmp;
 		if( type.equals(IdType.DOI)) {
 			tmp = fullSearch("DOI:"+id);
@@ -69,7 +69,7 @@ public class EuropePmcClient extends CachingApiClient {
 		} else {
 			tmp = fullSearch(id);
 		}
-		return tmp;
+		return tmp.getItems().findFirst();
 	}
 	
 	public ListResult<LiteResult> liteSearch(String text) {
