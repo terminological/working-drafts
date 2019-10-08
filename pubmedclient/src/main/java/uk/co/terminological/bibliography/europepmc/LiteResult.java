@@ -2,6 +2,8 @@ package uk.co.terminological.bibliography.europepmc;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import uk.co.terminological.bibliography.ExtensibleJson;
 
 
@@ -22,6 +24,8 @@ pmid: "20981092",
 pmcid: "PMC3042601",
 doi: "10.1038/nature09534",
 
+citedByCount: 4184,
+hasReferences: "Y",
 
 
 
@@ -32,8 +36,6 @@ inPMC: "Y",
 hasPDF: "Y",
 hasBook: "N",
 hasSuppl: "Y",
-citedByCount: 4184,
-hasReferences: "Y",
 hasTextMinedTerms: "Y",
 hasDbCrossReferences: "N",
 hasLabsLinks: "Y",
@@ -44,6 +46,8 @@ firstPublicationDate: "2010-10-01"
 
 public class LiteResult extends ExtensibleJson {
 
+	public LiteResult(JsonNode node) { super(node); }
+	
 	public Optional<String> getID() {return this.asString("id");}
 	public Optional<String> getSource() {return this.asString("source");}
 	public Optional<String> getTitle() {return this.asString("title");}
@@ -56,8 +60,14 @@ public class LiteResult extends ExtensibleJson {
 	// public Optional<String> getEssn() {return this.asString("essn");}
 	public Optional<String> getIssn() {return this.asString("journalIssn");}
 	
-	public Optional<Long> getCitedByCount() {return this.asLong("citedByCount");
+	public Optional<Long> getCitedByCount() {return this.asLong("citedByCount");}
+	
+	public Optional<String> getPMID() {return this.asString("pmid");}
+	public Optional<String> getPMCID() {return this.asString("pmcid");}
+	public Optional<String> getDOI() {return this.asString("doi");}
+	
+	public Optional<Boolean> hasReferences() {return this.asString("hasReferences").map(r -> r.equals("Y"));}
 	
 	
-	}
+	
 }

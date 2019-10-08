@@ -2,6 +2,8 @@ package uk.co.terminological.bibliography.europepmc;
 
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import uk.co.terminological.bibliography.ExtensibleJson;
 
 /*
@@ -22,6 +24,8 @@ issn: "0036-8075"
  */
 
 public class Reference extends ExtensibleJson {
+	
+	public Reference(JsonNode node) { super(node); }
 	
 	public Optional<String> getID() {return this.asString("id");}
 	public Optional<String> getSource() {return this.asString("source");}
