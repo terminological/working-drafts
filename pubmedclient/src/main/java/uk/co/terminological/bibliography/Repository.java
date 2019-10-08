@@ -20,4 +20,5 @@ public class Repository {
 	//TODO: Methods to navigate repository
 	//TODO: Is the repository a graph database? Is it a database?
 	//TODO: Consider loading 217MB ftp://ftp.ebi.ac.uk/pub/databases/pmc/DOI/ for id mapping
+	//TODO: Consider JGraphT as in memory graph for determining expansion / shortest path etc
 }
