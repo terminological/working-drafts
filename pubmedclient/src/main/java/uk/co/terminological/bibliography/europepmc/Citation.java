@@ -22,6 +22,8 @@ citedByCount: 0
 
 */
 
+//TODO: change API to make a first class citation object
+//TODO: get this to conform
 
 public class Citation extends ExtensibleJson {
 

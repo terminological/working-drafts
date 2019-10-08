@@ -9,6 +9,7 @@ package uk.co.terminological.bibliography;
  * resolves institutions to other institutions.
  * resolves citations to canonical citations
  * resolve mesh code links
+ * manage and cache citation strings
  * 
  * @author terminological
  *
