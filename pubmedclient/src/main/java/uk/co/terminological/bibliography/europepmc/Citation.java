@@ -35,6 +35,6 @@ public class Citation extends ExtensibleJson {
 	public Optional<String> getEssn() {return this.asString("essn");}
 	public Optional<String> getIssn() {return this.asString("issn");}
 	
-	public Optional<String> getCitedByCount() {return this.asString("citedByCount");}
+	public Optional<Long> getCitedByCount() {return this.asLong("citedByCount");}
 	
 }
