@@ -1,8 +1,10 @@
 package uk.co.terminological.bibliography;
 
 /**
+ * noramlise DOI 
  * manages a cross map of ids fo different types
- * retains and resolves record references to individual records,
+ * retains and resolves record references to individual article records,
+ * merges and deduplicates
  * resolves author references to authors
  * resolves institutions to other institutions.
  * resolves citations to canonical citations
@@ -16,5 +18,5 @@ public class Repository {
 	//TODO: Use repository in API clients, to resolve references.
 	//TODO: Methods to navigate repository
 	//TODO: Is the repository a graph database? Is it a database?
-	//TODO: 
+	//TODO: Consider loading 217MB ftp://ftp.ebi.ac.uk/pub/databases/pmc/DOI/ for id mapping
 }
