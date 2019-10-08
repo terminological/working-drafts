@@ -64,11 +64,12 @@ public class EuropePmcClient extends CachingApiClient {
 		} else if( type.equals(IdType.PMCID)) {
 			tmp = fullSearch("PMCID:"+id);
 		} else if( type.equals(IdType.PMID)) {
-			tmp = fullSearch("ID:"+id);
+			//EXT_ID:16199517
+			tmp = fullSearch("EXT_ID:"+id);
 		} else {
 			tmp = fullSearch(id);
 		}
-			
+		return tmp;
 	}
 	
 	public ListResult<LiteResult> liteSearch(String text) {
