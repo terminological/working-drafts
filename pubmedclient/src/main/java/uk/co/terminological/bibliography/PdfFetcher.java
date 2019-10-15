@@ -125,6 +125,10 @@ public class PdfFetcher extends CachingApiClient {
 			return out;
 		});
 		return references.orElse(new ArrayList<>());
-		
+		//TODO: get mapped metadata 
 	}
+	
+	//TODO: Stream<Citation> getCitations(Record sourceWithDoi) {
+	//USing BibEntryFieldType / BibEntry
+	
 }
