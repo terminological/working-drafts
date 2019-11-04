@@ -34,7 +34,7 @@ public class Reference extends ExtensibleJson implements Print, RecordReference 
 	public Optional<String> getIdentifier() {return this.asString("id");}
 	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
 	public Optional<String> getTitle() {return this.asString("title");}
-	public Optional<String> getAuthors() {return this.asString("authorString");}
+	public Optional<String> getAuthorString() {return this.asString("authorString");}
 	public Optional<String> getJournal() {return this.asString("journalAbbreviation");}
 	public Optional<String> getIssue() {return this.asString("issue");}
 	public Optional<String> getVolume() {return this.asString("volume");}
@@ -55,6 +55,6 @@ public class Reference extends ExtensibleJson implements Print, RecordReference 
 
 	@Override
 	public Optional<String> getFirstAuthorName() {
-		return getAuthors().map(s -> s.split(",")[0]);
+		return getAuthorString().map(s -> s.split(",")[0]);
 	}
 }

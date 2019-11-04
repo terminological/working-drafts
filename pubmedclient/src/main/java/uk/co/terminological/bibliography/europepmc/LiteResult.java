@@ -68,7 +68,7 @@ public class LiteResult extends ExtensibleJson implements RecordReference, Ident
 	public Optional<String> getIdentifier() {return this.asString("id");}
 	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
 	public Optional<String> getTitle() {return this.asString("title");}
-	public Optional<String> getAuthors() {return this.asString("authorString");}
+	public Optional<String> getAuthorString() {return this.asString("authorString");}
 	public Optional<String> getJournal() {return this.asString("journalTitle");}
 	public Optional<String> getIssue() {return this.asString("issue");}
 	public Optional<String> getVolume() {return this.asString("journalVolume");}
@@ -105,7 +105,7 @@ public class LiteResult extends ExtensibleJson implements RecordReference, Ident
 
 	@Override
 	public Optional<String> getFirstAuthorName() {
-		return getAuthors().map(s -> s.split(",")[0]);
+		return getAuthorString().map(s -> s.split(",")[0]);
 	}
 
 	
