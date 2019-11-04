@@ -36,8 +36,8 @@ public class Reference extends ExtensibleJson implements RecordReference, Print,
 	}
 
 	@Override
-	public Set<RecordReference> getOtherIdentifiers() {
-		return Collections.emptySet();
+	public List<RecordReference> getOtherIdentifiers() {
+		return Collections.emptyList();
 	}
 
 	@Override
