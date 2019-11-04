@@ -85,16 +85,10 @@ public class LiteResult extends ExtensibleJson implements RecordReference, Ident
 
 	@Override
 	public IdType getIdentifierType() {
-		if (getSource().equals("")) return IdType.DOI;
-		if (getSource().equals("")) return IdType.PMCID;
-		if (getSource().equals(DataSources.MED.toString())) return IdType.PMID;
-		if (getSource().equals("")) return IdType.MID;
+		if (!getSource().isPresent()) return IdType.UNK;
+		if (getSource().get().equals(DataSources.MED)) return IdType.PMID;
+		if (getSource().get().equals(DataSources.PMC)) return IdType.PMCID;
 		return IdType.UNK;
-	}
-
-	public Set<RecordReference> getOtherIdentifiers() {
-		Set<RecordReference>
-		return null;
 	}
 
 	@Override
@@ -103,6 +97,7 @@ public class LiteResult extends ExtensibleJson implements RecordReference, Ident
 		getDOI().map(d -> recordReference(IdType.DOI,d)).ifPresent(tmp::add);
 		getPMCID().map(d -> recordReference(IdType.PMCID,d)).ifPresent(tmp::add);
 		getPMID().map(d -> recordReference(IdType.PMID,d)).ifPresent(tmp::add);
+		getIdentifier().map(d -> recordReference(getIdentifierType(),d)).ifPresent(tmp::add);
 		return tmp;
 	}
 
