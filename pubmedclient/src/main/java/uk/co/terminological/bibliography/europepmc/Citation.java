@@ -34,7 +34,7 @@ public class Citation extends ExtensibleJson implements Print, RecordReference {
 	public Citation(JsonNode node) { super(node); }
 	
 	public Optional<String> getIdentifier() {return this.asString("id");}
-	public Optional<String> getSource() {return this.asString("source");}
+	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
 	public Optional<String> getTitle() {return this.asString("title");}
 	public Optional<String> getAuthors() {return this.asString("authorString");}
 	public Optional<String> getJournal() {return this.asString("journalAbbreviation");}
