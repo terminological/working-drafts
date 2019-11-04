@@ -46,7 +46,7 @@ public class TestJsonParsing {
 						System.out.println("orcid name: "+a.getORCID());
 					});
 					System.out.println("CITATIONS:");
-					item.getCitations().forEach(r -> {
+					item.getReferences().forEach(r -> {
 						System.out.println("CITATION:");
 						System.out.println(r.getFirstAuthorName());
 						System.out.println(r.getIdentifier());

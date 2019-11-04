@@ -77,7 +77,7 @@ public class TestEndToEnd {
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
 		Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().getWork();
 		//System.out.println(work.journalAbstract.get());
-		work2.getCitations().forEach(r -> System.out.println(r.getIdentifier().orElse("?")+"\t"+r.getTitle().orElse("No title")));
+		work2.getReferences().forEach(r -> System.out.println(r.getIdentifier().orElse("?")+"\t"+r.getTitle().orElse("No title")));
 		System.exit(0);
 	}
 
