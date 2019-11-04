@@ -90,8 +90,8 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 	}
 
 	@Override
-	public Set<RecordReference> getOtherIdentifiers() {
-		return Collections.emptySet();
+	public List<RecordReference> getOtherIdentifiers() {
+		return Collections.emptyList();
 	}
 
 	@Override
