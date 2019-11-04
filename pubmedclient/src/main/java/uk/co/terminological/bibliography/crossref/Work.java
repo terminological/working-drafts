@@ -1,6 +1,9 @@
 package uk.co.terminological.bibliography.crossref;
 
+import static uk.co.terminological.bibliography.record.Builder.*;
+
 import java.net.URI;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -63,47 +66,11 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 		Integer i = 0;
 		for (Reference r: (Iterable<Reference>)this.getReferences()::iterator) {
 			tmp.add(
-				new CitationLink() {
-
-					@Override
-					public CitationReference getSource() {
-						return new CitationReference() {
-
-							@Override
-							public Optional<RecordReference> getIdentifier() {
-								// TODO Auto-generated method stub
-								return this<Work>;
-							}
-
-							@Override
-							public Optional<String> getTitle() {
-								// TODO Auto-generated method stub
-								return null;
-							}
-
-							@Override
-							public Optional<Print> getBibliographicId() {
-								// TODO Auto-generated method stub
-								return null;
-							}
-							
-						};
-					}
-
-					@Override
-					public CitationReference getTarget() {
-						// TODO Auto-generated method stub
-						return null;
-					}
-
-					@Override
-					public Optional<Integer> getIndex() {
-						// TODO Auto-generated method stub
-						return null;
-					}
-				
-				}
-			);
+				citationLink(
+						citationReference(this, this.getTitle().orElse(null), this),
+						citationReference(r, r.getTitle().orElse(null), r),
+						i
+					));
 		}
 		return tmp.stream();
 	}
