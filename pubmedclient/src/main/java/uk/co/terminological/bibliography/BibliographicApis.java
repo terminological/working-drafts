@@ -9,6 +9,8 @@ import java.util.Properties;
 
 import uk.co.terminological.bibliography.crossref.CrossRefClient;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
+import uk.co.terminological.bibliography.europepmc.EuropePmcClient;
+import uk.co.terminological.bibliography.opencitations.OpenCitationsClient;
 import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
 
@@ -64,6 +66,8 @@ public class BibliographicApis {
 	private CrossRefClient crossref;
 	private UnpaywallClient unpaywall;
 	private PdfFetcher pdfFetcher;
+	private EuropePmcClient europepmc;
+	private OpenCitationsClient opencitations;
 
 	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
 
@@ -77,6 +81,8 @@ public class BibliographicApis {
 				cacheDir.map(o -> o.resolve("unpaywall")).orElse(null));
 		pdfFetcher = PdfFetcher.create(
 				cacheDir.map(o -> o.resolve("pdf")).orElse(null));
+		europepmc = EuropePmcClient.create(developerEmail, 
+				cacheDir.map(o -> o.resolve("unpaywall")).orElse(null));
 		unpaywall.withPdfFetcher(pdfFetcher);
 
 	}

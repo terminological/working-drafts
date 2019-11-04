@@ -47,10 +47,10 @@ public class EuropePmcClient extends CachingApiClient {
 	private static EuropePmcClient singleton;
 	
 	public static  EuropePmcClient create(String developerEmail) {
-		return create(null, developerEmail);
+		return create(developerEmail, null);
 	}
 	
-	public static  EuropePmcClient create(Path cacheDir, String developerEmail) {
+	public static  EuropePmcClient create(String developerEmail, Path cacheDir) {
 		if (singleton == null) singleton = new EuropePmcClient(Optional.ofNullable(cacheDir), developerEmail);
 		return singleton;
 	}

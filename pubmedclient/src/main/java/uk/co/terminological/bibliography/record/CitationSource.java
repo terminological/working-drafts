@@ -6,6 +6,6 @@ import uk.co.terminological.bibliography.opencitations.Citation;
 
 public interface CitationSource {
 
-	public Stream<Citation> getCitations()
+	public Stream<Citation> getCitations();
 	
 }
