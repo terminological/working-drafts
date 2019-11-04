@@ -1,9 +1,9 @@
 package uk.co.terminological.bibliography.record;
 
-import java.util.List;
+import java.util.Set;
 
 public interface IdentityMapping {
 
-	public List<RecordReference> getMapping();
+	public Set<RecordReference> getMapping();
 	
 }

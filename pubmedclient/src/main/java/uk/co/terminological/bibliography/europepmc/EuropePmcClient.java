@@ -69,7 +69,9 @@ public class EuropePmcClient extends CachingApiClient {
 		} else {
 			tmp = fullSearch(id);
 		}
-		return tmp.getItems().findFirst();
+		return tmp.getItems()
+				
+				.findFirst();
 	}
 	
 	public ListResult<LiteResult> liteSearch(String text) {
@@ -118,5 +120,8 @@ public class EuropePmcClient extends CachingApiClient {
 		
 	}
 	
+	public static enum DataSources {
+		AGR, CBA, CTX, ETH, HIR, MED, NBK, PAT, PMC
+	}
 	
 }

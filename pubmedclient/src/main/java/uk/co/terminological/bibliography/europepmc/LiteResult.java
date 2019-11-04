@@ -1,10 +1,25 @@
 package uk.co.terminological.bibliography.europepmc;
 
+import java.net.URI;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
+import uk.co.terminological.bibliography.europepmc.EuropePmcClient.DataSources;
+import uk.co.terminological.bibliography.record.Author;
+import static uk.co.terminological.bibliography.record.Builder.*;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.IdentityMapping;
+import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordReference;
+import uk.co.terminological.datatypes.FluentList;
 
 
 /*
@@ -44,12 +59,12 @@ firstIndexDate: "2010-12-03",
 firstPublicationDate: "2010-10-01"
  */
 
-public class LiteResult extends ExtensibleJson {
+public class LiteResult extends ExtensibleJson implements RecordReference, IdentityMapping {
 
 	public LiteResult(JsonNode node) { super(node); }
 	
-	public Optional<String> getID() {return this.asString("id");}
-	public Optional<String> getSource() {return this.asString("source");}
+	public Optional<String> getIdentifier() {return this.asString("id");}
+	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
 	public Optional<String> getTitle() {return this.asString("title");}
 	public Optional<String> getAuthors() {return this.asString("authorString");}
 	public Optional<String> getJournal() {return this.asString("journalTitle");}
@@ -67,6 +82,31 @@ public class LiteResult extends ExtensibleJson {
 	public Optional<String> getDOI() {return this.asString("doi");}
 	
 	public Optional<Boolean> hasReferences() {return this.asString("hasReferences").map(r -> r.equals("Y"));}
+
+	@Override
+	public IdType getIdentifierType() {
+		if (getSource().equals("")) return IdType.DOI;
+		if (getSource().equals("")) return IdType.PMCID;
+		if (getSource().equals(DataSources.MED.toString())) return IdType.PMID;
+		if (getSource().equals("")) return IdType.MID;
+		return IdType.UNK;
+	}
+
+	public Set<RecordReference> getOtherIdentifiers() {
+		Set<RecordReference>
+		return null;
+	}
+
+	@Override
+	public Set<RecordReference> getMapping() {
+		Set<RecordReference> tmp = new HashSet<>();
+		getDOI().map(d -> recordReference(IdType.DOI,d)).ifPresent(tmp::add);
+		getPMCID().map(d -> recordReference(IdType.PMCID,d)).ifPresent(tmp::add);
+		getPMID().map(d -> recordReference(IdType.PMID,d)).ifPresent(tmp::add);
+		return tmp;
+	}
+
+	
 	
 	
 	

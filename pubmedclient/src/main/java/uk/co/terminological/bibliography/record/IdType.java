@@ -4,5 +4,6 @@ public enum IdType {
 	PMCID,
 	PMID,
 	DOI,
-	MID
+	MID, 
+	UNK
 }
