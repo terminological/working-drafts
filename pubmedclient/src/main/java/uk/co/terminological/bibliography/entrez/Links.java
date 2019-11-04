@@ -5,17 +5,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class Links {
+public class Links implements Raw<XmlElement> {
 
 	private XmlElement raw;
 	public Links(XmlElement raw) throws XmlException {
 		this.raw=raw; 
 		convert();
 	}
-	public XmlElement raw() {return raw;}
+	public XmlElement getRaw() {return raw;}
 
 	private List<Link> links;
 

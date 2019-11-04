@@ -3,10 +3,13 @@ package uk.co.terminological.bibliography.entrez;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class EntrezAuthor implements uk.co.terminological.bibliography.record.Author {
+public class EntrezAuthor implements uk.co.terminological.bibliography.record.Author, Raw<XmlElement>  {
 
 	private XmlElement raw;
 	public EntrezAuthor(XmlElement raw) {this.raw = raw;}
@@ -34,6 +37,10 @@ public class EntrezAuthor implements uk.co.terminological.bibliography.record.Au
 	
 	public String toString() {
 		return getLastName()+", "+getInitials().orElse("Unknown");
+	}
+	@Override
+	public XmlElement getRaw() {
+		return raw;
 	}
 
 }
