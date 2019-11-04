@@ -2,6 +2,10 @@ package uk.co.terminological.bibliography.entrez;
 
 import java.util.Optional;
 
+import static uk.co.terminological.bibliography.record.Builder.*;
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.CitationReference;
+
 /**
  * 
  * type: https://eutils.ncbi.nlm.nih.gov/entrez/query/static/entrezlinks.html
@@ -18,7 +22,7 @@ import java.util.Optional;
  * @author terminological
  *
  */
-public class Link {
+public class Link implements CitationLink {
 	public String fromDb;
 	public String fromId;
 	public Optional<String> typeOrCategory = Optional.empty();
@@ -44,6 +48,25 @@ public class Link {
 
 	public String toString() {
 		return fromDb+"\t"+fromId+"\t"+typeOrCategory.orElse("")+"\t"+toDbOrUrl+"\t"+toId.orElse("")+"\t"+score.orElse(0L);
+	}
+
+	@Override
+	public CitationReference getSource() {
+		return citationLink(
+				citationReference(), 
+				citationReference(), null);
+	}
+
+	@Override
+	public CitationReference getTarget() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Optional<Integer> getIndex() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

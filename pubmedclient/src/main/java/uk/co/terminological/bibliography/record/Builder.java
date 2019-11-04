@@ -61,4 +61,20 @@ public class Builder {
 				Optional.ofNullable(bibliographicId)
 		);
 	}
+	
+	public static RecordReference recordReference(IdType idType, String identifier) {
+		return new RecordReference() {
+
+			@Override
+			public Optional<String> getIdentifier() {
+				return Optional.ofNullable(identifier);
+			}
+
+			@Override
+			public IdType getIdentifierType() {
+				return idType;
+			}
+			
+		};
+	}
 }
