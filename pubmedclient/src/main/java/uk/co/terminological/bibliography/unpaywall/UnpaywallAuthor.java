@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
 
-public class Author extends ExtensibleJson implements uk.co.terminological.bibliography.record.Author {
+public class UnpaywallAuthor extends ExtensibleJson implements uk.co.terminological.bibliography.record.Author {
 	
-	public Author(JsonNode node) { super(node); }
+	public UnpaywallAuthor(JsonNode node) { super(node); }
 	
 	public String getLastName() {return this.asString("family").orElse(this.asString("name").orElse("Unknown"));}
 	public Optional<String> getORCID() {return this.asString("ORCID");}

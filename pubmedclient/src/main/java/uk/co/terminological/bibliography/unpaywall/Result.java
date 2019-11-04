@@ -38,7 +38,7 @@ public class Result extends ExtensibleJson implements Record {
 	
 	//public Optional<Double> getScore() {return this.asDouble("score");}
 	
-	public List<Author> getAuthors() {return this.streamPath(Author.class, "z_authors").collect(Collectors.toList());}
+	public List<UnpaywallAuthor> getAuthors() {return this.streamPath(UnpaywallAuthor.class, "z_authors").collect(Collectors.toList());}
 	public Optional<String> getAbstract() {return this.asString("abstract");}
 	
 	public Optional<URI> getTextMiningUri() {
