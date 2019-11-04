@@ -5,6 +5,10 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
+import uk.co.terminological.bibliography.europepmc.EuropePmcClient.DataSources;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.RecordReference;
 
 /*
 id: "7569999",
@@ -23,11 +27,11 @@ essn: "1095-9203",
 issn: "0036-8075"
  */
 
-public class Reference extends ExtensibleJson {
+public class Reference extends ExtensibleJson implements Print, RecordReference {
 	
 	public Reference(JsonNode node) { super(node); }
 	
-	public Optional<String> getID() {return this.asString("id");}
+	public Optional<String> getIdentifier() {return this.asString("id");}
 	public Optional<String> getSource() {return this.asString("source");}
 	public Optional<String> getTitle() {return this.asString("title");}
 	public Optional<String> getAuthors() {return this.asString("authorString");}
@@ -35,10 +39,22 @@ public class Reference extends ExtensibleJson {
 	public Optional<String> getIssue() {return this.asString("issue");}
 	public Optional<String> getVolume() {return this.asString("volume");}
 	public Optional<Long> getYear() {return this.asLong("pubYear");}
-	public Optional<String> getPages() {return this.asString("pageInfo");}
+	public Optional<String> getPage() {return this.asString("pageInfo");}
 	public Optional<String> getEssn() {return this.asString("essn");}
 	public Optional<String> getIssn() {return this.asString("issn");}
 	
 	public Optional<String> getCitationIndex() {return this.asString("citedOrder");}
 	
+	@Override
+	public IdType getIdentifierType() {
+		if (!getSource().isPresent()) return IdType.UNK;
+		if (getSource().get().equals(DataSources.MED)) return IdType.PMID;
+		if (getSource().get().equals(DataSources.PMC)) return IdType.PMCID;
+		return IdType.UNK;
+	}
+
+	@Override
+	public Optional<String> getFirstAuthorName() {
+		return getAuthors().map(s -> s.split(",")[0]);
+	}
 }
