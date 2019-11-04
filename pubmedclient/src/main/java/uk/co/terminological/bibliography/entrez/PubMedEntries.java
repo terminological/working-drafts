@@ -2,10 +2,11 @@ package uk.co.terminological.bibliography.entrez;
 
 import java.util.stream.Stream;
 
+import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class PubMedEntries {
+public class PubMedEntries implements Raw<XmlElement> {
 
 	private XmlElement raw; //PubmedArticleSet
 
@@ -29,6 +30,11 @@ public class PubMedEntries {
 
 	public static PubMedEntries empty() {
 		return new PubMedEntries(null);
+	}
+
+	@Override
+	public XmlElement getRaw() {
+		return raw;
 	}
 
 }
