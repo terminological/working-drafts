@@ -84,7 +84,9 @@ public class Links implements Raw<XmlElement> {
 	}
 	
 	public Stream<CitationLink> getCitations() {
-		return stream().map(l -> 
+		return stream()
+				.filter(l -> l.toId.isPresent())
+				.map(l -> 
 			citationLink(
 					citationReference(
 							recordReference(lookup.get(l.fromDb),l.fromId),null,null

@@ -5,8 +5,12 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
+import static uk.co.terminological.bibliography.record.Builder.*;
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.CitationReference;
+import uk.co.terminological.bibliography.record.IdType;
 
-public class Citation extends ExtensibleJson {
+public class Citation extends ExtensibleJson implements CitationLink {
 	
 	public Citation(JsonNode node) { super(node); }
 	
@@ -28,6 +32,27 @@ public class Citation extends ExtensibleJson {
 			return response.split(" => ")[0];
 		else
 			return null;
+	}
+
+	@Override
+	public CitationReference getSource() {
+		return citationReference(
+				recordReference(IdType.DOI, getCitingDoi().get()), null, null);
+	}
+
+	@Override
+	public CitationReference getTarget() {
+		return citationReference(
+				recordReference(IdType.DOI, getCitedDoi().get()), null, null);
+	}
+
+	@Override
+	public Optional<Integer> getIndex() {
+		try {
+			return getCitationIndex().map(Integer::parseInt);
+		} catch (NumberFormatException e) {
+			return Optional.empty();
+		}
 	}
 	
 }
