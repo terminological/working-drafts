@@ -27,7 +27,7 @@ import uk.co.terminological.datatypes.FluentMap;
  * @author terminological
  *
  */
-public class Link implements CitationLink {
+public class Link {
 	public String fromDb;
 	public String fromId;
 	public Optional<String> typeOrCategory = Optional.empty();
