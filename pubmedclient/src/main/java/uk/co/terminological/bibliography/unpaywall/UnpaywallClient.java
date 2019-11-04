@@ -76,19 +76,19 @@ public class UnpaywallClient extends CachingApiClient {
 		return out;
 	}
 
-	public Optional<Result> getUnpaywallByDoi(String doi) {
+	public Optional<UnpaywallResult> getUnpaywallByDoi(String doi) {
 		logger.debug("fetching unpaywall record for: {}",doi);
-		return this.buildCall("https://api.unpaywall.org/v2/"+encode(doi), Result.class)
+		return this.buildCall("https://api.unpaywall.org/v2/"+encode(doi), UnpaywallResult.class)
 			.cacheForever()
-			.withOperation(is -> new Result(objectMapper.readTree(is)))
+			.withOperation(is -> new UnpaywallResult(objectMapper.readTree(is)))
 			.get();
 	}
 
-	public Set<Result> getUnpaywallByDois(Collection<String> dois) {
+	public Set<UnpaywallResult> getUnpaywallByDois(Collection<String> dois) {
 		return dois.stream().flatMap(doi -> getUnpaywallByDoi(doi).stream()).collect(Collectors.toSet());
 	}
 	
-	public Optional<InputStream> getPdfByResult(Result result) {
+	public Optional<InputStream> getPdfByResult(UnpaywallResult result) {
 		try {
 			String url = result.getPdfUri().orElseThrow(() -> new BibliographicApiException("no pdf for doi: "+result.getIdentifier())).toString();
 			return getPdfFetcher().getPdfFromUrl(url);
@@ -99,7 +99,7 @@ public class UnpaywallClient extends CachingApiClient {
 	}
 
 	public Optional<InputStream> getPdfByDoi(String doi) {
-		Optional<Result> result = getUnpaywallByDoi(doi);
+		Optional<UnpaywallResult> result = getUnpaywallByDoi(doi);
 		return result.flatMap(r -> getPdfByResult(r));
 	}
 	

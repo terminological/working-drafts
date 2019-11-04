@@ -17,8 +17,8 @@ import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class Result extends ExtensibleJson implements Record {
-	public Result(JsonNode node) {super(node);}
+public class UnpaywallResult extends ExtensibleJson implements Record {
+	public UnpaywallResult(JsonNode node) {super(node);}
 	
 	public Optional<String> getIdentifier() {return this.asString("doi");}
 	public Optional<String> getTitle() {return Optional.ofNullable(this.streamPath("title").findFirst().map(

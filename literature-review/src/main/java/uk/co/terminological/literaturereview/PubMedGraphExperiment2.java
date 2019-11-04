@@ -58,7 +58,7 @@ import uk.co.terminological.bibliography.entrez.PubMedEntry;
 import uk.co.terminological.bibliography.entrez.Search;
 import uk.co.terminological.bibliography.pmcidconv.Record;
 import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.bibliography.unpaywall.Result;
+import uk.co.terminological.bibliography.unpaywall.UnpaywallResult;
 import uk.co.terminological.datatypes.StreamExceptions;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
@@ -489,7 +489,7 @@ public class PubMedGraphExperiment2 {
 	Set<String> updateMetadataFromUnpaywall(Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
-			Optional<Result> res = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+			Optional<UnpaywallResult> res = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
 			res.ifPresent(r -> {
 				log.debug("found unpaywall entry for: "+doi);
 				updateUnpaywallMetadata(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));
@@ -501,7 +501,7 @@ public class PubMedGraphExperiment2 {
 	Set<String> updatePdfLinksFromUnpaywall(Set<String> dois) {
 		Set<String> out = new HashSet<String>();
 		for (String doi: dois) {
-			Optional<Result> res = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
+			Optional<UnpaywallResult> res = biblioApi.getUnpaywall().getUnpaywallByDoi(doi.toLowerCase());
 			res.ifPresent(r -> {
 				log.debug("found unpaywall entry for: "+doi);
 				updatePdfLink(r, graphApi).ifPresent(d -> out.add(d.toLowerCase()));

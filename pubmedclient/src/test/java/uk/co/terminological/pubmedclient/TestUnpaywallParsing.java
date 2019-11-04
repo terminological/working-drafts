@@ -6,7 +6,7 @@ import java.io.InputStream;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import uk.co.terminological.bibliography.unpaywall.Result;
+import uk.co.terminological.bibliography.unpaywall.UnpaywallResult;
 
 public class TestUnpaywallParsing {
 
@@ -15,7 +15,7 @@ public class TestUnpaywallParsing {
 
 		ObjectMapper objectMapper = new ObjectMapper();
 		InputStream is = ClassLoader.getSystemResourceAsStream("unpaywall.json");
-		Result item = new Result(objectMapper.readTree(is));
+		UnpaywallResult item = new UnpaywallResult(objectMapper.readTree(is));
 					System.out.println("\n========================================\n"+item.getTitle());
 					System.out.println("abs: "+item.getAbstract());
 					//System.out.println("cited by: "+item.getCitedByCount());

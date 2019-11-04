@@ -7,7 +7,7 @@ import uk.co.terminological.bibliography.entrez.Link;
 import uk.co.terminological.bibliography.entrez.MeshCode;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
 import uk.co.terminological.bibliography.record.Author;
-import uk.co.terminological.bibliography.unpaywall.Result;
+import uk.co.terminological.bibliography.unpaywall.UnpaywallResult;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Rel;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Prop;
@@ -375,7 +375,7 @@ public class PubMedGraphUtils {
 		return Optional.empty();
 	}
 
-	public static Optional<String> updateUnpaywallMetadata(Result work, GraphDatabaseApi graph) {
+	public static Optional<String> updateUnpaywallMetadata(UnpaywallResult work, GraphDatabaseApi graph) {
 		if (work.getIdentifier().isPresent()) {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
@@ -394,7 +394,7 @@ public class PubMedGraphUtils {
 		return Optional.empty();
 	}
 	
-	public static Optional<String> updatePdfLink(Result work, GraphDatabaseApi graph) {
+	public static Optional<String> updatePdfLink(UnpaywallResult work, GraphDatabaseApi graph) {
 		if (work.getIdentifier().isPresent()) {
 			try (Transaction tx = graph.get().beginTx()) {
 				tx.acquireWriteLock(lockNode);
