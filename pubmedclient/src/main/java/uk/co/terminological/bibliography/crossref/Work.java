@@ -69,7 +69,7 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 				citationLink(
 						citationReference(this, this.getTitle().orElse(null), this),
 						citationReference(r, r.getTitle().orElse(null), r),
-						i
+						Optional.of(i)
 					));
 			i += 1;
 		}
