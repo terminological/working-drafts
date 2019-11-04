@@ -2,12 +2,18 @@ package uk.co.terminological.bibliography.entrez;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import static uk.co.terminological.bibliography.record.Builder.*;
 
+import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Raw;
+import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
@@ -21,6 +27,9 @@ public class Links implements Raw<XmlElement> {
 	public XmlElement getRaw() {return raw;}
 
 	private List<Link> links;
+	private static Map<String,IdType> lookup = FluentMap
+			.with(Database.PUBMED.toString(), IdType.PMID)
+			.and(Database.PMC.toString(), IdType.PMCID);
 
 	public Stream<Link> stream() {
 		return links.stream();
@@ -72,6 +81,21 @@ public class Links implements Raw<XmlElement> {
 	}
 	public List<Link> getLinks() {
 		return links;
+	}
+	
+	public Stream<CitationLink> getCitations() {
+		return stream().map(l -> 
+			citationLink(
+					citationReference(
+							recordReference(lookup.get(l.fromDb),l.fromId),null,null
+							),
+					citationReference(
+							recordReference(lookup.get(l.toDbOrUrl),l.toId.get()),null,null
+							),
+					null
+				)
+		);
+		
 	}
 
 
