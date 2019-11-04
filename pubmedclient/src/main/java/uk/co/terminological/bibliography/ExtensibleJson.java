@@ -14,8 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import uk.co.terminological.bibliography.record.Raw;
 
-public class ExtensibleJson {
+
+public class ExtensibleJson implements Raw<JsonNode> {
 	
 	static final Logger logger = LoggerFactory.getLogger(ExtensibleJson.class);
 	
