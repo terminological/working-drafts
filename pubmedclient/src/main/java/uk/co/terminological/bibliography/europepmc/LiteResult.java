@@ -17,6 +17,8 @@ import uk.co.terminological.bibliography.record.Author;
 import static uk.co.terminological.bibliography.record.Builder.*;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.IdentityMapping;
+import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.datatypes.FluentList;
@@ -59,7 +61,7 @@ firstIndexDate: "2010-12-03",
 firstPublicationDate: "2010-10-01"
  */
 
-public class LiteResult extends ExtensibleJson implements RecordReference, IdentityMapping {
+public class LiteResult extends ExtensibleJson implements RecordReference, IdentityMapping, Print {
 
 	public LiteResult(JsonNode node) { super(node); }
 	
@@ -71,7 +73,7 @@ public class LiteResult extends ExtensibleJson implements RecordReference, Ident
 	public Optional<String> getIssue() {return this.asString("issue");}
 	public Optional<String> getVolume() {return this.asString("journalVolume");}
 	public Optional<Long> getYear() {return this.asString("pubYear").map(Long::parseLong);}
-	public Optional<String> getPages() {return this.asString("pageInfo");}
+	public Optional<String> getPage() {return this.asString("pageInfo");}
 	// public Optional<String> getEssn() {return this.asString("essn");}
 	public Optional<String> getIssn() {return this.asString("journalIssn");}
 	
@@ -92,14 +94,21 @@ public class LiteResult extends ExtensibleJson implements RecordReference, Ident
 	}
 
 	@Override
-	public Set<RecordReference> getMapping() {
-		Set<RecordReference> tmp = new HashSet<>();
+	public List<RecordReference> getMapping() {
+		List<RecordReference> tmp = new ArrayList<>();
 		getDOI().map(d -> recordReference(IdType.DOI,d)).ifPresent(tmp::add);
 		getPMCID().map(d -> recordReference(IdType.PMCID,d)).ifPresent(tmp::add);
 		getPMID().map(d -> recordReference(IdType.PMID,d)).ifPresent(tmp::add);
 		getIdentifier().map(d -> recordReference(getIdentifierType(),d)).ifPresent(tmp::add);
 		return tmp;
 	}
+
+	@Override
+	public Optional<String> getFirstAuthorName() {
+		return getAuthors().map(s -> s.split(",")[0]);
+	}
+
+	
 
 	
 	

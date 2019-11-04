@@ -1,7 +1,10 @@
 package uk.co.terminological.bibliography.entrez;
 
+import static uk.co.terminological.bibliography.record.Builder.recordReference;
+
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -141,9 +144,12 @@ public class PubMedEntry implements PrintRecord, Raw<XmlElement> {
 	}
 
 	@Override
-	public Set<RecordReference> getOtherIdentifiers() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<RecordReference> getOtherIdentifiers() {
+		List<RecordReference> tmp = new ArrayList<>();
+		getDoi().map(d -> recordReference(IdType.DOI,d)).ifPresent(tmp::add);
+		getPMCID().map(d -> recordReference(IdType.PMCID,d)).ifPresent(tmp::add);
+		// getPMID().map(d -> recordReference(IdType.PMID,d)).ifPresent(tmp::add);
+		return tmp;
 	}
 
 	@Override
