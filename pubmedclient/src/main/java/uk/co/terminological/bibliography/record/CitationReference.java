@@ -2,17 +2,17 @@ package uk.co.terminological.bibliography.record;
 
 import java.util.Optional;
 
-public interface Citation {
+public interface CitationReference {
 
 	Optional<RecordReference> getIdentifier();
 	Optional<String> getTitle();
 	Optional<Print> getBibliographicId();
 	
-	public static Citation create(
+	public static CitationReference create(
 			final RecordReference identifier,
 			final String title,
 			final Print bibliographicInfo) {
-		return new Citation() {
+		return new CitationReference() {
 
 			@Override
 			public Optional<RecordReference> getIdentifier() {
