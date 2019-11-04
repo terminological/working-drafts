@@ -1,10 +1,15 @@
 package uk.co.terminological.bibliography.entrez;
 
+import java.util.Map;
 import java.util.Optional;
 
-import static uk.co.terminological.bibliography.record.Builder.*;
+
+
+import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.CitationReference;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.datatypes.FluentMap;
 
 /**
  * 
@@ -29,6 +34,8 @@ public class Link implements CitationLink {
 	public Optional<Long> score = Optional.empty();
 	public String toDbOrUrl;
 	public Optional<String> toId = Optional.empty();
+	
+	
 
 	protected Link(String dbFrom, String fromId, Optional<String> category, String toUrl) {
 		this.fromDb = dbFrom;
@@ -50,23 +57,6 @@ public class Link implements CitationLink {
 		return fromDb+"\t"+fromId+"\t"+typeOrCategory.orElse("")+"\t"+toDbOrUrl+"\t"+toId.orElse("")+"\t"+score.orElse(0L);
 	}
 
-	@Override
-	public CitationReference getSource() {
-		return citationLink(
-				citationReference(), 
-				citationReference(), null);
-	}
-
-	@Override
-	public CitationReference getTarget() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Optional<Integer> getIndex() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }

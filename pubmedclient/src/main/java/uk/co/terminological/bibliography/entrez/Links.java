@@ -92,7 +92,7 @@ public class Links implements Raw<XmlElement> {
 					citationReference(
 							recordReference(lookup.get(l.toDbOrUrl),l.toId.get()),null,null
 							),
-					null
+					Optional.empty()
 				)
 		);
 		

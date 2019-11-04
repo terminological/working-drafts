@@ -4,10 +4,6 @@ import java.util.Optional;
 
 public class Builder {
 
-	public static CitationLink citationLink(CitationReference source, CitationReference target, Integer index) {
-		return citationLink(source,target,Optional.ofNullable(index));
-	}
-	
 	public static CitationLink citationLink(CitationReference source, CitationReference target, Optional<Integer> index) {
 		return new CitationLink() {
 			@Override

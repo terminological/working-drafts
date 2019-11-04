@@ -176,7 +176,9 @@ public class EntrezClient extends CachingApiClient {
 
 	//public static class ELinkQueryBuilder
 
-	public static enum Database { PUBMED, PMC, MESH, GENE }
+	public static enum Database { PUBMED, PMC, MESH, GENE;
+		public String toString() {return this.name().toLowerCase();}
+	}
 
 	/**
 	 * Retrieve PMIDs from PubMed for a search string

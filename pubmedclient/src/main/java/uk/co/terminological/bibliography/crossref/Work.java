@@ -63,7 +63,7 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 	public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
 	public Stream<CitationLink> getCitations() {
 		List<CitationLink> tmp = new ArrayList<>();
-		Integer i = 0;
+		Integer i = 1;
 		for (Reference r: (Iterable<Reference>)this.getReferences()::iterator) {
 			tmp.add(
 				citationLink(
@@ -71,6 +71,7 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 						citationReference(r, r.getTitle().orElse(null), r),
 						i
 					));
+			i += 1;
 		}
 		return tmp.stream();
 	}
