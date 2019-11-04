@@ -26,7 +26,7 @@ affiliationOrgId
 	
 	@Override
 	public Optional<String> getORCID() {
-		return this.streamPath("authorId","value").findFirst().map(n -> n.asString())
+		return this.streamPath("authorId","value").findFirst().map(n -> n.asString());
 	}
 
 	@Override
