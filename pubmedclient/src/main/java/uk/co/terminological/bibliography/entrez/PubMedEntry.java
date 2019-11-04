@@ -121,9 +121,9 @@ public class PubMedEntry implements PrintRecord {
 		}
 	}
 
-	public List<Author> getAuthors() {
+	public List<EntrezAuthor> getAuthors() {
 		try {
-			return raw.doXpath(".//Author").getManyAsStream(XmlElement.class).map(o -> new Author(o)).collect(Collectors.toList());
+			return raw.doXpath(".//Author").getManyAsStream(XmlElement.class).map(o -> new EntrezAuthor(o)).collect(Collectors.toList());
 		} catch (XmlException e) {
 			return Collections.emptyList();
 		}

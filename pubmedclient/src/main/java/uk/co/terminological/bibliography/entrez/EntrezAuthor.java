@@ -6,10 +6,10 @@ import java.util.stream.Stream;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class Author implements uk.co.terminological.bibliography.record.Author {
+public class EntrezAuthor implements uk.co.terminological.bibliography.record.Author {
 
 	private XmlElement raw;
-	public Author(XmlElement raw) {this.raw = raw;}
+	public EntrezAuthor(XmlElement raw) {this.raw = raw;}
 	public String getLastName() {
 		return raw.childElements("LastName").findFirst().flatMap(o -> o.getTextContent()).orElse("Unknown");
 	}
