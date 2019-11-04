@@ -1,5 +1,9 @@
 package uk.co.terminological.bibliography.record;
 
-public interface CitationLink {
+import java.util.Optional;
 
+public interface CitationLink {
+	CitationReference getSource();
+	CitationReference getTarget();
+	Optional<Integer> getIndex();
 }
