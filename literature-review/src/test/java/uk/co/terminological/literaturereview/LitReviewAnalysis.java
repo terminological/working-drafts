@@ -1005,7 +1005,7 @@ public class LitReviewAnalysis {
 								.map(sr -> sr.getWork())
 								.flatMap(w -> {
 									cppNew.add(w,doi);
-									return w.getCitations();
+									return w.getReferences();
 								})
 								.flatMap(ref -> {
 									ref.getIdentifier().ifPresent(d -> cppRefs.add(ref,d));
