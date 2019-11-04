@@ -5,6 +5,8 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
+import uk.co.terminological.bibliography.record.RecordReference;
+import uk.co.terminological.bibliography.record.Paper;
 
 /*
 
@@ -25,7 +27,7 @@ citedByCount: 0
 //TODO: change API to make a first class citation object
 //TODO: get this to conform
 
-public class Citation extends ExtensibleJson {
+public class Citation extends ExtensibleJson implements Paper, RecordReference {
 
 	public Citation(JsonNode node) { super(node); }
 	

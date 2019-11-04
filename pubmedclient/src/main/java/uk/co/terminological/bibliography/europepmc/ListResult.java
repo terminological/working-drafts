@@ -20,6 +20,7 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 		return new ListResult<Y>(clazz,raw);
 	}
 	
+	// there paths are either/or in the output.
 	public Stream<X> getItems() {
 		return Stream.concat(Stream.concat(
 				this.streamPath(clazz,"referenceList","reference"),
