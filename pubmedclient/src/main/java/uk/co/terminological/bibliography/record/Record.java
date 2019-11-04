@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 public interface Record extends RecordReference {
 
-	public Set<RecordReference> getOtherIdentifiers();
+	public List<RecordReference> getOtherIdentifiers();
 	
 	public default Optional<? extends Author> getFirstAuthor() {
 		if (getAuthors().isEmpty()) return Optional.empty();
