@@ -3,10 +3,11 @@ package uk.co.terminological.bibliography.entrez;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class Search {
+public class Search implements Raw<XmlElement> {
 
 	private XmlElement raw;
 
@@ -14,7 +15,7 @@ public class Search {
 		this.raw = raw;
 	}
 
-	public XmlElement raw() {return raw;}
+	public XmlElement getRaw() {return raw;}
 
 	public Optional<Integer> count() {
 		try {

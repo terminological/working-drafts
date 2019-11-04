@@ -11,12 +11,13 @@ import java.util.stream.Stream;
 
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
+import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlList;
 
-public class PubMedEntry implements PrintRecord {
+public class PubMedEntry implements PrintRecord, Raw<XmlElement> {
 
 	private XmlElement raw; //PubmedArticle
 
