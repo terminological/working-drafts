@@ -3,6 +3,7 @@ package uk.co.terminological.bibliography.crossref;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -13,8 +14,11 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.CitationReference;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Print;
+import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.bibliography.record.RecordWithCitations;
 
@@ -53,7 +57,56 @@ public class Work extends ExtensibleJson implements Print, RecordWithCitations {
 	
 	public List<Contributor> getAuthors() {
 		return this.streamPath(Contributor.class, "author").collect(Collectors.toList());}
-	public Stream<Reference> getCitations() {return this.streamPath(Reference.class, "reference");}
+	public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
+	public Stream<CitationLink> getCitations() {
+		List<CitationLink> tmp = new ArrayList<>();
+		Integer i = 0;
+		for (Reference r: (Iterable<Reference>)this.getReferences()::iterator) {
+			tmp.add(
+				new CitationLink() {
+
+					@Override
+					public CitationReference getSource() {
+						return new CitationReference() {
+
+							@Override
+							public Optional<RecordReference> getIdentifier() {
+								// TODO Auto-generated method stub
+								return this<Work>;
+							}
+
+							@Override
+							public Optional<String> getTitle() {
+								// TODO Auto-generated method stub
+								return null;
+							}
+
+							@Override
+							public Optional<Print> getBibliographicId() {
+								// TODO Auto-generated method stub
+								return null;
+							}
+							
+						};
+					}
+
+					@Override
+					public CitationReference getTarget() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+
+					@Override
+					public Optional<Integer> getIndex() {
+						// TODO Auto-generated method stub
+						return null;
+					}
+				
+				}
+			);
+		}
+		return tmp.stream();
+	}
 	public Optional<Long> getCitedByCount() {return this.asLong("is-referenced-by-count");}
 	public Optional<Long> getReferencesCount() {return this.asLong("references-count");}
 	public Optional<String> getAbstract() {return this.asString("abstract");}
