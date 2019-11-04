@@ -81,10 +81,11 @@ public class BibliographicApis {
 				cacheDir.map(o -> o.resolve("unpaywall")).orElse(null));
 		pdfFetcher = PdfFetcher.create(
 				cacheDir.map(o -> o.resolve("pdf")).orElse(null));
-		europepmc = EuropePmcClient.create(developerEmail, 
-				cacheDir.map(o -> o.resolve("unpaywall")).orElse(null));
 		unpaywall.withPdfFetcher(pdfFetcher);
-
+		europepmc = EuropePmcClient.create(developerEmail, 
+				cacheDir.map(o -> o.resolve("europepmc")).orElse(null));
+		opencitations = OpenCitationsClient.create(
+				cacheDir.map(o -> o.resolve("opencitations")).orElse(null));
 	}
 
 	public BibliographicApis debugMode() {
@@ -92,6 +93,8 @@ public class BibliographicApis {
 		pmcIdConv.debugMode();
 		crossref.debugMode();
 		unpaywall.debugMode();
+		europepmc.debugMode();
+		opencitations.debugMode();
 		return this;
 	}
 	
@@ -113,5 +116,13 @@ public class BibliographicApis {
 
 	public PdfFetcher getPdfFetcher() {
 		return pdfFetcher;
+	}
+	
+	public EuropePmcClient getEuropePMC() {
+		return europepmc;
+	}
+	
+	public OpenCitationsClient getOpenCitationsClient() {
+		return opencitations;
 	}
 }
