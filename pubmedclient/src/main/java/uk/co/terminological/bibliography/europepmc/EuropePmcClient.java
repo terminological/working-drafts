@@ -163,7 +163,7 @@ public class EuropePmcClient extends CachingApiClient {
 		return buildQuery(text).executeFull().get();
 	}
 	
-	public ListResult<Citation> citations(String source, String id) {
+	public ListResult<Citation> citations(DataSources source, String id) {
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/citations?format=json
 		//id=23245604
 		//source=MED
@@ -177,7 +177,7 @@ public class EuropePmcClient extends CachingApiClient {
 				).get().get();
 	}
 	
-	public ListResult<Reference> references(String source, String id) {
+	public ListResult<Reference> references(DataSources source, String id) {
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/references?format=json
 		//id=23245604
 		//source=MED
