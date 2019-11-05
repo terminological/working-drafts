@@ -173,18 +173,22 @@ public class EuropePmcClient extends CachingApiClient {
 		return this.buildCall(baseUrl+source+"/"+id+"/citations", ListResult.Citation.class)
 				.withParams(defaultApiParams())
 				.withOperation(is -> 
-					new ListResult.Citation(client.objectMapper.readTree(is))
+					new ListResult.Citation(objectMapper.readTree(is))
 				).get().get();
 	}
 	
-	public ListResult<Reference> references(String pubmedId) {
+	public ListResult<Reference> references(String source, String id) {
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/references?format=json
 		//id=23245604
 		//source=MED
 		//page=0
 		//pageSize=1000 (max)
 		//format=json
-		
+		return this.buildCall(baseUrl+source+"/"+id+"/references", ListResult.Reference.class)
+				.withParams(defaultApiParams())
+				.withOperation(is -> 
+					new ListResult.Reference(objectMapper.readTree(is))
+				).get().get();
 	}
 	
 	
