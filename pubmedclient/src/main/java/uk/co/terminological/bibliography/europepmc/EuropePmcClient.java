@@ -10,9 +10,13 @@ import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.bibliography.CachingApiClient;
+
+import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.record.IdType;
 
 public class EuropePmcClient extends CachingApiClient {
@@ -35,11 +39,13 @@ public class EuropePmcClient extends CachingApiClient {
 	private static String baseUrl = "https://www.ebi.ac.uk/europepmc/webservices/rest/"; //search?query=malaria&format=json
 
 	private String developerEmail;
+	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Override
 	protected MultivaluedMap<String, String> defaultApiParams() {
 		MultivaluedMap<String, String> out = new MultivaluedMapImpl();
 		out.add("format", "json");
+		out.add("pageSize", "1000");
 		if (developerEmail != null) out.add("email", developerEmail);
 		return out;
 	}
@@ -54,6 +60,8 @@ public class EuropePmcClient extends CachingApiClient {
 		if (singleton == null) singleton = new EuropePmcClient(Optional.ofNullable(cacheDir), developerEmail);
 		return singleton;
 	}
+	
+	
 	
 	// ####### API methods ####### //
 	
@@ -74,6 +82,57 @@ public class EuropePmcClient extends CachingApiClient {
 				.findFirst();
 	}
 	
+	public QueryBuilder buildQuery(String searchTerm) {
+		return new QueryBuilder(defaultApiParams(),searchTerm,this);
+	}
+	
+	public static class QueryBuilder {
+		MultivaluedMap<String, String> searchParams;
+		EuropePmcClient client;
+		
+		protected QueryBuilder(MultivaluedMap<String, String> searchParams,String searchTerm, EuropePmcClient client) {
+			this.searchParams = searchParams;
+			this.searchParams.add("query", searchTerm);
+			this.client = client;
+		}
+		
+		public QueryBuilder useSynonyms() {
+			this.searchParams.add("synonym", "true");
+			return this;
+		}
+		
+		public QueryBuilder withSort(Field field, Direction dir) {
+			this.searchParams.add("sort", field.toString()+" "+dir.toString());
+			return this;
+		}
+		
+		public Optional<ListResult.Lite> executeLite() {
+			this.searchParams.add("resultType", "lite");
+			return client.buildCall(baseUrl+"searchPost", ListResult.Lite.class)
+					.withParams(searchParams)
+					.withOperation(is -> {
+						JsonNode tmp = client.objectMapper.readTree(is);
+						return ListResult.create(LiteResult.class, tmp);
+					})
+					.post();
+					
+		}
+		
+		public ListResult<CoreResult> executeFull() {
+			this.searchParams.add("resultType", "core");
+			
+		}
+		
+	}
+	
+	public static enum Field {
+		P_PDATE_D, AUTH_FIRST, CITED
+	}
+	
+	public static enum Direction {
+		ASC, DESC; public String toString() {return this.name().toLowerCase()}
+	}
+		
 	public ListResult<LiteResult> liteSearch(String text) {
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
@@ -119,6 +178,8 @@ public class EuropePmcClient extends CachingApiClient {
 		//format=json
 		
 	}
+	
+	
 	
 	public static enum DataSources {
 		AGR, CBA, CTX, ETH, HIR, MED, NBK, PAT, PMC
