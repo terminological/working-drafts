@@ -132,7 +132,7 @@ public class EuropePmcClient extends CachingApiClient {
 	}
 	
 	public static enum Direction {
-		ASC, DESC; public String toString() {return this.name().toLowerCase()}
+		ASC, DESC; public String toString() {return this.name().toLowerCase();}
 	}
 		
 	public ListResult<LiteResult> liteSearch(String text) {
