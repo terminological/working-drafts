@@ -16,10 +16,6 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 		this.clazz = clazz;
 	}
 	
-	public static <Y extends ExtensibleJson> ListResult<Y> create(Class<Y> clazz, JsonNode raw) {
-		return new ListResult<Y>(clazz,raw);
-	}
-	
 	// there paths are either/or in the output.
 	public Stream<X> getItems() {
 		return Stream.concat(Stream.concat(
@@ -41,4 +37,28 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 	
 	public Optional<Long> pageNumber() {
 		return this.streamPath("request","page").findFirst().map(jn -> jn.asLong());}
+	
+	public static class Lite extends ListResult<LiteResult> {
+		public Lite(JsonNode raw) {
+			super(LiteResult.class,raw);
+		}
+	}
+	
+	public static class Core extends ListResult<CoreResult> {
+		public Core(JsonNode raw) {
+			super(CoreResult.class,raw);
+		}
+	}
+	
+	public static class Reference extends ListResult<Reference> {
+		public Reference(JsonNode raw) {
+			super(Reference.class,raw);
+		}
+	}
+	
+	public static class Citation extends ListResult<Citation> {
+		public Citation(JsonNode raw) {
+			super(Citation.class,raw);
+		}
+	}
 }
