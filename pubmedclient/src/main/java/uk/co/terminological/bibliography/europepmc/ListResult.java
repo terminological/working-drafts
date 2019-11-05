@@ -50,15 +50,15 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 		}
 	}
 	
-	public static class Reference extends ListResult<Reference> {
+	public static class Reference extends ListResult<uk.co.terminological.bibliography.europepmc.Reference> {
 		public Reference(JsonNode raw) {
-			super(Reference.class,raw);
+			super(uk.co.terminological.bibliography.europepmc.Reference.class,raw);
 		}
 	}
 	
-	public static class Citation extends ListResult<Citation> {
+	public static class Citation extends ListResult<uk.co.terminological.bibliography.europepmc.Citation> {
 		public Citation(JsonNode raw) {
-			super(Citation.class,raw);
+			super(uk.co.terminological.bibliography.europepmc.Citation.class,raw);
 		}
 	}
 }

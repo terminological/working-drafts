@@ -110,17 +110,19 @@ public class EuropePmcClient extends CachingApiClient {
 			this.searchParams.add("resultType", "lite");
 			return client.buildCall(baseUrl+"searchPost", ListResult.Lite.class)
 					.withParams(searchParams)
-					.withOperation(is -> {
-						JsonNode tmp = client.objectMapper.readTree(is);
-						return ListResult.create(LiteResult.class, tmp);
-					})
-					.post();
+					.withOperation(is -> 
+						new ListResult.Lite(client.objectMapper.readTree(is))
+					).post();
 					
 		}
 		
-		public ListResult<CoreResult> executeFull() {
+		public Optional<ListResult.Core> executeFull() {
 			this.searchParams.add("resultType", "core");
-			
+			return client.buildCall(baseUrl+"searchPost", ListResult.Core.class)
+					.withParams(searchParams)
+					.withOperation(is -> 
+						new ListResult.Core(client.objectMapper.readTree(is))
+					).post();
 		}
 		
 	}
@@ -144,6 +146,7 @@ public class EuropePmcClient extends CachingApiClient {
 		// synonym=false/true
 		// resultType=idlist/lite/core
 		// POST
+		return buildQuery(text).executeLite().get();
 	}
 	
 	public ListResult<CoreResult> fullSearch(String text) {
@@ -157,16 +160,21 @@ public class EuropePmcClient extends CachingApiClient {
 		// synonym=false/true
 		// resultType=idlist/lite/core
 		// POST
+		return buildQuery(text).executeFull().get();
 	}
 	
-	public ListResult<Citation> citations(String pubmedId) {
+	public ListResult<Citation> citations(String source, String id) {
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/citations?format=json
 		//id=23245604
 		//source=MED
 		//page=0
 		//pageSize=1000 (max)
 		//format=json
-		
+		return this.buildCall(baseUrl+source+"/"+id+"/citations", ListResult.Citation.class)
+				.withParams(defaultApiParams())
+				.withOperation(is -> 
+					new ListResult.Citation(client.objectMapper.readTree(is))
+				).get().get();
 	}
 	
 	public ListResult<Reference> references(String pubmedId) {
