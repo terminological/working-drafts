@@ -46,6 +46,8 @@ public class PdfFetcher extends CachingApiClient {
 	    config.getProperties().put(ClientConfig.PROPERTY_FOLLOW_REDIRECTS, true);
 	    client = Client.create(config);
 	    client.setFollowRedirects(true);
+	    client.setConnectTimeout(1000);
+	    client.setReadTimeout(4000);
 	    client.addFilter(new ClientFilter() { 
             @Override 
             public ClientResponse handle(ClientRequest request) 
