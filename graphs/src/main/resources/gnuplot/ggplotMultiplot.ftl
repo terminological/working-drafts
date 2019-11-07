@@ -5,9 +5,10 @@ library(ggplot2);
 library(patchwork);
 library(tidyverse);
 library(latex2exp);
-library(phdUtils);
 
-theme_set(themePhd())
+library(standardPrintOutput);
+
+theme_set(defaultFigureLayout(base_size=8))
 
 <#list plots as plot>
 
@@ -44,11 +45,7 @@ p <- wrap_plots(grid,wrap_elements(legend),nrow=1,widths = c(1, .2));
 p <- grid;
 </#if>
 
-
-# save_plot("${output}.png", p, ncol=${cols}, nrow=${(plots?size/cols)?int}, base_height=2, base_width=2);
-# ggsave("${output}.png", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
-# ggsave("${output}.pdf", p, width = min(5.5,8*${cols}/${(plots?size/cols)?int}), height = min(8,5.5*${(plots?size/cols)?int}/${cols}));
-saveThesisFullPage("${output}",plot=p,aspectRatio=${cols}<#if mergeAxes>*1.2</#if>/${(plots?size/cols)?int})
+saveFullPageFigure(plot=p,filename="${output}",aspectRatio=${cols}<#if mergeAxes>*1.2</#if>/${(plots?size/cols)?int})
 <#-- https://stackoverflow.com/questions/45473843/put-row-and-column-titles-using-grid-arrange-in-r/45474093#45474093 
 rremove
 
