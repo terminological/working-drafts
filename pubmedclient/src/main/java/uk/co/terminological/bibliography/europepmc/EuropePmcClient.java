@@ -22,7 +22,7 @@ public class EuropePmcClient extends CachingApiClient {
 	
 	// ####### Constructors / factories etc ####### //
 	
-	private static Logger log = LoggerFactory.getLogger(EuropePmcClient.class);
+	// private static Logger log = LoggerFactory.getLogger(EuropePmcClient.class);
 	
 	private EuropePmcClient(Optional<Path> optional, String developerEmail) {
 		super(optional,
