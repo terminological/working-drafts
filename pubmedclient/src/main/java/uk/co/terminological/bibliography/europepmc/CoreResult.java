@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
