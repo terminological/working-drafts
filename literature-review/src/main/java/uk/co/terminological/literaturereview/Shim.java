@@ -34,8 +34,8 @@ public class Shim {
 			}
 
 			@Override
-			public Set<RecordReference> getOtherIdentifiers() {
-				return Collections.emptySet();
+			public List<RecordReference> getOtherIdentifiers() {
+				return Collections.emptyList();
 			}
 
 			@Override
