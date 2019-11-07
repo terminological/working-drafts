@@ -124,9 +124,9 @@ public class Shim {
 			}
 
 			@Override
-			public Set<RecordReference> getOtherIdentifiers() {
+			public List<RecordReference> getOtherIdentifiers() {
 				// TODO Could look up the others
-				return Collections.emptySet();
+				return Collections.emptyList();
 			}
 
 			@Override
