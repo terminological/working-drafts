@@ -10,13 +10,10 @@ import org.isomorphism.util.TokenBuckets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.bibliography.CachingApiClient;
-
-import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.record.IdType;
 
 public class EuropePmcClient extends CachingApiClient {
