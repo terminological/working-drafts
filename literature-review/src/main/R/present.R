@@ -1,9 +1,9 @@
 library(tidyverse)
 library(reshape2)
-library(cowplot)
 library(lubridate)
 library(huxtable)
-library(phdUtils)
+library(standardPrintOutput)
+# library(phdUtils)
 
 # sudo apt-get install libcairo2-dev libmagick++-dev
 # install.packages("tidyverse")
@@ -12,12 +12,11 @@ library(phdUtils)
 # install.packages("huxtable")
 # install.packages("flextable")
 
-theme_set(themePhd())
+theme_set(defaultFigureLayout())
+setwd("~/Dropbox/litReview/output/")
 
 files <- list.files(path = "~/Dropbox/litReview/output/", pattern = "*.tsv", all.files = TRUE)
 files <- colsplit(files,"\\.",names=c("base","etn"))
-
-theme_set(theme_cowplot(font_size=8))
 
 # load variables based on content of directory
 for (file in files$base) {
@@ -59,7 +58,7 @@ plotArticlesByPagerank_DateCitedBy
 figure1pg = plot_grid(plotArticlesByJournal_Count, 
           plot_grid(plotArticlesByPagerank_Date, plotArticlesByPagerank_DateCitedBy, labels=c("B","C"), ncol=1),
           labels=c("A",NA), ncol=2)
-saveThesisHalfPage("~/Dropbox/litReview/output/figure1", figure1pg)
+figure1pg %>% saveHalfPageFigure("~/Dropbox/litReview/output/figure1")
 
 
 # plotArticlesByPagerank_DateDomainCitedBy <- ggplot(getArticlesByPagerank,
@@ -111,12 +110,14 @@ top5ByTopic <- getTopicDocuments %>% left_join(getArticlesByPagerank, by="nodeId
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(topic,reference,weight) 
 
-top5ByTopic %>% mergeCells() %>% 
-  set_align(1, 3, 'right') %>%
-  set_align(everywhere, 1, 'left') %>%
-  set_col_width(c(.1, .7, .2)) %>%
-  set_font_size(everywhere,everywhere,8) %>%
-  saveTable("~/Dropbox/litReview/output/top5RefsByTopic")
+# top5ByTopic %>% mergeCells() %>% 
+#   set_align(1, 3, 'right') %>%
+#   set_align(everywhere, 1, 'left') %>%
+#   set_col_width(c(.1, .7, .2)) %>%
+#   set_font_size(everywhere,everywhere,8) %>%
+#   saveTable("top5RefsByTopic")
+
+top5ByTopic %>% saveMultiPageLandscape("~/Dropbox/litReview/output/top5RefsByTopic",colWidths=c(.05, .9, .05),defaultFontSize=8)
 
 ##################################################
 
@@ -133,9 +134,9 @@ top5ByAuthorCommunity <- getAuthorCommunityArticles %>%
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(community,reference,pagerank) 
 
-top5ByAuthorCommunity %>% saveTable("~/Dropbox/litReview/output/top5RefsByAuthorCommunity",colWidths=c(.1, .7, .2),defaultFontSize=8)
+top5ByAuthorCommunity %>% saveMultiPageLandscape("~/Dropbox/litReview/output/top5RefsByAuthorCommunity",colWidths=c(.05, .9, .05),defaultFontSize=8)
 
-##################################################
+################################################## 
 
 
 top5ByArticleGroup <- getArticlesByPagerank %>%
@@ -149,7 +150,7 @@ top5ByArticleGroup <- getArticlesByPagerank %>%
   mutate(reference = sub("\\[[0-9]+\\]","",node)) %>% 
   select(articleGroup,reference,pagerank) 
 
-top5ByArticleGroup %>% saveTable("~/Dropbox/litReview/output/top5RefsByArticleGroup",colWidths=c(.1, .7, .2),defaultFontSize=8)
+top5ByArticleGroup %>% saveMultiPageLandscape("~/Dropbox/litReview/output/top5RefsByArticleGroup",colWidths=c(.05, .9, .05),defaultFontSize=8)
 
 ##############################################
 
@@ -168,8 +169,7 @@ htAuthorsByCommunity <- defaultLayout(as_huxtable(authorCommunityByMember, add_c
   set_col_width(c(.1, .3, .5, .1)) %>%
   set_caption('Top 5 pageranked researchers in community')
 htAuthorsByCommunity = mergeCells(htAuthorsByCommunity)
-
-quick_html(htAuthorsByCommunity, file="~/Dropbox/litReview/output/top5AuthorsByCommunity.html")
+htAuthorsByCommunity %>% saveTable("~/Dropbox/litReview/output/top5AuthorsByCommunity")
 
 ##########################################################
 # confusion matrices ----
