@@ -1,27 +1,19 @@
 package uk.co.terminological.bibliography.europepmc;
 
-import java.net.URI;
-import java.time.LocalDate;
+import static uk.co.terminological.bibliography.record.Builder.recordReference;
+
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.europepmc.EuropePmcClient.DataSources;
-import uk.co.terminological.bibliography.record.Author;
-import static uk.co.terminological.bibliography.record.Builder.*;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.IdentityMapping;
 import uk.co.terminological.bibliography.record.Print;
-import uk.co.terminological.bibliography.record.PrintRecord;
-import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
-import uk.co.terminological.datatypes.FluentList;
 
 
 /*
