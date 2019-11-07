@@ -4,9 +4,9 @@
 library(cowplot);
 library(tidyverse);
 library(latex2exp);
-library(phdUtils);
+library(standardPrintOutput);
 
-theme_set(themePhd(base_size=10))
+theme_set(defaultFigureLayout(base_size=10))
 
 ${plot}
 
