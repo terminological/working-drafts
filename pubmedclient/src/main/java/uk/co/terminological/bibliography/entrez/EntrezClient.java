@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -34,12 +35,14 @@ import uk.co.terminological.bibliography.PdfFetcher;
 import uk.co.terminological.bibliography.client.CitedByMapper;
 import uk.co.terminological.bibliography.client.CitesMapper;
 import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.IdMapper;
 import uk.co.terminological.bibliography.client.Searcher;
 import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordIdentifier;
+import uk.co.terminological.bibliography.record.RecordIdentifierMapping;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
@@ -47,7 +50,7 @@ import uk.co.terminological.fluentxml.XmlException;
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
  */
-public class EntrezClient extends CachingApiClient implements Searcher, IdLocator, CitesMapper, CitedByMapper {
+public class EntrezClient extends CachingApiClient implements Searcher, IdLocator, CitesMapper, CitedByMapper, IdMapper {
 
 	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
 	// TODO: caching with https://hc.apache.org/httpcomponents-client-ga/tutorial/html/caching.html#storage and EHCache
@@ -598,11 +601,21 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	@Override
-	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> ref) {
+	public Map<RecordIdentifier, EntrezEntry> getById(Collection<RecordReference> ref) {
 		Map<RecordIdentifier, EntrezEntry> out = new HashMap<>();
 		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		// List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		getPMEntriesByPMIds(pmids).forEach(ee -> out.put(Builder.recordReference(ee), ee));
+		return out;
+	}
+
+	@Override
+	public Collection<RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
+		Collection<RecordIdentifierMapping> out = new ArrayList<>();
+		Map<RecordIdentifier, EntrezEntry> tmp = getById(source);
+		for (Entry<RecordIdentifier, EntrezEntry> e: tmp.entrySet()) {
+			out.add(Builder.recordIdMapping(e.getKey(),e.getValue()));
+		}
 		return out;
 	}
 	
