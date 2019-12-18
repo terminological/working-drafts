@@ -567,7 +567,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	@Override
-	public Map<? extends RecordIdentifier, Collection<? extends CitationLink>> referencesCiting(Collection<RecordReference> ref) {
+	public Collection<? extends CitationLink> referencesCiting(Collection<RecordReference> ref) {
 		Map<String,String> out = new HashMap<>();
 		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
@@ -580,7 +580,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	@Override
-	public Map<? extends RecordIdentifier, Collection<? extends CitationLink>> citesReferences(Collection<RecordReference> ref) {
+	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
 		// TODO Auto-generated method stub
 		return null;
 	}
