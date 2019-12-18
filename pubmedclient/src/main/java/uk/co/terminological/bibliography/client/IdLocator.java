@@ -1,5 +1,6 @@
 package uk.co.terminological.bibliography.client;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -11,7 +12,7 @@ import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface IdLocator {
 
-	Optional<? extends Record> getById(Set<RecordReference> equivalentIds);
+	Optional<? extends Record> getById(Collection<RecordReference> equivalentIds);
 	
 	default Optional<? extends Record> getById(IdType type, String id) {
 		return getById(Collections.singleton(new RecordReference() {

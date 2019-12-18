@@ -10,7 +10,7 @@ import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface CitesMapper {
 	
-	public Map<? extends RecordReference, Collection<? extends CitationLink>> citesReferences(Set<RecordReference> ref);
+	public Map<? extends RecordReference, Collection<? extends CitationLink>> citesReferences(Collection<RecordReference> ref);
 	
 	default Collection<? extends CitationLink> citesReferences(RecordReference ref) {
 		return citesReferences(Collections.singleton(ref)).get(ref);
