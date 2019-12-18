@@ -32,6 +32,7 @@ import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.client.CitesMapper;
 import uk.co.terminological.bibliography.client.IdLocator;
 import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
@@ -432,12 +433,12 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 		Map<RecordIdentifier,CrossRefWork> out = new HashMap<>(); 
 		for (RecordReference id: equivalentIds) {
 			if (id instanceof CrossRefWork) {
-				out.put(RecordIdentifier.create(id),(CrossRefWork) id);
+				out.put(Builder.recordReference(id),(CrossRefWork) id);
 			};
 			if (id.getIdentifierType().equals(IdType.DOI)) {
 				if (id.getIdentifier().isPresent()) {
 					Optional<CrossRefWork> tmp = this.getByDoi(id.getIdentifier().get()).map(r -> r.getWork());
-					tmp.ifPresent(t -> out.put(RecordIdentifier.create(id), t));
+					tmp.ifPresent(t -> out.put(Builder.recordReference(id), t));
 				}
 			}
 		}
