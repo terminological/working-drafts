@@ -62,8 +62,8 @@ public class EuropePmcClient extends CachingApiClient {
 	
 	// ####### API methods ####### //
 	
-	public Optional<CoreResult> getById(String id, IdType type) {
-		ListResult<CoreResult> tmp;
+	public Optional<EuropePMCCoreResult> getById(String id, IdType type) {
+		ListResult<EuropePMCCoreResult> tmp;
 		if( type.equals(IdType.DOI)) {
 			tmp = fullSearch("DOI:"+id);
 		} else if( type.equals(IdType.PMCID)) {
@@ -146,7 +146,7 @@ public class EuropePmcClient extends CachingApiClient {
 		return buildQuery(text).executeLite().get();
 	}
 	
-	public ListResult<CoreResult> fullSearch(String text) {
+	public ListResult<EuropePMCCoreResult> fullSearch(String text) {
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
 		// query=malaria%20sort_cited:y

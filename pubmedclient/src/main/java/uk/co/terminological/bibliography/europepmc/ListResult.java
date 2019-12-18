@@ -44,9 +44,9 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 		}
 	}
 	
-	public static class Core extends ListResult<CoreResult> {
+	public static class Core extends ListResult<EuropePMCCoreResult> {
 		public Core(JsonNode raw) {
-			super(CoreResult.class,raw);
+			super(EuropePMCCoreResult.class,raw);
 		}
 	}
 	

@@ -17,7 +17,7 @@ import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class CoreResult extends LiteResult implements PrintRecord {
+public class EuropePMCCoreResult extends LiteResult implements PrintRecord {
 
 	//https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1073/pnas.0506580102&sort=CITED%20desc&format=json&resultType=core
 	/*
@@ -32,7 +32,7 @@ affiliation
 affiliationOrgId
 	 */
 	
-	public CoreResult(JsonNode node) { super(node); }
+	public EuropePMCCoreResult(JsonNode node) { super(node); }
 
 	@Override
 	public List<RecordReference> getOtherIdentifiers() {
