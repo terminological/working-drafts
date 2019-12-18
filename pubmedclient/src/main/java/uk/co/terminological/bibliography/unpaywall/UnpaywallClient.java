@@ -21,8 +21,10 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.PdfFetcher;
+import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.Searcher;
 
-public class UnpaywallClient extends CachingApiClient {
+public class UnpaywallClient extends CachingApiClient implements IdLocator {
 
 	//api.unpaywall.org/v2/DOI?email=YOUR_EMAIL.
 	//https://unpaywall.org/YOUR_DOI
