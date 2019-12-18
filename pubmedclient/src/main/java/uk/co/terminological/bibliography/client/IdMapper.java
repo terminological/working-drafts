@@ -7,5 +7,5 @@ import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface IdMapper {
 
-	public Collection<RecordIdentifierMapping> mappings(RecordReference source);
+	public Collection<? extends RecordIdentifierMapping> mappings(Collection<? extends RecordReference> source);
 }
