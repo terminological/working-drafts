@@ -308,7 +308,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 			}).post();
 	}
 
-	public Optional<EntrezEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
+	public Optional<EntrezEntry> getPMEntryByPMId(String pmid) { //throws BibliographicApiException {
 		if (pmid == null || pmid.isEmpty()) return Optional.empty(); 
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
