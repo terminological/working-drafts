@@ -427,7 +427,7 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Optional<? extends Record> getById(Set<RecordReference> equivalentIds) {
+	public Optional<? extends Record> getById(Collection<RecordReference> equivalentIds) {
 		for (RecordReference id: equivalentIds) {
 			if (id instanceof CrossRefWork) return Optional.of((CrossRefWork) id);
 			if (id.getIdentifierType().equals(IdType.DOI)) {
