@@ -1,5 +1,5 @@
 package uk.co.terminological.bibliography.record;
 
-public class RecordIdentifier {
+public class RecordIdentifier implements RecordReference {
 
 }

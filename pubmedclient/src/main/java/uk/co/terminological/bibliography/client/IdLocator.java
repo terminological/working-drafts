@@ -13,7 +13,7 @@ import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface IdLocator {
 
-	Map<RecordReference, ? extends Record> getById(Collection<RecordReference> equivalentIds);
+	Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds);
 	
 	default Optional<? extends Record> getById(IdType type, String id) {
 		return getById(Collections.singleton(new RecordReference() {
