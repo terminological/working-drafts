@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +30,13 @@ import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.client.IdLocator;
 import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.client.CitesMapper;
+import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordReference;
 
-public class CrossRefClient extends CachingApiClient implements IdLocator,Searcher {
+public class CrossRefClient extends CachingApiClient implements IdLocator,Searcher,CitesMapper {
 	// https://www.crossref.org/schemas/
 	// https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
 	// https://github.com/CrossRef/rest-api-doc
@@ -425,6 +429,17 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	public Optional<? extends Record> getById(IdType type, String id) {
 		if (!type.equals(IdType.DOI)) return Optional.empty();
 		return this.getByDoi(id).map(r -> r.getWork());
+	}
+
+	@Override
+	public Collection<? extends CitationLink> citesReferences(RecordReference ref) {
+		Optional<CrossRefWork> tmp;
+		if (ref instanceof CrossRefWork) {
+			tmp = Optional.of((CrossRefWork) ref); 
+		} else {
+			tmp = getById(ref.getIdentifierType(), ref.getIdentifier().get()).map(w -> (CrossRefWork) w);
+		}
+		return tmp.stream().flatMap(t -> t.getCitations()).collect(Collectors.toList());
 	}
 
 }
