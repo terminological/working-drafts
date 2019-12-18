@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -97,7 +98,7 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	static String baseUrl ="https://api.crossref.org/";
 
 	public Optional<CrossRefSingleResult> getByDoi(String doi) {
-		
+		if (doi == null) return Optional.empty();
 		String url = baseUrl+"works/"+encode(doi);
 		return this
 			.buildCall(url,CrossRefSingleResult.class)
@@ -426,9 +427,15 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Optional<? extends Record> getById(IdType type, String id) {
-		if (!type.equals(IdType.DOI)) return Optional.empty();
-		return this.getByDoi(id).map(r -> r.getWork());
+	public Optional<? extends Record> getOneById(Set<RecordReference> equivalentIds) {
+		for (RecordReference id: equivalentIds) {
+			if (id instanceof CrossRefWork) return Optional.of((CrossRefWork) id);
+			if (id.getIdentifierType().equals(IdType.DOI)) {
+				return this.getByDoi(id.getIdentifier().orElse(null)).map(r -> r.getWork());
+			}
+			
+		}
+		
 	}
 
 	@Override
