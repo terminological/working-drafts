@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.record.Author;
 
-public class Contributor extends ExtensibleJson implements Author {
+public class CrossRefContributor extends ExtensibleJson implements Author {
 	
-	public Contributor(JsonNode node) { super(node); }
+	public CrossRefContributor(JsonNode node) { super(node); }
 	
 	public String getLastName() {
 		return this.asString("family").orElse("Unknown");

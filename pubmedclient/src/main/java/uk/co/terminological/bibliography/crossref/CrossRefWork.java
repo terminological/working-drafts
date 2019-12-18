@@ -58,8 +58,8 @@ public class CrossRefWork extends ExtensibleJson implements Print, RecordWithCit
 	public Optional<Double> getScore() {return this.asDouble("score");}
 	public Stream<String> getLicenses() {return this.streamPath("license","URL").map(o -> o.asString());}
 	
-	public List<Contributor> getAuthors() {
-		return this.streamPath(Contributor.class, "author").collect(Collectors.toList());}
+	public List<CrossRefContributor> getAuthors() {
+		return this.streamPath(CrossRefContributor.class, "author").collect(Collectors.toList());}
 	public Stream<CrossRefReference> getReferences() {return this.streamPath(CrossRefReference.class, "reference");}
 	public Stream<CitationLink> getCitations() {
 		List<CitationLink> tmp = new ArrayList<>();
