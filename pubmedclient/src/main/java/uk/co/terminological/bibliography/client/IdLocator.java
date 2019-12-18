@@ -17,24 +17,15 @@ public interface IdLocator {
 	Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds);
 	
 	default Optional<? extends Record> getById(IdType type, String id) {
-		return getById(Collections.singleton(new RecordReference() {
-
-			@Override
-			public Optional<String> getIdentifier() {
-				return Optional.of(id);
-			}
-
-			@Override
-			public IdType getIdentifierType() {
-				return type;
-			}}));
+		RecordIdentifier tmp = RecordIdentifier.create(type,id); 
+		return Optional.of(getById(Collections.singleton(tmp)).get(tmp));
 	};
 	
 	default Optional<? extends Record> getById(Record rec) {
 		Set<RecordReference> tmp = new HashSet<>();
 		tmp.add(rec);
 		tmp.addAll(rec.getOtherIdentifiers());
-		return getById(tmp);
+		return getById(tmp).values().stream().findFirst();
 	};
 	
 }
