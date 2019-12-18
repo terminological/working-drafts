@@ -19,7 +19,7 @@ import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.crossref.CrossRefClient;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
-import uk.co.terminological.bibliography.entrez.Search;
+import uk.co.terminological.bibliography.entrez.EntrezSearch;
 import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
@@ -47,7 +47,7 @@ public class TestEndToEnd {
 		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache.resolve("xref"));
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail, ehcache.resolve("unpaywall"));
 		
-		Search result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
+		EntrezSearch result = pubmed.buildSearchQuery("machine learning").limit(0, 50).betweenDates(
 				LocalDate.of(2016, 01, 1), 
 				LocalDate.of(2017, 01, 1)).execute().get();
 		

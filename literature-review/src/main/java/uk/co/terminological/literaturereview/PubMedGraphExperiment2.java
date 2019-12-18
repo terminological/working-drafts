@@ -55,7 +55,7 @@ import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezClient.ELinksQueryBuilder;
 import uk.co.terminological.bibliography.entrez.EntrezLink;
 import uk.co.terminological.bibliography.entrez.EntrezEntry;
-import uk.co.terminological.bibliography.entrez.Search;
+import uk.co.terminological.bibliography.entrez.EntrezSearch;
 import uk.co.terminological.bibliography.pmcidconv.Record;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallResult;
@@ -152,7 +152,7 @@ public class PubMedGraphExperiment2 {
 		
 		// get search results for broad catch all terms without any date constraints.
 		// This may be a large set and should be tested to be reasonable
-		Search broadSearch = searchPubMed(this.broaderSearch).get();
+		EntrezSearch broadSearch = searchPubMed(this.broaderSearch).get();
 		log.info("Pubmed broad search found {} articles",broadSearch.count().get());
 		
 		// once search is conducted use entrez history to retrieve result.
@@ -300,9 +300,9 @@ public class PubMedGraphExperiment2 {
 
 	
 
-	Optional<Search> searchPubMed(String search) {
+	Optional<EntrezSearch> searchPubMed(String search) {
 		try {
-			Optional<Search> tmp = biblioApi.getEntrez()
+			Optional<EntrezSearch> tmp = biblioApi.getEntrez()
 					.buildSearchQuery(search)
 					.betweenDates(earliest, latest)
 					.execute();

@@ -160,13 +160,13 @@ public class EntrezClient extends CachingApiClient {
 			return this;
 		}
 		
-		public Optional<Search> execute() throws BibliographicApiException {
+		public Optional<EntrezSearch> execute() throws BibliographicApiException {
 			if (empty) return Optional.empty();
-			return client.buildCall(ESEARCH, Search.class)
+			return client.buildCall(ESEARCH, EntrezSearch.class)
 					.withParams(searchParams)
 					.withOperation(is -> {
 						Xml resp = Xml.fromStream(is);
-						return new Search(resp.content());
+						return new EntrezSearch(resp.content());
 					}).post();
 			
 		}

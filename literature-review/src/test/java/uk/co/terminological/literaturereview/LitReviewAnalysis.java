@@ -52,7 +52,7 @@ import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Format;
 import uk.co.terminological.bibliography.entrez.EntrezEntries;
-import uk.co.terminological.bibliography.entrez.Search;
+import uk.co.terminological.bibliography.entrez.EntrezSearch;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.datatypes.EavMap;
 import uk.co.terminological.datatypes.StreamExceptions;
@@ -976,7 +976,7 @@ public class LitReviewAnalysis {
 		OutputStream refsCsv = Files.newOutputStream(outDir.resolve("getTestSetReferences.tsv"));
 		refsCsv.write("doi\treferenceDoi\n".getBytes());
 		
-		Optional<Search> result = biblioApi.getEntrez().buildSearchQuery(broaderSearch)
+		Optional<EntrezSearch> result = biblioApi.getEntrez().buildSearchQuery(broaderSearch)
 			.betweenDates(LocalDate.of(2017, 1, 1), LocalDate.of(2018, 12, 31))
 			.execute();
 		

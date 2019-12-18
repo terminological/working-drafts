@@ -7,11 +7,11 @@ import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class Search implements Raw<XmlElement> {
+public class EntrezSearch implements Raw<XmlElement> {
 
 	private XmlElement raw;
 
-	public Search(XmlElement raw) {
+	public EntrezSearch(XmlElement raw) {
 		this.raw = raw;
 	}
 

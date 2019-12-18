@@ -18,7 +18,7 @@ import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezLinks;
 import uk.co.terminological.bibliography.entrez.EntrezEntry;
-import uk.co.terminological.bibliography.entrez.Search;
+import uk.co.terminological.bibliography.entrez.EntrezSearch;
 
 public class TestPubMedRestClient {
 
@@ -40,7 +40,7 @@ public class TestPubMedRestClient {
 		EntrezClient restClient = EntrezClient.create(pubmedApiToken, appId, developerEmail);
 		restClient.debugMode();
 			
-		Search result = restClient.buildSearchQuery("Doxapram")
+		EntrezSearch result = restClient.buildSearchQuery("Doxapram")
 			.limit(0, 10)
 			.execute().get();
 		
