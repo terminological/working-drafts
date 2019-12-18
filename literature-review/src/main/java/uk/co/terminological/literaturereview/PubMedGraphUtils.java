@@ -3,7 +3,7 @@ package uk.co.terminological.literaturereview;
 
 import uk.co.terminological.bibliography.crossref.CrossRefReference;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
-import uk.co.terminological.bibliography.entrez.Link;
+import uk.co.terminological.bibliography.entrez.EntrezLink;
 import uk.co.terminological.bibliography.entrez.MeshCode;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
 import uk.co.terminological.bibliography.record.Author;
@@ -295,19 +295,19 @@ public class PubMedGraphUtils {
 		
 	}
 
-	public static List<Relationship> mapPubmedRelated(List<Link> links, GraphDatabaseApi graph) {
+	public static List<Relationship> mapPubmedRelated(List<EntrezLink> links, GraphDatabaseApi graph) {
 		return mapEntrez(links, Prop.PMID, Labels.PMID_STUB, Prop.PMID, Labels.PMID_STUB, Rel.HAS_RELATED, graph, false);
 	}
 	
-	public static List<Relationship> mapPubMedCentralReferences(List<Link> links, GraphDatabaseApi graph) {
+	public static List<Relationship> mapPubMedCentralReferences(List<EntrezLink> links, GraphDatabaseApi graph) {
 		return mapEntrez(links, Prop.PMID, Labels.PMID_STUB, Prop.PMID, Labels.PMID_STUB, Rel.HAS_REFERENCE, graph, false);
 	}
 	
-	public static List<Relationship> mapPubMedCentralCitedBy(List<Link> links, GraphDatabaseApi graph) {
+	public static List<Relationship> mapPubMedCentralCitedBy(List<EntrezLink> links, GraphDatabaseApi graph) {
 		return mapEntrez(links, Prop.PMID, Labels.PMID_STUB, Prop.PMID, Labels.PMID_STUB, Rel.HAS_REFERENCE, graph, true);
 	}
 	
-	public static List<Relationship> mapEntrez(List<Link> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
+	public static List<Relationship> mapEntrez(List<EntrezLink> links, String inIdType, Label inLabel, String outIdType, Label outLabel, RelationshipType relType, GraphDatabaseApi graph, boolean invert) {
 		logger.debug("Adding {} entries {}:{} <-{}- {}:{}",links.size(), outIdType, outLabel, relType, inIdType, inLabel);
 		List<Relationship> out = new ArrayList<>();
 		try (Transaction tx = graph.get().beginTx()) {

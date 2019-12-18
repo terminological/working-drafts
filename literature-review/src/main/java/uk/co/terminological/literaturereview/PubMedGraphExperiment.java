@@ -41,7 +41,7 @@ import uk.co.terminological.bibliography.crossref.CrossRefReference;
 import uk.co.terminological.bibliography.crossref.SingleResult;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
-import uk.co.terminological.bibliography.entrez.Link;
+import uk.co.terminological.bibliography.entrez.EntrezLink;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.pipestream.EventBus;
@@ -354,7 +354,7 @@ public class PubMedGraphExperiment {
 						
 						
 						
-						List<Link> tmp = bib.getEntrez()
+						List<EntrezLink> tmp = bib.getEntrez()
 								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 								.command(Command.NEIGHBOR_SCORE)
 								.withLinkname("pubmed_pubmed")
@@ -396,7 +396,7 @@ public class PubMedGraphExperiment {
 							tx.success();
 						}
 						
-						List<Link> tmp = bib.getEntrez()
+						List<EntrezLink> tmp = bib.getEntrez()
 								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 								.toDatabase(Database.PUBMED)
 								.command(Command.NEIGHBOR)
@@ -409,7 +409,7 @@ public class PubMedGraphExperiment {
 						
 						mapPubMedCentralReferences(tmp, graph);
 						
-						List<Link> tmp2 = bib.getEntrez()
+						List<EntrezLink> tmp2 = bib.getEntrez()
 								.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 								.toDatabase(Database.PUBMED)
 								.command(Command.NEIGHBOR)

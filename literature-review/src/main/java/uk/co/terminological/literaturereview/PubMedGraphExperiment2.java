@@ -53,7 +53,7 @@ import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezClient.ELinksQueryBuilder;
-import uk.co.terminological.bibliography.entrez.Link;
+import uk.co.terminological.bibliography.entrez.EntrezLink;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
 import uk.co.terminological.bibliography.entrez.Search;
 import uk.co.terminological.bibliography.pmcidconv.Record;
@@ -176,7 +176,7 @@ public class PubMedGraphExperiment2 {
 		// pubmed for the new articles... If there was a hit on the doi then remove it from the list of dois
 		Set<String> pmidsLeftInBroaderSet = PubMedGraphUtils.lookupPMIDSForUnreferenced(graphApi);
 		log.info("{} articles without references have pubmedids", pmidsLeftInBroaderSet.size());
-		List<Link> links2 = findPMCReferencesFromPMIDs(pmidsLeftInBroaderSet);
+		List<EntrezLink> links2 = findPMCReferencesFromPMIDs(pmidsLeftInBroaderSet);
 		log.info("{} individual targets found in PMC (not articles though)", links2.stream().flatMap(l -> l.toId.stream()).collect(Collectors.toSet()).size());
 		Set<String> pmidStubs = PubMedGraphUtils.lookupPmidStubs(graphApi);
 		log.info("{} of which are new sibling articles found in pubmed",pmidStubs.size());
@@ -368,7 +368,7 @@ public class PubMedGraphExperiment2 {
 
 	List<Relationship> findRelatedArticlesFromPMIDs(List<String> pmids, String searchWithin) {
 		try {
-			List<Link> tmp = biblioApi.getEntrez()
+			List<EntrezLink> tmp = biblioApi.getEntrez()
 					.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 					.command(Command.NEIGHBOR_SCORE)
 					.withLinkname("pubmed_pubmed")
@@ -387,7 +387,7 @@ public class PubMedGraphExperiment2 {
 	}
 
 	
-	List<Link> findPMCReferencesFromPMIDs(Collection<String> pmids) {
+	List<EntrezLink> findPMCReferencesFromPMIDs(Collection<String> pmids) {
 		return findPMCReferences(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
 	}
 
@@ -397,10 +397,10 @@ public class PubMedGraphExperiment2 {
 	
 	//https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pmc&db=pubmed&id=212403&cmd=neighbor&linkname=pmc_refs_pubmed
 	// provides pubmed ids for all citations if has a pmc id
-	List<Link> findPMCReferences(ELinksQueryBuilder elqb) {
+	List<EntrezLink> findPMCReferences(ELinksQueryBuilder elqb) {
 		try {
 
-			List<Link> tmp = elqb
+			List<EntrezLink> tmp = elqb
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_refs")
@@ -419,14 +419,14 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	List<Link> findPMCCitedByPMIDs(Collection<String> pmids) {
+	List<EntrezLink> findPMCCitedByPMIDs(Collection<String> pmids) {
 		return findPMCCitedBy(biblioApi.getEntrez().buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED));
 	}
 	
-	List<Link> findPMCCitedBy(ELinksQueryBuilder elqb) {
+	List<EntrezLink> findPMCCitedBy(ELinksQueryBuilder elqb) {
 		try {
 
-			List<Link> tmp = elqb
+			List<EntrezLink> tmp = elqb
 					.toDatabase(Database.PUBMED)
 					.command(Command.NEIGHBOR)
 					.withLinkname("pubmed_pubmed_citedin")

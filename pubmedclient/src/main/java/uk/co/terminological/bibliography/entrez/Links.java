@@ -26,17 +26,17 @@ public class Links implements Raw<XmlElement> {
 	}
 	public XmlElement getRaw() {return raw;}
 
-	private List<Link> links;
+	private List<EntrezLink> links;
 	private static Map<String,IdType> lookup = FluentMap
 			.with(Database.PUBMED.toString(), IdType.PMID)
 			.and(Database.PMC.toString(), IdType.PMCID);
 
-	public Stream<Link> stream() {
+	public Stream<EntrezLink> stream() {
 		return links.stream();
 	}
 
 	private void convert() throws XmlException {
-		links = new ArrayList<Link>();
+		links = new ArrayList<EntrezLink>();
 		
 			for (XmlElement linkSet: raw.doXpath(".//LinkSet").getMany(XmlElement.class)) {
 
@@ -54,7 +54,7 @@ public class Links implements Raw<XmlElement> {
 						Optional<Long> score = link.doXpath("./Score").get(XmlElement.class).flatMap(el -> el.getTextContent()).map(s -> Long.parseLong(s));
 						
 						if (dbFrom.isPresent() && fromId.isPresent() && toId.isPresent()) {
-							links.add(new Link(dbFrom.get(),fromId.get(),linkName,dbTo,toId.get(), score));
+							links.add(new EntrezLink(dbFrom.get(),fromId.get(),linkName,dbTo,toId.get(), score));
 						}
 						
 					}
@@ -70,7 +70,7 @@ public class Links implements Raw<XmlElement> {
 						Optional<String> toUrl = objUrl.doXpath("./Url").get(XmlElement.class).flatMap(el -> el.getTextContent());
 						
 						if (dbFrom.isPresent() && fromId.isPresent() && toUrl.isPresent()) {
-							links.add(new Link(dbFrom.get(),fromId.get(),category,toUrl.get()));
+							links.add(new EntrezLink(dbFrom.get(),fromId.get(),category,toUrl.get()));
 						}
 					}
 				}
@@ -79,7 +79,7 @@ public class Links implements Raw<XmlElement> {
 			}
 		
 	}
-	public List<Link> getLinks() {
+	public List<EntrezLink> getLinks() {
 		return links;
 	}
 	

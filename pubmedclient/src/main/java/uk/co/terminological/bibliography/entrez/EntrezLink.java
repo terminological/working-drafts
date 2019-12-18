@@ -27,7 +27,7 @@ import uk.co.terminological.datatypes.FluentMap;
  * @author terminological
  *
  */
-public class Link {
+public class EntrezLink {
 	public String fromDb;
 	public String fromId;
 	public Optional<String> typeOrCategory = Optional.empty();
@@ -37,14 +37,14 @@ public class Link {
 	
 	
 
-	protected Link(String dbFrom, String fromId, Optional<String> category, String toUrl) {
+	protected EntrezLink(String dbFrom, String fromId, Optional<String> category, String toUrl) {
 		this.fromDb = dbFrom;
 		this.fromId = fromId;
 		this.typeOrCategory = category;
 		this.toDbOrUrl = toUrl;
 	}
 
-	protected Link(String fromDb, String fromId, Optional<String> type, Optional<String> toDb, String toId, Optional<Long> score) {
+	protected EntrezLink(String fromDb, String fromId, Optional<String> type, Optional<String> toDb, String toId, Optional<Long> score) {
 		this.fromDb = fromDb;
 		this.fromId = fromId;
 		this.typeOrCategory = type;
