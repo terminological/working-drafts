@@ -36,6 +36,7 @@ import uk.co.terminological.bibliography.client.CitesMapper;
 import uk.co.terminological.bibliography.client.IdLocator;
 import uk.co.terminological.bibliography.client.Searcher;
 import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordIdentifier;
 import uk.co.terminological.bibliography.record.RecordReference;
@@ -458,7 +459,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 			return this;
 		}
 
-		public Optional<EntrezLinks> execute() throws BibliographicApiException {
+		public Optional<EntrezLinks> execute() {
 			if (empty) return Optional.empty();
 			return client.buildCall(ELINK, EntrezLinks.class)
 				.withParams(searchParams)
@@ -562,12 +563,19 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 				out.addAll(e.stream().collect(Collectors.toList()));
 			});
 		});
-		return null;
+		return out;
 	}
 
 	@Override
 	public Map<? extends RecordIdentifier, Collection<? extends CitationLink>> referencesCiting(Collection<RecordReference> ref) {
-		// TODO Auto-generated method stub
+		Map<String,String> out = new HashMap<>();
+		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
+				.toDatabase(Database.PUBMED)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pubmed_pubmed_refs")
+				.execute().stream().flatMap(l -> l.getCitations());
 		return null;
 	}
 
