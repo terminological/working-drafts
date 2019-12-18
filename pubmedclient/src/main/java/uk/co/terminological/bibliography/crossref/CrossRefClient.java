@@ -431,11 +431,12 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 		for (RecordReference id: equivalentIds) {
 			if (id instanceof CrossRefWork) return Optional.of((CrossRefWork) id);
 			if (id.getIdentifierType().equals(IdType.DOI)) {
-				return this.getByDoi(id.getIdentifier().orElse(null)).map(r -> r.getWork());
+				if (id.getIdentifier().isPresent()) {
+					return this.getByDoi(id.getIdentifier().get()).map(r -> r.getWork());
+				}
 			}
-			
 		}
-		
+		return Optional.empty();
 	}
 
 	@Override
