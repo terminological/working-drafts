@@ -58,7 +58,7 @@ public class Builder {
 		);
 	}
 	
-	public static RecordIdentifier recrodReference(RecordReference ref) {
+	public static RecordIdentifier recordReference(RecordReference ref) {
 		RecordIdentifier out = new RecordIdentifier();
 		out.id = ref.getIdentifier().get();
 		out.idType = ref.getIdentifierType();
