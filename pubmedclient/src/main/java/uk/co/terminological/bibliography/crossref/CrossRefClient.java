@@ -5,9 +5,11 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -443,9 +445,9 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Map<? extends RecordIdentifier, Collection<? extends CitationLink>> citesReferences(Collection<RecordReference> refs) {
+	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> refs) {
 		
-		Map<RecordIdentifier,Collection<? extends CitationLink>> out = new HashMap<>();
+		List<CitationLink> out = new ArrayList<>();
 		for (RecordReference ref: refs) {
 			Optional<CrossRefWork> tmp;
 			if (ref instanceof CrossRefWork) {
@@ -453,7 +455,7 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 			} else {
 				tmp = getById(ref.getIdentifierType(), ref.getIdentifier().get()).map(w -> (CrossRefWork) w);
 			}
-			out.put(RecordIdentifier.create(ref), tmp.stream().flatMap(t -> t.getCitations()).collect(Collectors.toList()));
+			out.addAll(tmp.stream().flatMap(t -> t.getCitations()).collect(Collectors.toList()));
 		}
 		return out;
 	}
