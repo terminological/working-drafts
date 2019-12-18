@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordIdentifier;
@@ -17,7 +18,7 @@ public interface IdLocator {
 	Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds);
 	
 	default Optional<? extends Record> getById(IdType type, String id) {
-		RecordIdentifier tmp = RecordIdentifier.create(type,id); 
+		RecordIdentifier tmp = Builder.recordReference(type,id); 
 		return Optional.of(getById(Collections.singleton(tmp)).get(tmp));
 	};
 	
