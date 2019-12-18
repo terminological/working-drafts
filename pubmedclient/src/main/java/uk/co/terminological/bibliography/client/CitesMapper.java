@@ -1,5 +1,12 @@
 package uk.co.terminological.bibliography.client;
 
-public interface CitesMapper {
+import java.util.Collection;
 
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.RecordReference;
+
+public interface CitesMapper {
+	
+	public Collection<? extends CitationLink> cites(RecordReference ref);
+	
 }
