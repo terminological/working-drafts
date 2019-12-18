@@ -7,6 +7,6 @@ import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface CitedByMapper {
 	
-	public Collection<? extends CitationLink> cites(RecordReference ref);
+	public Collection<? extends CitationLink> articlesCiting(RecordReference ref);
 	
 }
