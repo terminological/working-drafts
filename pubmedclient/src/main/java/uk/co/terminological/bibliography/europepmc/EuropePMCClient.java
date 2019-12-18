@@ -280,7 +280,7 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 		
 		for (RecordReference rr : equivalentIds) {
 			if (rr.getIdentifier().isPresent()) {
-				this.getById(rr.getIdentifier().get(), rr.getIdentifierType()).ifPresent(r -> out.put(RecordIdentifier.create(rr), r));
+				this.getById(rr.getIdentifier().get(), rr.getIdentifierType()).ifPresent(r -> out.put(Builder.recordReference(rr), r));
 			}
 		}
 		
