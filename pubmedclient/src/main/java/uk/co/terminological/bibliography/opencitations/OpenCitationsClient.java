@@ -120,10 +120,10 @@ public class OpenCitationsClient extends CachingApiClient {
 			return keyFromApiQuery(url,params); 
 		}
 		
-		public Optional<ListResult> execute() {
-			return client.buildCall(url, ListResult.class)
+		public Optional<OpenCitationsListResult> execute() {
+			return client.buildCall(url, OpenCitationsListResult.class)
 					.withParams(params)
-					.withOperation(is -> new ListResult(client.objectMapper.readTree(is))).get();
+					.withOperation(is -> new OpenCitationsListResult(client.objectMapper.readTree(is))).get();
 		}
 	}
 	
