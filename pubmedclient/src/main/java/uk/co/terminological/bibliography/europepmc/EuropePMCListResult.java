@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
 
-public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
+public class EuropePMCListResult<X extends ExtensibleJson> extends ExtensibleJson {
 
 	Class<X> clazz;
 	
-	private ListResult(Class<X> clazz, JsonNode raw) {
+	private EuropePMCListResult(Class<X> clazz, JsonNode raw) {
 		super(raw);
 		this.clazz = clazz;
 	}
@@ -38,25 +38,25 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 	public Optional<Long> pageNumber() {
 		return this.streamPath("request","page").findFirst().map(jn -> jn.asLong());}
 	
-	public static class Lite extends ListResult<EuropePMCLiteResult> {
+	public static class Lite extends EuropePMCListResult<EuropePMCLiteResult> {
 		public Lite(JsonNode raw) {
 			super(EuropePMCLiteResult.class,raw);
 		}
 	}
 	
-	public static class Core extends ListResult<EuropePMCCoreResult> {
+	public static class Core extends EuropePMCListResult<EuropePMCCoreResult> {
 		public Core(JsonNode raw) {
 			super(EuropePMCCoreResult.class,raw);
 		}
 	}
 	
-	public static class Reference extends ListResult<uk.co.terminological.bibliography.europepmc.EuropePMCReference> {
+	public static class Reference extends EuropePMCListResult<uk.co.terminological.bibliography.europepmc.EuropePMCReference> {
 		public Reference(JsonNode raw) {
 			super(uk.co.terminological.bibliography.europepmc.EuropePMCReference.class,raw);
 		}
 	}
 	
-	public static class Citation extends ListResult<uk.co.terminological.bibliography.europepmc.EuropePMCCitation> {
+	public static class Citation extends EuropePMCListResult<uk.co.terminological.bibliography.europepmc.EuropePMCCitation> {
 		public Citation(JsonNode raw) {
 			super(uk.co.terminological.bibliography.europepmc.EuropePMCCitation.class,raw);
 		}

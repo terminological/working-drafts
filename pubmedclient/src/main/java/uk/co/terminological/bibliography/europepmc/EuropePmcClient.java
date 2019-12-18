@@ -63,7 +63,7 @@ public class EuropePmcClient extends CachingApiClient {
 	// ####### API methods ####### //
 	
 	public Optional<EuropePMCCoreResult> getById(String id, IdType type) {
-		ListResult<EuropePMCCoreResult> tmp;
+		EuropePMCListResult<EuropePMCCoreResult> tmp;
 		if( type.equals(IdType.DOI)) {
 			tmp = fullSearch("DOI:"+id);
 		} else if( type.equals(IdType.PMCID)) {
@@ -103,22 +103,22 @@ public class EuropePmcClient extends CachingApiClient {
 			return this;
 		}
 		
-		public Optional<ListResult.Lite> executeLite() {
+		public Optional<EuropePMCListResult.Lite> executeLite() {
 			this.searchParams.add("resultType", "lite");
-			return client.buildCall(baseUrl+"searchPost", ListResult.Lite.class)
+			return client.buildCall(baseUrl+"searchPost", EuropePMCListResult.Lite.class)
 					.withParams(searchParams)
 					.withOperation(is -> 
-						new ListResult.Lite(client.objectMapper.readTree(is))
+						new EuropePMCListResult.Lite(client.objectMapper.readTree(is))
 					).post();
 					
 		}
 		
-		public Optional<ListResult.Core> executeFull() {
+		public Optional<EuropePMCListResult.Core> executeFull() {
 			this.searchParams.add("resultType", "core");
-			return client.buildCall(baseUrl+"searchPost", ListResult.Core.class)
+			return client.buildCall(baseUrl+"searchPost", EuropePMCListResult.Core.class)
 					.withParams(searchParams)
 					.withOperation(is -> 
-						new ListResult.Core(client.objectMapper.readTree(is))
+						new EuropePMCListResult.Core(client.objectMapper.readTree(is))
 					).post();
 		}
 		
@@ -132,7 +132,7 @@ public class EuropePmcClient extends CachingApiClient {
 		ASC, DESC; public String toString() {return this.name().toLowerCase();}
 	}
 		
-	public ListResult<EuropePMCLiteResult> liteSearch(String text) {
+	public EuropePMCListResult<EuropePMCLiteResult> liteSearch(String text) {
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
 		// query=malaria%20sort_cited:y
@@ -146,7 +146,7 @@ public class EuropePmcClient extends CachingApiClient {
 		return buildQuery(text).executeLite().get();
 	}
 	
-	public ListResult<EuropePMCCoreResult> fullSearch(String text) {
+	public EuropePMCListResult<EuropePMCCoreResult> fullSearch(String text) {
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
 		// query=malaria%20sort_cited:y
@@ -160,31 +160,31 @@ public class EuropePmcClient extends CachingApiClient {
 		return buildQuery(text).executeFull().get();
 	}
 	
-	public ListResult<EuropePMCCitation> citations(DataSources source, String id) {
+	public EuropePMCListResult<EuropePMCCitation> citations(DataSources source, String id) {
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/citations?format=json
 		//id=23245604
 		//source=MED
 		//page=0
 		//pageSize=1000 (max)
 		//format=json
-		return this.buildCall(baseUrl+source+"/"+id+"/citations", ListResult.Citation.class)
+		return this.buildCall(baseUrl+source+"/"+id+"/citations", EuropePMCListResult.Citation.class)
 				.withParams(defaultApiParams())
 				.withOperation(is -> 
-					new ListResult.Citation(objectMapper.readTree(is))
+					new EuropePMCListResult.Citation(objectMapper.readTree(is))
 				).get().get();
 	}
 	
-	public ListResult<EuropePMCReference> references(DataSources source, String id) {
+	public EuropePMCListResult<EuropePMCReference> references(DataSources source, String id) {
 		//https://www.ebi.ac.uk/europepmc/webservices/rest/MED/9843981/references?format=json
 		//id=23245604
 		//source=MED
 		//page=0
 		//pageSize=1000 (max)
 		//format=json
-		return this.buildCall(baseUrl+source+"/"+id+"/references", ListResult.Reference.class)
+		return this.buildCall(baseUrl+source+"/"+id+"/references", EuropePMCListResult.Reference.class)
 				.withParams(defaultApiParams())
 				.withOperation(is -> 
-					new ListResult.Reference(objectMapper.readTree(is))
+					new EuropePMCListResult.Reference(objectMapper.readTree(is))
 				).get().get();
 	}
 	
