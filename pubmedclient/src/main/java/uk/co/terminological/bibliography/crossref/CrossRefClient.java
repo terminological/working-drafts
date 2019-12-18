@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -229,12 +230,12 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 			return this;
 		}
 
-		public QueryBuilder since(Date date) {
+		public QueryBuilder since(LocalDate date) {
 			params.add("filter","from-index-date:"+format.format(date));
 			return this;
 		}
 		
-		public QueryBuilder until(Date date) {
+		public QueryBuilder until(LocalDate date) {
 			params.add("filter","until-index-date:"+format.format(date));
 			return this;
 		}
@@ -408,12 +409,12 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Collection<? extends Record> search(String search, Optional<Date> from,  Optional<Date> to, Optional<Integer> limit) {
+	public Collection<? extends Record> search(String search, Optional<LocalDate> from,  Optional<LocalDate> to, Optional<Integer> limit) {
 		QueryBuilder tmp = this.buildQuery()
 			.withSearchTerm(search);
 		limit.ifPresent(l -> tmp.limit(l));
 		from.ifPresent(f -> tmp.since(f));
-		to.ifPresent(t -> tmp.since(t));
+		to.ifPresent(t -> tmp.until(t));
 		return tmp.execute().stream()
 			.map(lr -> lr.getMessage())
 			.flatMap(m -> m.getItems())
