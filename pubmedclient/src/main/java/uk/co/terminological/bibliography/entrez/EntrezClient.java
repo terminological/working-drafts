@@ -235,15 +235,15 @@ public class EntrezClient extends CachingApiClient {
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public Set<PubMedEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
-		Set<PubMedEntry> out = new HashSet<>();
+	public Set<EntrezEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
+		Set<EntrezEntry> out = new HashSet<>();
 		if (pmids.isEmpty()) return out;
 		Cache<String,BinaryData> cache = this.permanentCache(); 
 		Collection<String> deferred = new HashSet<>();
 		for (String pmid: pmids) {
 			if (cache.containsKey(keyFrom(pmid))) {
 				try {
-					out.add(new PubMedEntry(Xml.fromStream(cache.get(keyFrom(pmid)).inputStream()).content()));
+					out.add(new EntrezEntry(Xml.fromStream(cache.get(keyFrom(pmid)).inputStream()).content()));
 					} catch (XmlException e) {
 						logger.debug("error parsing cached content for: "+pmid);
 						cache.remove(keyFrom(pmid));
@@ -298,7 +298,7 @@ public class EntrezClient extends CachingApiClient {
 			}).post();
 	}
 
-	public Optional<PubMedEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
+	public Optional<EntrezEntry> getPMEntryByPMId(String pmid) throws BibliographicApiException {
 		if (pmid == null || pmid.isEmpty()) return Optional.empty(); 
 		return getPMEntriesByPMIds(Collections.singletonList(pmid)).stream().findFirst();
 	}
@@ -320,12 +320,12 @@ public class EntrezClient extends CachingApiClient {
 		return getXMLByIdsAndDatabase(pmcIds, Database.PMC);
 	}
 
-	public Optional<InputStream> getPubMedCentralXMLByPMEntry(PubMedEntry pmEntry) {
+	public Optional<InputStream> getPubMedCentralXMLByPMEntry(EntrezEntry pmEntry) {
 		Optional<String> pmcId = pmEntry.getPMCID();
 		return pmcId.flatMap(p -> getPubMedCentralXMLByPubMedCentralId(p));
 	}
 
-	public Optional<InputStream> getPubMedCentralPdfByPMEntry(PubMedEntry pmEntry, PdfFetcher pdfFetch) {
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezEntry pmEntry, PdfFetcher pdfFetch) {
 		if (pmEntry.getPdfUri().isPresent()) {
 			String pdfUrl = pmEntry.getPdfUri().get().toString();
 			return pdfFetch.getPdfFromUrl(pdfUrl);
@@ -334,7 +334,7 @@ public class EntrezClient extends CachingApiClient {
 		}
 	}
 	
-	public Optional<InputStream> getPubMedCentralPdfByPMEntry(PubMedEntry pmEntry) throws BibliographicApiException {
+	public Optional<InputStream> getPubMedCentralPdfByPMEntry(EntrezEntry pmEntry) throws BibliographicApiException {
 		return getPubMedCentralPdfByPMEntry(pmEntry, PdfFetcher.create());
 	}
 	

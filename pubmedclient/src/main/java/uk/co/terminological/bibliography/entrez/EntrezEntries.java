@@ -12,9 +12,9 @@ public class EntrezEntries implements Raw<XmlElement> {
 
 	public EntrezEntries(XmlElement raw) {this.raw = raw;}
 
-	public Stream<PubMedEntry> stream() {
+	public Stream<EntrezEntry> stream() {
 		if (raw == null) return Stream.empty();
-		return raw.childElements("PubmedArticle").stream().map(o-> new PubMedEntry(o));
+		return raw.childElements("PubmedArticle").stream().map(o-> new EntrezEntry(o));
 
 	}
 

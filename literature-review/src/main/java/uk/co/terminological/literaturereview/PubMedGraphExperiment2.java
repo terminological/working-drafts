@@ -54,7 +54,7 @@ import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezClient.ELinksQueryBuilder;
 import uk.co.terminological.bibliography.entrez.EntrezLink;
-import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.entrez.EntrezEntry;
 import uk.co.terminological.bibliography.entrez.Search;
 import uk.co.terminological.bibliography.pmcidconv.Record;
 import uk.co.terminological.bibliography.record.IdType;
@@ -158,7 +158,7 @@ public class PubMedGraphExperiment2 {
 		// once search is conducted use entrez history to retrieve result.
 		// and write the result into the graph
 		
-		Set<PubMedEntry> ent = fetchPubMedEntries(broadSearch.getIds().collect(Collectors.toSet()), EXPAND);
+		Set<EntrezEntry> ent = fetchPubMedEntries(broadSearch.getIds().collect(Collectors.toSet()), EXPAND);
 		log.info("Of broad search pubmed found {} articles with metadata in pubmed",ent.size());
 		// At this stage we have search result + metadata
 		
@@ -180,7 +180,7 @@ public class PubMedGraphExperiment2 {
 		log.info("{} individual targets found in PMC (not articles though)", links2.stream().flatMap(l -> l.toId.stream()).collect(Collectors.toSet()).size());
 		Set<String> pmidStubs = PubMedGraphUtils.lookupPmidStubs(graphApi);
 		log.info("{} of which are new sibling articles found in pubmed",pmidStubs.size());
-		Set<PubMedEntry> entries5 = fetchPubMedEntries(pmidStubs);
+		Set<EntrezEntry> entries5 = fetchPubMedEntries(pmidStubs);
 		//entries5.forEach(e -> e.getDoi().ifPresent(d -> toDois.remove(d)));
 		
 		// OK we are left with some unreferenced articles in the original broader set
@@ -219,7 +219,7 @@ public class PubMedGraphExperiment2 {
 		tryRethrow( t -> {
 			Map<String,String> moreDoi2PMIDs = biblioApi.getPmcIdConv().getPMIdsByIdAndType(doisMissingPMIDS, IdType.DOI);
 			PMIDSMissingDois.addAll(moreDoi2PMIDs.values());
-			Set<PubMedEntry> entries4 = fetchPubMedEntries(PMIDSMissingDois);
+			Set<EntrezEntry> entries4 = fetchPubMedEntries(PMIDSMissingDois);
 			// entries4.forEach(e -> e.getDoi().ifPresent(d -> toDois.remove(d)));
 			log.info("Found pmids for {} entries which were previously missing them",entries4.size());
 		});
@@ -346,13 +346,13 @@ public class PubMedGraphExperiment2 {
 
 	}
 
-	Set<PubMedEntry> fetchPubMedEntries(Collection<String> pmids, Label... labels) {
-		Set<PubMedEntry> entriesOut = new HashSet<>();
+	Set<EntrezEntry> fetchPubMedEntries(Collection<String> pmids, Label... labels) {
+		Set<EntrezEntry> entriesOut = new HashSet<>();
 		List<String> deferred = new ArrayList<>(pmids);
 		while (!deferred.isEmpty()) {
 			try {
 				int size = 300 > deferred.size()? deferred.size(): 300;
-				Set<PubMedEntry> entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred.subList(0, size));
+				Set<EntrezEntry> entries = biblioApi.getEntrez().getPMEntriesByPMIds(deferred.subList(0, size));
 				mapEntriesToNode(entries.stream(), graphApi, earliest, latest, labels);
 				log.info("retrieved {} articles referred to in broad search",entries.stream().count());
 				deferred.subList(0, size).clear();

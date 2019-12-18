@@ -17,7 +17,7 @@ import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezLinks;
-import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.entrez.EntrezEntry;
 import uk.co.terminological.bibliography.entrez.Search;
 
 public class TestPubMedRestClient {
@@ -58,11 +58,11 @@ public class TestPubMedRestClient {
 		
 		links2.stream().forEach(System.out::println);
 		
-		Set<PubMedEntry> entries = restClient.getPMEntriesByPMIds(result.getIds().collect(Collectors.toSet()));
+		Set<EntrezEntry> entries = restClient.getPMEntriesByPMIds(result.getIds().collect(Collectors.toSet()));
 		entries.stream().map(e -> e.getTitle()).forEach(System.out::println);
 		
 		
-		Optional<PubMedEntry> entry = restClient.getPMEntryByPMId("11748933");
+		Optional<EntrezEntry> entry = restClient.getPMEntryByPMId("11748933");
 		entry.get().getMeshHeadings().forEach(System.out::println);
 		entry.get().getJournal().ifPresent(System.out::println);
 		

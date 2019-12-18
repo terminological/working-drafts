@@ -20,11 +20,11 @@ import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 import uk.co.terminological.fluentxml.XmlList;
 
-public class PubMedEntry implements PrintRecord, Raw<XmlElement> {
+public class EntrezEntry implements PrintRecord, Raw<XmlElement> {
 
 	private XmlElement raw; //PubmedArticle
 
-	public PubMedEntry(XmlElement raw) {this.raw = raw;}
+	public EntrezEntry(XmlElement raw) {this.raw = raw;}
 
 	public XmlElement getRaw() {return raw;}
 

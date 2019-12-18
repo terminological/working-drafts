@@ -5,7 +5,7 @@ import uk.co.terminological.bibliography.crossref.CrossRefReference;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezLink;
 import uk.co.terminological.bibliography.entrez.EntrezMeshCode;
-import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.entrez.EntrezEntry;
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallResult;
 import uk.co.terminological.literaturereview.PubMedGraphSchema.Labels;
@@ -104,7 +104,7 @@ public class PubMedGraphUtils {
 	}
 	
 	
-	public static List<Node> mapEntriesToNode(Stream<PubMedEntry> entries, GraphDatabaseApi graph, LocalDate earliest, LocalDate latest, Label... additional) {
+	public static List<Node> mapEntriesToNode(Stream<EntrezEntry> entries, GraphDatabaseApi graph, LocalDate earliest, LocalDate latest, Label... additional) {
 
 		List<Node> out = new ArrayList<>();
 

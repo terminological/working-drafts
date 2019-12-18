@@ -42,7 +42,7 @@ import uk.co.terminological.bibliography.crossref.SingleResult;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezLink;
-import uk.co.terminological.bibliography.entrez.PubMedEntry;
+import uk.co.terminological.bibliography.entrez.EntrezEntry;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.pipestream.EventBus;
 import uk.co.terminological.pipestream.EventGenerator;
@@ -300,7 +300,7 @@ public class PubMedGraphExperiment {
 						
 						GraphDatabaseApi graph = context.getEventBus().getApi(GraphDatabaseApi.class).get();
 
-						Set<PubMedEntry> entries = bib.getEntrez()
+						Set<EntrezEntry> entries = bib.getEntrez()
 								.getPMEntriesByPMIds(event.get());
 
 						boolean originalSearch = event.getMetadata().name().orElse("none").equals(ORIGINAL_SEARCH);
