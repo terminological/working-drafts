@@ -50,9 +50,9 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 		}
 	}
 	
-	public static class Reference extends ListResult<uk.co.terminological.bibliography.europepmc.Reference> {
+	public static class Reference extends ListResult<uk.co.terminological.bibliography.europepmc.EuropePMCReference> {
 		public Reference(JsonNode raw) {
-			super(uk.co.terminological.bibliography.europepmc.Reference.class,raw);
+			super(uk.co.terminological.bibliography.europepmc.EuropePMCReference.class,raw);
 		}
 	}
 	

@@ -27,9 +27,9 @@ essn: "1095-9203",
 issn: "0036-8075"
  */
 
-public class Reference extends ExtensibleJson implements Print, RecordReference {
+public class EuropePMCReference extends ExtensibleJson implements Print, RecordReference {
 	
-	public Reference(JsonNode node) { super(node); }
+	public EuropePMCReference(JsonNode node) { super(node); }
 	
 	public Optional<String> getIdentifier() {return this.asString("id");}
 	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
