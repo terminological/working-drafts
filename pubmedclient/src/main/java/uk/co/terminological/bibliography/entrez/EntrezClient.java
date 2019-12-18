@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -168,7 +169,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 			return this;
 		}
 		
-		public Optional<EntrezSearch> execute() throws BibliographicApiException {
+		public Optional<EntrezSearch> execute() {
 			if (empty) return Optional.empty();
 			return client.buildCall(ESEARCH, EntrezSearch.class)
 					.withParams(searchParams)
@@ -552,7 +553,15 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 
 	@Override
 	public Collection<? extends Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to, Optional<Integer> limit) {
-		// TODO Auto-generated method stub
+		ESearchQueryBuilder tmp = this.buildSearchQuery(search);
+		List<EntrezEntry> out = new ArrayList<>();
+		from.ifPresent(s -> tmp.betweenDates(s, to.orElse(LocalDate.now())));
+		limit.ifPresent(l -> tmp.limit(1, l));
+		tmp.execute().ifPresent(s -> {
+			s.getStoredResult(this).ifPresent(e -> {
+				out.addAll(e.stream().collect(Collectors.toList()));
+			});
+		});
 		return null;
 	}
 
