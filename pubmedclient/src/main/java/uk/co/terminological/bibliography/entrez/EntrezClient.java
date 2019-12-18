@@ -610,8 +610,8 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	@Override
-	public Collection<RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
-		Collection<RecordIdentifierMapping> out = new ArrayList<>();
+	public Set<RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
+		Set<RecordIdentifierMapping> out = new HashSet<>();
 		Map<RecordIdentifier, EntrezEntry> tmp = getById(source);
 		for (Entry<RecordIdentifier, EntrezEntry> e: tmp.entrySet()) {
 			Set<RecordIdentifier> allIds = new HashSet<>();
