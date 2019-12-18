@@ -408,12 +408,13 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Collection<? extends Record> search(String search, int limit) {
-		return this.buildQuery()
-			.limit(limit)
-			.withSearchTerm(search)
-			.since(date)
-			.execute().stream()
+	public Collection<? extends Record> search(String search, Optional<Date> from,  Optional<Date> to, Optional<Integer> limit) {
+		QueryBuilder tmp = this.buildQuery()
+			.withSearchTerm(search);
+		limit.ifPresent(l -> tmp.limit(l));
+		from.ifPresent(f -> tmp.since(f));
+		to.ifPresent(t -> tmp.since(t));
+		return tmp.execute().stream()
 			.map(lr -> lr.getMessage())
 			.flatMap(m -> m.getItems())
 			.collect(Collectors.toList());
