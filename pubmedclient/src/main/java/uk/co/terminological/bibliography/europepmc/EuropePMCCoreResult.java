@@ -46,7 +46,7 @@ affiliationOrgId
 
 	@Override
 	public List<? extends Author> getAuthors() {
-		return this.streamPath(EuropePmcAuthor.class, "authorList","author").collect(Collectors.toList());
+		return this.streamPath(EuropePMCAuthor.class, "authorList","author").collect(Collectors.toList());
 	}
 
 	@Override

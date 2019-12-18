@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.terminological.bibliography.ExtensibleJson;
 import uk.co.terminological.bibliography.record.Author;
 
-public class EuropePmcAuthor extends ExtensibleJson implements Author {
+public class EuropePMCAuthor extends ExtensibleJson implements Author {
 
 	/*
 	 * authorList
@@ -22,7 +22,7 @@ affiliation
 affiliationOrgId
 	 */
 	
-	public EuropePmcAuthor(JsonNode node) { super(node); }
+	public EuropePMCAuthor(JsonNode node) { super(node); }
 	
 	@Override
 	public Optional<String> getORCID() {
