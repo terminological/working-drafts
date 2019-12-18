@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Version {
+public class PMCIDVersion {
 	@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
 	@JsonProperty("mid") public Optional<String> pmid = Optional.empty();
 	@JsonProperty("current") public Optional<Boolean> current = Optional.empty();

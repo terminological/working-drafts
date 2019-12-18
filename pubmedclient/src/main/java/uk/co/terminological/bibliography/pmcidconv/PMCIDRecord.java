@@ -19,7 +19,7 @@ public class PMCIDRecord implements IdentityMapping {
 	@JsonProperty("live") public Optional<Boolean> live = Optional.empty();
 	@JsonProperty("status") public Optional<String> status = Optional.empty();
 	@JsonProperty("errmsg") public Optional<String> errmsg = Optional.empty();
-	@JsonProperty("versions") public List<Version> versions = Collections.emptyList();
+	@JsonProperty("versions") public List<PMCIDVersion> versions = Collections.emptyList();
 	@JsonProperty("release-date") public Optional<String> releaseDate = Optional.empty();
 	
 	public boolean idNotFound() { return status.orElse("ok").equals("error"); }
