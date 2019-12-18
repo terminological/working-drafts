@@ -58,19 +58,17 @@ public class Builder {
 		);
 	}
 	
-	public static RecordReference recordReference(IdType idType, String identifier) {
-		return new RecordReference() {
-
-			@Override
-			public Optional<String> getIdentifier() {
-				return Optional.ofNullable(identifier);
-			}
-
-			@Override
-			public IdType getIdentifierType() {
-				return idType;
-			}
-			
-		};
+	public static RecordIdentifier recrodReference(RecordReference ref) {
+		RecordIdentifier out = new RecordIdentifier();
+		out.id = ref.getIdentifier().get();
+		out.idType = ref.getIdentifierType();
+		return out;
+	}
+	
+	public static RecordIdentifier recordReference(IdType idType, String id) {
+		RecordIdentifier out = new RecordIdentifier();
+		out.id = id;
+		out.idType = idType;
+		return out;
 	}
 }

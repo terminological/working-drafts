@@ -17,19 +17,7 @@ public class RecordIdentifier implements RecordReference {
 		return idType;
 	}
 	
-	public static RecordIdentifier create(RecordReference ref) {
-		RecordIdentifier out = new RecordIdentifier();
-		out.id = ref.getIdentifier().get();
-		out.idType = ref.getIdentifierType();
-		return out;
-	}
 	
-	public static RecordIdentifier create(IdType idType, String id) {
-		RecordIdentifier out = new RecordIdentifier();
-		out.id = id;
-		out.idType = idType;
-		return out;
-	}
 
 	@Override
 	public int hashCode() {
