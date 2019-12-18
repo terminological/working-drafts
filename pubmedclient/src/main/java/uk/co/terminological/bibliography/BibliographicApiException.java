@@ -1,6 +1,6 @@
 package uk.co.terminological.bibliography;
 
-public class BibliographicApiException extends Exception {
+public class BibliographicApiException extends RuntimeException {
 	public BibliographicApiException(String string) {
 		super(string);
 	}

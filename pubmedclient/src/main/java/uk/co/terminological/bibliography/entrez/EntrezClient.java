@@ -214,17 +214,17 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}*/
 
 
-	public List<String> findPMIdsBySearch(String searchTerm) throws BibliographicApiException {
+	public List<String> findPMIdsBySearch(String searchTerm) { //throws BibliographicApiException {
 		if (searchTerm == null || searchTerm.isEmpty()) return Collections.emptyList(); 
 		return this.buildSearchQuery(searchTerm).execute().get().getIds().collect(Collectors.toList());
 	}
 
-	public List<String> findPMIdsByDoi(String doi) throws BibliographicApiException {
+	public List<String> findPMIdsByDoi(String doi) { // throws BibliographicApiException {
 		if (doi.isEmpty()) return Collections.emptyList();
 		return this.buildSearchQuery(doi).execute().get().getIds().collect(Collectors.toList());
 	}
 
-	public List<String> findPMIdsByPubMedCentralIds(String pmcid) throws BibliographicApiException {
+	public List<String> findPMIdsByPubMedCentralIds(String pmcid) { //throws BibliographicApiException {
 		if (pmcid.isEmpty()) return Collections.emptyList();
 		return this.buildSearchQuery("PMC"+pmcid.replace("PMC", "")).execute().get().getIds().collect(Collectors.toList());
 	}
