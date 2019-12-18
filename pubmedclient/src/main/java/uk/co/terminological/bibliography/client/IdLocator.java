@@ -10,10 +10,10 @@ import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface IdLocator {
 
-	Optional<? extends Record> getOneById(Set<RecordReference> equivalentIds);
+	Optional<? extends Record> getById(Set<RecordReference> equivalentIds);
 	
 	default Optional<? extends Record> getById(IdType type, String id) {
-		return getOneById(Collections.singleton(new RecordReference() {
+		return getById(Collections.singleton(new RecordReference() {
 
 			@Override
 			public Optional<String> getIdentifier() {
