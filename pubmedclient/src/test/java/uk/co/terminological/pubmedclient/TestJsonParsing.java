@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
-import uk.co.terminological.bibliography.crossref.ListResult;
+import uk.co.terminological.bibliography.crossref.CrossRefListResult;
 
 public class TestJsonParsing {
 
@@ -17,7 +17,7 @@ public class TestJsonParsing {
 
 		ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());;
 		InputStream is = ClassLoader.getSystemResourceAsStream("ontologiesExample.json");
-		ListResult  response = new ListResult(objectMapper.readTree(is));
+		CrossRefListResult  response = new CrossRefListResult(objectMapper.readTree(is));
 		response.getMessage().getItems().forEach(
 				item -> {
 					System.out.println("\n========================================\n"+item.getTitle());

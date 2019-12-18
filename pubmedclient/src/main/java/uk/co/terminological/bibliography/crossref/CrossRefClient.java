@@ -159,7 +159,7 @@ public class CrossRefClient extends CachingApiClient {
 	
 	
 	public Optional<CrossRefWork> findWorkByCitationString(String citation) {
-		Optional<ListResult> lr = this.buildQuery()
+		Optional<CrossRefListResult> lr = this.buildQuery()
 				.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
 				.sortedBy(Sort.SCORE, SortOrder.DESC)
 				.limit(1)
@@ -234,7 +234,7 @@ public class CrossRefClient extends CachingApiClient {
 			return this;
 		}
 
-		public Optional<QueryBuilder> nextPage(ListResult resp) {
+		public Optional<QueryBuilder> nextPage(CrossRefListResult resp) {
 			if (
 					resp.getMessage().getNextCursor().isPresent() &&
 					!(
@@ -265,10 +265,10 @@ public class CrossRefClient extends CachingApiClient {
 			return this;
 		}
 
-		public Optional<ListResult> execute() {
-			return client.buildCall(url, ListResult.class)
+		public Optional<CrossRefListResult> execute() {
+			return client.buildCall(url, CrossRefListResult.class)
 					.withParams(params)
-					.withOperation(is -> new ListResult(client.objectMapper.readTree(is)))
+					.withOperation(is -> new CrossRefListResult(client.objectMapper.readTree(is)))
 					.get();
 		}
 
