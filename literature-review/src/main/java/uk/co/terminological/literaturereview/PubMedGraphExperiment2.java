@@ -49,7 +49,7 @@ import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.crossref.Reference;
 import uk.co.terminological.bibliography.crossref.SingleResult;
-import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezClient.ELinksQueryBuilder;
@@ -200,7 +200,7 @@ public class PubMedGraphExperiment2 {
 						List<String> refs = biblioApi.getPdfFetcher().extractArticleRefs(doi, is);
 						log.debug("Found {} references for {}", refs.size(), doi);
 						
-						Set<Work> works = refs.stream().flatMap(ref -> {
+						Set<CrossRefWork> works = refs.stream().flatMap(ref -> {
 							log.debug(ref);
 							return biblioApi.getCrossref().findWorkByCitationString(ref).stream();
 						}).collect(Collectors.toSet());

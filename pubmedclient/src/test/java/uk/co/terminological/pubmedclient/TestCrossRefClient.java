@@ -16,7 +16,7 @@ import uk.co.terminological.bibliography.crossref.CrossRefClient.Field;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.QueryBuilder;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.Sort;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.SortOrder;
-import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.crossref.CrossRefWork;
 
 public class TestCrossRefClient {
 
@@ -55,7 +55,7 @@ public class TestCrossRefClient {
 		
 		for (String ref: articles) {
 			System.out.println(ref);
-			Optional<Work> work = xref.findWorkByCitationString(ref); 
+			Optional<CrossRefWork> work = xref.findWorkByCitationString(ref); 
 			work.ifPresent(
 					w -> {
 						System.out.println(w.getTitle());

@@ -16,7 +16,7 @@ import uk.co.terminological.bibliography.crossref.CrossRefClient.Field;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.QueryBuilder;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.Sort;
 import uk.co.terminological.bibliography.crossref.CrossRefClient.SortOrder;
-import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.scholar.GoogleResult;
 import uk.co.terminological.bibliography.scholar.GoogleScholarClient;
 

@@ -128,7 +128,7 @@ public class CrossRefClient extends CachingApiClient {
 		}
 	}*/
 
-	public InputStream getTDM(Work work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
+	public InputStream getTDM(CrossRefWork work, Predicate<String> licenceFilter, String clickThroughToken) throws BibliographicApiException {
 
 		logger.debug("Retrieving crossref content for:" + work.getIdentifier().orElse("?")+": "+work.getTitle());
 
@@ -158,13 +158,13 @@ public class CrossRefClient extends CachingApiClient {
 	 */
 	
 	
-	public Optional<Work> findWorkByCitationString(String citation) {
+	public Optional<CrossRefWork> findWorkByCitationString(String citation) {
 		Optional<ListResult> lr = this.buildQuery()
 				.withSearchTerm(Field.BIBLIOGRAPHIC, citation)
 				.sortedBy(Sort.SCORE, SortOrder.DESC)
 				.limit(1)
 				.execute();
-		Optional<Work> out = lr.stream().map(l -> l.getMessage())
+		Optional<CrossRefWork> out = lr.stream().map(l -> l.getMessage())
 				.flatMap(i -> i.getItems())
 				.filter(o -> o.getScore().orElse(0D) > 85.0D)
 				.findFirst();

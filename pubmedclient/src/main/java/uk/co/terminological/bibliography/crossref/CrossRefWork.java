@@ -25,8 +25,8 @@ import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.bibliography.record.RecordWithCitations;
 
-public class Work extends ExtensibleJson implements Print, RecordWithCitations {
-	public Work(JsonNode node) {super(node);}
+public class CrossRefWork extends ExtensibleJson implements Print, RecordWithCitations {
+	public CrossRefWork(JsonNode node) {super(node);}
 	
 	public Optional<String> getIdentifier() {return this.asString("DOI");}
 	public IdType getIdentifierType() {return IdType.DOI;}

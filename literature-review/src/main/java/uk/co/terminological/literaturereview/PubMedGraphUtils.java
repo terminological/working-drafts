@@ -2,7 +2,7 @@ package uk.co.terminological.literaturereview;
 
 
 import uk.co.terminological.bibliography.crossref.Reference;
-import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.Link;
 import uk.co.terminological.bibliography.entrez.MeshCode;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
@@ -271,13 +271,13 @@ public class PubMedGraphUtils {
 		return out;
 	}
 	
-	public static Set<String> mapCermineReferences(String citingDoi, Set<Work> citedDois, GraphDatabaseApi graph) {
+	public static Set<String> mapCermineReferences(String citingDoi, Set<CrossRefWork> citedDois, GraphDatabaseApi graph) {
 		return citedDois.stream().flatMap(work -> {
 			return mapCermineReference(Prop.DOI,citingDoi,Labels.DOI_STUB,Prop.DOI,work,Labels.DOI_STUB, Rel.HAS_REFERENCE,graph).stream();
 		}).collect(Collectors.toSet());
 	}
 	
-	public static Optional<String> mapCermineReference(String citingType, String citingDoi, Label citingStubLabel, String citedType, Work cite, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
+	public static Optional<String> mapCermineReference(String citingType, String citingDoi, Label citingStubLabel, String citedType, CrossRefWork cite, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
 		updateCrossRefMetadata(cite, graph);
 		Optional<String> out = Optional.empty();
 		try (Transaction tx = graph.get().beginTx()) {
@@ -337,7 +337,7 @@ public class PubMedGraphUtils {
 	
 	
 	
-	public static Optional<String> updateCrossRefMetadata(Work work, GraphDatabaseApi graph) {
+	public static Optional<String> updateCrossRefMetadata(CrossRefWork work, GraphDatabaseApi graph) {
 		if (work.getIdentifier().isPresent()) {
 			
 			try (Transaction tx = graph.get().beginTx()) {

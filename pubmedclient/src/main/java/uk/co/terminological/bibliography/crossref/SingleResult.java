@@ -11,6 +11,6 @@ public class SingleResult extends ExtensibleJson implements Raw<JsonNode> {
 	public SingleResult(JsonNode node) { super(node); }
 	
 	public Optional<String> getStatus() {return this.asString("status");}
-	public Work getWork() {return this.asObject(Work.class, "message").get();}
+	public CrossRefWork getWork() {return this.asObject(CrossRefWork.class, "message").get();}
 	
 }

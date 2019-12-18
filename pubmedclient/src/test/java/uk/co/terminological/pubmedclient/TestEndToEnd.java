@@ -17,7 +17,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.crossref.CrossRefClient;
-import uk.co.terminological.bibliography.crossref.Work;
+import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.entrez.Search;
 import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
@@ -69,13 +69,13 @@ public class TestEndToEnd {
 		unpaywall.getUnpaywallByDois(dois2).stream()
 			.forEach(res -> System.out.println(res.getIdentifier().orElse("?")+"\t"+res.getTitle()+"\t"+res.getPdfUri()));
 		
-		Stream<Work> work = dois2.stream().flatMap(doi -> {
+		Stream<CrossRefWork> work = dois2.stream().flatMap(doi -> {
 			return xref.getByDoi(doi).map(o -> Stream.of(o)).orElse(Stream.empty());
 		})
 				.map(sr -> sr.getWork());
 		work.forEach(w -> System.out.println(w.getTitle()));
 		//https://academic.oup.com/bioinformatics/article-pdf/33/6/863/25147932/btw768.pdf
-		Work work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().getWork();
+		CrossRefWork work2 = xref.getByDoi("10.1093/bioinformatics/btw768").get().getWork();
 		//System.out.println(work.journalAbstract.get());
 		work2.getReferences().forEach(r -> System.out.println(r.getIdentifier().orElse("?")+"\t"+r.getTitle().orElse("No title")));
 		System.exit(0);

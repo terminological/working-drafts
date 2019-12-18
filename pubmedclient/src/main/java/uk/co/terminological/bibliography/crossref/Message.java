@@ -12,7 +12,7 @@ public class Message extends ExtensibleJson {
 	public Message(JsonNode node) { super(node); }
 	
 	public Optional<String> getNextCursor() {return this.asString("next-cursor");}
-	public Stream<Work> getItems() {return this.streamNode(Work.class, "items");}
+	public Stream<CrossRefWork> getItems() {return this.streamNode(CrossRefWork.class, "items");}
 	public Optional<Long> getTotalResults() {return this.asLong("total-results");}
 	
 }
