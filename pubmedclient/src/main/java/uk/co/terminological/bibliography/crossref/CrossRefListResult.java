@@ -11,6 +11,6 @@ public class CrossRefListResult extends ExtensibleJson {
 	public CrossRefListResult(JsonNode node) { super(node); }
 	
 	public Optional<String> getStatus() {return this.asString("status");}
-	public Message getMessage() {return this.asObject(Message.class, "message").get();}
+	public CrossRefMessage getMessage() {return this.asObject(CrossRefMessage.class, "message").get();}
 	
 }

@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import uk.co.terminological.bibliography.ExtensibleJson;
 
 //When message-type is work-list
-public class Message extends ExtensibleJson {
-	public Message(JsonNode node) { super(node); }
+public class CrossRefMessage extends ExtensibleJson {
+	public CrossRefMessage(JsonNode node) { super(node); }
 	
 	public Optional<String> getNextCursor() {return this.asString("next-cursor");}
 	public Stream<CrossRefWork> getItems() {return this.streamNode(CrossRefWork.class, "items");}
