@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.crossref.CrossRefReference;
-import uk.co.terminological.bibliography.crossref.SingleResult;
+import uk.co.terminological.bibliography.crossref.CrossRefSingleResult;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
 import uk.co.terminological.bibliography.entrez.EntrezLink;
@@ -454,7 +454,7 @@ public class PubMedGraphExperiment {
 					}
 					
 					for (String doi: dois) {
-						Optional<SingleResult> tmp = api.getCrossref().getByDoi(doi);
+						Optional<CrossRefSingleResult> tmp = api.getCrossref().getByDoi(doi);
 						tmp.ifPresent(t ->
 								context.send(
 								Events.namedTypedEvent(t.getWork(),doi,XREF_FETCH_RESULT)

@@ -85,13 +85,13 @@ public class CrossRefClient extends CachingApiClient {
 
 	static String baseUrl ="https://api.crossref.org/";
 
-	public Optional<SingleResult> getByDoi(String doi) {
+	public Optional<CrossRefSingleResult> getByDoi(String doi) {
 		
 		String url = baseUrl+"works/"+encode(doi);
 		return this
-			.buildCall(url,SingleResult.class)
+			.buildCall(url,CrossRefSingleResult.class)
 			.cacheForever()
-			.withOperation(is -> new SingleResult(objectMapper.readTree(is)))
+			.withOperation(is -> new CrossRefSingleResult(objectMapper.readTree(is)))
 			.get();
 		
 	}

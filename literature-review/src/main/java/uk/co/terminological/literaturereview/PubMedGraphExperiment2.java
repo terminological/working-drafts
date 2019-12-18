@@ -48,7 +48,7 @@ import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.crossref.CrossRefReference;
-import uk.co.terminological.bibliography.crossref.SingleResult;
+import uk.co.terminological.bibliography.crossref.CrossRefSingleResult;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
@@ -461,7 +461,7 @@ public class PubMedGraphExperiment2 {
 	Set<String> findCrossRefReferencesFromNodes(Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
-			Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
+			Optional<CrossRefSingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 			tmp.ifPresent(t -> updateCrossRefMetadata(t.getWork(),graphApi));
 			List<CrossRefReference> referencedDois = tmp.stream()
 					.map(t -> t.getWork())
@@ -477,7 +477,7 @@ public class PubMedGraphExperiment2 {
 	Set<String> updateMetadataFromCrossRef(Set<String> dois) {
 		Set<String> outDois = new HashSet<>();
 		for (String doi: dois) {
-			Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
+			Optional<CrossRefSingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 			tmp.ifPresent(t -> {
 					Optional<String> out = updateCrossRefMetadata(t.getWork(),graphApi);
 					out.ifPresent(o->outDois.add(o.toLowerCase()));
