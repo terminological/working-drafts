@@ -53,9 +53,9 @@ firstIndexDate: "2010-12-03",
 firstPublicationDate: "2010-10-01"
  */
 
-public class LiteResult extends ExtensibleJson implements RecordReference, IdentityMapping, Print {
+public class EuropePMCLiteResult extends ExtensibleJson implements RecordReference, IdentityMapping, Print {
 
-	public LiteResult(JsonNode node) { super(node); }
+	public EuropePMCLiteResult(JsonNode node) { super(node); }
 	
 	public Optional<String> getIdentifier() {return this.asString("id");}
 	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}

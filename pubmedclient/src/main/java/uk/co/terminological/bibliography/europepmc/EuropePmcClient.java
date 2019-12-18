@@ -132,7 +132,7 @@ public class EuropePmcClient extends CachingApiClient {
 		ASC, DESC; public String toString() {return this.name().toLowerCase();}
 	}
 		
-	public ListResult<LiteResult> liteSearch(String text) {
+	public ListResult<EuropePMCLiteResult> liteSearch(String text) {
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/nature09534&sort=CITED%20desc&format=json
 		// https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST
 		// query=malaria%20sort_cited:y

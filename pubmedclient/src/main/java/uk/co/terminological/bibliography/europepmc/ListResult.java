@@ -38,9 +38,9 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 	public Optional<Long> pageNumber() {
 		return this.streamPath("request","page").findFirst().map(jn -> jn.asLong());}
 	
-	public static class Lite extends ListResult<LiteResult> {
+	public static class Lite extends ListResult<EuropePMCLiteResult> {
 		public Lite(JsonNode raw) {
-			super(LiteResult.class,raw);
+			super(EuropePMCLiteResult.class,raw);
 		}
 	}
 	

@@ -17,7 +17,7 @@ import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class EuropePMCCoreResult extends LiteResult implements PrintRecord {
+public class EuropePMCCoreResult extends EuropePMCLiteResult implements PrintRecord {
 
 	//https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1073/pnas.0506580102&sort=CITED%20desc&format=json&resultType=core
 	/*
