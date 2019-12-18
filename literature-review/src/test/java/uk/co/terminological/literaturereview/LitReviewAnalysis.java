@@ -51,7 +51,7 @@ import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
 import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Format;
-import uk.co.terminological.bibliography.entrez.PubMedEntries;
+import uk.co.terminological.bibliography.entrez.EntrezEntries;
 import uk.co.terminological.bibliography.entrez.Search;
 import uk.co.terminological.bibliography.record.PrintRecord;
 import uk.co.terminological.datatypes.EavMap;
@@ -984,7 +984,7 @@ public class LitReviewAnalysis {
 		CiteProcProvider cppRefs = CiteProcProvider.create(REFERENCE_FORMAT, Format.text);
 		
 		result.ifPresent(r -> {
-			Optional<PubMedEntries> entries = r.getStoredResult(biblioApi.getEntrez());
+			Optional<EntrezEntries> entries = r.getStoredResult(biblioApi.getEntrez());
 			
 			entries.ifPresent(es -> {
 				es.stream().filter(e -> e.getDoi().isPresent())

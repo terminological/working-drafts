@@ -3,7 +3,7 @@ package uk.co.terminological.pubmedclient;
 import java.io.IOException;
 import java.io.InputStream;
 
-import uk.co.terminological.bibliography.entrez.PubMedEntries;
+import uk.co.terminological.bibliography.entrez.EntrezEntries;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 
@@ -14,7 +14,7 @@ public class TestEntrezParsing {
 
 		InputStream is = ClassLoader.getSystemResourceAsStream("efetch.xml");
 		Xml xml = Xml.fromStream(is);
-		PubMedEntries  response = new PubMedEntries(xml.content());
+		EntrezEntries  response = new EntrezEntries(xml.content());
 		response.stream().forEach(
 				item -> {
 					System.out.println("\n========================================\n"+item.getTitle());

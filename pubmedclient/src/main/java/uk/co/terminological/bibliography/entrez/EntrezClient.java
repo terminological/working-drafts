@@ -271,7 +271,7 @@ public class EntrezClient extends CachingApiClient {
 			Xml xml;
 			try {
 				xml = Xml.fromStream(is.get());
-				PubMedEntries tmp = new PubMedEntries(xml.content());
+				EntrezEntries tmp = new EntrezEntries(xml.content());
 				tmp.stream().forEach(entry -> {
 					out.add(entry);
 					String pmid = entry.getPMID().get();
@@ -284,17 +284,17 @@ public class EntrezClient extends CachingApiClient {
 		return out;
 	}
 	
-	public Optional<PubMedEntries> getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey) {
+	public Optional<EntrezEntries> getPMEntriesByWebEnvAndQueryKey(String webEnv, String queryKey) {
 		MultivaluedMap<String, String> fetchParams = defaultApiParams();
 		fetchParams.add("db", "pubmed");
 		fetchParams.add("format", "xml");
 		fetchParams.add("query_key", queryKey);
 		fetchParams.add("WebEnv", webEnv);
-		return this.buildCall(EFETCH, PubMedEntries.class)
+		return this.buildCall(EFETCH, EntrezEntries.class)
 			.withParams(fetchParams)
 			.withOperation(is -> {
 				Xml xml = Xml.fromStream(is);
-				return new PubMedEntries(xml.content());
+				return new EntrezEntries(xml.content());
 			}).post();
 	}
 
@@ -315,7 +315,7 @@ public class EntrezClient extends CachingApiClient {
 	}
 
 
-	public Optional<InputStream> getPubMedCentralXMLByPMEntries(PubMedEntries pmEntries) {
+	public Optional<InputStream> getPubMedCentralXMLByPMEntries(EntrezEntries pmEntries) {
 		List<String> pmcIds = pmEntries.stream().flatMap(e -> e.getPMCID().stream()).collect(Collectors.toList());
 		return getXMLByIdsAndDatabase(pmcIds, Database.PMC);
 	}

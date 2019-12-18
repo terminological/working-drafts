@@ -50,7 +50,7 @@ public class Search implements Raw<XmlElement> {
 		}
 	}
 	
-	public Optional<PubMedEntries> getStoredResult(EntrezClient client) {
+	public Optional<EntrezEntries> getStoredResult(EntrezClient client) {
 		Optional<String> webEnv = getWebEnv(); 
 		Optional<String> queryKey = getQueryKey();
 		if (webEnv.isPresent() && queryKey.isPresent()) {

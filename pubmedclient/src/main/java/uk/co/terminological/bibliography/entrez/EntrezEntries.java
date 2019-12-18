@@ -6,11 +6,11 @@ import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class PubMedEntries implements Raw<XmlElement> {
+public class EntrezEntries implements Raw<XmlElement> {
 
 	private XmlElement raw; //PubmedArticleSet
 
-	public PubMedEntries(XmlElement raw) {this.raw = raw;}
+	public EntrezEntries(XmlElement raw) {this.raw = raw;}
 
 	public Stream<PubMedEntry> stream() {
 		if (raw == null) return Stream.empty();
@@ -28,8 +28,8 @@ public class PubMedEntries implements Raw<XmlElement> {
 		}
 	}
 
-	public static PubMedEntries empty() {
-		return new PubMedEntries(null);
+	public static EntrezEntries empty() {
+		return new EntrezEntries(null);
 	}
 
 	@Override
