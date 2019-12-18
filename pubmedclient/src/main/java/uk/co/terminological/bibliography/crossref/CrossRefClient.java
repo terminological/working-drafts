@@ -427,27 +427,36 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Optional<? extends Record> getById(Collection<RecordReference> equivalentIds) {
+	public Map<RecordReference,? extends Record> getById(Collection<RecordReference> equivalentIds) {
+		Map<RecordReference,CrossRefWork> out = new HashMap<>(); 
 		for (RecordReference id: equivalentIds) {
-			if (id instanceof CrossRefWork) return Optional.of((CrossRefWork) id);
+			if (id instanceof CrossRefWork) {
+				out.put(id,(CrossRefWork) id);
+			};
 			if (id.getIdentifierType().equals(IdType.DOI)) {
 				if (id.getIdentifier().isPresent()) {
-					return this.getByDoi(id.getIdentifier().get()).map(r -> r.getWork());
+					Optional<CrossRefWork> tmp = this.getByDoi(id.getIdentifier().get()).map(r -> r.getWork());
+					tmp.ifPresent(t -> out.put(id, t));
 				}
 			}
 		}
-		return Optional.empty();
+		return out;
 	}
 
 	@Override
-	public Collection<? extends CitationLink> citesReferences(RecordReference ref) {
-		Optional<CrossRefWork> tmp;
-		if (ref instanceof CrossRefWork) {
-			tmp = Optional.of((CrossRefWork) ref); 
-		} else {
-			tmp = getById(ref.getIdentifierType(), ref.getIdentifier().get()).map(w -> (CrossRefWork) w);
+	public Map<? extends RecordReference, Collection<? extends CitationLink>> citesReferences(Collection<RecordReference> refs) {
+		
+		Map<RecordReference,Collection<? extends CitationLink>> out = new HashMap<>();
+		for (RecordReference ref: refs) {
+			Optional<CrossRefWork> tmp;
+			if (ref instanceof CrossRefWork) {
+				tmp = Optional.of((CrossRefWork) ref); 
+			} else {
+				tmp = getById(ref.getIdentifierType(), ref.getIdentifier().get()).map(w -> (CrossRefWork) w);
+			}
+			out.put(ref, tmp.stream().flatMap(t -> t.getCitations()).collect(Collectors.toList()));
 		}
-		return tmp.stream().flatMap(t -> t.getCitations()).collect(Collectors.toList());
+		return out;
 	}
 
 }
