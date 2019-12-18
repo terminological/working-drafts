@@ -30,13 +30,20 @@ import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BinaryData;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.PdfFetcher;
+import uk.co.terminological.bibliography.client.CitedByMapper;
+import uk.co.terminological.bibliography.client.CitesMapper;
+import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
 
 /*
  * http://www.ncbi.nlm.nih.gov/books/NBK25500/
  */
-public class EntrezClient extends CachingApiClient {
+public class EntrezClient extends CachingApiClient implements Searcher, IdLocator, CitesMapper, CitedByMapper {
 
 	// TODO: integrate CSL: https://michel-kraemer.github.io/citeproc-java/api/1.0.1/de/undercouch/citeproc/csl/CSLItemDataBuilder.html 
 	// TODO: caching with https://hc.apache.org/httpcomponents-client-ga/tutorial/html/caching.html#storage and EHCache
@@ -540,6 +547,33 @@ public class EntrezClient extends CachingApiClient {
 				.flatMap(o -> o.stream())
 				.flatMap(l -> l.toId.stream())
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public Collection<? extends CitationLink> citesReferences(RecordReference ref) {
+		if (ref instanceof EntrezEntry) {
+			((EntrezEntry) ref).get
+		}
+		return null;
+	}
+
+	@Override
+	public Optional<? extends Record> getById(Set<RecordReference> equivalentIds) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<? extends Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to,
+			Optional<Integer> limit) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<? extends CitationLink> referencesCiting(RecordReference ref) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
