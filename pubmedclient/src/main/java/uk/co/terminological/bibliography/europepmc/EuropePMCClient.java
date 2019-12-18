@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -244,21 +245,53 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 
 	@Override
 	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<CitationLink> out = new ArrayList<>();
+		
+		for (RecordReference r: ref) {
+			
+			if (r.getIdentifierType().equals(IdType.PMID)) {
+				int i = 0;
+				for (EuropePMCCitation r2: citations(DataSources.MED,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
+					out.add(Builder.citationLink(
+							Builder.citationReference(r, null, null), 
+							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+							Optional.of(i)));
+				}
+			}
+			
+			if (r.getIdentifierType().equals(IdType.PMCID)) {
+				int i = 0;
+				for (EuropePMCCitation r2: citations(DataSources.PMC,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
+					out.add(Builder.citationLink(
+							Builder.citationReference(r, null, null), 
+							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+							Optional.of(i)));
+				}
+			}
+		}
+		
+		return out;
 	}
 
 	@Override
 	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds) {
-		// TODO Auto-generated method stub
-		return null;
+		Map<RecordIdentifier, Record> out = new HashMap<>();
+		
+		for (RecordReference rr : equivalentIds) {
+			if (rr.getIdentifier().isPresent()) {
+				this.getById(rr.getIdentifier().get(), rr.getIdentifierType()).ifPresent(r -> out.put(RecordIdentifier.create(rr), r));
+			}
+		}
+		
+		return out;
 	}
 
 	@Override
 	public Collection<? extends Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to,
 			Optional<Integer> limit) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.buildQuery(search).executeFull().stream().flatMap(c -> c.getItems()).collect(Collectors.toList());
+		
 	}
 	
 }
