@@ -56,9 +56,9 @@ public class ListResult<X extends ExtensibleJson> extends ExtensibleJson {
 		}
 	}
 	
-	public static class Citation extends ListResult<uk.co.terminological.bibliography.europepmc.Citation> {
+	public static class Citation extends ListResult<uk.co.terminological.bibliography.europepmc.EuropePMCCitation> {
 		public Citation(JsonNode raw) {
-			super(uk.co.terminological.bibliography.europepmc.Citation.class,raw);
+			super(uk.co.terminological.bibliography.europepmc.EuropePMCCitation.class,raw);
 		}
 	}
 }

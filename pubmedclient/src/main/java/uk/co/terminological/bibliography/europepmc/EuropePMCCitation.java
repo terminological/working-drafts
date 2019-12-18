@@ -29,9 +29,9 @@ citedByCount: 0
 //TODO: change API to make a first class citation object
 //TODO: get this to conform
 
-public class Citation extends ExtensibleJson implements Print, RecordReference {
+public class EuropePMCCitation extends ExtensibleJson implements Print, RecordReference {
 
-	public Citation(JsonNode node) { super(node); }
+	public EuropePMCCitation(JsonNode node) { super(node); }
 	
 	public Optional<String> getIdentifier() {return this.asString("id");}
 	public Optional<DataSources> getSource() {return this.asString("source").map(DataSources::valueOf);}
