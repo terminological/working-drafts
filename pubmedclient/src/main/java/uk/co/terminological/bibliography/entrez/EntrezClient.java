@@ -245,7 +245,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	 * @throws BibliographicApiException 
 	 * @throws JAXBException
 	 */
-	public Set<EntrezEntry> getPMEntriesByPMIds(Collection<String> pmids) throws BibliographicApiException {
+	public Set<EntrezEntry> getPMEntriesByPMIds(Collection<String> pmids) { // throws BibliographicApiException {
 		Set<EntrezEntry> out = new HashSet<>();
 		if (pmids.isEmpty()) return out;
 		Cache<String,BinaryData> cache = this.permanentCache(); 
@@ -568,27 +568,41 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 
 	@Override
 	public Collection<? extends CitationLink> referencesCiting(Collection<RecordReference> ref) {
-		Map<String,String> out = new HashMap<>();
+		List<CitationLink> out = new ArrayList<>();
+		List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		this.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
+				.toDatabase(Database.PMC)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pmc_pmc_citedby")
+				.execute().stream().flatMap(l -> l.getCitations()).forEach(c -> out.add(c));
+		return out;
+	}
+
+	@Override
+	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+		List<CitationLink> out = new ArrayList<>();
 		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
 				.toDatabase(Database.PUBMED)
 				.command(Command.NEIGHBOR)
 				.withLinkname("pubmed_pubmed_refs")
-				.execute().stream().flatMap(l -> l.getCitations());
-		return null;
+				.execute().stream().flatMap(l -> l.getCitations()).forEach(c -> out.add(c));
+		this.buildLinksQueryForIdsAndDatabase(pmcids, Database.PMC)
+				.toDatabase(Database.PMC)
+				.command(Command.NEIGHBOR)
+				.withLinkname("pmc_pmc_cites")
+				.execute().stream().flatMap(l -> l.getCitations()).forEach(c -> out.add(c));
+		return out;
 	}
 
 	@Override
-	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds) {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> ref) {
+		Map<RecordIdentifier, EntrezEntry> out = new HashMap<>();
+		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		// List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		getPMEntriesByPMIds(pmids).forEach(ee -> out.put(RecordIdentifier.create(ee), ee));
+		return out;
 	}
 	
 }
