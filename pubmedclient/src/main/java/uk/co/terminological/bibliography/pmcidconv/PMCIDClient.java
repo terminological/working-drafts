@@ -31,28 +31,28 @@ import uk.co.terminological.bibliography.BinaryData;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.record.IdType;
 
-public class IdConverterClient extends CachingApiClient {
+public class PMCIDClient extends CachingApiClient {
 
-	private static final Logger logger = LoggerFactory.getLogger(IdConverterClient.class);
-	private static Map<String, IdConverterClient> instances = new HashMap<>();
+	private static final Logger logger = LoggerFactory.getLogger(PMCIDClient.class);
+	private static Map<String, PMCIDClient> instances = new HashMap<>();
 	
 	private String developerEmail;
 	private String toolName;
 	private static String URL = "https://www.ncbi.nlm.nih.gov/pmc/utils/idconv/v1.0/";
 	private ObjectMapper objectMapper = new ObjectMapper().registerModule(new Jdk8Module());
 	
-	public static IdConverterClient create(String developerEmail, String toolName) {
-		return new IdConverterClient(developerEmail,toolName, Optional.empty());
+	public static PMCIDClient create(String developerEmail, String toolName) {
+		return new PMCIDClient(developerEmail,toolName, Optional.empty());
 	}
 	
-	public static IdConverterClient create(String developerEmail, String toolName, Path cacheDir) {
+	public static PMCIDClient create(String developerEmail, String toolName, Path cacheDir) {
 		if (!instances.containsKey(developerEmail)) {
-			instances.put(developerEmail, new IdConverterClient(developerEmail,toolName, Optional.ofNullable(cacheDir)));
+			instances.put(developerEmail, new PMCIDClient(developerEmail,toolName, Optional.ofNullable(cacheDir)));
 		}
 		return instances.get(developerEmail);	
 	}
 	
-	private IdConverterClient(String developerEmail, String toolName, Optional<Path> cacheDir) {
+	private PMCIDClient(String developerEmail, String toolName, Optional<Path> cacheDir) {
 		super ( cacheDir, TokenBuckets.builder().withInitialTokens(1000).withCapacity(1000).withFixedIntervalRefillStrategy(1000, 24*6*6, TimeUnit.SECONDS).build());
 		this.developerEmail = developerEmail;
 		this.toolName = toolName;

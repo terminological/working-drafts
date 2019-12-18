@@ -20,7 +20,7 @@ import uk.co.terminological.bibliography.crossref.CrossRefClient;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.entrez.EntrezSearch;
-import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
+import uk.co.terminological.bibliography.pmcidconv.PMCIDClient;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
 
@@ -43,7 +43,7 @@ public class TestEndToEnd {
 		Files.createDirectories(ehcache.getParent());
 		
 		EntrezClient pubmed = EntrezClient.create(pubmedApiToken, appId, developerEmail,ehcache.resolve("pubmed"));
-		IdConverterClient mapper = IdConverterClient.create(appId,developerEmail, ehcache.resolve("idconv"));
+		PMCIDClient mapper = PMCIDClient.create(appId,developerEmail, ehcache.resolve("idconv"));
 		CrossRefClient xref = CrossRefClient.create(developerEmail, ehcache.resolve("xref"));
 		UnpaywallClient unpaywall = UnpaywallClient.create(developerEmail, ehcache.resolve("unpaywall"));
 		

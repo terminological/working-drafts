@@ -11,7 +11,7 @@ import uk.co.terminological.bibliography.crossref.CrossRefClient;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.europepmc.EuropePMCClient;
 import uk.co.terminological.bibliography.opencitations.OpenCitationsClient;
-import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
+import uk.co.terminological.bibliography.pmcidconv.PMCIDClient;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
 
 public class BibliographicApis {
@@ -62,7 +62,7 @@ public class BibliographicApis {
 	}
 
 	private EntrezClient entrez;
-	private IdConverterClient pmcIdConv;
+	private PMCIDClient pmcIdConv;
 	private CrossRefClient crossref;
 	private UnpaywallClient unpaywall;
 	private PdfFetcher pdfFetcher;
@@ -73,7 +73,7 @@ public class BibliographicApis {
 
 		entrez = EntrezClient.create(pubmedApiToken, appId, developerEmail,
 				cacheDir.map(o -> o.resolve("entrez")).orElse(null));
-		pmcIdConv = IdConverterClient.create(appId,developerEmail, 
+		pmcIdConv = PMCIDClient.create(appId,developerEmail, 
 				cacheDir.map(o -> o.resolve("idconv")).orElse(null));
 		crossref = CrossRefClient.create(developerEmail, 
 				cacheDir.map(o -> o.resolve("xref")).orElse(null));
@@ -102,7 +102,7 @@ public class BibliographicApis {
 		return entrez;
 	}
 
-	public IdConverterClient getPmcIdConv() {
+	public PMCIDClient getPmcIdConv() {
 		return pmcIdConv;
 	}
 

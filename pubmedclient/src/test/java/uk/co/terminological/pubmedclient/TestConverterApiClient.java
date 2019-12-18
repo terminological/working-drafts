@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
-import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
+import uk.co.terminological.bibliography.pmcidconv.PMCIDClient;
 import uk.co.terminological.bibliography.record.IdType;
 
 public class TestConverterApiClient {
@@ -20,7 +20,7 @@ public class TestConverterApiClient {
 	public static void main(String[] args) throws BibliographicApiException {
 		
 		BasicConfigurator.configure();
-		IdConverterClient client = IdConverterClient.create(APP_ID,DEVELOPER_EMAIL);
+		PMCIDClient client = PMCIDClient.create(APP_ID,DEVELOPER_EMAIL);
 		client.debugMode();
 		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach((k,v) -> System.out.println(k+"->"+v));
 		client.getDoisByIdAndType(Arrays.asList("12964947"), IdType.PMID).forEach((k,v) -> System.out.println(k+"->"+v));
