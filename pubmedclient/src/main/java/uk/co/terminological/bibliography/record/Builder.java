@@ -73,18 +73,8 @@ public class Builder {
 	}
 	
 	public static RecordIdentifierMapping recordIdMapping(RecordReference source, RecordReference target) {
-		return new RecordIdentifierMapping() {
-
-			@Override
-			public RecordReference getSource() {
-				return source;
-			}
-
-			@Override
-			public RecordReference getTarget() {
-				return target;
-			}
-			
-		};
+		return new RecordIdentifierMapping(
+				Builder.recordReference(source), 
+				Builder.recordReference(target));
 	}
 }
