@@ -1,6 +1,7 @@
 package uk.co.terminological.bibliography.client;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,6 +25,13 @@ public interface IdLocator {
 			public IdType getIdentifierType() {
 				return type;
 			}}));
+	};
+	
+	default Optional<? extends Record> getById(Record rec) {
+		Set<RecordReference> tmp = new HashSet<>();
+		tmp.add(rec);
+		tmp.addAll(rec.getOtherIdentifiers());
+		return getById(tmp);
 	};
 	
 }
