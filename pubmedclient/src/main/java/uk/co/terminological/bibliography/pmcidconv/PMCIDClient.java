@@ -164,10 +164,7 @@ public class PMCIDClient extends CachingApiClient implements IdMapper {
 		return out;
 	}
 
-	@Override
-	public Set<? extends RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
-		return null;
-	}
+	
 
 	
 }
