@@ -6,9 +6,9 @@ import java.util.stream.Stream;
 import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 
-public class MeshHeading implements Raw<XmlElement> {
+public class EntrezMeshHeading implements Raw<XmlElement> {
 	private XmlElement raw;
-	public MeshHeading(XmlElement raw) {this.raw = raw;}
+	public EntrezMeshHeading(XmlElement raw) {this.raw = raw;}
 	public EntrezMeshCode getDescriptor() {
 		return raw.childElements("DescriptorName").stream().findFirst().map(o -> new EntrezMeshCode(o)).get();
 	}

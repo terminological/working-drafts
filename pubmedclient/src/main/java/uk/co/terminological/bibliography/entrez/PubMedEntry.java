@@ -100,9 +100,9 @@ public class PubMedEntry implements PrintRecord, Raw<XmlElement> {
 		}
 	}
 
-	public Stream<MeshHeading> getMeshHeadings() {			
+	public Stream<EntrezMeshHeading> getMeshHeadings() {			
 		try {
-			return raw.doXpath(".//MeshHeading").getManyAsStream(XmlElement.class).map(o -> new MeshHeading(o));
+			return raw.doXpath(".//MeshHeading").getManyAsStream(XmlElement.class).map(o -> new EntrezMeshHeading(o));
 		} catch (XmlException e) {
 			return Stream.empty();
 		}
