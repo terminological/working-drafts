@@ -35,6 +35,7 @@ import uk.co.terminological.bibliography.client.CitedByMapper;
 import uk.co.terminological.bibliography.client.CitesMapper;
 import uk.co.terminological.bibliography.client.IdLocator;
 import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
@@ -601,7 +602,7 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 		Map<RecordIdentifier, EntrezEntry> out = new HashMap<>();
 		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		// List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
-		getPMEntriesByPMIds(pmids).forEach(ee -> out.put(RecordIdentifier.create(ee), ee));
+		getPMEntriesByPMIds(pmids).forEach(ee -> out.put(Builder.recordReference(ee), ee));
 		return out;
 	}
 	
