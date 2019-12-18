@@ -23,6 +23,13 @@ public class RecordIdentifier implements RecordReference {
 		out.idType = ref.getIdentifierType();
 		return out;
 	}
+	
+	public static RecordIdentifier create(IdType idType, String id) {
+		RecordIdentifier out = new RecordIdentifier();
+		out.id = id;
+		out.idType = idType;
+		return out;
+	}
 
 	@Override
 	public int hashCode() {
