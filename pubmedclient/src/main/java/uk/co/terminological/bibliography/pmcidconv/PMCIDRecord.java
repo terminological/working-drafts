@@ -12,7 +12,7 @@ import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.IdentityMapping;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class Record implements IdentityMapping {
+public class PMCIDRecord implements IdentityMapping {
 	@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
 	@JsonProperty("pmid") public Optional<String> pmid = Optional.empty();
 	@JsonProperty("doi") public Optional<String> doi = Optional.empty();

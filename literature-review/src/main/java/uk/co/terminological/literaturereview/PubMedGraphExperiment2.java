@@ -56,7 +56,7 @@ import uk.co.terminological.bibliography.entrez.EntrezClient.ELinksQueryBuilder;
 import uk.co.terminological.bibliography.entrez.EntrezLink;
 import uk.co.terminological.bibliography.entrez.EntrezEntry;
 import uk.co.terminological.bibliography.entrez.EntrezSearch;
-import uk.co.terminological.bibliography.pmcidconv.Record;
+import uk.co.terminological.bibliography.pmcidconv.PMCIDRecord;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallResult;
 import uk.co.terminological.datatypes.StreamExceptions;
@@ -327,13 +327,13 @@ public class PubMedGraphExperiment2 {
 		}
 	}*/
 
-	List<Record> lookupIdMapping(List<String> ids, IdType ofType) {
-		List<Record> out = new ArrayList<>();
+	List<PMCIDRecord> lookupIdMapping(List<String> ids, IdType ofType) {
+		List<PMCIDRecord> out = new ArrayList<>();
 
 		try {
 			while(ids.size() > 0) {
 				List<String> batchDois = ids.subList(0, Math.min(100, ids.size()));
-				Set<Record> pmids = biblioApi.getPmcIdConv()
+				Set<PMCIDRecord> pmids = biblioApi.getPmcIdConv()
 						.getMapping(batchDois, ofType);
 				log.debug("Looked up "+batchDois.size()+" "+ofType.name()+" and found "+pmids.size()+" linked records");
 				out.addAll(pmids);

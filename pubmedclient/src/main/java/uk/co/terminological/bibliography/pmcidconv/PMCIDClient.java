@@ -76,17 +76,17 @@ public class PMCIDClient extends CachingApiClient {
 	}
 	
 	// Batches the calls to groups of max 50 ids
-	public Set<Record> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
-		Set<Record> out = new HashSet<>();
+	public Set<PMCIDRecord> getMapping(Collection<String> id2, IdType idType) throws BibliographicApiException {
+		Set<PMCIDRecord> out = new HashSet<>();
 		Cache<String,BinaryData> cache = permanentCache();
 		List<String> id = new ArrayList<String>();
 		
 		for (String nextId: id2) {
 			if (cache.containsKey(keyFrom(nextId,idType))) {
 				try {
-					Record tmp = objectMapper.readValue(
+					PMCIDRecord tmp = objectMapper.readValue(
 							cache.get(keyFrom(nextId,idType)).inputStream(), 
-							Record.class);
+							PMCIDRecord.class);
 					out.add(tmp);
 				} catch (CacheLoadingException | IOException e) {
 					logger.debug("error parsing cached content for: {}, {}",nextId,idType);
@@ -135,27 +135,27 @@ public class PMCIDClient extends CachingApiClient {
 	}
 	
 	public Map<String,String> getDoisByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		Set<Record> tmp = getMapping(ids, type);
+		Set<PMCIDRecord> tmp = getMapping(ids, type);
 		Map<String,String> out = new HashMap<>();
-		for (Record r: tmp) {
+		for (PMCIDRecord r: tmp) {
 			r.doi.ifPresent(d -> out.put(r.idByType(type).get(), d));
 		}
 		return out;
 	}
 	
 	public Map<String,String> getPubMedCentralIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		Set<Record> tmp = getMapping(ids, type);
+		Set<PMCIDRecord> tmp = getMapping(ids, type);
 		Map<String,String> out = new HashMap<>();
-		for (Record r: tmp) {
+		for (PMCIDRecord r: tmp) {
 			r.pmcid.ifPresent(d -> out.put(r.idByType(type).get(), d));
 		}
 		return out;
 	}
 	
 	public Map<String,String> getPMIdsByIdAndType(Collection<String> ids, IdType type) throws BibliographicApiException {
-		Set<Record> tmp = getMapping(ids, type);
+		Set<PMCIDRecord> tmp = getMapping(ids, type);
 		Map<String,String> out = new HashMap<>();
-		for (Record r: tmp) {
+		for (PMCIDRecord r: tmp) {
 			r.pmid.ifPresent(d -> out.put(r.idByType(type).get(), d));
 		}
 		return out;
