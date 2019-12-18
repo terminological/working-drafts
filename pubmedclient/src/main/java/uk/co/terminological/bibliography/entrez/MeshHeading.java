@@ -9,11 +9,11 @@ import uk.co.terminological.fluentxml.XmlElement;
 public class MeshHeading implements Raw<XmlElement> {
 	private XmlElement raw;
 	public MeshHeading(XmlElement raw) {this.raw = raw;}
-	public MeshCode getDescriptor() {
-		return raw.childElements("DescriptorName").stream().findFirst().map(o -> new MeshCode(o)).get();
+	public EntrezMeshCode getDescriptor() {
+		return raw.childElements("DescriptorName").stream().findFirst().map(o -> new EntrezMeshCode(o)).get();
 	}
-	public Stream<MeshCode> getQualifiers() {
-		return raw.childElements("QualifierName").stream().map(o -> new MeshCode(o));
+	public Stream<EntrezMeshCode> getQualifiers() {
+		return raw.childElements("QualifierName").stream().map(o -> new EntrezMeshCode(o));
 	}
 	public String toString() { 
 		return getDescriptor().toString()+ " ["+getQualifiers().map(q -> q.toString()).collect(Collectors.joining("; "))+"]";

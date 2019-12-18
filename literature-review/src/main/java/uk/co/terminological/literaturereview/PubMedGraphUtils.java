@@ -4,7 +4,7 @@ package uk.co.terminological.literaturereview;
 import uk.co.terminological.bibliography.crossref.CrossRefReference;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezLink;
-import uk.co.terminological.bibliography.entrez.MeshCode;
+import uk.co.terminological.bibliography.entrez.EntrezMeshCode;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallResult;
@@ -226,7 +226,7 @@ public class PubMedGraphUtils {
 	
 	
 
-	public static Optional<Node> mapMeshCodeToNode(MeshCode meshCode, GraphDatabaseApi graph, Transaction tx) {
+	public static Optional<Node> mapMeshCodeToNode(EntrezMeshCode meshCode, GraphDatabaseApi graph, Transaction tx) {
 		Node out = null;
 
 			Node tmp = doMerge(Labels.MESH_CODE, Prop.CODE, meshCode.getCode(), graph.get());
