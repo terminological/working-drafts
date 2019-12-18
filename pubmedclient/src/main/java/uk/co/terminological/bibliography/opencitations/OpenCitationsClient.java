@@ -2,7 +2,9 @@ package uk.co.terminological.bibliography.opencitations;
 
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,8 +19,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.client.CitedByMapper;
+import uk.co.terminological.bibliography.client.CitesMapper;
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.RecordReference;
 
-public class OpenCitationsClient extends CachingApiClient {
+public class OpenCitationsClient extends CachingApiClient implements CitedByMapper,CitesMapper {
 
 	protected OpenCitationsClient(Optional<Path> optional) {
 		super(optional, TokenBuckets.builder()
@@ -129,5 +136,29 @@ public class OpenCitationsClient extends CachingApiClient {
 	
 	public static enum Fields {
 		oci, citing, cited, creation, timespan, journal_sc, author_sc;
+	}
+
+	@Override
+	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+		List<CitationLink> out = new ArrayList<>();
+		List<String> dois = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.DOI)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		dois.stream().forEach(
+				doi -> this.buildQuery(Action.CITATIONS, doi).execute().stream().flatMap(lr -> lr.getCitations()).forEach(
+						e -> out.add(e)
+				)
+		);
+		return out;
+	}
+
+	@Override
+	public Collection<? extends CitationLink> referencesCiting(Collection<RecordReference> ref) {
+		List<CitationLink> out = new ArrayList<>();
+		List<String> dois = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.DOI)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
+		dois.stream().forEach(
+				doi -> this.buildQuery(Action.REFERENCES, doi).execute().stream().flatMap(lr -> lr.getCitations()).forEach(
+						e -> out.add(e)
+				)
+		);
+		return out;
 	}
 }
