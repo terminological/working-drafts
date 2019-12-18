@@ -1,8 +1,15 @@
 package uk.co.terminological.bibliography.europepmc;
 
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -14,9 +21,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.client.CitedByMapper;
+import uk.co.terminological.bibliography.client.CitesMapper;
+import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.record.Builder;
+import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordIdentifier;
+import uk.co.terminological.bibliography.record.RecordReference;
 
-public class EuropePMCClient extends CachingApiClient {
+public class EuropePMCClient extends CachingApiClient implements Searcher,IdLocator,CitesMapper,CitedByMapper {
 
 	// https://europepmc.org/RestfulWebService
 	
@@ -192,6 +208,57 @@ public class EuropePMCClient extends CachingApiClient {
 	
 	public static enum DataSources {
 		AGR, CBA, CTX, ETH, HIR, MED, NBK, PAT, PMC
+	}
+
+	@Override
+	public Collection<? extends CitationLink> referencesCiting(Collection<RecordReference> ref) {
+		
+		List<CitationLink> out = new ArrayList<>();
+		
+		for (RecordReference r: ref) {
+			
+			if (r.getIdentifierType().equals(IdType.PMID)) {
+				int i = 0;
+				for (EuropePMCReference r2: references(DataSources.MED,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
+					out.add(Builder.citationLink(
+							Builder.citationReference(r, null, null), 
+							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+							Optional.of(i)));
+				}
+			}
+			
+			if (r.getIdentifierType().equals(IdType.PMCID)) {
+				int i = 0;
+				for (EuropePMCReference r2: references(DataSources.PMC,r.getIdentifier().get()).getItems().collect(Collectors.toList())) {
+					out.add(Builder.citationLink(
+							Builder.citationReference(r, null, null), 
+							Builder.citationReference(Optional.of(r2), r2.getTitle(), Optional.empty()), 
+							Optional.of(i)));
+				}
+			}
+		}
+		
+		return out;
+		
+	}
+
+	@Override
+	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<? extends Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to,
+			Optional<Integer> limit) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
