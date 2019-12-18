@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import uk.co.terminological.bibliography.crossref.CrossRefClient;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
-import uk.co.terminological.bibliography.europepmc.EuropePmcClient;
+import uk.co.terminological.bibliography.europepmc.EuropePMCClient;
 import uk.co.terminological.bibliography.opencitations.OpenCitationsClient;
 import uk.co.terminological.bibliography.pmcidconv.IdConverterClient;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
@@ -66,7 +66,7 @@ public class BibliographicApis {
 	private CrossRefClient crossref;
 	private UnpaywallClient unpaywall;
 	private PdfFetcher pdfFetcher;
-	private EuropePmcClient europepmc;
+	private EuropePMCClient europepmc;
 	private OpenCitationsClient opencitations;
 
 	private BibliographicApis(String appId, String developerEmail, String xrefToken, String pubmedApiToken, Optional<Path> cacheDir) {
@@ -82,7 +82,7 @@ public class BibliographicApis {
 		pdfFetcher = PdfFetcher.create(
 				cacheDir.map(o -> o.resolve("pdf")).orElse(null));
 		unpaywall.withPdfFetcher(pdfFetcher);
-		europepmc = EuropePmcClient.create(developerEmail, 
+		europepmc = EuropePMCClient.create(developerEmail, 
 				cacheDir.map(o -> o.resolve("europepmc")).orElse(null));
 		opencitations = OpenCitationsClient.create(
 				cacheDir.map(o -> o.resolve("opencitations")).orElse(null));
@@ -118,7 +118,7 @@ public class BibliographicApis {
 		return pdfFetcher;
 	}
 	
-	public EuropePmcClient getEuropePMC() {
+	public EuropePMCClient getEuropePMC() {
 		return europepmc;
 	}
 	

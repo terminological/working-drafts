@@ -16,7 +16,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.record.IdType;
 
-public class EuropePmcClient extends CachingApiClient {
+public class EuropePMCClient extends CachingApiClient {
 
 	// https://europepmc.org/RestfulWebService
 	
@@ -24,7 +24,7 @@ public class EuropePmcClient extends CachingApiClient {
 	
 	// private static Logger log = LoggerFactory.getLogger(EuropePmcClient.class);
 	
-	private EuropePmcClient(Optional<Path> optional, String developerEmail) {
+	private EuropePMCClient(Optional<Path> optional, String developerEmail) {
 		super(optional,
 				TokenBuckets.builder()
 				.withCapacity(50)
@@ -47,14 +47,14 @@ public class EuropePmcClient extends CachingApiClient {
 		return out;
 	}
 	
-	private static EuropePmcClient singleton;
+	private static EuropePMCClient singleton;
 	
-	public static  EuropePmcClient create(String developerEmail) {
+	public static  EuropePMCClient create(String developerEmail) {
 		return create(developerEmail, null);
 	}
 	
-	public static  EuropePmcClient create(String developerEmail, Path cacheDir) {
-		if (singleton == null) singleton = new EuropePmcClient(Optional.ofNullable(cacheDir), developerEmail);
+	public static  EuropePMCClient create(String developerEmail, Path cacheDir) {
+		if (singleton == null) singleton = new EuropePMCClient(Optional.ofNullable(cacheDir), developerEmail);
 		return singleton;
 	}
 	
@@ -85,9 +85,9 @@ public class EuropePmcClient extends CachingApiClient {
 	
 	public static class QueryBuilder {
 		MultivaluedMap<String, String> searchParams;
-		EuropePmcClient client;
+		EuropePMCClient client;
 		
-		protected QueryBuilder(MultivaluedMap<String, String> searchParams,String searchTerm, EuropePmcClient client) {
+		protected QueryBuilder(MultivaluedMap<String, String> searchParams,String searchTerm, EuropePMCClient client) {
 			this.searchParams = searchParams;
 			this.searchParams.add("query", searchTerm);
 			this.client = client;

@@ -9,7 +9,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import uk.co.terminological.bibliography.ExtensibleJson;
-import uk.co.terminological.bibliography.europepmc.EuropePmcClient.DataSources;
+import uk.co.terminological.bibliography.europepmc.EuropePMCClient.DataSources;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.IdentityMapping;
 import uk.co.terminological.bibliography.record.Print;
