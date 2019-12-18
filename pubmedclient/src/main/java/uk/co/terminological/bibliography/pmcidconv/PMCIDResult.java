@@ -8,7 +8,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 //https://github.com/FasterXML/jackson-modules-java8
-public class Result implements Iterable<PMCIDRecord> {
+public class PMCIDResult implements Iterable<PMCIDRecord> {
 	@JsonProperty("status") public Optional<String> status = Optional.empty();
 	@JsonProperty("responseDate") public Optional<String> responseDate = Optional.empty();
 	@JsonProperty("request") public Optional<String> request = Optional.empty();

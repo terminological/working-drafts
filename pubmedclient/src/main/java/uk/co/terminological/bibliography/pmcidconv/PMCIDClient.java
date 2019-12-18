@@ -101,7 +101,7 @@ public class PMCIDClient extends CachingApiClient {
 		while (start<id.size()) {
 			int end = id.size()<start+50 ? id.size() : start+50;
 			List<String> tmp2 = id.subList(start, end);
-			Optional<Result> outTmp = doCall(tmp2,idType);
+			Optional<PMCIDResult> outTmp = doCall(tmp2,idType);
 			outTmp.ifPresent(o -> {
 				out.addAll(o.records);
 				o.records.forEach(r -> {
@@ -122,15 +122,15 @@ public class PMCIDClient extends CachingApiClient {
 		return out;
 	}
 	
-	private Optional<Result> doCall(Collection<String> id, IdType idType) {
+	private Optional<PMCIDResult> doCall(Collection<String> id, IdType idType) {
 		MultivaluedMap<String, String> params = defaultApiParams();
 		params.add("ids", id.stream().collect(Collectors.joining(",")));
 		params.add("idtype", idType.name().toLowerCase());
 		logger.debug("calling id converter with params: "+params);
-		return this.buildCall(URL, Result.class)
+		return this.buildCall(URL, PMCIDResult.class)
 			.cacheForever()
 			.withParams(params)
-			.withOperation(is -> objectMapper.readValue(is, Result.class))
+			.withOperation(is -> objectMapper.readValue(is, PMCIDResult.class))
 			.get();
 	}
 	
