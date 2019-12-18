@@ -31,7 +31,7 @@ import pl.edu.icm.cermine.ContentExtractor;
 import pl.edu.icm.cermine.bibref.model.BibEntry;
 import pl.edu.icm.cermine.bibref.model.BibEntryType;
 import uk.co.terminological.bibliography.CachingApiClient;
-import uk.co.terminological.bibliography.entrez.Links;
+import uk.co.terminological.bibliography.entrez.EntrezLinks;
 import uk.co.terminological.fluentxml.Xml;
 
 //TODO: needs a bit of a rethink

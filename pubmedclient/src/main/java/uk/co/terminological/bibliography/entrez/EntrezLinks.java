@@ -17,10 +17,10 @@ import uk.co.terminological.datatypes.FluentMap;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class Links implements Raw<XmlElement> {
+public class EntrezLinks implements Raw<XmlElement> {
 
 	private XmlElement raw;
-	public Links(XmlElement raw) throws XmlException {
+	public EntrezLinks(XmlElement raw) throws XmlException {
 		this.raw=raw; 
 		convert();
 	}

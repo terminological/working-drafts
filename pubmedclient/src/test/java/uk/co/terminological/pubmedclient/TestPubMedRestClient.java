@@ -16,7 +16,7 @@ import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
-import uk.co.terminological.bibliography.entrez.Links;
+import uk.co.terminological.bibliography.entrez.EntrezLinks;
 import uk.co.terminological.bibliography.entrez.PubMedEntry;
 import uk.co.terminological.bibliography.entrez.Search;
 
@@ -46,13 +46,13 @@ public class TestPubMedRestClient {
 		
 		result.getIds().forEach(System.out::println);
 		
-		Links links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
+		EntrezLinks links = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
 				.command(Command.LLINKS)
 				.execute().get();
 		
 		links.stream().forEach(System.out::println);
 		
-		Links links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
+		EntrezLinks links2 = restClient.buildLinksQueryForIdsAndDatabase(result.getIds().collect(Collectors.toSet()), Database.PUBMED)
 				.command(Command.NEIGHBOR_SCORE)
 				.execute().get();
 		

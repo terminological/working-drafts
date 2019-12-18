@@ -449,13 +449,13 @@ public class EntrezClient extends CachingApiClient {
 			return this;
 		}
 
-		public Optional<Links> execute() throws BibliographicApiException {
+		public Optional<EntrezLinks> execute() throws BibliographicApiException {
 			if (empty) return Optional.empty();
-			return client.buildCall(ELINK, Links.class)
+			return client.buildCall(ELINK, EntrezLinks.class)
 				.withParams(searchParams)
 				.withOperation(is -> {
 					Xml resp = Xml.fromStream(is);
-					return new Links(resp.content());
+					return new EntrezLinks(resp.content());
 				}).post();
 		}
 		
