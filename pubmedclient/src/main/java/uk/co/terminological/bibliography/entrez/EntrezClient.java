@@ -614,7 +614,17 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 		Collection<RecordIdentifierMapping> out = new ArrayList<>();
 		Map<RecordIdentifier, EntrezEntry> tmp = getById(source);
 		for (Entry<RecordIdentifier, EntrezEntry> e: tmp.entrySet()) {
-			out.add(Builder.recordIdMapping(e.getKey(),e.getValue()));
+			Set<RecordIdentifier> allIds = new HashSet<>();
+			allIds.add(e.getKey());
+			allIds.add(Builder.recordReference(e.getValue()));
+			e.getValue().getOtherIdentifiers().stream().map(Builder::recordReference).forEach(allIds::add);
+			for (RecordIdentifier src: allIds) {
+				for (RecordIdentifier targ: allIds) {
+					if (!src.equals(targ)) {
+						out.add(Builder.recordIdMapping(src,targ));
+					}
+				}
+			}
 		}
 		return out;
 	}
