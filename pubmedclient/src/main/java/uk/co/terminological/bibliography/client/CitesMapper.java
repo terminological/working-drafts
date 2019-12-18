@@ -6,11 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.RecordIdentifier;
 import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface CitesMapper {
 	
-	public Map<? extends RecordReference, Collection<? extends CitationLink>> citesReferences(Collection<RecordReference> ref);
+	public Map<? extends RecordIdentifier, Collection<? extends CitationLink>> citesReferences(Collection<RecordReference> ref);
 	
 	default Collection<? extends CitationLink> citesReferences(RecordReference ref) {
 		return citesReferences(Collections.singleton(ref)).get(ref);

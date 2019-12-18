@@ -9,6 +9,7 @@ import java.util.Set;
 
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordIdentifier;
 import uk.co.terminological.bibliography.record.RecordReference;
 
 public interface IdLocator {

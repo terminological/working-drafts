@@ -35,6 +35,7 @@ import uk.co.terminological.bibliography.client.CitesMapper;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordIdentifier;
 import uk.co.terminological.bibliography.record.RecordReference;
 
 public class CrossRefClient extends CachingApiClient implements IdLocator,Searcher,CitesMapper {
@@ -427,7 +428,7 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Map<RecordReference,? extends Record> getById(Collection<RecordReference> equivalentIds) {
+	public Map<RecordIdentifier,? extends Record> getById(Collection<RecordReference> equivalentIds) {
 		Map<RecordReference,CrossRefWork> out = new HashMap<>(); 
 		for (RecordReference id: equivalentIds) {
 			if (id instanceof CrossRefWork) {
