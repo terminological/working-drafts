@@ -17,9 +17,9 @@ import uk.co.terminological.bibliography.record.Print;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class Reference extends ExtensibleJson implements RecordReference, Print, Record {
+public class CrossRefReference extends ExtensibleJson implements RecordReference, Print, Record {
 	
-	public Reference(JsonNode node) { super(node); }
+	public CrossRefReference(JsonNode node) { super(node); }
 	
 	public Optional<String> getIdentifier() {return this.asString("DOI");}
 	public Optional<String> getTitle() {return this.asString("article-title");}

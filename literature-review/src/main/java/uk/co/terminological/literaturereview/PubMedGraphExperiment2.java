@@ -47,7 +47,7 @@ import org.yaml.snakeyaml.Yaml;
 import pl.edu.icm.cermine.exception.AnalysisException;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
-import uk.co.terminological.bibliography.crossref.Reference;
+import uk.co.terminological.bibliography.crossref.CrossRefReference;
 import uk.co.terminological.bibliography.crossref.SingleResult;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
@@ -463,7 +463,7 @@ public class PubMedGraphExperiment2 {
 		for (String doi: dois) {
 			Optional<SingleResult> tmp = biblioApi.getCrossref().getByDoi(doi);
 			tmp.ifPresent(t -> updateCrossRefMetadata(t.getWork(),graphApi));
-			List<Reference> referencedDois = tmp.stream()
+			List<CrossRefReference> referencedDois = tmp.stream()
 					.map(t -> t.getWork())
 					.flatMap(w -> w.getReferences())
 					.collect(Collectors.toList());

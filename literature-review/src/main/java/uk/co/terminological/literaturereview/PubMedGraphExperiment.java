@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BibliographicApis;
-import uk.co.terminological.bibliography.crossref.Reference;
+import uk.co.terminological.bibliography.crossref.CrossRefReference;
 import uk.co.terminological.bibliography.crossref.SingleResult;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Command;
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
@@ -459,7 +459,7 @@ public class PubMedGraphExperiment {
 								context.send(
 								Events.namedTypedEvent(t.getWork(),doi,XREF_FETCH_RESULT)
 							));
-						List<Reference> referencedDois = tmp.stream()
+						List<CrossRefReference> referencedDois = tmp.stream()
 							.map(t -> t.getWork())
 							.flatMap(w -> w.getReferences())
 							.collect(Collectors.toList());

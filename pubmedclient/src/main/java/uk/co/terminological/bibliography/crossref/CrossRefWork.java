@@ -60,11 +60,11 @@ public class CrossRefWork extends ExtensibleJson implements Print, RecordWithCit
 	
 	public List<Contributor> getAuthors() {
 		return this.streamPath(Contributor.class, "author").collect(Collectors.toList());}
-	public Stream<Reference> getReferences() {return this.streamPath(Reference.class, "reference");}
+	public Stream<CrossRefReference> getReferences() {return this.streamPath(CrossRefReference.class, "reference");}
 	public Stream<CitationLink> getCitations() {
 		List<CitationLink> tmp = new ArrayList<>();
 		Integer i = 1;
-		for (Reference r: (Iterable<Reference>)this.getReferences()::iterator) {
+		for (CrossRefReference r: (Iterable<CrossRefReference>)this.getReferences()::iterator) {
 			tmp.add(
 				citationLink(
 						citationReference(this, this.getTitle().orElse(null), this),

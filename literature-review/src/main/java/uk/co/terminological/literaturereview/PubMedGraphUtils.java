@@ -1,7 +1,7 @@
 package uk.co.terminological.literaturereview;
 
 
-import uk.co.terminological.bibliography.crossref.Reference;
+import uk.co.terminological.bibliography.crossref.CrossRefReference;
 import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.entrez.Link;
 import uk.co.terminological.bibliography.entrez.MeshCode;
@@ -237,11 +237,11 @@ public class PubMedGraphUtils {
 		return Optional.ofNullable(out);
 	}
 	
-	public static List<Relationship> mapCrossRefReferences(String citingDoi, List<Reference> citedDois, GraphDatabaseApi graph) {
+	public static List<Relationship> mapCrossRefReferences(String citingDoi, List<CrossRefReference> citedDois, GraphDatabaseApi graph) {
 		return mapHasReferences(Prop.DOI,citingDoi,Labels.DOI_STUB,Prop.DOI,citedDois,Labels.DOI_STUB, Rel.HAS_REFERENCE,graph);
 	}
 	
-	public static List<Relationship> mapHasReferences(String citingType, String citingDoi, Label citingStubLabel, String citedType, List<Reference> citedDois, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
+	public static List<Relationship> mapHasReferences(String citingType, String citingDoi, Label citingStubLabel, String citedType, List<CrossRefReference> citedDois, Label citedStubLabel, RelationshipType relType, GraphDatabaseApi graph) {
 		List<Relationship> out = new ArrayList<>();
 			
 		try (Transaction tx = graph.get().beginTx()) {
