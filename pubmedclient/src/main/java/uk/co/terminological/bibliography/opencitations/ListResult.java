@@ -10,6 +10,6 @@ public class ListResult extends ExtensibleJson {
 	
 	public ListResult(JsonNode node) { super(node); }
 	
-	public Stream<Citation> getCitations() {return this.streamNode(Citation.class);}
+	public Stream<OpenCitationsCitation> getCitations() {return this.streamNode(OpenCitationsCitation.class);}
 	
 }

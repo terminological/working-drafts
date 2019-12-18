@@ -10,15 +10,15 @@ import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.CitationReference;
 import uk.co.terminological.bibliography.record.IdType;
 
-public class Citation extends ExtensibleJson implements CitationLink {
+public class OpenCitationsCitation extends ExtensibleJson implements CitationLink {
 	
-	public Citation(JsonNode node) { super(node); }
+	public OpenCitationsCitation(JsonNode node) { super(node); }
 	
-	public Optional<String> getCitingDoi() {return this.asString("citing").map(Citation::value);}
-	public Optional<String> getCitedDoi() {return this.asString("cited").map(Citation::value);}
-	public Optional<String> getCitingDate() {return this.asString("creation").map(Citation::value);}
-	public Optional<String> getCitationId() {return this.asString("oci").map(Citation::value);}
-	public Optional<String> getCitationIndex() {return this.asString("oci").map(Citation::key);}
+	public Optional<String> getCitingDoi() {return this.asString("citing").map(OpenCitationsCitation::value);}
+	public Optional<String> getCitedDoi() {return this.asString("cited").map(OpenCitationsCitation::value);}
+	public Optional<String> getCitingDate() {return this.asString("creation").map(OpenCitationsCitation::value);}
+	public Optional<String> getCitationId() {return this.asString("oci").map(OpenCitationsCitation::value);}
+	public Optional<String> getCitationIndex() {return this.asString("oci").map(OpenCitationsCitation::key);}
 	
 	private static String value(String response) {
 		if (response.contains(" => "))
