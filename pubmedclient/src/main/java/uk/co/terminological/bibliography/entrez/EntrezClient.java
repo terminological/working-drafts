@@ -36,6 +36,7 @@ import uk.co.terminological.bibliography.client.IdLocator;
 import uk.co.terminological.bibliography.client.Searcher;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordIdentifier;
 import uk.co.terminological.bibliography.record.RecordReference;
 import uk.co.terminological.fluentxml.Xml;
 import uk.co.terminological.fluentxml.XmlException;
@@ -550,28 +551,25 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	@Override
-	public Collection<? extends CitationLink> citesReferences(RecordReference ref) {
-		if (ref instanceof EntrezEntry) {
-			((EntrezEntry) ref).get
-		}
-		return null;
-	}
-
-	@Override
-	public Optional<? extends Record> getById(Set<RecordReference> equivalentIds) {
+	public Collection<? extends Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to, Optional<Integer> limit) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<? extends Record> search(String search, Optional<LocalDate> from, Optional<LocalDate> to,
-			Optional<Integer> limit) {
+	public Map<? extends RecordIdentifier, Collection<? extends CitationLink>> referencesCiting(Collection<RecordReference> ref) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Collection<? extends CitationLink> referencesCiting(RecordReference ref) {
+	public Map<? extends RecordIdentifier, Collection<? extends CitationLink>> citesReferences(Collection<RecordReference> ref) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds) {
 		// TODO Auto-generated method stub
 		return null;
 	}
