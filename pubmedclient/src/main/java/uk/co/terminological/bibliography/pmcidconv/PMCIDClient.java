@@ -29,9 +29,12 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BinaryData;
 import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.client.IdMapper;
 import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.RecordIdentifierMapping;
+import uk.co.terminological.bibliography.record.RecordReference;
 
-public class PMCIDClient extends CachingApiClient {
+public class PMCIDClient extends CachingApiClient implements IdMapper {
 
 	private static final Logger logger = LoggerFactory.getLogger(PMCIDClient.class);
 	private static Map<String, PMCIDClient> instances = new HashMap<>();
@@ -159,6 +162,11 @@ public class PMCIDClient extends CachingApiClient {
 			r.pmid.ifPresent(d -> out.put(r.idByType(type).get(), d));
 		}
 		return out;
+	}
+
+	@Override
+	public Set<? extends RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
+		return null;
 	}
 
 	
