@@ -4,12 +4,14 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -24,8 +26,12 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.CachingApiClient;
+import uk.co.terminological.bibliography.client.IdLocator;
+import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.Record;
 
-public class CrossRefClient extends CachingApiClient {
+public class CrossRefClient extends CachingApiClient implements IdLocator,Searcher {
 	// https://www.crossref.org/schemas/
 	// https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md
 	// https://github.com/CrossRef/rest-api-doc
@@ -227,6 +233,11 @@ public class CrossRefClient extends CachingApiClient {
 			params.add("filter","from-index-date:"+format.format(date));
 			return this;
 		}
+		
+		public QueryBuilder until(Date date) {
+			params.add("filter","until-index-date:"+format.format(date));
+			return this;
+		}
 
 		public QueryBuilder firstPage(Integer rows) {
 			params.add("rows",rows.toString());
@@ -394,6 +405,24 @@ public class CrossRefClient extends CachingApiClient {
 		RELATION__OBJECT,
 		RELATION__OBJECT_TYPE
 
+	}
+
+	@Override
+	public Collection<? extends Record> search(String search, int limit) {
+		return this.buildQuery()
+			.limit(limit)
+			.withSearchTerm(search)
+			.since(date)
+			.execute().stream()
+			.map(lr -> lr.getMessage())
+			.flatMap(m -> m.getItems())
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public Optional<? extends Record> getById(IdType type, String id) {
+		if (!type.equals(IdType.DOI)) return Optional.empty();
+		return this.getByDoi(id).map(r -> r.getWork());
 	}
 
 }
