@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import static uk.co.terminological.bibliography.record.Builder.*;
 
 import uk.co.terminological.bibliography.entrez.EntrezClient.Database;

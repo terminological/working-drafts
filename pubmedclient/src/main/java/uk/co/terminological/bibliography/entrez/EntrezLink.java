@@ -1,15 +1,6 @@
 package uk.co.terminological.bibliography.entrez;
 
-import java.util.Map;
 import java.util.Optional;
-
-
-
-import uk.co.terminological.bibliography.entrez.EntrezClient.Database;
-import uk.co.terminological.bibliography.record.CitationLink;
-import uk.co.terminological.bibliography.record.CitationReference;
-import uk.co.terminological.bibliography.record.IdType;
-import uk.co.terminological.datatypes.FluentMap;
 
 /**
  * 

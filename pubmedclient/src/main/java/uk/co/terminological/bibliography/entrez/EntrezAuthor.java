@@ -3,8 +3,6 @@ package uk.co.terminological.bibliography.entrez;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;

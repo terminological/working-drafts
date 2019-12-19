@@ -1,10 +1,6 @@
 package uk.co.terminological.bibliography.scholar;
 
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -27,11 +23,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import pl.edu.icm.cermine.ContentExtractor;
-import pl.edu.icm.cermine.bibref.model.BibEntry;
-import pl.edu.icm.cermine.bibref.model.BibEntryType;
 import uk.co.terminological.bibliography.CachingApiClient;
-import uk.co.terminological.bibliography.entrez.EntrezLinks;
 import uk.co.terminological.fluentxml.Xml;
 
 //TODO: needs a bit of a rethink
