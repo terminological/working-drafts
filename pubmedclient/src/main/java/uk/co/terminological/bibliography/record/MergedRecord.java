@@ -18,6 +18,7 @@ public class MergedRecord implements Record {
 	}
 	
 	public MergedRecord merge(Record r) {
+		//TODO: Check before merge
 		records.add(r);
 		return this;
 	}
