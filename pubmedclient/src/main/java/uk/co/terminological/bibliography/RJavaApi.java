@@ -5,6 +5,7 @@ import static uk.co.terminological.jsr223.ROutput.toDataframe;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -23,18 +24,35 @@ public class RJavaApi {
 	
 	BibliographicApis api;
 	
-	
+	@RMethod
 	public RJavaApi(String configFilename) throws IOException {
 		this.api = BibliographicApis.create(Paths.get(configFilename));
 	}
 	
 	@RMethod
-	public List<String> getSupportedClients() {
+	public List<String> getSupportedApis() {
 		return Arrays.asList("crossref","entrez","europepmc","opencitations","pmcid","unpaywall");
 	}
 	
+	@RMethod
+	public Map<String,Object[]> searchAllApis(String searchTerm, String citationStyle) {
+		return searchSelectedApis(searchTerm, citationStyle, getSupportedApis());
+	}
 	
-	
+	@RMethod
+	public Map<String,Object[]> searchSelectedApis(String searchTerm, String citationStyle, List<String> apis) {
+		Collection<Record> out = new ArrayList<>();
+		if (apis.contains("crossref")) {
+			out.addAll(api.getCrossref().search(searchTerm));
+		}
+		if (apis.contains("entrez")) {
+			out.addAll(api.getEntrez().search(searchTerm));
+		}
+		if (apis.contains("europepmc")) {
+			out.addAll(api.getEuropePMC().search(searchTerm));
+		}
+		return recordsToDataFrame(out,citationStyle); 
+	}
 	
 	
 	
