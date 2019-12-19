@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -446,9 +448,9 @@ public class CrossRefClient extends CachingApiClient implements IdLocator,Search
 	}
 
 	@Override
-	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> refs) {
+	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> refs) {
 		
-		List<CitationLink> out = new ArrayList<>();
+		Set<CitationLink> out = new HashSet<>();
 		for (RecordReference ref: refs) {
 			Optional<CrossRefWork> tmp;
 			if (ref instanceof CrossRefWork) {
