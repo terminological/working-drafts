@@ -1,9 +1,5 @@
 package uk.co.terminological.bibliography.europepmc;
 
-import static uk.co.terminological.bibliography.record.Builder.recordReference;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.JsonNode;

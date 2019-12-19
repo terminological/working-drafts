@@ -3,20 +3,12 @@ package uk.co.terminological.pubmedclient;
 
 
 import java.io.IOException;
-import java.util.Optional;
-
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 
 import uk.co.terminological.bibliography.BibliographicApiException;
-import uk.co.terminological.bibliography.crossref.CrossRefClient;
-import uk.co.terminological.bibliography.crossref.CrossRefClient.Field;
-import uk.co.terminological.bibliography.crossref.CrossRefClient.QueryBuilder;
-import uk.co.terminological.bibliography.crossref.CrossRefClient.Sort;
-import uk.co.terminological.bibliography.crossref.CrossRefClient.SortOrder;
-import uk.co.terminological.bibliography.crossref.CrossRefWork;
 import uk.co.terminological.bibliography.scholar.GoogleResult;
 import uk.co.terminological.bibliography.scholar.GoogleScholarClient;
 
