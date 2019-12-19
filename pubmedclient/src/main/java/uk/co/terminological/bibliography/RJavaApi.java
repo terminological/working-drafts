@@ -1,7 +1,16 @@
 package uk.co.terminological.bibliography;
 
+import static uk.co.terminological.jsr223.ROutput.mapping;
+import static uk.co.terminological.jsr223.ROutput.toDataframe;
+
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import uk.co.terminological.bibliography.record.CitationLink;
+import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordIdentifierMapping;
 
 public class RJavaApi {
 	//TODO: more task based methods 
@@ -9,6 +18,51 @@ public class RJavaApi {
 	
 	public List<String> getSupportedClients() {
 		return Arrays.asList("crossref","entrez","europepmc","opencitations","pmcid","unpaywall");
+	}
+	
+	
+	public Map<String,Object[]> recordsToDataFrame(Collection<? extends Record> records,String style) {
+		return 
+			records
+			.stream()
+			.collect(toDataframe(
+					mapping(Record.class,"abstract", s-> s.getAbstract().orElse(null)),
+					mapping(Record.class,"citation", s-> s.render(style).orElse(null)),
+					mapping(Record.class,"idType", s-> s.getIdentifierType().toString()),
+					mapping(Record.class,"id", s-> s.getIdentifier().orElse(null))
+					));
+		
+	}
+	
+	public Map<String,Object[]> citationsToDataFrame(Collection<? extends CitationLink> citations) {
+		return 
+			citations
+			.stream()
+			.filter(s -> s.getSource().getIdentifier().isPresent())
+			.filter(s -> s.getSource().getIdentifier().get().getIdentifier().isPresent())
+			.filter(s -> s.getTarget().getIdentifier().isPresent())
+			.filter(s -> s.getTarget().getIdentifier().get().getIdentifier().isPresent())
+			.collect(toDataframe(
+					mapping(CitationLink.class,"sourceId", s-> s.getSource().getIdentifier().get().getIdentifier().get()),
+					mapping(CitationLink.class,"sourceIdType", s-> s.getSource().getIdentifier().get().getIdentifierType()),
+					mapping(CitationLink.class,"targetId", s-> s.getTarget().getIdentifier().get().getIdentifier().get()),
+					mapping(CitationLink.class,"targetIdType", s-> s.getTarget().getIdentifier().get().getIdentifierType()),
+					mapping(CitationLink.class,"order", s-> s.getIndex().orElse(null))
+					));
+	}
+	
+	public Map<String,Object[]> idMappingToDataFrame(Collection<? extends RecordIdentifierMapping> idMappings) {
+		return 
+				idMappings
+				.stream()
+				.filter(s -> s.getSource().getIdentifier().isPresent())
+				.filter(s -> s.getTarget().getIdentifier().isPresent())
+				.collect(toDataframe(
+						mapping(RecordIdentifierMapping.class,"sourceId", s-> s.getSource().getIdentifier().get()),
+						mapping(RecordIdentifierMapping.class,"sourceIdType", s-> s.getSource().getIdentifierType()),
+						mapping(RecordIdentifierMapping.class,"targetId", s-> s.getTarget().getIdentifier().get()),
+						mapping(RecordIdentifierMapping.class,"targetIdType", s-> s.getTarget().getIdentifierType())
+						));
 	}
 	
 	
