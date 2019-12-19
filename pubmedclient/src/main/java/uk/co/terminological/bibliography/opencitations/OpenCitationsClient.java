@@ -5,9 +5,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -139,8 +141,8 @@ public class OpenCitationsClient extends CachingApiClient implements CitedByMapp
 	}
 
 	@Override
-	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
-		List<CitationLink> out = new ArrayList<>();
+	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+		Set<CitationLink> out = new HashSet<>();
 		List<String> dois = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.DOI)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		dois.stream().forEach(
 				doi -> this.buildQuery(Action.CITATIONS, doi).execute().stream().flatMap(lr -> lr.getCitations()).forEach(
