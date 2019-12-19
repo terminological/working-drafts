@@ -10,4 +10,6 @@ public class RJavaApi {
 	public List<String> getSupportedClients() {
 		return Arrays.asList("crossref","entrez","europepmc","opencitations","pmcid","unpaywall");
 	}
+	
+	
 }
