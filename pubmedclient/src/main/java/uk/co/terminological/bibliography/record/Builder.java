@@ -60,14 +60,14 @@ public class Builder {
 	
 	public static RecordIdentifier recordReference(RecordReference ref) {
 		RecordIdentifier out = new RecordIdentifier();
-		out.id = ref.getIdentifier().get().toUpperCase();
+		out.id = ref.getIdentifier().get();
 		out.idType = ref.getIdentifierType();
 		return out;
 	}
 	
 	public static RecordIdentifier recordReference(IdType idType, String id) {
 		RecordIdentifier out = new RecordIdentifier();
-		out.id = id.toUpperCase();
+		out.id = id;
 		out.idType = idType;
 		return out;
 	}
