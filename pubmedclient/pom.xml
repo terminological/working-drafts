@@ -160,7 +160,7 @@
 						<maintainerFamilyName>Challen</maintainerFamilyName>
 						<maintainerEmail>rob@terminological.co.uk</maintainerEmail>
 					</packageData>
-					<outputDirectory>${project.basedir}/r-library</outputDirectory>
+					<outputDirectory>~/tmp/r-library</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>
