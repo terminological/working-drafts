@@ -157,8 +157,31 @@
     <version>4.8.0</version>
 </dependency>-->
 
+		<dependency>
+			<!-- DEVELOPMENT -->
+			<!--<groupId>uk.co.terminological</groupId>-->
+			<!-- DEPLOYMENT -->
+			<groupId>com.github.terminological</groupId>
+			<artifactId>r-jsr223-runtime</artifactId>
+			<version>1.02</version>
+		</dependency>
 	</dependencies>
+
+	<!-- Resolve runtime library on github -->
+	
+
+	<!-- Resolve maven plugin on github -->
+	<pluginRepositories>
+		<pluginRepository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
 		<repository>
 			<id>icm</id>
 			<name>ICM repository</name>
