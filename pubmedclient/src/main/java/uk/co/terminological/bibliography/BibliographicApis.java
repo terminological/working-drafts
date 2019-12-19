@@ -7,11 +7,13 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
 
+import uk.co.terminological.bibliography.CiteProcProvider.Format;
 import uk.co.terminological.bibliography.crossref.CrossRefClient;
 import uk.co.terminological.bibliography.entrez.EntrezClient;
 import uk.co.terminological.bibliography.europepmc.EuropePMCClient;
 import uk.co.terminological.bibliography.opencitations.OpenCitationsClient;
 import uk.co.terminological.bibliography.pmcidconv.PMCIDClient;
+import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.unpaywall.UnpaywallClient;
 
 public class BibliographicApis {
@@ -124,5 +126,9 @@ public class BibliographicApis {
 	
 	public OpenCitationsClient getOpenCitationsClient() {
 		return opencitations;
+	}
+	
+	public String render(String style, Record record) {
+		CiteProcProvider.convert(style, Format.text, record).
 	}
 }
