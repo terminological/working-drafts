@@ -12,7 +12,7 @@ import uk.co.terminological.bibliography.record.IdType;
 import uk.co.terminological.bibliography.record.IdentityMapping;
 import uk.co.terminological.bibliography.record.RecordReference;
 
-public class PMCIDRecord implements IdentityMapping {
+public class PMCIDRecord {
 	@JsonProperty("pmcid") public Optional<String> pmcid = Optional.empty();
 	@JsonProperty("pmid") public Optional<String> pmid = Optional.empty();
 	@JsonProperty("doi") public Optional<String> doi = Optional.empty();
@@ -31,7 +31,6 @@ public class PMCIDRecord implements IdentityMapping {
 		return Optional.empty();
 	}
 
-	@Override
 	public List<RecordReference> getMapping() {
 		List<RecordReference> out = new ArrayList<>();
 		idByType(IdType.DOI).ifPresent(s -> out.add(Builder.recordReference(IdType.DOI, s)));
