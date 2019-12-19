@@ -5,9 +5,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -241,9 +243,9 @@ public class EuropePMCClient extends CachingApiClient implements Searcher,IdLoca
 	}
 
 	@Override
-	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
 		
-		List<CitationLink> out = new ArrayList<>();
+		Set<CitationLink> out = new HashSet<>();
 		
 		for (RecordReference r: ref) {
 			
