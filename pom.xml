@@ -22,7 +22,7 @@
         <module>costbenefit</module>
         <module>pipestream</module>
         <module>literature-review</module>
-    <module>nlp-tools</module>
+    	<module>nlp-tools</module>
   </modules>
 
 	<dependencies>
