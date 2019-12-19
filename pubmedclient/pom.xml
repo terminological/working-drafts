@@ -107,7 +107,7 @@
 		<dependency>
 			<groupId>com.github.terminological</groupId>
 			<artifactId>r-jsr223-runtime</artifactId>
-			<version>1.02</version>
+			<version>1.03</version>
 		</dependency>
 	</dependencies>
 
@@ -148,7 +148,7 @@
 			<plugin>
 				<groupId>com.github.terminological</groupId>
 				<artifactId>r-jsr223-maven-plugin</artifactId>
-				<version>1.02</version>
+				<version>1.03</version>
 				<configuration>
 					<packageData>
 						<title>Bibliographic Apis</title>
