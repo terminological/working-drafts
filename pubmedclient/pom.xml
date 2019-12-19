@@ -160,7 +160,7 @@
 						<maintainerFamilyName>Challen</maintainerFamilyName>
 						<maintainerEmail>rob@terminological.co.uk</maintainerEmail>
 					</packageData>
-					<outputDirectory>~/tmp/r-library</outputDirectory>
+					<outputDirectory>/home/terminological/tmp/r-library</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>
