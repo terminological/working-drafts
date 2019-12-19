@@ -20,7 +20,6 @@
         <module>deid</module>
         <module>graphs</module>
         <module>costbenefit</module>
-        <module>pubmedclient</module>
         <module>pipestream</module>
         <module>literature-review</module>
     <module>nlp-tools</module>
