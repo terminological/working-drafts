@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,11 @@ import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.PdfFetcher;
 import uk.co.terminological.bibliography.client.IdLocator;
 import uk.co.terminological.bibliography.client.Searcher;
+import uk.co.terminological.bibliography.record.Builder;
+import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.Record;
+import uk.co.terminological.bibliography.record.RecordIdentifier;
+import uk.co.terminological.bibliography.record.RecordReference;
 
 public class UnpaywallClient extends CachingApiClient implements IdLocator {
 
@@ -103,6 +109,14 @@ public class UnpaywallClient extends CachingApiClient implements IdLocator {
 	public Optional<InputStream> getPdfByDoi(String doi) {
 		Optional<UnpaywallResult> result = getUnpaywallByDoi(doi);
 		return result.flatMap(r -> getPdfByResult(r));
+	}
+
+	@Override
+	public Map<RecordIdentifier, ? extends Record> getById(Collection<RecordReference> equivalentIds) {
+		Map<RecordIdentifier, UnpaywallResult> out = new HashMap<>();
+		Collection<String> dois = equivalentIds.stream().filter(i -> i.getIdentifierType().equals(IdType.DOI)).flatMap(i -> i.getIdentifier().stream()).collect(Collectors.toList());
+		getUnpaywallByDois(dois).forEach(upw -> out.put(Builder.recordReference(upw), upw));
+		return out;
 	}
 	
 
