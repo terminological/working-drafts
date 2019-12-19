@@ -583,8 +583,8 @@ public class EntrezClient extends CachingApiClient implements Searcher, IdLocato
 	}
 
 	@Override
-	public Collection<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
-		List<CitationLink> out = new ArrayList<>();
+	public Set<? extends CitationLink> citesReferences(Collection<RecordReference> ref) {
+		Set<CitationLink> out = new HashSet<>();
 		List<String> pmids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		List<String> pmcids = ref.stream().filter(r -> r.getIdentifierType().equals(IdType.PMCID)).flatMap(r -> r.getIdentifier().stream()).collect(Collectors.toList());
 		this.buildLinksQueryForIdsAndDatabase(pmids, Database.PUBMED)
