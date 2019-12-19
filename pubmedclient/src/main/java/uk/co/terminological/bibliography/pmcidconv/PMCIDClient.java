@@ -3,6 +3,7 @@ package uk.co.terminological.bibliography.pmcidconv;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,10 @@ import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.BinaryData;
 import uk.co.terminological.bibliography.CachingApiClient;
 import uk.co.terminological.bibliography.client.IdMapper;
+import uk.co.terminological.bibliography.entrez.EntrezEntry;
+import uk.co.terminological.bibliography.record.Builder;
 import uk.co.terminological.bibliography.record.IdType;
+import uk.co.terminological.bibliography.record.RecordIdentifier;
 import uk.co.terminological.bibliography.record.RecordIdentifierMapping;
 import uk.co.terminological.bibliography.record.RecordReference;
 
@@ -161,6 +166,49 @@ public class PMCIDClient extends CachingApiClient implements IdMapper {
 		for (PMCIDRecord r: tmp) {
 			r.pmid.ifPresent(d -> out.put(r.idByType(type).get(), d));
 		}
+		return out;
+	}
+	
+	public static class MergeableList<X> extends ArrayList<X> {
+		public static <Y> MergeableList<Y> of(Y item) {
+			MergeableList<Y> out = new MergeableList<>();
+			out.add(item);
+			return out;
+		}
+		public MergeableList<X> merge(MergeableList<X> input) {
+			this.addAll(input);
+			return this;
+		}
+	}
+	
+	@Override
+	public Set<RecordIdentifierMapping> mappings(Collection<RecordReference> source) {
+		Set<RecordIdentifierMapping> out = new HashSet<>();
+		Map<IdType,MergeableList<String>> idsByType = new HashMap<>();
+		source.stream()
+			.filter(rr -> rr.getIdentifier().isPresent())
+			.forEach(rr -> idsByType.merge(
+					rr.getIdentifierType(), 
+					MergeableList.of(rr.getIdentifier().get()), 
+					(l1,l2) -> l1.merge(l2)));
+		for (Entry<IdType,MergeableList<String>> entry: idsByType.entrySet()) {
+			doCall(entry.getValue(),entry.getKey()).stream().flatMap(r -> r.records.stream()).forEach(
+				pmcr -> {
+					Set<RecordIdentifier> allIds = new HashSet<>();
+					pmcr.doi.ifPresent(d -> allIds.add(Builder.recordReference(IdType.DOI, d)));
+					pmcr.pmcid.ifPresent(d -> allIds.add(Builder.recordReference(IdType.PMCID, d)));
+					pmcr.pmid.ifPresent(d -> allIds.add(Builder.recordReference(IdType.PMID, d)));
+					for (RecordIdentifier src: allIds) {
+						for (RecordIdentifier targ: allIds) {
+							//if (!src.equals(targ)) {
+								out.add(Builder.recordIdMapping(src,targ));
+							//}
+						}
+					}
+				}
+			);
+		}
+		
 		return out;
 	}
 
