@@ -19,8 +19,6 @@ import uk.co.terminological.jsr223.RMethod;
 
 @RClass
 public class RJavaApi {
-	//TODO: more task based methods 
-	//TODO: 
 	
 	BibliographicApis api;
 	
@@ -44,12 +42,15 @@ public class RJavaApi {
 		Collection<Record> out = new ArrayList<>();
 		if (apis.contains("crossref")) {
 			out.addAll(api.getCrossref().search(searchTerm));
+			//TODO: store search result and update ID mapping
 		}
 		if (apis.contains("entrez")) {
 			out.addAll(api.getEntrez().search(searchTerm));
+			//TODO: store search result and update ID mapping
 		}
 		if (apis.contains("europepmc")) {
 			out.addAll(api.getEuropePMC().search(searchTerm));
+			//TODO: store search result and update ID mapping
 		}
 		return recordsToDataFrame(out,citationStyle); 
 	}
