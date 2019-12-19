@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import uk.co.terminological.bibliography.BibliographicApiException;
+import uk.co.terminological.bibliography.CiteProcProvider;
+import uk.co.terminological.bibliography.CiteProcProvider.Format;
+
 public interface Record extends RecordReference {
 
 	public List<RecordReference> getOtherIdentifiers();
@@ -31,6 +35,14 @@ public interface Record extends RecordReference {
 	
 	public default Optional<String> getFirstAuthorFirstName() {
 		return getFirstAuthor().flatMap(a -> a.getFirstName());
+	}
+
+	public default Optional<String> render(String style) {
+		try {
+			return Optional.of(CiteProcProvider.convert(style, Format.text, this).getEntries()[0]);
+		} catch (Exception e) {
+			return Optional.empty();
+		}
 	}
 	
 }
