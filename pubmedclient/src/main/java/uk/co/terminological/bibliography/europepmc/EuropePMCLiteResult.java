@@ -53,7 +53,7 @@ firstIndexDate: "2010-12-03",
 firstPublicationDate: "2010-10-01"
  */
 
-public class EuropePMCLiteResult extends ExtensibleJson implements RecordReference, IdentityMapping, Print {
+public class EuropePMCLiteResult extends ExtensibleJson implements RecordReference, Print {
 
 	public EuropePMCLiteResult(JsonNode node) { super(node); }
 	
@@ -83,16 +83,6 @@ public class EuropePMCLiteResult extends ExtensibleJson implements RecordReferen
 		if (getSource().get().equals(DataSources.MED)) return IdType.PMID;
 		if (getSource().get().equals(DataSources.PMC)) return IdType.PMCID;
 		return IdType.UNK;
-	}
-
-	@Override
-	public List<RecordReference> getMapping() {
-		List<RecordReference> tmp = new ArrayList<>();
-		getDOI().map(d -> recordReference(IdType.DOI,d)).ifPresent(tmp::add);
-		getPMCID().map(d -> recordReference(IdType.PMCID,d)).ifPresent(tmp::add);
-		getPMID().map(d -> recordReference(IdType.PMID,d)).ifPresent(tmp::add);
-		getIdentifier().map(d -> recordReference(getIdentifierType(),d)).ifPresent(tmp::add);
-		return tmp;
 	}
 
 	@Override
