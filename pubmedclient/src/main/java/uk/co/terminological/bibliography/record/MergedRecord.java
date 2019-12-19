@@ -18,7 +18,7 @@ public class MergedRecord implements Record {
 	}
 	
 	public MergedRecord merge(Record r) {
-		//TODO: Check before merge
+		//TODO: Check for duplicates before merge
 		records.add(r);
 		return this;
 	}
