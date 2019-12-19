@@ -5,11 +5,12 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import uk.co.terminological.bibliography.record.Author;
 import uk.co.terminological.bibliography.record.Raw;
 import uk.co.terminological.fluentxml.XmlElement;
 import uk.co.terminological.fluentxml.XmlException;
 
-public class EntrezAuthor implements uk.co.terminological.bibliography.record.Author, Raw<XmlElement>  {
+public class EntrezAuthor implements Author, Raw<XmlElement>  {
 
 	private XmlElement raw;
 	public EntrezAuthor(XmlElement raw) {this.raw = raw;}
