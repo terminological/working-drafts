@@ -128,7 +128,5 @@ public class BibliographicApis {
 		return opencitations;
 	}
 	
-	public String render(String style, Record record) {
-		CiteProcProvider.convert(style, Format.text, record).
-	}
+	
 }
