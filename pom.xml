@@ -110,32 +110,7 @@
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.github.terminological</groupId>
-				<artifactId>r-jsr223-maven-plugin</artifactId>
-				<version>1.02</version>
-				<configuration>
-					<packageData>
-						<title>Bibliographic Apis</title>
-						<version>0.01</version>
-						<packageName>bibliographicapis</packageName>
-						<license>MIT</license>
-						<description>A collection of utilities for interacting with various bibliographic APIs from R</description>
-						<maintainerName>Rob</maintainerName>
-						<maintainerFamilyName>Challen</maintainerFamilyName>
-						<maintainerEmail>rob@terminological.co.uk</maintainerEmail>
-					</packageData>
-					<outputDirectory>${project.basedir}/r-library</outputDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>generate-r-library</id>
-						<goals>
-							<goal>generate-r-library</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+			
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.4</version>
