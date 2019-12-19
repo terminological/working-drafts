@@ -37,6 +37,7 @@ public interface Record extends RecordReference {
 	}
 
 	public default Optional<String> render(String style) {
+		
 		try {
 			return Optional.of(CiteProcProvider.convert(style, Format.text, this).getEntries()[0]);
 		} catch (Exception e) {
