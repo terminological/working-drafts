@@ -3,6 +3,8 @@ package uk.co.terminological.bibliography;
 import static uk.co.terminological.jsr223.ROutput.mapping;
 import static uk.co.terminological.jsr223.ROutput.toDataframe;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -11,14 +13,29 @@ import java.util.Map;
 import uk.co.terminological.bibliography.record.CitationLink;
 import uk.co.terminological.bibliography.record.Record;
 import uk.co.terminological.bibliography.record.RecordIdentifierMapping;
+import uk.co.terminological.jsr223.RClass;
+import uk.co.terminological.jsr223.RMethod;
 
+@RClass
 public class RJavaApi {
 	//TODO: more task based methods 
 	//TODO: 
 	
+	BibliographicApis api;
+	
+	
+	public RJavaApi(String configFilename) throws IOException {
+		this.api = BibliographicApis.create(Paths.get(configFilename));
+	}
+	
+	@RMethod
 	public List<String> getSupportedClients() {
 		return Arrays.asList("crossref","entrez","europepmc","opencitations","pmcid","unpaywall");
 	}
+	
+	
+	
+	
 	
 	
 	public Map<String,Object[]> recordsToDataFrame(Collection<? extends Record> records,String style) {
