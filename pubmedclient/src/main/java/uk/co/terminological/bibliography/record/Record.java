@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import uk.co.terminological.bibliography.BibliographicApiException;
 import uk.co.terminological.bibliography.CiteProcProvider;
 import uk.co.terminological.bibliography.CiteProcProvider.Format;
 
