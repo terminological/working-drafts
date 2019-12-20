@@ -16,8 +16,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.terminological</groupId>
-			<artifactId>pubmedclient</artifactId>
-			<version>0.01-SNAPSHOT</version>
+			<artifactId>>bibliographic-api-client</artifactId>
+			<version>1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.neo4j</groupId>
