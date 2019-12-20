@@ -16,7 +16,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.terminological</groupId>
-			<artifactId>>bibliographic-api-client</artifactId>
+			<artifactId>bibliographic-api-client</artifactId>
 			<version>1.0</version>
 		</dependency>
 		<dependency>
