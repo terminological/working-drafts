@@ -80,9 +80,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
 			<artifactId>fluentxml</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 			<type>maven-plugin</type>
 		</dependency>
 		<dependency>
@@ -92,13 +92,20 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
 			<artifactId>exotic-datatypes</artifactId>
-			<version>1.0.0</version>
+			<version>1.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.graphaware.neo4j/nlp -->
 
 	</dependencies>
+	<repositories>
+	<!-- Resolve runtime library on github -->
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 	<build>
 		<pluginManagement>
 		<plugins>
