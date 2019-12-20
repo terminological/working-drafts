@@ -102,4 +102,11 @@
    <version>5.0.0-RC2</version>
 </dependency>
 	</dependencies>
+	<repositories>
+	<!-- Resolve runtime library on github -->
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 </project>
