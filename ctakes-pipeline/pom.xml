@@ -70,9 +70,9 @@
 		
 
 		<dependency>
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
 			<artifactId>exotic-datatypes</artifactId>
-			<version>1.0.0</version>
+			<version>master-SNAPSHOT</version>
 		</dependency>
 		
 
@@ -94,9 +94,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>uk.co.terminological</groupId>
+			<groupId>com.github.terminological</groupId>
 			<artifactId>fluentxml</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 			<type>maven-plugin</type>
 		</dependency>
 		<dependency>
