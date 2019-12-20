@@ -153,7 +153,7 @@
 					<packageData>
 						<title>Bibliographic Apis</title>
 						<version>0.01</version>
-						<packageName>bibliographicapis</packageName>
+						<packageName>biblioapi</packageName>
 						<license>MIT</license>
 						<description>A collection of utilities for interacting with various bibliographic APIs from R</description>
 						<maintainerName>Rob</maintainerName>
