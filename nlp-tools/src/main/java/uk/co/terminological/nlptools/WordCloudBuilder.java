@@ -19,7 +19,6 @@ import com.kennycason.kumo.font.KumoFont;
 import com.kennycason.kumo.font.scale.SqrtFontScalar;
 import com.kennycason.kumo.palette.ColorPalette;
 
-import uk.co.terminological.simplechart.ColourScheme;
 
 public class WordCloudBuilder {
 
