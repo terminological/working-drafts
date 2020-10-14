@@ -1,6 +1,7 @@
 package uk.co.terminological.pipestream;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,6 +14,7 @@ public class FluentEventBusTest {
 			EventBusTest tmp = new EventBusTest();
 			tmp.setUp();
 			tmp.test();
+			
 		}
 		
 		@Before
